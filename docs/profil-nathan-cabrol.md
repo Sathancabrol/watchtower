@@ -10,7 +10,7 @@
 | Champ | Valeur |
 |---|---|
 | Nom | Cabrol |
-| Prénom | Säthan |
+| Prénom | Näthan |
 | Pays | France |
 | Région / zone | Occitanie — Bassin de Thau |
 | Langues | Français (natif), anglais (courant) |
