@@ -3,7 +3,9 @@
 Audit produit le 2026-09-05 · sources vérifiées en ligne · liens dans chaque ligne
 
 > **Périmètre** : les 11 liens YouTube + 1 repo GitHub que tu as fournis, croisés avec **tes 8 repos publics** (`watchtower`, `COGNITORIUM`, `proto-cognitorium`, `reaserch-engine`, `HCSM`, `ETAT-DE-LART-PSYCHOLOGIE`, `Language-decoder`, `animation-chronos`).
-> **Verdict en une ligne** : ~85 % de ce que montrent ces vidéos est **faisable 100 % gratuit chez toi**, sans abonnement ; et ~70 % du boulot d'installation peut être fait par un **agent IA** (moi) directement dans tes repos, pour que tu n'aies qu'un script à lancer.
+> **Verdict en une ligne** : **36 outils sur 44** cités par ces liens (≈ 82 %) sont faisables **100 % gratuit, en local** sur ta tour, sans abonnement ; et **20 tâches sur 22** (≈ 90 %) du travail d'installation/patching sont réalisables **par un agent IA** (moi) directement dans tes repos — il ne te reste que les clics de compte, le micro, et le matériel éventuel.
+
+> **Méthode** : les 11 liens ont été récupérés et lus (titres, descriptions, chapitres, transcripts) ; les 8 repos GitHub ont été clonés/inspectés (dont les 57 modules de `COGNITORIUM/watchtower-mods/src`) ; les licences des 44 outils ont été vérifiées via GitHub API le 2026-09-05 (le compteur `44` = somme des lignes des 8 tableaux du §Catalogue).
 
 ---
 
