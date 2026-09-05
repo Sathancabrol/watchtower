@@ -36,6 +36,7 @@ import { initPaywallGate } from './paywallGate.js';
 import { initPosteCommandement } from './posteCommandement.js';
 import { initMinimap } from './minimap.js';
 import { creerBatiRapide } from './batiRapide.js';
+import { initHistorique } from './historique.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
 import { initNomsLieux } from './nomsLieux.js';
@@ -484,6 +485,14 @@ async function init() {
       const batiRapide = creerBatiRapide(viewer, { surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.bati = batiRapide;
       const bati = initOsmBuildings3D(viewer, { bati: batiRapide });
+      // 🕰 MODE HISTORIQUE : les mêmes bâtiments 3D, mais datés — le curseur
+      // d'année ne laisse debout que ceux qui existaient déjà. Gratuit :
+      // les dates viennent d'OpenStreetMap (start_date), déjà dans les tags.
+      const historique = initHistorique(viewer, {
+        bati: batiRapide,
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.historique = historique;
       const chantier = initChantier(viewer);
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
       const recentrerHQ = () => {
@@ -531,6 +540,7 @@ async function init() {
         { libelle: '🎚 VISUEL+', cible: 'pp-toggles' },
         { libelle: '🎛 PARAMS', cible: 'param-slider-panel' },
         { libelle: '🏗 CHANTIER', dock: 'chantier' },
+        { libelle: '🕰 ÉPOQUES', dock: 'temps' },
       ];
       const cockpit = creerCockpit(viewer, {
         panneaux: PANNEAUX_BORD,
@@ -577,6 +587,7 @@ async function init() {
           { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: poste.panneaux.lieux.element, cote: 'gauche' },
           { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: poste.panneaux.histo.element, cote: 'droite' },
           { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: poste.panneaux.favoris.element, cote: 'gauche' },
+          { id: 'temps', icone: '🕰', libelle: 'ÉPOQUES', titre: '🕰 MODE HISTORIQUE — LA VILLE À TRAVERS LE TEMPS (OSM)', element: historique.element, cote: 'gauche' },
           { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: cctv.element, cote: 'droite' },
         ],
         panneauxExistants: [

@@ -4,17 +4,48 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 9** (🧠 palais mental, 😴 veille du HUD,
-🔑 comptes & IA locale, 🎥 dispositifs en direct, 🔲 cadrans au tracé
-communal, 🌀 rotation 360° des icônes AR).
-Itérations précédentes : **8** = chat à réponses rapides, `/aide`, mode urgence
-guidé, icônes AR lisibles · **7** = … · **6** = entités de la carte, sources
-cliquables & traçabilité, mobiGlas + VTOL + 3ᵉ personne, INTEL élargi à 6 vues,
-cadrans, fenêtres réductibles, SUIVI direct, analyse de 25 sites gratuits.
+Dernière mise à jour : **itération 11** (🕰 mode historique : la ville se
+construit sous vos yeux à partir des dates OpenStreetMap).
+Itérations précédentes : **10** = parcours de vol traçés & rejoués, 3ᵉ personne
+réparée, routes + cadastre visibles en satellite, bouton « ME LOCALISER »
+explicité · **9** = 🧠 palais mental, 😴 veille du HUD, 🔑 comptes & IA locale,
+🎥 dispositifs en direct, 🔲 cadrans au tracé communal, 🌀 rotation 360° des
+icônes AR · **8** = chat à réponses rapides, `/aide`, mode urgence guidé ·
+**7** = … · **6** = entités de la carte, sources cliquables & traçabilité,
+mobiGlas + VTOL + 3ᵉ personne, INTEL élargi à 6 vues, cadrans, fenêtres
+réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 9 — en cours
+## 0. Itération 11 — en cours
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Temps** | 🕰 **MODE HISTORIQUE** : curseur d'année, seuls les bâtiments déjà debout restent à l'écran | ✅ | `historique.js`, `data/historique.js` | Overpass · OSM `start_date` |
+| **Temps** | Lecture des dates OSM : `1850`, `1850s`, `C19`, `XIXe siècle`, `~1850`, `avant/après 1900`, `1850..1870`, dates ISO, époques en mots | ✅ | `data/historique.js` | — |
+| **Temps** | ▶ LIRE : la ville pousse décennie par décennie (une primitive par décennie, aucun recalcul) | ✅ | `historique.js` | — |
+| **Temps** | Courbe de croissance + liste des bâtiments « apparus dans les années N » (clic = la caméra y vole) | ✅ | `historique.js` | — |
+| **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
+| **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
+
+## 0 bis. Itération 10 — terminée
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Vol** | 🛩 **PARCOURS** : 5 préréglages (orbite, balayage, spirale, approche, navette) + réglages | ✅ | `flightMode.js`, `data/volParcours.js` | géométrie pure |
+| **Vol** | 📐 TRACER · ▶ JOUER · ⏹ STOP · 💾 SAUVER (liste locale) · 🔴 ENREGISTRER LE VOL réel | ✅ | `flightMode.js` | mesure locale |
+| **Vol** | 🐛 **3ᵉ personne réparée** : toute vue passe par `appliquerVue()` (boutons compris, plus seulement la touche V) | ✅ | `flightMode.js` | — |
+| **Cadastre** | 👁 « visible en vue satellite » : plafond porté à 22 000 m | ✅ | `cadastre.js` | apicarto (IGN · Etalab) |
+| **Cadastre** | 🛣 **ROUTES** : tracé Overpass coloré par classe, noms optionnels, résumé en km | ✅ | `cadastre.js` | Overpass (ODbL) |
+| **Interface** | 👁 bouton HQ renommé **« ME LOCALISER »** + message à chaque clic | ✅ | `main.js` | — |
+
+### Mémoire des outils (ne rien refaire deux fois)
+→ voir **`docs/SOURCES_ET_OUTILS.md`** : ce qui a été vu, utilisé, écarté, et
+pourquoi. Document à compléter dès qu'un outil est croisé.
+
+---
+
+## 0 ter. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -29,10 +60,6 @@ cadrans, fenêtres réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Dispositifs** | Fiche détaillée : site, type d'objet, outils, **activité estimée**, description de scène (mesuré localement) | ✅ | `dispositifs.js` | mesure locale (aucun envoi) |
 | **Cadrans** | Découpage **au tracé communal** : intersection exacte case × contour (ear clipping + Sutherland–Hodgman) | ✅ | `data/geoCadrans.js` | géométrie pure |
 | **Vue communale** | 🌀 Icônes AR : rotation 360° (24 images), 104 px, écartées pour ne plus se chevaucher | ✅ | `arIcons.js`, `vueCommunale.js` | — |
-
-### Mémoire des outils (ne rien refaire deux fois)
-→ voir **`docs/SOURCES_ET_OUTILS.md`** : ce qui a été vu, utilisé, écarté, et
-pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
@@ -71,6 +98,30 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itérations **10** et **11** :
+
+* **« le mode vol n'a pas de parcours »** — panneau 🛩 **PARCOURS** : 5
+  préréglages (orbite, balayage, spirale, approche, navette), 📐 TRACER dessine
+  la trajectoire sur la carte, ▶ JOUER fait voler la caméra le long du tracé
+  (drone qui scanne la ville), 💾 SAUVER garde le parcours, 🔴 ENREGISTRER
+  capture le vol **réellement piloté** (simplifié au posage) pour le rejouer.
+* **« la 3ᵉ personne ne marche pas »** — les boutons de vue changeaient
+  `modeVue` sans toucher à l'avatar : seule la touche **V** fonctionnait. Toute
+  vue passe maintenant par `appliquerVue()`.
+* **« le cadastre et les routes disparaissent en vue satellite »** — case
+  👁 « visible en vue satellite » (plafond porté à 22 000 m) et couche 🛣
+  **ROUTES** (OpenStreetMap, colorée par classe, noms optionnels, résumé en km).
+* **« on ne comprend pas le bouton HQ »** — renommé **ME LOCALISER**, avec un
+  message à chaque clic qui explique la cinématique (espace → ta position).
+* **🕰 MODE HISTORIQUE** — curseur d'année : seuls les bâtiments déjà debout
+  restent à l'écran, ▶ LIRE fait pousser la ville décennie par décennie,
+  courbe de croissance, liste des bâtiments apparus (clic = la caméra y vole),
+  rendu sépia. Dates lues dans **OSM `start_date`** : gratuit, ouvert, sans clé.
+  Ce qui n'est pas daté n'est **pas inventé** : option « estimer » séparée,
+  toujours annoncée comme hypothèse.
+
+Plus ancien (itérations 6 → 9) :
 
 * **« fenetres non modifiables »** — toutes les fenêtres flottantes passent par
   `amenagerToutes()` (`fenetres.js`) : déplaçables, redimensionnables,
@@ -119,11 +170,11 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 |---|---|---|---|---|
 | 1 | **🏗 Dossier source chantier** : CERFA, DT-DICT, budgets, normes, plans, bordereaux — modèle de référence réutilisable, complété automatiquement | le chantier doit capitaliser | interne + data.gouv (modèles CERFA) | 🟠 |
 | 2 | **🗓 Phasage → animation du périmètre sur la carte** + options de préparation (balisage, circulations, interdictions) | sécuriser avant d'ouvrir | interne + OSM | 🟡 |
-| 3 | **Plans de vol / waypoints** | transforme la visite en mission | moteur interne | 🟢 |
+| 3 | ~~**Plans de vol / waypoints**~~ → **FAIT** (itération 10 : `data/volParcours.js` + 🛩 PARCOURS) | transforme la visite en mission | moteur interne | ✅ |
 | 4 | **Curseur temporel** (heure → ombres + lumière réelles) | juger une vue drone | Cesium (clock) | 🟢 |
 | 5 | **Mode photo** (HUD masqué, capture haute rés, filigrane coordonnées) | livrable terrain | `preserveDrawingBuffer` | 🟢 |
 | 6 | **Biodiversité d'un site** (GBIF / iNaturalist) | compléter l'empreinte environnementale | API ouvertes sans clé | 🟡 |
-| 7 | **Noms de rues** au fort zoom | orientation fine | Overpass `highway[name]` | 🟢 |
+| 7 | ~~**Noms de rues** au fort zoom~~ → **FAIT** (itération 10 : couche 🛣 ROUTES + 🔤 noms) | orientation fine | Overpass `highway[name]` | ✅ |
 | 8 | **Journal de vol + export GPX/KML** | traçabilité | moteur interne | 🟡 |
 | 9 | **Préréglages de calques** (urbanisme / risques / nature / nocturne) | un bouton au lieu de dix | interne | 🟢 |
 | 10 | **Alertes / veille** (nouveaux ICPE, arrêtés, séismes) | « prévoir et actionner » | Géorisques, USGS | 🟡 |
@@ -131,6 +182,9 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | 12 | **Comparateur temporel** (imagerie avant/après) | juger l'évolution | IGN remonter le temps (clé) | 🟠 |
 | 13 | **Modèles 3D d'aéronefs** (glTF) | remplacer les silhouettes | licences à vérifier | 🟠 |
 | 14 | **Comptes annuels certifiés** (Pappers / API Entreprise) | CA et résultat officiels dans la fiche | jeton gratuit | 🟡 |
+| 15 | **Étendre le mode historique** aux voies, POI et équipements datés (`start_date` sur tout OSM) | une ville complète, pas que le bâti | Overpass | 🟢 |
+| 16 | **Recouper les dates manquantes** (BDNB, cadastre napoléonien, archives départementales) | moins de « non daté » | BDNB (ouverte), archives open data | 🟠 |
+| 17 | **Imagerie ancienne** superposée au curseur d'année | juger l'évolution d'un coup d'œil | IGN remonter le temps (clé gratuite) | 🟠 |
 
 ## 4. Sources ouvertes : ce que j'utilise, et ce qui reste à brancher
 
@@ -154,6 +208,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | recherche-entreprises **`/near_point`** | **entreprises autour d'un point** (SIREN, NAF, effectif) | `/near_point?lat=&long=&radius=` |
 | GDELT | dépêches de presse indexées | `api.gdeltproject.org/api/v2/doc/doc` |
 | USGS | séismes des dernières 24 h | `earthquake.usgs.gov/…/all_day.geojson` |
+| **Overpass `start_date` / `end_date`** | **dates de construction & de démolition des bâtiments (mode historique)** | `overpass-api.de/api/interpreter` |
 | Radio-Browser, Panoramax, Commons | voir ci-dessus | — |
 
 ### À brancher (selon les besoins)

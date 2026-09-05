@@ -153,7 +153,9 @@ rien à la fiche d'un lieu.
 Contours de parcelles (API apicarto de l'IGN, données ouvertes) en trait fin
 avec remplissage discret : juste assez pour lire l'environnement, jamais assez
 pour noyer l'écran. Se charge **sous 2 500 m d'altitude** seulement, emprise
-plafonnée, secteurs mis en cache.
+plafonnée, secteurs mis en cache. Case **👁 visible en vue satellite** pour
+garder le cadastre jusqu'à 22 000 m, et case **🛣 voir les ROUTES** pour tracer
+la voirie OpenStreetMap (colorée par classe, noms optionnels, longueur en km).
 
 ### 🎬 « ME LOCALISER » — la cinématique (panneau **📍 MOI**)
 
@@ -283,6 +285,21 @@ défilant** façon Bloomberg, où chaque dépêche est datée et cliquable.
 « 25 Websites You Won't Believe Exist » passé au crible de WATCHTOWER : ce
 qu'on reprend, ce qu'on remplace par un équivalent libre, ce qu'on écarte —
 dans **[docs/COMPARAISON_SITES.md](./docs/COMPARAISON_SITES.md)**.
+
+### 🕰 Mode historique (dock **🕰 ÉPOQUES**)
+
+Un curseur d'année, et la ville se construit sous vos yeux : seuls les
+bâtiments **déjà debout** à l'année choisie restent à l'écran ; **▶ LIRE** fait
+pousser la commune décennie par décennie (rendu sépia, bâti actuel masqué).
+Courbe de croissance, liste des bâtiments « apparus dans les années N » (un clic
+y emmène la caméra), légende des époques.
+
+Les dates viennent d'**OpenStreetMap** (`start_date` / `end_date`) : ouvertes,
+gratuites, sans clé. Le mode **n'invente rien** — trois provenances sont
+toujours distinguées : **daté par OSM**, **estimé** (option « hypothèse »,
+répartition calculée d'après les bâtiments datés), **non daté** (masqué par
+défaut). Formats reconnus : `1850`, `1850s`, `C19`, `XIXe siècle`, `~1850`,
+`avant/après 1900`, `1850..1870`, dates ISO et époques en mots clés.
 
 ### 🗺 Feuille de route
 
