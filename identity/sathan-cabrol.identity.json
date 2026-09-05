@@ -1,0 +1,237 @@
+{
+  "$schema": "./identity.schema.json",
+  "spec": "gobonet.identity/1.0",
+  "entity_id": "person:sathan-cabrol",
+  "version": "1.0.0",
+  "updated": "2026-09-05",
+  "locale": "fr-FR",
+  "status": "authoritative_self_declared",
+  "purpose": "Contexte d'identité destiné aux agents IA de Gobonet. Charge ce document avant tout raisonnement, génération ou recommandation concernant cette personne.",
+
+  "core": {
+    "nom": "Cabrol",
+    "prenom": "Säthan",
+    "nom_affichage": "Säthan Cabrol",
+    "orthographe_stricte": "Säthan (tréma sur le a). Ne jamais écrire Sathan, Nathan, Satan.",
+    "genre_grammatical": "masculin",
+    "pays": "France",
+    "region": "Occitanie",
+    "zone": "Bassin de Thau",
+    "fuseau": "Europe/Paris",
+    "langues": [
+      { "code": "fr", "niveau": "natif", "usage": "langue de travail par défaut" },
+      { "code": "en", "niveau": "courant", "usage": "lecture technique, échanges internationaux" }
+    ]
+  },
+
+  "identite_synthetique": {
+    "titre_canonique": "Concepteur de systèmes cognitifs assistés par IA",
+    "phrase_25_mots": "Concepteur transdisciplinaire : je traduis des problèmes complexes — humains, techniques, territoriaux — en modèles, visualisations et outils décisionnels utilisables sur le terrain.",
+    "trois_piliers": [
+      { "id": "cognition", "libelle": "Cognition humaine", "contenu": "perception, apprentissage, erreur, décision" },
+      { "id": "numerique", "libelle": "Numérique et IA", "contenu": "modélisation, données, visualisation, automatisation" },
+      { "id": "reel", "libelle": "Réel physique", "contenu": "chantier, VRD, contraintes, coûts, délais, sécurité" }
+    ],
+    "these_centrale": "La valeur ne vient pas d'une expertise unique mais de la tenue simultanée des trois piliers dans un même système opérationnel."
+  },
+
+  "formation": [
+    {
+      "id": "edu:master-psycho-cognitive",
+      "intitule": "Master — Psychologie cognitive",
+      "etablissement": "Université Paul-Valéry Montpellier 3",
+      "niveau_cec": 7,
+      "domaine": ["sciences cognitives", "méthodologie de recherche"],
+      "confiance": "declaree"
+    },
+    {
+      "id": "edu:sti2d-sin",
+      "intitule": "Baccalauréat STI2D — option Systèmes d'Information et Numérique",
+      "etablissement": null,
+      "niveau_cec": 4,
+      "domaine": ["électronique", "informatique", "systèmes embarqués"],
+      "confiance": "declaree"
+    },
+    {
+      "id": "edu:afpa-conducteur-travaux-tp",
+      "intitule": "Conducteur de travaux — Travaux Publics",
+      "etablissement": "AFPA",
+      "niveau_cec": 5,
+      "domaine": ["BTP", "VRD", "génie civil", "gestion de chantier"],
+      "confiance": "declaree"
+    }
+  ],
+
+  "experience_domaines": [
+    { "id": "exp:recherche", "libelle": "Recherche en psychologie cognitive", "pilier": "cognition" },
+    { "id": "exp:enseignement", "libelle": "Enseignement / transmission", "pilier": "cognition" },
+    { "id": "exp:btp", "libelle": "BTP, VRD, génie civil, gestion de chantier", "pilier": "reel" },
+    { "id": "exp:numerique", "libelle": "Développement de projets numériques", "pilier": "numerique" },
+    { "id": "exp:ia", "libelle": "Intelligence artificielle appliquée", "pilier": "numerique" },
+    { "id": "exp:dataviz", "libelle": "Visualisation de données et systèmes complexes", "pilier": "numerique" },
+    { "id": "exp:3d", "libelle": "Conception 3D et fabrication", "pilier": "reel" }
+  ],
+
+  "competences": {
+    "cognitives": ["analyse", "observation", "résolution de problèmes", "modélisation", "abstraction", "compréhension des systèmes complexes"],
+    "techniques": ["structuration de données", "visualisation", "développement / prototypage", "outils et agents IA", "BTP / VRD", "gestion de projet", "3D et fabrication", "cartographie"],
+    "adaptatives": ["autonomie", "apprentissage rapide", "adaptation aux contraintes", "prise de responsabilité", "polyvalence", "tenue sous contrainte"]
+  },
+
+  "preuves": [
+    { "affirmation": "comprend l'humain", "appuis": ["edu:master-psycho-cognitive", "exp:recherche", "exp:enseignement"] },
+    { "affirmation": "comprend la technique", "appuis": ["edu:sti2d-sin", "exp:numerique", "exp:3d"] },
+    { "affirmation": "comprend le réel opérationnel", "appuis": ["edu:afpa-conducteur-travaux-tp", "exp:btp"] },
+    { "affirmation": "sait construire", "appuis": ["proj:cognitorium", "exp:numerique", "exp:ia"] },
+    { "affirmation": "tient sous contrainte", "appuis": ["parcours personnel exigeant (voir regles_editoriales)"] }
+  ],
+
+  "projets": [
+    {
+      "id": "proj:cognitorium",
+      "nom": "Cognitorium",
+      "role": "central",
+      "statut": "en conception / prototypage",
+      "description": "Environnement destiné à représenter et connecter connaissances, compétences, apprentissages, métiers, projets, territoires et intelligences humaines et artificielles.",
+      "objets_modelises": ["connaissances", "compétences", "apprentissages", "métiers", "projets", "territoires", "interactions humain-IA"]
+    },
+    {
+      "id": "proj:gobonet",
+      "nom": "Gobonet",
+      "role": "plateforme hôte",
+      "statut": "en construction",
+      "description": "Environnement dans lequel cette fiche sert de carte d'identité de base, reliée aux expériences, compétences, événements de vie, projets et objectifs."
+    }
+  ],
+
+  "vision": {
+    "chaine_de_valeur": ["Voir", "Comprendre", "Explorer", "Simuler", "Décider", "Concevoir", "Construire", "Mesurer"],
+    "principe_humain_ia": {
+      "ia_fait": ["recherche", "mémoire", "analyse", "programmation", "simulation", "orchestration", "automatisation"],
+      "humain_garde": ["les objectifs", "les valeurs", "le jugement", "la décision", "la responsabilité"]
+    },
+    "beneficiaires": ["une personne", "une entreprise", "une collectivité"]
+  },
+
+  "objectif_actuel": {
+    "formulation": "Ne plus chercher un métier précis, mais construire des systèmes permettant de comprendre et transformer des problèmes complexes.",
+    "implication_pour_l_ia": "Ne pas réduire ce profil à une offre d'emploi standard. Privilégier les propositions de type projet, mission de cadrage, partenariat, recherche appliquée ou création d'outil."
+  },
+
+  "disambiguation": {
+    "n_est_pas": [
+      "un développeur logiciel de production classique",
+      "un chercheur académique en poste",
+      "un conducteur de travaux exclusivement terrain",
+      "un data scientist statisticien",
+      "un consultant en organisation généraliste"
+    ],
+    "erreurs_frequentes_a_eviter": [
+      "Interpréter la transdisciplinarité comme de la dispersion ou un manque de spécialisation.",
+      "Choisir un seul pilier et ignorer les deux autres : le profil n'a de sens qu'en croisement.",
+      "Traduire 'psychologie' par clinique, thérapie ou soin. Il s'agit de psychologie cognitive, orientée recherche et modélisation.",
+      "Présenter l'IA comme substitut de décision : elle est outil, jamais décideur.",
+      "Générer un CV chronologique classique quand le contexte demande un positionnement."
+    ]
+  },
+
+  "audiences": [
+    {
+      "id": "aud:tech-data",
+      "cible": "Entreprise tech, data, produit",
+      "accroche": "Je conçois des outils qui rendent des données complexes lisibles et décidables — avec une formation en psychologie cognitive qui me fait concevoir pour l'utilisateur réel, pas pour la spec.",
+      "mettre_en_avant": ["modélisation", "visualisation", "structuration de données", "prototypage IA", "edu:sti2d-sin", "proj:cognitorium"],
+      "mettre_en_retrait": ["parcours personnel", "vocabulaire philosophique"],
+      "mot_cle": "Product / data designer à profil cognitif"
+    },
+    {
+      "id": "aud:btp",
+      "cible": "Entreprise BTP / TP / VRD",
+      "accroche": "Conducteur de travaux TP de formation, avec en plus la capacité de numériser et de piloter par la donnée : suivi de chantier, cartographie, 3D, outillage IA pour la préparation et le reporting.",
+      "mettre_en_avant": ["edu:afpa-conducteur-travaux-tp", "exp:btp", "gestion des contraintes", "terrain", "sécurité"],
+      "mettre_en_retrait": ["Cognitorium en version longue — dire 'outils numériques métier'"],
+      "mot_cle": "Conducteur de travaux à profil numérique / BIM-data"
+    },
+    {
+      "id": "aud:recherche",
+      "cible": "Laboratoire, université",
+      "accroche": "Master en psychologie cognitive, avec une pratique de terrain et d'ingénierie. Je travaille sur la représentation des connaissances et des compétences, et sur les interfaces humain-IA.",
+      "mettre_en_avant": ["edu:master-psycho-cognitive", "exp:recherche", "méthodologie", "cadre théorique de Cognitorium"],
+      "mettre_en_retrait": ["registre produit", "pitch entrepreneurial"],
+      "mot_cle": "Sciences cognitives appliquées & représentation des connaissances"
+    },
+    {
+      "id": "aud:collectivite",
+      "cible": "Collectivité, acteur public, territoire",
+      "accroche": "J'aide un territoire à voir ce qu'il a — compétences, métiers, projets, ressources — et à simuler ses décisions avant de les prendre.",
+      "mettre_en_avant": ["ancrage Bassin de Thau", "cartographie", "visualisation territoriale", "compétences et formation", "exp:btp"],
+      "mettre_en_retrait": ["technique profonde", "vocabulaire IA anxiogène"],
+      "mot_cle": "Ingénierie territoriale & cartographie des compétences"
+    },
+    {
+      "id": "aud:financeur",
+      "cible": "Incubateur, financeur, partenaire",
+      "accroche": "Cognitorium relie connaissances, compétences, projets et territoires, pour passer de la compréhension à la décision. Je suis à la fois l'utilisateur, le concepteur et le terrain de test.",
+      "mettre_en_avant": ["vision", "chaîne Voir→Mesurer", "croisement cognition × IA × terrain", "capacité à prototyper seul"],
+      "mettre_en_retrait": ["CV chronologique"],
+      "mot_cle": "Founder — infrastructure cognitive"
+    },
+    {
+      "id": "aud:freelance",
+      "cible": "Client de mission ponctuelle",
+      "accroche": "Vous avez un problème mal défini. Je le cadre, je le modélise, je livre un prototype et une visualisation exploitables.",
+      "livrables_types": ["audit de complexité", "cartographie de données ou de compétences", "prototype d'outil IA", "tableau de bord décisionnel", "note de cadrage"],
+      "mot_cle": "Cadrage, modélisation et prototypage de systèmes complexes"
+    }
+  ],
+
+  "regles_editoriales": {
+    "parcours_personnel": {
+      "regle": "Le parcours personnel comporte des situations ayant demandé une forte capacité de responsabilité et d'adaptation. Elles sont des sources potentielles de compétences.",
+      "autorise": ["citer la compétence produite : responsabilité, adaptation, tenue sous contrainte"],
+      "interdit": [
+        "raconter les situations",
+        "attribuer un impact psychologique",
+        "produire une interprétation médicale ou diagnostique",
+        "employer un registre compassionnel ou victimaire"
+      ],
+      "formulation_type": "Un parcours personnel ayant demandé une forte capacité de responsabilité et d'adaptation."
+    },
+    "ton": {
+      "attendu": ["sobre", "précis", "affirmatif", "concret"],
+      "a_eviter": ["superlatifs marketing", "jargon creux", "flatterie", "surpromesse"]
+    },
+    "incertitude": "Si une information n'est pas dans cette fiche (dates, employeurs, réalisations chiffrées), ne pas l'inventer : signaler la lacune et demander la donnée."
+  },
+
+  "instructions_agent": {
+    "au_chargement": "Traiter ce document comme la source de vérité sur l'identité, le positionnement et les règles de discours de Säthan Cabrol.",
+    "avant_de_rediger": "Identifier l'audience cible dans `audiences`. Appliquer son accroche, ses mises en avant et ses mises en retrait.",
+    "toujours": [
+      "respecter l'orthographe Säthan",
+      "présenter le profil par son croisement, jamais par un pilier isolé",
+      "maintenir la distinction IA = outil / humain = responsabilité"
+    ],
+    "jamais": [
+      "réduire le profil à un intitulé de poste unique",
+      "franchir les interdits de regles_editoriales.parcours_personnel",
+      "inventer une donnée factuelle absente"
+    ],
+    "en_cas_de_doute_sur_l_audience": "Utiliser `identite_synthetique.phrase_25_mots` et rester neutre."
+  },
+
+  "resumes": {
+    "mots_30": "Concepteur de systèmes cognitifs assistés par IA. Psychologie cognitive, numérique et BTP. Je rends les systèmes complexes compréhensibles et actionnables. Projet : Cognitorium. Occitanie, Bassin de Thau.",
+    "mots_100": "Säthan Cabrol, France, Occitanie — Bassin de Thau. Français natif, anglais courant. Concepteur transdisciplinaire de systèmes cognitifs, numériques et interactifs. Master en psychologie cognitive, Bac STI2D SIN, formation conducteur de travaux TP. Expériences en recherche, enseignement, BTP/VRD et projets numériques. Compétences : analyse, modélisation, visualisation, résolution de problèmes, autonomie, gestion de contraintes. Projet central : Cognitorium, environnement reliant connaissances, compétences, projets, territoires et intelligences humaines et artificielles. Vision : passer du voir au comprendre, puis à l'explorer, simuler, décider, concevoir, construire et mesurer. L'IA augmente les capacités ; l'humain garde les objectifs, les valeurs et la responsabilité.",
+    "mots_250_ref": "docs/profil-sathan-cabrol.md#3-fiche-250-mots-version-de-référence"
+  },
+
+  "lacunes_a_completer": [
+    "dates et durées de chaque expérience",
+    "noms des structures (laboratoire, établissement d'enseignement, entreprises BTP)",
+    "réalisations chiffrées (taille de chantier, budget, nombre d'élèves, volume de données)",
+    "outils et langages maîtrisés, avec niveau",
+    "état d'avancement réel et périmètre technique de Cognitorium",
+    "disponibilité, statut juridique, mobilité, prétentions"
+  ]
+}
