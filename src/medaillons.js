@@ -224,6 +224,28 @@ export function initMedaillons(viewer, options = {}) {
     } catch { return hier; }
   }
 
+  /**
+   * Repli SANS RÉSEAU : l'application affiche déjà pays / région /
+   * département / ville dans le panneau WATCHTOWER · FR. On les lit plutôt
+   * que d'afficher rien du tout quand Nominatim est muet (traceabilité : la
+   * source est notée).
+   */
+  function depuisEcran() {
+    const lire = (sel) => String(document.querySelector(sel)?.textContent || '').trim();
+    const net = (v) => (/^[-—]+$/.test(v) ? '' : v);
+    return {
+      pays: net(lire('#wt-panel [data-wt="pays"]')),
+      region: net(lire('#wt-panel [data-wt="region"]')),
+      departement: net(lire('#wt-panel [data-wt="dept"]')),
+      commune: net(lire('#wt-panel [data-wt="ville"]')),
+      quartier: net(lire('#wt-ville .wv-nom')),
+      complet: '',
+      source: 'écran (panneau WATCHTOWER · FR)',
+      lon: centre.lon,
+      lat: centre.lat,
+    };
+  }
+
   /** Géocode un nom de lieu (pour voler vers lui). */
   async function geocoder(terme) {
     if (!terme) return null;
@@ -267,35 +289,45 @@ export function initMedaillons(viewer, options = {}) {
     ds.entities.removeAll();
     entites = new Map();
     if (!actif || !hier) return;
-    let i = 0;
-    for (const niv of NIVEAUX) {
+    const connus = NIVEAUX.filter((n) => hier[n]);
+    if (!connus.length) return;
+    // Empilement À L'ÉCRAN (décalage en pixels) autour du point survolé :
+    // c'est ce qui rend les médaillons visibles quelle que soit l'altitude
+    // (à 300 m comme à 300 km), là où des altitudes absolues les faisaient
+    // sortir du champ.
+    const ecart = 104;
+    const milieu = (connus.length - 1) / 2;
+    connus.forEach((niv, i) => {
       const nom = hier[niv];
-      if (!nom) continue;
-      const alt = altitudeDeBase(niv);
       const image = dessinerMedaillon(nom, {
         taille: 256,
         couleur: couleurNiveau(niv),
         sous: LIBELLES[niv] || niv,
       });
-      if (!image) break;
-      const taille = niv === niveau ? 132 : 92;
+      if (!image) return;
+      const taille = niv === niveau ? 128 : 88;
+      const haut = (milieu - i) * ecart;
       const e = ds.entities.add({
-        position: positionFlottante(centre.lon, centre.lat, alt, i * 1.3),
+        // au sol, sous la caméra : le décalage se fait en pixels
+        position: Cesium.Cartesian3.fromDegrees(centre.lon, centre.lat, 0),
         billboard: {
           image,
           width: taille,
           height: taille,
-          rotation: rotationLente(i * 2.1),
+          rotation: rotationLente(i * 1.7),
           alignedAxis: Cesium.Cartesian3.UNIT_Z,
           verticalOrigin: Cesium.VerticalOrigin.CENTER,
-          scaleByDistance: new Cesium.NearFarScalar(2_000, 1, 4_000_000, 0.5),
+          // flottement : quelques pixels de va-et-vient, décalé par niveau
+          pixelOffset: new Cesium.CallbackProperty(() => {
+            const sec = (Date.now() - dateDebut) / 1000;
+            return new Cesium.Cartesian2(0, haut + Math.sin(sec * 0.8 + i) * 7);
+          }, false),
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
         },
         properties: { wtMedaillon: true, wtNiveau: niv, wtNom: nom },
       });
       entites.set(niv, e);
-      i += 1;
-    }
+    });
     ds.show = true;
     governorRequestRender('wt-medaillons');
   }
@@ -381,7 +413,10 @@ export function initMedaillons(viewer, options = {}) {
       const bouge = Math.abs(lon - centre.lon) > 0.02 || Math.abs(lat - centre.lat) > 0.02;
       centre = { lon, lat };
       if (bouge || !hier) await chercherHierarchie(lon, lat);
-      if (niv !== niveau || bouge) {
+      // Nominatim muet (hors ligne, quota, CORS) → on prend ce que l'écran
+      // affiche déjà plutôt que de ne rien montrer du tout.
+      if (!hier || NIVEAUX.filter((n) => hier[n]).length < 2) hier = depuisEcran();
+      if (niv !== niveau || bouge || ds.entities.values.length === 0) {
         niveau = niv;
         construire();
       }
@@ -398,7 +433,7 @@ export function initMedaillons(viewer, options = {}) {
     activer(on = true) {
       actif = Boolean(on);
       ds.show = actif;
-      if (actif) { maj(); holdContinuousRender('wt-medaillons'); }
+      if (actif) { maj(); window.setTimeout(maj, 1500); holdContinuousRender('wt-medaillons'); }
       else {
         ds.entities.removeAll();
         carte.classList.remove('ouvert');

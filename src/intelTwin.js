@@ -120,7 +120,15 @@ export function initIntelTwin(viewer) {
   const style = document.createElement('style');
   style.textContent = CSS;
   document.head.appendChild(style);
-  document.getElementById('intel-hud')?.style.setProperty('display', 'none', 'important');
+  // ⚠ Le bandeau d'info live (`#intel-hud`) était masqué ici en !important :
+  // l'utilisateur perdait le bandeau définitivement, et la fenêtre AFFICHAGE
+  // ne pouvait pas le rendre (un style inline !important gagne). Il reste
+  // désormais pilotable (CALQUES → Bandeau live, ou AFFICHAGE) et son choix
+  // est mémorisé dans `watchtower.bandeauLive.v1`.
+  const bandeauLive = (() => {
+    try { return window.localStorage.getItem('watchtower.bandeauLive.v1') !== '0'; } catch { return true; }
+  })();
+  document.getElementById('intel-hud')?.style.setProperty('display', bandeauLive ? '' : 'none', 'important');
 
   const heatDs = new Cesium.CustomDataSource('wt-intel-heat');
   viewer.dataSources.add(heatDs);

@@ -4,10 +4,13 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 15** (🗂 CALQUES : les 27 couches de
-l'app, rien de bloqué · 🧭 médaillons de lieu 360° cliquables · 🎛 pastilles
-de catégories dans le lanceur).
-Itérations précédentes : **14** = 🎛 lanceur par catégories + préréglages,
+Dernière mise à jour : **itération 16** (🐞 diagnostic de démarrage F3 +
+« tout réafficher » · 📶 bandeau live rendu · 🧭 médaillons repli sans
+réseau · 📐 lanceur plafonné). Voir **`docs/DIAGNOSTIC.md`** : comment
+l'app est montée, les cinq mécanismes qui vident l'écran, les pannes déjà
+rencontrées, la marche à suivre.
+Itérations précédentes : **15** = 🗂 CALQUES : les 27 couches, rien de
+bloqué · 🧭 médaillons de lieu 360° · 🎛 pastilles de catégories · **14** = 🎛 lanceur par catégories + préréglages,
 🧭 boussole dans la minicarte, 🗺 minicarte en globe · **13** = 🧭 boussole « casque » sur la hauteur, ▚
 MATRIX sur la minicarte, 🎨 peau néon, 👁 œil dans le logo · **12** = 🖥 HUD central (un œil toujours visible +
 la liste de tout ce qui s'affiche) · **11** = 🕰 mode historique (la ville se construit à
@@ -45,7 +48,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 ter. Itération 13 — terminée
+## 0 quater. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -57,7 +60,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 quater. Itération 12 — terminée
+## 0 quinquies. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -68,7 +71,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 quinquies. Itération 11 — terminée
+## 0 sexies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -79,7 +82,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 sexies. Itération 10 — terminée
+## 0 septies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -96,7 +99,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 septies. Itération 9 — terminée
+## 0 octies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -149,6 +152,25 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **16** :
+
+* **« j'ai plus le bandeau d'info live »** — trouvé : `intelTwin.js` posait
+  `display: none !important` sur `#intel-hud` au démarrage, et un style
+  inline `!important` écrase tout (la fenêtre AFFICHAGE ne pouvait donc pas
+  le rendre). Le masquage devient conditionnel et mémorisé
+  (`watchtower.bandeauLive.v1`) ; le bandeau est de retour et pilotable
+  depuis **CALQUES → Bandeau live**.
+* **« les médaillons n'apparaissent pas »** — deux causes : Nominatim muet
+  (plus de hiérarchie du tout) et des altitudes absolues qui sortaient du
+  champ de la caméra. Le module a maintenant un **repli sans réseau** (il lit
+  pays / région / département / ville déjà affichés dans le panneau
+  WATCHTOWER · FR) et un **empilement en pixels** autour du point survolé :
+  visible à 300 m comme à 300 km.
+* **« les vues INTEL / CHANTIER ne s'activent pas »** — pas encore prouvé :
+  plutôt que deviner, l'app s'auto-diagnostique. **F3** (ou 🐞 DIAG) liste
+  les modules présents, les erreurs capturées et quel mécanisme masque
+  l'écran ; **TOUT RÉAFFICHER** remet tout en place d'un clic.
 
 Itération **15** :
 

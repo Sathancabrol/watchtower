@@ -138,6 +138,20 @@ export const CALQUES = [
     mettre: (v) => clique('#detection-toggle', v),
   },
   {
+    id: 'bandeau', nom: 'Bandeau live', icone: '📶', niveau: 'gratuit', famille: 'DONNÉES',
+    aide: 'Bandeau d’informations en direct en haut de l’écran',
+    actif: () => {
+      const b = document.getElementById('intel-hud');
+      return b ? b.style.display !== 'none' : false;
+    },
+    mettre: (v) => {
+      const b = document.getElementById('intel-hud');
+      if (!b) return;
+      b.style.setProperty('display', v ? '' : 'none', 'important');
+      try { window.localStorage.setItem('watchtower.bandeauLive.v1', v ? '1' : '0'); } catch { /* plein */ }
+    },
+  },
+  {
     id: 'radio', nom: 'Radios', icone: '📻', niveau: 'gratuit', famille: 'DONNÉES',
     aide: 'Stations Radio-Browser placées sur la carte',
     actif: () => etatDe('#radio-enable-btn'),

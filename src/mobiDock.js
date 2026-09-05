@@ -54,6 +54,9 @@ const CSS = `
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 960;
   display: flex; flex-direction: column; align-items: center; gap: 3px;
   padding: 4px 8px 7px;
+  /* plafond : le lanceur ne doit jamais manger plus de la moitié de l'écran
+     (sinon les panneaux ancrés partent au-dessus du bord haut) */
+  max-height: 46vh; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin;
   background: linear-gradient(180deg, rgba(5,8,14,0) 0%, rgba(5,8,14,0.88) 46%);
   pointer-events: none;
   font-family: var(--font-mono, monospace);
@@ -105,7 +108,7 @@ const CSS = `
 #command-dock { bottom: calc(var(--wt-hauteur-dock, 72px) + 8px) !important; transition: bottom .25s ease; }
 /* panneaux ancrés (chat, autour…) */
 .wt-dock-panel {
-  position: fixed; bottom: calc(var(--wt-hauteur-dock, 72px) + 62px); z-index: 955;
+  position: fixed; bottom: min(calc(var(--wt-hauteur-dock, 72px) + 62px), 44vh); z-index: 955;
   width: min(360px, 92vw); max-height: 52vh; display: flex; flex-direction: column;
   background: rgba(8,12,20,0.92); color: var(--text-primary, #e8eaed);
   border: 1px solid rgba(0,212,255,0.35);

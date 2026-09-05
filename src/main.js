@@ -38,6 +38,7 @@ import { initMinimap } from './minimap.js';
 import { creerBatiRapide } from './batiRapide.js';
 import { initHistorique } from './historique.js';
 import { initHudCentral } from './hudCentral.js';
+import { capturerErreurs, initDiagnostic, toutReafficher } from './diagnostic.js';
 import { initMedaillons } from './medaillons.js';
 import { initTheme } from './theme.js';
 import { initVuesTerritoire } from './vueCommunale.js';
@@ -135,6 +136,10 @@ function describeError(error) {
  * style system, intelligence HUD, location presets, and share links.
  */
 async function init() {
+  // 🐞 Capture d'erreurs AVANT tout : si un module jette au démarrage, tout
+  // ce qui suit dans cette fonction n'existe pas — le diagnostic (touche F3)
+  // pourra le dire au lieu de laisser l'écran vide sans explication.
+  capturerErreurs();
   const loadingScreen = document.getElementById('loading-screen');
   const loaderStatus = loadingScreen.querySelector('.loader-status');
 
@@ -395,7 +400,19 @@ async function init() {
     // loop burning behind a hidden tab. (perf wave 2 fix)
     syncVisibilitySuspension();
 
-    window.__godsEyeView = {
+    window.__godsEyeView = {};
+    // 🐞 Diagnostic + raccourci universel « tout réafficher » (F3).
+    try {
+      window.__godsEyeView.diagnostic = initDiagnostic({
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__wtToutReafficher = () => {
+        const fait = toutReafficher();
+        window.__wtToast?.(`👁 Tout réaffiché : ${fait.length} action(s).`);
+        return fait;
+      };
+    } catch (e) { console.error('[watchtower] diagnostic:', e); }
+    Object.assign(window.__godsEyeView, {
       viewer,
       styleManager,
       tileset,
@@ -407,7 +424,7 @@ async function init() {
       cockpitCloudEffects,
       getRenderGovernorDiagnostics,
       requestRender: governorRequestRender,
-    };
+    });
     // Voice: PAID mode runs the OpenAI realtime agent (needs OPENAI_API_KEY on
     // the dev server); FREE mode runs the keyless browser voice — Web Speech
     // recognition + a local FR/EN grammar driving the same action runner.
@@ -950,6 +967,17 @@ async function init() {
         b.dataset.groupe = 'modes';
         b.addEventListener('click', () => hudCentral.basculer());
         window.__godsEyeView.dock?.ranger?.(b, 'modes');
+      }
+      // 🐞 DIAG : état des modules, erreurs capturées, « tout réafficher ».
+      const diag = window.__godsEyeView.diagnostic;
+      if (diag) {
+        const b2 = document.createElement('button');
+        b2.type = 'button';
+        b2.className = 'wt-dock-btn';
+        b2.innerHTML = '<span class="ic">🐞</span><span class="lb">DIAG</span>';
+        b2.title = 'Diagnostic : modules présents, erreurs capturées, tout réafficher (touche F3)';
+        b2.addEventListener('click', () => diag.basculer());
+        window.__godsEyeView.dock?.ranger?.(b2, 'modes');
       }
     } catch (e) { console.error('[watchtower] hud central:', e); }
 
