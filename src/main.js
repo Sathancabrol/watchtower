@@ -35,6 +35,9 @@ import { initFrenchHud } from './frenchHud.js';
 import { initPaywallGate } from './paywallGate.js';
 import { initPosteCommandement } from './posteCommandement.js';
 import { initMinimap } from './minimap.js';
+import { creerBatiRapide } from './batiRapide.js';
+import { initVuesTerritoire } from './vueCommunale.js';
+import { initPins } from './pins.js';
 import { initCctvCam } from './cctvCam.js';
 import { MapStackController } from './mapStackController.js';
 import { initAnnotations } from './annotations/index.js';
@@ -54,6 +57,23 @@ import { loadPhotorealisticTileset } from './mapStartup.js';
 import { openStartGate } from './startGate.js';
 
 initLogoGaze();
+
+/**
+ * Bandeau d'information éphémère partagé par les modules WATCHTOWER
+ * (bâti 3D rapide, vues du territoire, épingles). Un seul canal de message,
+ * pas une fenêtre de plus à l'écran.
+ * @param {string} html Message (mise en forme légère autorisée : <b>, <br>).
+ */
+window.__wtToast = (html) => {
+  try {
+    const bandeau = document.getElementById('toast');
+    if (!bandeau) return;
+    bandeau.innerHTML = html;
+    bandeau.classList.add('visible');
+    window.clearTimeout(window.__wtToastTimer);
+    window.__wtToastTimer = window.setTimeout(() => bandeau.classList.remove('visible'), 3400);
+  } catch { /* bandeau absent : le message est simplement perdu */ }
+};
 
 /**
  * Extract a human-readable error message from any thrown value.
@@ -383,7 +403,11 @@ async function init() {
       });
       const autour = initNearbyPlaces(viewer);
       const filtres = initVisualFilters();
-      const bati = initOsmBuildings3D(viewer);
+      // ⚡ Bâti 3D : pipeline rapide (cache mémoire, géométrie par lots sur un
+      // worker, hauteurs estimées) partagé par le panneau BÂTI 3D et les vues.
+      const batiRapide = creerBatiRapide(viewer, { surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.bati = batiRapide;
+      const bati = initOsmBuildings3D(viewer, { bati: batiRapide });
       const chantier = initChantier(viewer);
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
       const recentrerHQ = () => {
@@ -433,6 +457,23 @@ async function init() {
       poste.setDock(window.__godsEyeView.dock);
       // 🏙 BÂTI 3D : clic sur un nom de repère → FICHE LIEU du bâtiment
       bati.setSurFiche((lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat));
+      // 🗼 VUES DU TERRITOIRE : boutons nommés dans la fenêtre CONTEXTE de
+      // l'INTEL (vue communale = plan 2D + contour animé + couche AR).
+      const vues = initVuesTerritoire(viewer, {
+        bati: batiRapide,
+        analyse: () => window.__godsEyeView.intel?.derniere?.() || null,
+        fiche: (lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat),
+        heatzones: () => window.__godsEyeView.intel?.basculerHeat?.(),
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.vues = vues;
+      window.__godsEyeView.intel?.setVues?.(vues);
+      // 📌 ÉPINGLES : bouton visible en bas à gauche → clic carte = épingle.
+      const pins = initPins(viewer, {
+        fiche: (lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat),
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.pins = pins;
       // « chaque bouton envoie vers sa fenêtre / fiche » — navigation globale
       window.wtAller = {
         pageChantier: (p) => {

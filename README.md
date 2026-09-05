@@ -32,6 +32,54 @@ Notes : `ALLOW_FRAMING=1` désactive les en-têtes anti-iframe du serveur de dev
 (uniquement pour les previews intégrées). `docs/media` (68 Mo de GIFs de démo)
 est exclu de ce fork.
 
+---
+
+## 🆕 Vues du territoire · épingles · minicarte · bâti 3D rapide
+
+### 🧭 Vues du territoire (dock **🧠 INTEL** → fenêtre **CONTEXTE**)
+
+Une rangée de boutons **nommés** change la façon de regarder le territoire :
+
+| Bouton | Effet |
+|---|---|
+| 🗺 **VUE COMMUNALE** | dézoom à la verticale (plan 2D du dessus) → le contour de la commune (geo.api.gouv.fr) **se trace en animation**, façon plan cadastral → puis la **couche AR** s'active : des icônes flottent en 3D au-dessus de la ville (✚ santé avec barre de vie, ❤️ bonheur, 🎓 écoles, 🛍 commerces, 🏛 services). **Clic sur une icône** → tous les bâtiments 3D de sa catégorie se modélisent et reçoivent leur icône flottante. |
+| 🏘 **VUE QUARTIER** | 3D rasante à 900 m + chargement du bâti |
+| 👁 **IMMERSION** | caméra au sol, regard horizontal |
+| 🌍 **ORBITE** | retour à la vue globe |
+| 🔥 **HEATZONES** | zones d'équipements (rayons) |
+| 🏙 **BÂTI 3D** | volumes rapides (cache mémoire) |
+
+Rendu « jeu » (GTA San Andreas) : aplats saturés, contour noir épais, ombre
+portée, barres segmentées — aucune texture ni modèle à télécharger.
+
+### 📌 Épingles
+
+Bouton **📌** en bas à gauche → *POSER UNE ÉPINGLE* → clic sur la carte : une
+grosse épingle numérotée et nommée apparaît, **cliquable** (ouvre la fiche
+lieu) et mémorisée sur l'appareil. Le repère **🏠 MA MAISON** (panneau 📍 MOI)
+répond à nouveau au clic.
+
+### 🗺 Minicarte
+
+Réécrite en **canvas** (fini le second viewer Cesium, lourd et qui restait
+vide) : elle suit la vue, se déplace au clic/glisser, zoome à la molette, 🛰
+change le fond de carte, et s'efface quand un panneau du dock s'ouvre.
+
+### ⚡ Bâti 3D rapide
+
+Le chargement « très long » venait de la construction, pas du réseau. Désormais :
+
+* **2 draw-calls** pour toute la ville (une primitive pour les corps, une pour
+  les dalles de toit) au lieu d'un objet Cesium par bâtiment ;
+* **hauteurs estimées** sans requête supplémentaire : tag OSM → étages × 3,2 m
+  → table par type (église 18 m, hangar 11 m…) → à défaut, déduites de
+  **l'emprise cadastrale** (variation déterministe : la ville ne « clignote »
+  pas d'un chargement à l'autre) ;
+* géométrie construite **par lots sur un worker**, avec progression : la
+  fenêtre reste fluide ;
+* **zones gardées en mémoire** : revenir sur une vue déjà chargée est instantané
+  (c'est là que le gain se voit).
+
 **Démarrage rapide (Windows PowerShell) :**
 
 ```powershell

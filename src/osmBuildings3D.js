@@ -50,7 +50,8 @@ function simplifier(anneau, maxPts = MAX_SOMMETS) {
   return out;
 }
 
-export function initOsmBuildings3D(viewer) {
+export function initOsmBuildings3D(viewer, options = {}) {
+  const { bati = null } = options || {};
   const style = document.createElement('style');
   style.textContent = CSS;
   document.head.appendChild(style);
@@ -82,6 +83,13 @@ export function initOsmBuildings3D(viewer) {
   const statut = el.querySelector('.statut');
 
   function effacer() {
+    // Le pipeline rapide garde les zones en mémoire : « effacer » retire
+    // seulement de la scène, revenir sur la zone ne recalcule rien.
+    if (bati) {
+      bati.effacer();
+      entiteSurlignee = null;
+      return;
+    }
     if (primitive) { viewer.scene.primitives.remove(primitive); primitive = null; }
     dsNom.entities.removeAll();
     entiteSurlignee = null;
@@ -103,6 +111,24 @@ export function initOsmBuildings3D(viewer) {
 
   async function charger() {
     const c = viewer.camera.positionCartographic;
+    // ⚡ Pipeline rapide (cache mémoire + géométrie par lots sur un worker) :
+    // il remplace la construction « une entité par bâtiment », qui bloquait
+    // la fenêtre pendant le chargement.
+    if (bati) {
+      const rayonRapide = Number(el.querySelector('.f-rayon').value) || 700;
+      statut.textContent = `🔍 Emprises OSM (${rayonRapide} m)…`;
+      const r = await bati.charger({
+        rayon: rayonRapide,
+        surProgres: (f, n) => {
+          if (n) statut.textContent = `🏗 ${n} volumes construits (${Math.round(f * 100)} %)…`;
+        },
+      });
+      statut.textContent = r?.n
+        ? `✅ ${r.n} bâtiments — 2 draw-calls, hauteurs estimées, zone gardée en mémoire :`
+          + ' reviens sur la vue, c’est instantané.'
+        : '⚠ Aucun bâtiment ici ou source OSM saturée — réessaie dans 20 s.';
+      return;
+    }
     if (c.height > 30000) { statut.textContent = '⚠ Zoome davantage (moins de 30 km d\u2019altitude) puis relance.'; return; }
     const lat = Cesium.Math.toDegrees(c.latitude);
     const lon = Cesium.Math.toDegrees(c.longitude);
@@ -184,7 +210,7 @@ export function initOsmBuildings3D(viewer) {
   // clic sur une étiquette de nom → FICHE LIEU du bâtiment + surbrillance
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   handler.setInputAction((click) => {
-    if (window.__wtDessin) return;
+    if (window.__wtDessin || window.__wtPinArme) return; // dessin chantier / pose d'épingle
     let picked = null;
     try { picked = viewer.scene.pick(click.position); } catch { return; }
     const entite = picked?.id;

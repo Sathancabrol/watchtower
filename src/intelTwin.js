@@ -57,6 +57,14 @@ const CSS = `
 #wti-droit .titre { font-size: 9px; letter-spacing: 3px; color: #7dd3c8; margin-bottom: 8px; display: flex; justify-content: space-between; }
 #wti-droit .pop { font-size: 20px; font-weight: 800; }
 #wti-droit .sous { font-size: 8px; letter-spacing: 1.5px; color: rgba(232,234,237,0.55); margin: 10px 0 4px; }
+#wti-droit .wti-vues { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+#wti-droit .wti-vues button { cursor: pointer; padding: 7px 5px; font-family: inherit; border-radius: 8px; background: rgba(120,200,190,0.08); border: 1px solid rgba(120,200,190,0.35); color: #7dd3c8; text-align: center; line-height: 1.4; }
+#wti-droit .wti-vues button:hover { background: rgba(120,200,190,0.18); border-color: #7dd3c8; }
+#wti-droit .wti-vues button .v-ic { display: block; font-size: 14px; }
+#wti-droit .wti-vues button .v-nom { display: block; font-size: 8px; font-weight: 800; letter-spacing: 0.5px; }
+#wti-droit .wti-vues button .v-sous { display: block; font-size: 6.5px; font-weight: 400; letter-spacing: 0.2px; color: rgba(232,234,237,0.5); }
+#wti-droit .wti-vues button.actif { background: rgba(120,200,190,0.26); border-color: #7dd3c8; }
+#wti-droit .wti-vues button:disabled { opacity: 0.45; cursor: progress; }
 #wti-droit .jauge { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.09); overflow: hidden; margin: 3px 0 2px; }
 #wti-droit .jauge i { display: block; height: 100%; border-radius: 3px; }
 #wti-droit canvas { width: 100%; border-radius: 8px; background: rgba(255,255,255,0.03); margin-top: 4px; }
@@ -158,6 +166,8 @@ export function initIntelTwin(viewer) {
       </div>
       <div class="vue-contexte">
         <div class="titre"><span>CONTEXT PANEL</span><span style="color:#43d17a">TRENDS ↗</span></div>
+        <div class="sous">🧭 VUES DU TERRITOIRE</div>
+        <div class="wti-vues"></div>
         <div class="sous">POPULATION</div><div class="pop">—</div>
         <div class="sous">ACTIVITÉ ÉCONOMIQUE</div>
         <div class="jauge eco"><i style="background:linear-gradient(90deg,#37b7ab,#7de8b0)"></i></div>
@@ -267,6 +277,38 @@ export function initIntelTwin(viewer) {
       vueProfil.style.display = o.dataset.v === 'profil' ? '' : 'none';
       if (o.dataset.v === 'profil') rendreProfil();
     });
+  }
+
+  // ═══════════ VUES DU TERRITOIRE — boutons nommés (fenêtre CONTEXTE) ═══════════
+  // Chaque bouton est une façon de regarder le territoire : plan communal 2D
+  // avec contour animé + couche AR, 3D rasante, immersion, orbite, heatzones,
+  // bâti 3D rapide. Branché par main.js une fois le moteur de vues créé.
+  const zoneVues = root.querySelector('.wti-vues');
+  let moteurVues = null;
+  let vueActive = null;
+  function rendreVues() {
+    if (!zoneVues || !moteurVues?.vues) return;
+    zoneVues.innerHTML = '';
+    for (const v of moteurVues.vues) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.dataset.vue = v.id;
+      b.title = `${v.nom} — ${v.sous}`;
+      b.innerHTML = `<span class="v-ic">${v.ic}</span><span class="v-nom">${v.nom}</span><span class="v-sous">${v.sous}</span>`;
+      b.addEventListener('click', async () => {
+        if (vueActive === v.id && b.classList.contains('actif')) return; // déjà active
+        zoneVues.querySelectorAll('button').forEach((x) => x.classList.remove('actif'));
+        b.classList.add('actif');
+        vueActive = v.id;
+        try { await moteurVues.appliquer(v.id); } catch { /* remonté par le moteur */ }
+      });
+      zoneVues.appendChild(b);
+    }
+  }
+  /** Rebranche le moteur de vues (appelé par main.js). */
+  function setVues(moteur) {
+    moteurVues = moteur || null;
+    rendreVues();
   }
 
   // ═══════════ rendu bandeau + catégories (cliquables) ═══════════
@@ -498,6 +540,7 @@ export function initIntelTwin(viewer) {
       // clic sur une icône 🔎 → fiche
       const pickCats = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
       pickCats.setInputAction((click) => {
+        if (window.__wtDessin || window.__wtPinArme) return; // dessin chantier / pose d'épingle
         let picked = null;
         try { picked = viewer.scene.pick(click.position); } catch { return; }
         const ent = picked?.id;
@@ -1012,5 +1055,12 @@ export function initIntelTwin(viewer) {
     if (!ouvert) { fermerDrill(); effacerCategories3D(); arreterLive(); }
   }).observe(root, { attributes: true, attributeFilter: ['class'] });
 
-  return { analyser, ouvrirRapport };
+  return {
+    analyser,
+    ouvrirRapport,
+    setVues,
+    basculerHeat,
+    derniere: () => derniere,
+    vueActive: () => vueActive,
+  };
 }

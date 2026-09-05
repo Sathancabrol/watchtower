@@ -19,6 +19,8 @@
 
 import * as Cesium from 'cesium';
 import { rendreDeplacable } from './draggable.js';
+import { resolvePickId } from './data/pickRegistry.js';
+import { spriteEpingle } from './marqueurs.js';
 
 const TYPE_ICONES = {
   townhall: ['🏛', 'Mairie · bâtiment public'],
@@ -198,9 +200,24 @@ export function initFicheLieu(viewer) {
     const id = ++requeteId;
     fermer();
 
+    // Épingle VISIBLE : un simple `point` Cesium passait sous les tuiles 3D
+    // et sous le relief (donc invisible, et non cliquable). On pose un sprite
+    // d'épingle (contour noir épais, ombre) + un petit disque de précision.
+    const imageEpingle = spriteEpingle({ couleur: '#00d4ff', texte: '', taille: 128 });
     marqueur = viewer.entities.add({
       position: Cesium.Cartesian3.fromDegrees(lon, lat),
-      point: { pixelSize: 9, color: Cesium.Color.CYAN, outlineColor: Cesium.Color.fromCssColorString('#062030'), outlineWidth: 2, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND },
+      point: { pixelSize: 7, color: Cesium.Color.CYAN, outlineColor: Cesium.Color.fromCssColorString('#062030'), outlineWidth: 2, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND },
+      ...(imageEpingle ? {
+        billboard: {
+          image: imageEpingle,
+          width: 34,
+          height: 34,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          scaleByDistance: new Cesium.NearFarScalar(200, 1.1, 20000, 0.45),
+        },
+      } : {}),
     });
 
     panneau = document.createElement('div');
@@ -453,10 +470,22 @@ export function initFicheLieu(viewer) {
   function marqueurDomicile({ lat, lon, label }) {
     dsRepere.entities.removeAll();
     repereMaison = { lat, lon, label };
+    const imageMaison = spriteEpingle({ couleur: '#ffd23f', texte: '🏠', taille: 128 });
     dsRepere.entities.add({
       id: 'wt-maison',
       position: Cesium.Cartesian3.fromDegrees(lon, lat),
       point: { pixelSize: 10, color: Cesium.Color.YELLOW, outlineColor: Cesium.Color.BLACK, outlineWidth: 2, heightReference: Cesium.HeightReference.CLAMP_TO_GROUND },
+      ...(imageMaison ? {
+        billboard: {
+          image: imageMaison,
+          width: 40,
+          height: 40,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          scaleByDistance: new Cesium.NearFarScalar(200, 1.15, 20000, 0.5),
+        },
+      } : {}),
       label: {
         text: `🏠 ${label || 'MA MAISON'}\nℹ️ INFO`,
         font: '13px JetBrains Mono, monospace',
@@ -472,11 +501,16 @@ export function initFicheLieu(viewer) {
   // ── clic gauche sur le globe → fiche ──
   const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   handler.setInputAction((click) => {
-    if (window.__wtDessin || interieur) return; // dessin de zone chantier ou visite en cours
-    // clic sur le repère « MA MAISON » → fiche du domicile (même après un vol)
+    // dessin de zone chantier, pose d'épingle en cours ou visite intérieure
+    if (window.__wtDessin || window.__wtPinArme || interieur) return;
+    // clic sur le repère « MA MAISON » → fiche du domicile (même après un vol).
+    // NB : `picked.id` est l'ENTITÉ Cesium, pas son identifiant — comparer à
+    // la chaîne 'wt-maison' ne marchait jamais. `resolvePickId()` lit l'un
+    // comme l'autre (entité, primitive, objet vessel…).
     let picked = null;
     try { picked = viewer.scene.pick(click.position); } catch { /* ok */ }
-    if (picked?.id === 'wt-maison' && repereMaison) { ouvrir(repereMaison.lon, repereMaison.lat); return; }
+    const idPick = resolvePickId(picked);
+    if (idPick === 'wt-maison' && repereMaison) { ouvrir(repereMaison.lon, repereMaison.lat); return; }
     let cart = null;
     try {
       if (viewer.scene.pickPositionSupported) cart = viewer.scene.pickPosition(click.position);
