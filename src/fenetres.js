@@ -5,6 +5,8 @@
  *  · DÉPLACÉES (poignée = barre de titre — reprend `rendreDeplacable`) ;
  *  · REDIMENSIONNÉES (poignée native en bas à droite, `resize: both`) ;
  *  · MISES EN FORME (⚙ : normale → compacte → large → bandeau → pilule) ;
+ *  · RÉDUITES EN ICÔNE (– : la fenêtre se replie sur sa barre de titre, et
+ *    reste ainsi d'une session à l'autre ; un clic la rouvre) ;
  *  · MÉMORISÉES : position, taille et forme sont sauvées par fenêtre
  *    (localStorage) et restaurées au démarrage suivant ; un bouton ⟲ remet
  *    la géométrie d'origine.
@@ -38,6 +40,17 @@ const CSS = `
   font-family: var(--font-mono, monospace);
 }
 .wt-fen-forme:hover { opacity: 1; }
+.wt-fen-mini {
+  height: 26px !important; min-height: 26px !important; max-height: 26px !important;
+  overflow: hidden; resize: none;
+}
+.wt-fen-mini > *:not(:first-child) { display: none !important; }
+.wt-fen-barre { display: flex; align-items: center; gap: 4px; }
+.wt-fen-barre button {
+  cursor: pointer; background: none; border: none; color: inherit;
+  opacity: .55; font-size: 10px; line-height: 1; padding: 0 2px; font-family: var(--font-mono, monospace);
+}
+.wt-fen-barre button:hover { opacity: 1; }
 `;
 
 function lireTout() {
@@ -101,6 +114,7 @@ export function amenagerFenetre(el, options = {}) {
     cle = el.id || el.className,
     poignee = null,
     formes = true,
+    reduire = true,
     redimensionnable = true,
     minW = 150,
     minH = 48,
@@ -115,7 +129,7 @@ export function amenagerFenetre(el, options = {}) {
   const origine = { largeur: Math.round(el.getBoundingClientRect().width) || null, hauteur: null };
   const sauver = () => {
     const tout = lireTout();
-    tout[cle] = { ...geometrie(el), forme: el.dataset.wtForme || 'normale' };
+    tout[cle] = { ...geometrie(el), forme: el.dataset.wtForme || 'normale', mini: el.classList.contains('wt-fen-mini') };
     ecrireTout(tout);
   };
   const restaurer = () => {
@@ -132,6 +146,7 @@ export function amenagerFenetre(el, options = {}) {
     if (Number.isFinite(g.height) && !g.forme) el.style.height = `${g.height}px`;
     if (g.forme && g.forme !== 'normale') appliquerForme(el, g.forme, origine);
     el.dataset.wtForme = g.forme || 'normale';
+    if (g.mini) el.classList.add('wt-fen-mini');
   };
 
   rendreDeplacable(el, poignee);
@@ -141,6 +156,51 @@ export function amenagerFenetre(el, options = {}) {
     el.style.minWidth = `${minW}px`;
     el.style.minHeight = `${minH}px`;
   }
+  // ── barre de boutons : – (réduire en icône) · ⚙ (forme) ──
+  const barre = document.createElement('span');
+  barre.className = 'wt-fen-barre';
+  if (poignee) {
+    // la barre se cale à droite de la poignée (la poignée est souvent un flex)
+    poignee.style.position = poignee.style.position || 'relative';
+    barre.style.position = 'absolute';
+    barre.style.right = '4px';
+    barre.style.top = '50%';
+    barre.style.transform = 'translateY(-50%)';
+    if (getComputedStyle(poignee).position === 'static') poignee.style.position = 'relative';
+    poignee.appendChild(barre);
+  } else {
+    barre.style.position = 'absolute';
+    barre.style.top = '4px';
+    barre.style.right = '16px';
+    el.appendChild(barre);
+  }
+
+  if (reduire) {
+    const bMini = document.createElement('button');
+    bMini.type = 'button';
+    bMini.className = 'wt-fen-mini-btn';
+    bMini.title = 'Réduire la fenêtre à sa barre de titre (icône) — clic pour rouvrir';
+    bMini.textContent = '–';
+    bMini.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const mini = !el.classList.contains('wt-fen-mini');
+      el.classList.toggle('wt-fen-mini', mini);
+      bMini.textContent = mini ? '⤢' : '–';
+      bMini.title = mini ? 'Rouvrir la fenêtre' : 'Réduire la fenêtre à sa barre de titre';
+      sauver();
+    });
+    if (el.classList.contains('wt-fen-mini')) bMini.textContent = '⤢';
+    barre.appendChild(bMini);
+    // double-clic sur la barre de titre : même bascule
+    const cible = poignee || el;
+    cible.addEventListener('dblclick', (e) => {
+      if (e.target?.closest?.('button')) return;
+      el.classList.toggle('wt-fen-mini');
+      bMini.textContent = el.classList.contains('wt-fen-mini') ? '⤢' : '–';
+      sauver();
+    });
+  }
+
   if (formes) {
     const bouton = document.createElement('button');
     bouton.type = 'button';
@@ -148,7 +208,6 @@ export function amenagerFenetre(el, options = {}) {
     bouton.title = 'Changer la forme de la fenêtre (normale · compacte · large · bandeau · pilule)';
     bouton.textContent = '⚙';
     // le bouton se cale à gauche de la poignée de la barre de titre
-    bouton.style.right = '18px';
     bouton.addEventListener('click', (e) => {
       e.stopPropagation();
       const actuel = el.dataset.wtForme || 'normale';
@@ -157,8 +216,7 @@ export function amenagerFenetre(el, options = {}) {
       bouton.textContent = FORMES[el.dataset.wtForme].ic;
       sauver();
     });
-    if (poignee) poignee.appendChild(bouton);
-    else el.appendChild(bouton);
+    barre.appendChild(bouton);
     // double-clic sur le bouton ⟲ : géométrie d'origine
     bouton.addEventListener('dblclick', (e) => {
       e.stopPropagation();
@@ -167,6 +225,7 @@ export function amenagerFenetre(el, options = {}) {
       ecrireTout(tout);
       el.dataset.wtForme = appliquerForme(el, 'normale', origine);
       el.style.width = ''; el.style.height = ''; el.style.left = ''; el.style.top = '';
+      el.classList.remove('wt-fen-mini');
       bouton.textContent = '⚙';
     });
   }
@@ -198,6 +257,43 @@ export function amenagerFenetres(cibles = []) {
   }
   return resultats;
 }
+
+/**
+ * Aménage « tout ce qui flotte » : fenêtres connues de l'application.
+ * Ignore les fenêtres absentes et ne réaménage jamais deux fois la même
+ * (marqueur `data-wt-fen`).
+ *
+ * @param {Array<{selecteur:string, poignee?:string, cle?:string}>} [cibles]
+ * @returns {number} nombre de fenêtres aménagées
+ */
+export function amenagerToutes(cibles = FENETRES_APP) {
+  let n = 0;
+  for (const c of cibles) {
+    const el = document.querySelector(c.selecteur);
+    if (!el || el.dataset.wtFen) continue;
+    const poignee = c.poignee ? el.querySelector(c.poignee) : null;
+    if (amenagerFenetre(el, { cle: c.cle, poignee })) {
+      el.dataset.wtFen = '1';
+      n += 1;
+    }
+  }
+  return n;
+}
+
+/** Fenêtres flottantes de l'application (barre de titre = poignée). */
+export const FENETRES_APP = Object.freeze([
+  { selecteur: '#wt-panel', poignee: '.wt-tete' },
+  { selecteur: '#wt-pins', poignee: '.t' },
+  { selecteur: '#wt-minimap', poignee: '.wt-mm-titre' },
+  { selecteur: '#wt-fiche', poignee: '.entete' },
+  { selecteur: '#wt-entites', poignee: '.t' },
+  { selecteur: '#wt-cadrans', poignee: '.t' },
+  { selecteur: '#wt-photo', poignee: '.t' },
+  { selecteur: '#wt-sv', poignee: '.t' },
+  { selecteur: '#wt-ville', poignee: '.t' },
+  { selecteur: '#pp-toggles', poignee: '.haut' },
+  { selecteur: '#param-slider-panel', poignee: '.entete' },
+]);
 
 export function oublierGeometries() {
   try { window.localStorage.removeItem(CLE); } catch { /* ok */ }

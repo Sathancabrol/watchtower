@@ -1,3 +1,5 @@
+import { liensVerification } from './tracabilite.js';
+
 /**
  * WATCHTOWER — EMPREINTE D'UN LIEU (économie, risques, environnement).
  *
@@ -152,10 +154,23 @@ export function faitsDeWikidata(json) {
   };
 }
 
-/** Résume une réponse Géorisques en une liste courte et lisible. */
-export function resumeGeorisques(json, theme, limite = 4) {
+/**
+ * Résume une réponse Géorisques en une liste courte et lisible.
+ * Chaque risque porte son lien de vérification : la fiche Géorisques de
+ * l'installation quand elle existe, sinon le rapport complet du point.
+ *
+ * @param {object} json réponse de l'API Géorisques
+ * @param {string} theme clé du thème (voir THEMES_RISQUES)
+ * @param {number} [limite=4]
+ * @param {{lat?:number, lon?:number}} [point] pour fabriquer le lien de repli
+ */
+export function resumeGeorisques(json, theme, limite = 4, point = {}) {
   const data = json?.data;
   if (!Array.isArray(data)) return [];
+  const { lat, lon } = point || {};
+  const rapport = Number.isFinite(lat) && Number.isFinite(lon)
+    ? `https://www.georisques.gouv.fr/dossiers/etude-risques?latlon=${lon},${lat}`
+    : 'https://www.georisques.gouv.fr/';
   return data.slice(0, limite).map((d) => ({
     nom: d.nomEtablissement || d.nom || d.libelle || d.nom_commune || d.risque || d.libelle_risque || '—',
     detail: [
@@ -167,6 +182,9 @@ export function resumeGeorisques(json, theme, limite = 4) {
       d.classe ? String(d.classe) : '',
     ].filter(Boolean).join(' · '),
     lien: d.lienFiche || d.lien || '',
+    // source cliquable : la donnée affichée se vérifie toujours en un clic
+    sourceUrl: d.lienFiche || d.lien || rapport,
+    sourceNom: 'Géorisques',
     theme,
   }));
 }
@@ -199,6 +217,9 @@ export async function empreinteDuLieu(p = {}) {
   const out = {
     exploitant: '', proprietaire: '', produit: '', activite: '',
     entreprise: null, wikidata: null, risques: [], tags: [], liens: [],
+    // traçabilité : les clés du registre de SOURCES effectivement consultées
+    sources: ['osm'],
+    verifications: liensVerification(lat, lon, codeCommune),
   };
 
   // 1) ce qu'OpenStreetMap sait déjà de l'objet
@@ -237,7 +258,7 @@ export async function empreinteDuLieu(p = {}) {
   if (Number.isFinite(lat) && Number.isFinite(lon)) {
     const demandes = THEMES_RISQUES.slice(0, 4).map(async (t) => {
       const brut = await jsonOuNull(urlGeorisques(t.cle, lon, lat, 1_000), 9_000);
-      return resumeGeorisques(brut, t.cle, 3).map((r) => ({ ...r, ic: t.ic, nomTheme: t.nom }));
+      return resumeGeorisques(brut, t.cle, 3, { lat, lon }).map((r) => ({ ...r, ic: t.ic, nomTheme: t.nom }));
     });
     const groupes = await Promise.all(demandes);
     out.risques = groupes.flat().slice(0, 10);
@@ -259,5 +280,14 @@ export async function empreinteDuLieu(p = {}) {
     out.liens.push({ nom: `INSEE — dossier ${codeCommune}`, url: `https://www.insee.fr/fr/statistiques/2011101?geo=COM-${codeCommune}` });
   }
   if (out.wikidata?.lien) out.liens.unshift({ nom: 'Wikidata', url: out.wikidata.lien });
+
+  // 6) TRAÇABILITÉ : quelles sources ont réellement servi (affichées dans la fiche)
+  const src = new Set(out.sources);
+  if (out.wikidata) src.add('wikidata');
+  if (out.entreprise?.siren) src.add('entreprises');
+  if (out.risques.length) src.add('georisques');
+  if (codeCommune) src.add('geoapigouv');
+  src.add('ign');   // orthophoto et cadastre servent de fond à la fiche
+  out.sources = [...src];
   return out;
 }

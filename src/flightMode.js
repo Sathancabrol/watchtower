@@ -14,6 +14,10 @@
 import * as Cesium from 'cesium';
 import { rendreDeplacable } from './draggable.js';
 import { CATEGORIES, FILTRES_VOL, ENGINS, bornesVol, cssFiltreVol, dessinerEngin, engin, filtrerEngins } from './engins.js';
+import {
+  VUES_VOL, ajusterDistance, bornerSite, cameraTroisiemePersonne, normaliserCap,
+  orientationCamera, translationVtol,
+} from './data/volVues.js';
 
 const CSS = `
 #wt-vol-hud { position: fixed; inset: 0; z-index: 1500; pointer-events: none; font-family: var(--font-mono, monospace); }
@@ -91,6 +95,18 @@ const CSS = `
 #wt-vol .h-canvas { width: 118px; height: 62px; background: rgba(0,0,0,0.35); border-radius: 7px; flex: none; }
 #wt-vol .h-fiche { flex: 1; font-size: 8px; line-height: 1.55; color: rgba(232,234,237,0.6); }
 #wt-vol .h-fiche b { color: #b8ffc9; }
+#wt-vol .camera-vues {
+  border: 1px solid rgba(0,212,255,0.22); border-radius: 9px; padding: 7px 8px;
+  background: rgba(0,212,255,0.03); margin-bottom: 7px;
+}
+#wt-vol .cv-bouts { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 5px; }
+#wt-vol .cv-bouts button {
+  cursor: pointer; padding: 5px 8px; border-radius: 6px; font-family: inherit; font-size: 8.5px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: rgba(232,234,237,0.8);
+}
+#wt-vol .cv-bouts button.actif { background: rgba(0,212,255,0.24); border-color: #00d4ff; color: #fff; }
+#wt-vol .cv-aide { font-size: 8px; line-height: 1.6; color: rgba(232,234,237,0.55); }
+#wt-vol .cv-aide b { color: #b8ffc9; }
 #wt-vol input { padding: 7px 9px; background: rgba(0,0,0,0.45); color: inherit; border-radius: 7px; border: 1px solid rgba(255,255,255,0.12); font-family: inherit; font-size: 10px; outline: none; }
 `;
 
@@ -98,12 +114,13 @@ const deg = Cesium.Math.toDegrees;
 const rad = Cesium.Math.toRadians;
 
 export function initFlightMode(viewer, options = {}) {
-  const { cockpit = null } = options || {};
+  const { cockpit = null, mobiglas = null } = options || {};
   const style = document.createElement('style');
   style.textContent = CSS;
   document.head.appendChild(style);
 
-  let vol = null; // état du vol en cours
+  let vol = null;    // état du vol en cours
+  let avatar = null; // entité Cesium de l'appareil (vue 3ᵉ personne)
 
   const el = document.createElement('div');
   el.id = 'wt-vol';
@@ -122,13 +139,19 @@ export function initFlightMode(viewer, options = {}) {
       <div class="h-t">🎛 FILTRE DE CAMÉRA</div>
       <div class="cf-bouts"></div>
     </div>
-    <button class="v-btn decoller" type="button">🛫 DÉCOLLER — MODE PILOTAGE POV</button>
+    <div class="camera-vues">
+      <div class="h-t">👁 VUE DE LA CAMÉRA</div>
+      <div class="cv-bouts"></div>
+      <div class="cv-aide"></div>
+    </div>
+    <button class="v-btn decoller" type="button">🛫 DÉCOLLER — MODE PILOTAGE</button>
     <div style="display:flex;gap:6px;align-items:center"><span>⚖ Masse (kg)</span>
       <input class="v-masse" type="number" value="1350" style="flex:1" /></div>
     <button class="v-btn gris hud" type="button" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.16);color:rgba(232,234,237,0.8)">🧹 HUD ÉPURÉ (touche H)</button>
     <div class="statut">La vue principale devient une caméra embarquée. Commandes :
     <b>Z/S</b> piquer/cabrer · <b>Q/D</b> virage incliné · <b>↑/↓</b> gaz · <b>MAJ</b> boost ·
-    <b>ESPACE</b> stabilisation · <b>🕹 STICK</b> joystick souris (haut centre) · <b>ÉCHAP</b> quitter.
+    <b>ESPACE</b> stabilisation · <b>V</b> changer de vue (POV / VTOL / 3ᵉ personne) ·
+    <b>M</b> HUD compact mobiGlas · <b>🕹 STICK</b> joystick souris (haut centre) · <b>ÉCHAP</b> quitter.
     Les raccourcis s'affichent aussi dans le HUD. Chaque fenêtre se déplace (en-tête)
     et se redimensionne (coin). Météo/hygrométrie réelles (Open-Meteo).
     Astuce : active 🏙 BÂTI 3D avant de décoller — les noms 🏛 au-dessus des toits
@@ -139,6 +162,23 @@ export function initFlightMode(viewer, options = {}) {
   let filtreCat = '';
   let filtreTexte = '';
   let filtreCamera = 'normal';
+
+  // ── 👁 VUES DE CAMÉRA : POV (embarquée) · VTOL (sur-place + nacelle 360°)
+  // · TPS (3ᵉ personne, appareil visible). La NACELLE (gimbal) est une
+  // orientation de caméra INDÉPENDANTE du cap de l'appareil : en VTOL comme
+  // en 3ᵉ personne on peut tourner le regard sur 360° sans bouger l'engin.
+  const VUES = VUES_VOL;
+  const CLE_VUE = 'watchtower.vol.vue.v1';
+  const lireVue = () => {
+    try {
+      const v = window.localStorage.getItem(CLE_VUE);
+      return VUES.some((x) => x.cle === v) ? v : 'pov';
+    } catch { return 'pov'; }
+  };
+  const ecrireVue = (v) => { try { window.localStorage.setItem(CLE_VUE, v); } catch { /* plein */ } };
+  let modeVue = lireVue();
+  const gimbal = { cap: 0, tangage: 0 };   // orientation de la NACELLE (rad)
+  const TPS = { distance: 42, hauteur: 12 }; // recul de la caméra 3ᵉ personne
 
   const elFiltres = el.querySelector('.h-filtres');
   const elListe = el.querySelector('.h-liste');
@@ -192,6 +232,39 @@ export function initFlightMode(viewer, options = {}) {
   elCherche.addEventListener('input', () => { filtreTexte = elCherche.value; rendreListe(); });
   rendreFiltres(); rendreListe(); rendreApercu();
 
+  // ── 👁 VUES DE CAMÉRA (POV · VTOL · 3ᵉ personne) ──
+  const elVues = el.querySelector('.cv-bouts');
+  const elAideVues = el.querySelector('.cv-aide');
+
+  const surMessageVue = () => {
+    const v = VUES.find((x) => x.cle === modeVue);
+    window.__wtToast?.(`${v?.ic || '👁'} Vue ${v?.nom || ''} — ${v?.aide || ''}`);
+  };
+
+  function rendreVues() {
+    elVues.innerHTML = '';
+    for (const v of VUES) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = `${v.ic} ${v.nom}`;
+      b.className = modeVue === v.cle ? 'actif' : '';
+      b.addEventListener('click', () => { modeVue = v.cle; ecrireVue(v.cle); rendreVues(); });
+      elVues.appendChild(b);
+    }
+    elAideVues.innerHTML = modeVue === 'vtol'
+      ? `<b>VTOL</b> — l’appareil fait du sur-place : on observe.<br>
+         <b>←/→</b> nacelle 360° · <b>PAGE↑/↓</b> site · <b>C</b> recentrer ·
+         <b>↑/↓</b> altitude · <b>Z/S</b> avancer/reculer · <b>Q/D</b> latéral ·
+         <b>glisser la souris</b> sur la vue = orienter la nacelle.`
+      : modeVue === 'tps'
+        ? `<b>3ᵉ PERSONNE</b> — l’appareil est visible, la caméra le suit.<br>
+           <b>←/→</b> orbiter autour · <b>PAGE↑/↓</b> hauteur de caméra ·
+           <b>[ / ]</b> distance · <b>C</b> dans l’axe · <b>V</b> changer de vue.`
+        : `<b>POV</b> — caméra embarquée. <b>Z/S</b> piquer/cabrer · <b>Q/D</b> virage ·
+           <b>↑/↓</b> gaz · <b>V</b> passer en VTOL (observation) ou 3ᵉ personne.`;
+  }
+  rendreVues();
+
   // ── 🎛 FILTRES DE CAMÉRA (appliqués au rendu 3D pendant le vol) ──
   for (const f of FILTRES_VOL) {
     const b = document.createElement('button');
@@ -235,6 +308,33 @@ export function initFlightMode(viewer, options = {}) {
     };
     viewer.scene.canvas.style.filter = cssFiltreVol(filtreCamera);
     viewer.scene.screenSpaceCameraController.enableInputs = false;
+
+    // 🎥 AVATAR DE L'APPAREIL : dessin vectoriel (engins.js) posé dans la scène,
+    // visible en vue 3ᵉ personne.
+    avatar = null;
+    try {
+      const cv = document.createElement('canvas');
+      cv.width = 160; cv.height = 160;
+      const g = cv.getContext('2d');
+      if (g) {
+        dessinerEngin(g, enginId, { largeur: 160, hauteur: 160, couleur: '#b8ffc9' });
+        const image = cv.toDataURL();
+        avatar = viewer.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(etat.lon, etat.lat, etat.alt),
+          billboard: {
+            image,
+            width: 52, height: 52,
+            verticalOrigin: Cesium.VerticalOrigin.CENTER,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            scaleByDistance: new Cesium.NearFarScalar(20, 1, 900, 0.35),
+          },
+          show: modeVue === 'tps',
+        });
+      }
+    } catch { avatar = null; }
+
+    // 🕶 MOBIGLAS : HUD compact au-dessus du micro, fenêtres de bureau estompées
+    mobiglas?.activer?.();
 
     const hud = document.createElement('div');
     hud.id = 'wt-vol-hud';
@@ -304,8 +404,19 @@ export function initFlightMode(viewer, options = {}) {
 
     const touches = new Set();
     const down = (e) => {
-      if (['KeyW', 'KeyS', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'Space', 'ShiftLeft', 'ShiftRight'].includes(e.code)) {
+      if (['KeyW', 'KeyS', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
+        'PageUp', 'PageDown', 'KeyC', 'KeyV', 'BracketLeft', 'BracketRight',
+        'Space', 'ShiftLeft', 'ShiftRight'].includes(e.code)) {
         touches.add(e.code); e.preventDefault(); e.stopPropagation();
+      }
+      // V : on change de vue à la volée (POV → VTOL → 3ᵉ personne)
+      if (e.code === 'KeyV' && vol) {
+        const i = VUES.findIndex((v) => v.cle === modeVue);
+        modeVue = VUES[(i + 1) % VUES.length].cle;
+        ecrireVue(modeVue);
+        rendreVues();
+        if (avatar) avatar.show = modeVue === 'tps';
+        surMessageVue?.();
       }
       if (e.code === 'Escape') atterrir();
     };
@@ -326,28 +437,76 @@ export function initFlightMode(viewer, options = {}) {
       const boost = touches.has('ShiftLeft') || touches.has('ShiftRight') ? 2 : 1;
       // ── commandes (modèle de vol de l'engin choisi) ──
       const B = etat.bornes;
+      const vtol = modeVue === 'vtol';
       const accel = 40 / Math.max(0.4, B.inertie);   // m/s² proportionnel à l'inertie
-      if (touches.has('ArrowUp')) etat.vitesse = Math.min(B.vMax, etat.vitesse + accel * dt);
-      if (touches.has('ArrowDown')) etat.vitesse = Math.max(B.peutStationner ? 0 : B.vMin, etat.vitesse - accel * dt);
-      // garde-fou : sous la vitesse de décrochage, l'appareil perd de l'altitude
-      const decroche = !B.peutStationner && etat.vitesse < B.vMin * 0.95;
 
-      if (touches.has('KeyW')) etat.tangage = Math.max(-1.1, etat.tangage - 0.9 * dt);
-      if (touches.has('KeyS')) etat.tangage = Math.min(1.1, etat.tangage + 0.9 * dt);
+      // ── 🧭 NACELLE : en VTOL / 3ᵉ personne la caméra pivote sur 360° ──
+      // C'est une tourelle d'observation : son orientation est INDÉPENDANTE du
+      // cap de l'appareil. Souris (glisser) ou flèches ←/→ + PAGE↑/↓.
+      const vitNacelle = 1.6 * dt;
+      if (modeVue !== 'pov') {
+        if (touches.has('ArrowLeft')) gimbal.cap -= vitNacelle;
+        if (touches.has('ArrowRight')) gimbal.cap += vitNacelle;
+        if (touches.has('PageUp')) gimbal.tangage = bornerSite(gimbal.tangage + vitNacelle);
+        if (touches.has('PageDown')) gimbal.tangage = bornerSite(gimbal.tangage - vitNacelle);
+        // joystick souris : on oriente la nacelle au lieu de piloter
+        if (Math.abs(manette.x) > 0.08) gimbal.cap += manette.x * vitNacelle * 2.2;
+        if (Math.abs(manette.y) > 0.08) {
+          gimbal.tangage = bornerSite(gimbal.tangage - manette.y * vitNacelle * 1.6);
+        }
+        gimbal.cap = normaliserCap(gimbal.cap);
+        // distance de la caméra 3ᵉ personne
+        if (touches.has('BracketRight')) TPS.distance = ajusterDistance(TPS.distance, 60 * dt);
+        if (touches.has('BracketLeft')) TPS.distance = ajusterDistance(TPS.distance, -60 * dt);
+      }
+      if (touches.has('KeyC')) { gimbal.cap = 0; gimbal.tangage = 0; }
+
+      if (vtol) {
+        // 🧭 VTOL : l'appareil tient son altitude, on translate doucement
+        const montee = Math.max(1.2, B.montee * 0.55) * (boost > 1 ? 1.6 : 1);
+        if (touches.has('ArrowUp')) etat.alt += montee * dt;
+        if (touches.has('ArrowDown')) etat.alt -= montee * dt;
+        etat.vitesse = 0; etat.tangage = 0; etat.roulis = 0;
+      } else {
+        if (touches.has('ArrowUp')) etat.vitesse = Math.min(B.vMax, etat.vitesse + accel * dt);
+        if (touches.has('ArrowDown')) etat.vitesse = Math.max(B.peutStationner ? 0 : B.vMin, etat.vitesse - accel * dt);
+      }
+      // garde-fou : sous la vitesse de décrochage, l'appareil perd de l'altitude
+      const decroche = !vtol && !B.peutStationner && etat.vitesse < B.vMin * 0.95;
+
+      if (vtol) {
+        // translation lente dans le repère de l'APPAREIL (pas de la nacelle)
+        const pas = Math.max(5, B.croisiere * 0.30) * (boost > 1 ? 2 : 1) * dt;
+        const avant = (touches.has('KeyW') ? 1 : 0) - (touches.has('KeyS') ? 1 : 0);
+        const cote = (touches.has('KeyD') ? 1 : 0) - (touches.has('KeyA') ? 1 : 0);
+        if (avant || cote) {
+          const p = translationVtol(etat, { avant, cote, pas });
+          etat.lat = p.lat; etat.lon = p.lon;
+        }
+      } else {
+        if (touches.has('KeyW')) etat.tangage = Math.max(-1.1, etat.tangage - 0.9 * dt);
+        if (touches.has('KeyS')) etat.tangage = Math.min(1.1, etat.tangage + 0.9 * dt);
+      }
       // 🔄 VIRAGE : la vitesse angulaire max dépend de l'engin et de la vitesse
       const tauxVirage = (dir) => {
         const facteur = 0.55 + 0.45 * Math.min(1, (etat.vitesse * boost) / Math.max(1, B.croisiere));
         etat.cap += dir * B.virage * facteur * dt;
         etat.roulis = Math.max(-0.6, Math.min(0.6, etat.roulis + dir * B.virage * 1.5 * dt));
       };
-      if (touches.has('KeyA')) tauxVirage(-1);
-      else if (touches.has('KeyD')) tauxVirage(1);
-      else etat.roulis *= 0.92;
-      if (touches.has('Space')) { etat.tangage *= 0.85; etat.roulis *= 0.8; }
-      // 🕹 joystick souris : X = virage (roulis suit), Y = tangage
-      if (Math.abs(manette.x) > 0.08) tauxVirage(Math.sign(manette.x) * Math.abs(manette.x));
-      if (Math.abs(manette.y) > 0.08) {
-        etat.tangage = Math.max(-1.1, Math.min(1.1, etat.tangage - manette.y * 0.95 * dt));
+      if (!vtol) {
+        if (touches.has('KeyA')) tauxVirage(-1);
+        else if (touches.has('KeyD')) tauxVirage(1);
+        else etat.roulis *= 0.92;
+      }
+      if (touches.has('Space')) {
+        if (modeVue === 'pov') { etat.tangage *= 0.85; etat.roulis *= 0.8; } else gimbal.tangage *= 0.8;
+      }
+      // 🕹 joystick souris : en POV il pilote, sinon il oriente la nacelle (déjà fait plus haut)
+      if (modeVue === 'pov') {
+        if (Math.abs(manette.x) > 0.08) tauxVirage(Math.sign(manette.x) * Math.abs(manette.x));
+        if (Math.abs(manette.y) > 0.08) {
+          etat.tangage = Math.max(-1.1, Math.min(1.1, etat.tangage - manette.y * 0.95 * dt));
+        }
       }
 
       // ── cinématique ──
@@ -364,7 +523,7 @@ export function initFlightMode(viewer, options = {}) {
       const dAlt = Math.max(-monteeMax * dt * 1.6, Math.min(monteeMax * dt, dAltVoulu));
       etat.alt += dAlt;
       if (decroche) etat.alt -= 3.5 * dt;              // décrochage : ça descend
-      if (B.tauxChute) etat.alt -= B.tauxChute * dt;   // planeur : chute permanente
+      if (B.tauxChute && !vtol) etat.alt -= B.tauxChute * dt;   // planeur : chute permanente
       const sol = viewer.scene.globe.getHeight(Cesium.Cartographic.fromDegrees(etat.lon, etat.lat)) || 0;
 
       // plafond réglementaire / physique de l'engin
@@ -382,10 +541,31 @@ export function initFlightMode(viewer, options = {}) {
       etat.distance += dSol;
       etat.g = 1 + Math.abs(etat.roulis) * 0.9 + Math.abs(etat.tangage) * 0.4;
 
-      viewer.camera.setView({
-        destination: Cesium.Cartesian3.fromDegrees(etat.lon, etat.lat, etat.alt),
-        orientation: { heading: etat.cap, pitch: etat.tangage, roll: B.auSol || B.surEau ? 0 : etat.roulis },
-      });
+      // ── caméra : POV / VTOL (nacelle 360°) / 3ᵉ personne ──
+      const oCam = orientationCamera(
+        { cap: etat.cap, tangage: etat.tangage },
+        modeVue === 'pov' ? { cap: 0, tangage: 0 } : gimbal,
+      );
+      const capCam = oCam.cap;
+      const pitchCam = oCam.tangage;
+      if (modeVue === 'tps') {
+        // recul derrière l'appareil, dans l'axe de la nacelle
+        const c = cameraTroisiemePersonne(etat, { distance: TPS.distance, hauteur: TPS.hauteur });
+        viewer.camera.setView({
+          destination: Cesium.Cartesian3.fromDegrees(c.lon, c.lat, c.alt),
+          orientation: { heading: capCam, pitch: pitchCam, roll: 0 },
+        });
+      } else {
+        viewer.camera.setView({
+          destination: Cesium.Cartesian3.fromDegrees(etat.lon, etat.lat, etat.alt),
+          orientation: { heading: capCam, pitch: pitchCam, roll: vtol ? 0 : (B.auSol || B.surEau ? 0 : etat.roulis) },
+        });
+      }
+      // avatar de l'appareil : visible en 3ᵉ personne
+      if (avatar) {
+        avatar.position = Cesium.Cartesian3.fromDegrees(etat.lon, etat.lat, etat.alt);
+        if (avatar.billboard) avatar.billboard.rotation = -etat.cap;
+      }
 
       // HUD (10 Hz)
       tick += 1;
@@ -394,30 +574,36 @@ export function initFlightMode(viewer, options = {}) {
         wVit.innerHTML = `<div class="gros">${kmh}</div>km/h · ${Math.round(kmh / 1.852)} kt<br>gaz ${Math.round((etat.vitesse / 320) * 100)}%${boost > 1 ? ' <b>BOOST</b>' : ''}`;
         wAlt.innerHTML = `<div class="gros">${Math.round(etat.alt - sol)}</div>m sol (AGL)<br>${Math.round(etat.alt)} m mer · vario ${etat.vario >= 0 ? '+' : ''}${etat.vario.toFixed(1)} m/s`;
         wPos.innerHTML = `LAT <b>${etat.lat.toFixed(5)}</b><br>LON <b>${etat.lon.toFixed(5)}</b><br>SOL ${Math.round(sol)} m`;
-        const capDeg = Math.round(((deg(etat.cap) % 360) + 360) % 360);
-        wAng.innerHTML = `CAP <b class="gros" style="font-size:16px">${String(capDeg).padStart(3, '0')}°</b><br>tangage ${Math.round(deg(etat.tangage))}° · roulis ${Math.round(deg(etat.roulis))}°`;
+        const capDeg = Math.round(((deg(capCam) % 360) + 360) % 360);
+        const nomVue = VUES.find((v) => v.cle === modeVue)?.nom || 'POV';
+        wAng.innerHTML = `CAP <b class="gros" style="font-size:16px">${String(capDeg).padStart(3, '0')}°</b><br>${nomVue} · nacelle ${Math.round(deg(gimbal.cap))}°<br>tangage ${Math.round(deg(etat.tangage))}° · roulis ${Math.round(deg(etat.roulis))}°`;
         const mins = Math.floor((Date.now() - etat.t0) / 60000);
         wTel.innerHTML = `G ≈ <b>${etat.g.toFixed(2)}</b> · vol ${mins} min<br>distance ${(etat.distance / 1000).toFixed(2)} km<br>conso est. ${(etat.distance / 1000 * (etat.masse / 1350) * 0.09).toFixed(1)} L`;
         const m = etat.meteo;
         wMet.innerHTML = m ? `hygrométrie <b>${m.relative_humidity_2m}%</b><br>vent ${Math.round(m.wind_speed_10m)} km/h @${Math.round(m.wind_direction_10m)}°<br>${Math.round(m.temperature_2m)}°C · ${Math.round(m.pressure_msl)} hPa` : 'mesure…';
         wMas.innerHTML = `masse <b>${etat.masse} kg</b><br>charge utile ${Math.max(0, 1900 - etat.masse)} kg<br>inertie ${(etat.masse / 1350).toFixed(2)}×`;
         // 🎛 cockpit : horizon artificiel, bandes, gaz, télémétrie
-        cockpit?.maj({
-          vitesse: v, alt: etat.alt, sol, cap: etat.cap, tangage: etat.tangage,
+        const vueCockpit = {
+          vitesse: v, alt: etat.alt, sol, cap: capCam, tangage: pitchCam,
           roulis: etat.roulis, vario: etat.vario, g: etat.g, distance: etat.distance,
           masse: etat.masse, duree: Date.now() - etat.t0,
           gaz: (etat.vitesse - etat.bornes.vMin) / Math.max(1, etat.bornes.vMax - etat.bornes.vMin),
-          engin: `${etat.engin?.ic || '✈'} ${etat.engin?.nom || ''}`,
+          engin: `${etat.engin?.ic || '✈'} ${etat.engin?.nom || ''}${modeVue !== 'pov' ? ` · ${VUES.find((x) => x.cle === modeVue)?.nom || ''}` : ''}`,
           bloque: etat.bloque,
-          decroche: !etat.bornes.peutStationner && etat.vitesse < etat.bornes.vMin * 0.95,
+          decroche: !etat.bornes.peutStationner && !vtol && etat.vitesse < etat.bornes.vMin * 0.95,
           plafond: Boolean(etat.bornes.plafond) && etat.alt >= etat.bornes.plafond - 2,
-        });
+        };
+        cockpit?.maj(vueCockpit);
+        // 🕶 MOBIGLAS : une seule ligne d'instruments, au-dessus du micro
+        mobiglas?.maj(vueCockpit);
       }
     }, 50);
 
     function atterrir() {
       if (!vol) return;
       cockpit?.desactiver();
+      mobiglas?.desactiver?.();
+      if (avatar) { try { viewer.entities.remove(avatar); } catch { /* ok */ } avatar = null; }
       viewer.scene.canvas.style.filter = ''; // on rend le rendu normal
       window.clearInterval(boucle);
       window.clearInterval(meteoTimer);

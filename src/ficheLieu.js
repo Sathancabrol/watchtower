@@ -24,6 +24,7 @@ import { resolvePickId } from './data/pickRegistry.js';
 import { spriteEpingle } from './marqueurs.js';
 import { CADRAGES_DRONE, capturerDrone, listerCommons } from './illustration.js';
 import { empreinteDuLieu, formaterEuros, trancheEffectif } from './empreinte.js';
+import { CLE_JOURNAL, ajouterTrace, exportCsv, formaterTrace, htmlSources, lireTraces } from './tracabilite.js';
 
 const TYPE_ICONES = {
   townhall: ['🏛', 'Mairie · bâtiment public'],
@@ -141,6 +142,20 @@ const CSS = `
 }
 #wt-fiche .empreinte .liens a:hover { background: rgba(0,212,255,0.22); }
 #wt-fiche .empreinte .risque { display: flex; gap: 5px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,0.06); }
+#wt-fiche .empreinte .src-chip {
+  display: inline-block; margin: 2px 3px 0 0; padding: 2px 6px; border-radius: 999px;
+  font-size: 8px; letter-spacing: .5px; text-decoration: none;
+  background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.35); color: #00d4ff;
+}
+#wt-fiche .empreinte .src-chip:hover { background: rgba(0,212,255,0.22); }
+#wt-fiche .empreinte .tracab { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+#wt-fiche .empreinte .tracab button {
+  cursor: pointer; padding: 4px 7px; border-radius: 7px; font-family: inherit; font-size: 8px;
+  letter-spacing: 1px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(232,234,237,0.85);
+}
+#wt-fiche .empreinte .tracab button:hover { border-color: #00d4ff; color: #00d4ff; }
+#wt-fiche .empreinte .tracab .ok { color: #7ef0c0; border-color: rgba(126,240,192,0.5); }
 #wt-fiche .empreinte .risque .d { color: rgba(232,234,237,0.55); font-size: 8px; }
 #wt-fiche .visite { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 10px; border-top: 1px solid rgba(0,212,255,0.15); }
 #wt-fiche .v-btn {
@@ -235,7 +250,7 @@ export function initFicheLieu(viewer) {
     return Cesium.Cartesian3.fromDegrees(lon, lat, h + 14);
   }
 
-  async function ouvrir(lon, lat) {
+  async function ouvrir(lon, lat, nomForce = '', contexte = {}) {
     const id = ++requeteId;
     fermer();
 
@@ -280,7 +295,7 @@ export function initFicheLieu(viewer) {
     const nomiType = nomi?.type || nomi?.category || '';
     const type = poi?.type || nomiType;
     const [ic, typeLbl] = icone(type);
-    const nom = poi?.nom || nomi?.name || ban?.features?.[0]?.properties?.label || 'Point GPS';
+    const nom = nomForce || poi?.nom || nomi?.name || ban?.features?.[0]?.properties?.label || 'Point GPS';
     const adresse = ban?.features?.[0]?.properties?.label || nomi?.display_name?.split(',').slice(0, 3).join(',') || '—';
 
     // Wikipédia : tag OSM direct sinon article géolocalisé le plus proche
@@ -322,6 +337,8 @@ export function initFicheLieu(viewer) {
       </div>
       <div class="sect-e">💼 EMPREINTE ÉCONOMIQUE · RISQUES · SOURCES</div>
       <div class="empreinte"><div class="chargement">🔍 Enquête : exploitant, entreprise, risques…</div></div>
+      <div class="sect-e">🧾 SOURCES CONSULTÉES &amp; TRAÇABILITÉ</div>
+      <div class="empreinte sources"><div class="chargement">⏳ recensement des sources…</div></div>
       <div class="visite">
         <button class="v-btn orbite">🚁 ORBITE DRONE</button>
         <button class="v-btn scene">🎬 SCÈNE SUIVANTE</button>
@@ -371,8 +388,10 @@ export function initFicheLieu(viewer) {
       ].filter(Boolean).join('');
 
       const risques = e.risques.length
-        ? `<div class="risques">${e.risques.map((r) => `<div class="risque"><span>${r.ic || '⚠'}</span><span>${r.nom}<span class="d"> — ${r.detail || r.nomTheme}</span></span></div>`).join('')}</div>`
-        : '<div style="opacity:.5">Aucun risque répertorié (Géorisques) dans un rayon de 1 km.</div>';
+        ? `<div class="risques">${e.risques.map((r) => `<div class="risque"><span>${r.ic || '⚠'}</span><span>${r.nom}<span class="d"> — ${r.detail || r.nomTheme}</span>${
+            r.sourceUrl ? ` <a href="${r.sourceUrl}" target="_blank" rel="noopener" title="Vérifier sur Géorisques">source ↗</a>` : ''
+          }</span></div>`).join('')}</div>`
+        : '<div style="opacity:.5">Aucun risque répertorié (<a href="https://www.georisques.gouv.fr/" target="_blank" rel="noopener">Géorisques</a>) dans un rayon de 1 km.</div>';
 
       zoneEmpreinte.innerHTML = `
         <div class="grille">${bloc || '<span class="k">—</span><span class="v">Aucune information d’entreprise : le site n’est pas rattaché à un exploitant connu d’OpenStreetMap.</span>'}</div>
@@ -382,6 +401,54 @@ export function initFicheLieu(viewer) {
         <div class="chips">${(e.tags || []).map(([k, v]) => `<span class="chip">${k} = ${v}</span>`).join('') || '<span class="chip">aucun tag</span>'}</div>
         <div class="sect-e" style="padding-left:0">🔗 VÉRIFIER &amp; AGIR</div>
         <div class="liens">${e.liens.map((l) => `<a href="${l.url}" target="_blank" rel="noopener">${l.nom} ↗</a>`).join('')}</div>`;
+
+      // ── 🧾 SOURCES & TRAÇABILITÉ : chaque donnée renvoie vers sa source ──
+      const zoneSources = panneau.querySelector('.empreinte.sources');
+      if (zoneSources) {
+        const idOsm = contexte?.osmId || poi?.osmId || '';
+        const lienOsm = idOsm
+          ? `<a class="src-chip" href="https://www.openstreetmap.org/${String(idOsm).replace(/^.*?(\w+)\/(.+)$/, '$1/$2')}" target="_blank" rel="noopener">Fiche OSM de l’objet ↗</a>`
+          : '';
+        const verif = (e.verifications || []).map((v) => `<a class="src-chip" href="${v.url}" target="_blank" rel="noopener">${v.nom}</a>`).join('');
+        zoneSources.innerHTML = `
+          <div style="opacity:.6;margin-bottom:3px">Toutes les données ci-dessus proviennent de ces sources — clique pour vérifier :</div>
+          ${htmlSources(e.sources, { vide: '<span style="opacity:.6">aucune source identifiée</span>' })}
+          ${lienOsm}
+          <div class="sect-e" style="padding-left:0">📄 DOCUMENTS &amp; REGISTRES À TÉLÉCHARGER</div>
+          ${verif}
+          <div class="tracab">
+            <button type="button" data-trace="ajouter">📌 TRACER CETTE CONSULTATION</button>
+            <button type="button" data-trace="csv">⬇ JOURNAL CSV (${lireTraces().length})</button>
+            <button type="button" data-trace="voir">🧾 VOIR LE JOURNAL</button>
+            <span class="etat-trace" style="opacity:.6;align-self:center"></span>
+          </div>
+          <div style="opacity:.45;margin-top:4px">Le journal reste sur cet appareil (${CLE_JOURNAL}) — aucune donnée n’est envoyée.</div>`;
+
+        const etat = zoneSources.querySelector('.etat-trace');
+        zoneSources.querySelector('[data-trace="ajouter"]')?.addEventListener('click', () => {
+          const t = ajouterTrace({
+            lat, lon, nom, fonction: contexte?.fonction || typeLbl || '',
+            sources: e.sources, note: idOsm ? `objet OSM ${idOsm}` : '',
+          });
+          if (t && etat) {
+            etat.textContent = `✔ tracé à ${new Date(t.quand).toLocaleTimeString('fr-FR')}`;
+            etat.className = 'etat-trace ok';
+          }
+        });
+        zoneSources.querySelector('[data-trace="voir"]')?.addEventListener('click', () => {
+          window.__wtToast?.(lireTraces().slice(-5).map(formaterTrace).join('<br>') || '🧾 Journal vide.');
+        });
+        zoneSources.querySelector('[data-trace="csv"]')?.addEventListener('click', () => {
+          try {
+            const blob = new Blob([exportCsv()], { type: 'text/csv;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `watchtower-tracabilite-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+          } catch { /* ok */ }
+        });
+      }
     })();
 
     // ── ILLUSTRATION : photo libre du lieu, sinon capture drone ──

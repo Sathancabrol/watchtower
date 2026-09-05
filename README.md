@@ -199,9 +199,11 @@ quel que soit le zoom.
 ### 🪟 Fenêtres déplaçables, redimensionnables, transformables
 
 Toutes les fenêtres flottantes se déplacent par leur barre de titre, se
-redimensionnent par la poignée en bas à droite, et changent de **forme** avec
-le bouton ⚙ (normale → compacte → large → bandeau → pilule). Position, taille
-et forme sont **mémorisées** ; un double-clic sur ⚙ remet tout à zéro.
+redimensionnent par la poignée en bas à droite, se **réduisent en icône** avec
+le bouton – (ou un double-clic sur la barre de titre) et changent de **forme**
+avec le bouton ⚙ (normale → compacte → large → bandeau → pilule). Position,
+taille, forme et état réduit sont **mémorisés** ; un double-clic sur ⚙ remet
+tout à zéro.
 
 ### 🛣 Street view (photos de rue libres)
 
@@ -217,6 +219,70 @@ réelles** (éléments képleriens JPL, domaine public ; Lune par ELP2000). Les
 directions et rotations sont vraies — la Terre tourne sous le ciel — et les
 orbites dessinées montrent les boucles de rétrogradation. Seules les distances
 sont comprimées (échelle logarithmique) ; la Lune garde ses 384 400 km.
+
+### 🏷 Entités de la carte : la fonction réelle de chaque lieu
+
+Dock **🏷 ENTITÉS** : chaque bâtiment ou équipement reçoit une pastille 2D avec
+le pictogramme de sa **fonction réelle** — 🥐 boulangerie, 📚 bibliothèque,
+🏠 maison, 🛢 cuve de stockage, 🏭 usine, 🏛 mairie… Les entités voisines de
+**même fonction** partagent une pastille marquée ×N (logique cadastrale) : un
+clic ouvre un sélecteur qui les liste **séparément**, avec leur adresse et le
+lien vers leur fiche OpenStreetMap. Données : Overpass / OSM (ODbL), filtres
+par famille, rayon réglable.
+
+### 🔲 Cadrans de la commune (vue quartier)
+
+Dock **INTEL → 🏛 COMMUNAL → 🔲 TRACER LES CADRANS** (ou panneau flottant) :
+un tracé animé divise la commune en cadrans (2×2, 3×3, sous-cadrans ×4). Les
+**quartiers officiels OpenStreetMap** (`place=quarter|neighbourhood`) baptisent
+chaque cadran quand ils existent ; sinon l'**alphabet OTAN** prend le relais
+(ALPHA, BRAVO, CHARLIE, DELTA…). Un clic y vole et affiche ses dimensions.
+
+### 🧾 Sources cliquables & traçabilité
+
+Registre unique des sources (`tracabilite.js`) : **une donnée dont la source
+n'est pas connue n'est pas affichée**. La fiche lieu montre un bloc
+🧾 **SOURCES CONSULTÉES** (pastilles cliquables vers chaque site), une liste de
+**documents à télécharger** (rapport Géorisques, parcelle cadastrale IGN,
+annuaire des entreprises, dossier INSEE, data.gouv.fr) et un **journal de
+traçabilité local** (horodaté, exportable CSV) : ce que tu as consulté, quand,
+et sur quelle source.
+
+### 🕶 Mode mobiGlas (vol) · VTOL · 3ᵉ personne
+
+* **mobiGlas** (touche **M**, bouton 🕶) : le HUD se réduit à une seule ligne
+  posée **au-dessus de la capture vocale** ; les fenêtres de bureau passent à
+  14 % d'opacité puis se masquent ; minicarte, altimètre, boussole et cockpit
+  restent intacts.
+* **VTOL** (touche **V**) : l'engin fait du sur-place et la caméra devient une
+  **nacelle d'observation 360°** (lacet continu, site borné, à la souris ou aux
+  flèches ←/→ et PAGE↑/↓).
+* **3ᵉ personne** : caméra en retrait, appareil **visible** (silhouette
+  vectorielle), distance réglable `[` `]`.
+
+### 🧠 INTEL élargi : 6 vues expertes + bandeaux « fil »
+
+Dock **🧠 INTEL** : 🛰 **JUMEAU AR**, 🏛 **COMMUNAL**, 🏠 **INDIVIDUEL**,
+🗳 **POLITIQUE**, 💼 **ÉCONOMIQUE**, 🏭 **PRODUCTION** — en plus de CONTEXTE et
+PROFIL. Chaque vue a ses données (entreprises autour du point via
+`recherche-entreprises /near_point`, installations classées et sols pollués
+Géorisques, identité INSEE, presse GDELT), ses outils et son **mini-bandeau
+défilant** façon Bloomberg, où chaque dépêche est datée et cliquable.
+
+### 📶 Chantier : SUIVI en direct, TRACKING
+
+* **📶 SUIVI** : le direct — multi-vues POV (nombre de cellules réglable),
+  icônes de chaque élément du chantier sur la carte principale, traits
+  « travaillent ensemble » entre éléments proches et actifs, horodatage au
+  journal.
+* **📡 TRACKING** (ancien « SUIVI ») : GPS de ta position et de l'inventaire,
+  placement sur carte et journal des positions.
+
+### 🔎 Analyse comparée de 25 sites gratuits
+
+« 25 Websites You Won't Believe Exist » passé au crible de WATCHTOWER : ce
+qu'on reprend, ce qu'on remplace par un équivalent libre, ce qu'on écarte —
+dans **[docs/COMPARAISON_SITES.md](./docs/COMPARAISON_SITES.md)**.
 
 ### 🗺 Feuille de route
 

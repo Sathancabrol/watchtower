@@ -45,8 +45,12 @@ import { initStreetView } from './streetView.js';
 import { initLocalisation } from './localisation.js';
 import { initSystemeSolaire } from './systemeSolaire.js';
 import { initCadastre } from './cadastre.js';
+import { initEntites } from './entites.js';
+import { initMobiglas } from './mobiglas.js';
+import { initCadrans } from './cadrans.js';
+import { initIntelVues } from './vuesIntel.js';
 import { initRadio } from './radio.js';
-import { amenagerFenetres } from './fenetres.js';
+import { amenagerFenetres, amenagerToutes } from './fenetres.js';
 import { creerCockpit } from './cockpit.js';
 import { initCinematique } from './cinematique.js';
 import { initCctvCam } from './cctvCam.js';
@@ -482,7 +486,11 @@ async function init() {
         },
       });
       window.__godsEyeView.cockpit = cockpit;
-      const vol = initFlightMode(viewer, { cockpit });
+      // 🕶 MOBIGLAS : en vol, HUD compact au-dessus du micro + fenêtres de
+      // bureau estompées (M pour basculer).
+      const mobiglas = initMobiglas({ surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.mobiglas = mobiglas;
+      const vol = initFlightMode(viewer, { cockpit, mobiglas });
 
       // INTEL nouvelle génération : tableau de bord « jumeau numérique »
       // (remplace le HUD intel d'origine — créé AVANT le dock qui le bascule).
@@ -526,6 +534,20 @@ async function init() {
       });
       window.__godsEyeView.vues = vues;
       window.__godsEyeView.intel?.setVues?.(vues);
+      // 🔲 CADRANS : la commune découpée en cadrans nommés (quartiers OSM, sinon
+      // alphabet OTAN) avec tracé animé — donne un repère commun pour en parler.
+      const cadrans = initCadrans(viewer, {
+        fiche: (lon, lat, nom) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom),
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.cadrans = cadrans;
+      // 🧠 INTEL ÉLARGI : 6 nouvelles vues (jumeau AR, communal, individuel,
+      // politique, économique, production) + bandeau « fil » façon Bloomberg.
+      const intelVues = initIntelVues(document.getElementById('wt-intel'), {
+        intel: window.__godsEyeView.intel,
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.intelVues = intelVues;
       // 📌 ÉPINGLES : bouton visible en bas à gauche → clic carte = épingle.
       const pins = initPins(viewer, {
         fiche: (lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat),
@@ -602,19 +624,30 @@ async function init() {
         titre: '🗺 CADASTRE — CONTOURS DE PARCELLES (IGN, SANS CLÉ)', element: cadastre.element, cote: 'gauche',
       });
 
+      // 🏷 ENTITÉS DE LA CARTE : chaque bâtiment/équipement porte la pastille
+      // de sa FONCTION RÉELLE (OSM) — boulangerie, bibliothèque, maison, cuves…
+      const entites = initEntites(viewer, {
+        fiche: (lon, lat, nom, contexte) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom, contexte),
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.entites = entites;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'entites', icone: '🏷', libelle: 'ENTITÉS',
+        titre: '🏷 ENTITÉS DE LA CARTE — FONCTION RÉELLE DE CHAQUE LIEU (OSM)',
+        element: entites.element, cote: 'gauche',
+      });
+
       // 🗺 NOMS DE LIEUX : étiquettes toujours lisibles (pays → villes →
       // hameaux) + fenêtre du lieu central sous la boussole.
       const nomsLieux = initNomsLieux(viewer, { fenetres: true });
       window.__godsEyeView.nomsLieux = nomsLieux;
 
       // 🪟 Toutes les fenêtres flottantes : déplaçables, redimensionnables,
-      // transformables (⚙) et mémorisées d'une session à l'autre.
-      amenagerFenetres([
-        { selecteur: '#wt-panel', poignee: '.wt-tete' },
-        { selecteur: '#wt-pins', poignee: '.t' },
-        { selecteur: '#wt-minimap', poignee: '.wt-mm-titre' },
-        { selecteur: '#wt-fiche', poignee: '.entete' },
-      ]);
+      // réductibles en icône (–), transformables (⚙) et mémorisées d'une
+      // session à l'autre. Deux passages : tout de suite, puis après la
+      // création des fenêtres tardives (fiche, street view, photo…).
+      amenagerToutes();
+      window.setTimeout(() => amenagerToutes(), 2500);
       // « chaque bouton envoie vers sa fenêtre / fiche » — navigation globale
       window.wtAller = {
         pageChantier: (p) => {

@@ -11,7 +11,11 @@
  *                  (plans, BIM, CSV, Excel, images…).
  *  ▶ SIMULATION  — fiche projet éditable (préremplie, import via DOSSIER),
  *                  timelapse phases + budget temps réel + ressources.
- *  🚜 SUIVI      — GPS du chantier & des outils : position temps réel de
+ *  📶 SUIVI      — DIRECT : multi-vues POV (nombre de cellules réglable) +
+ *                  suivi temps réel sur la carte, un icône par élément du
+ *                  chantier, tous cliquables, reliés quand ils travaillent
+ *                  ensemble (ex. pelle + tranchée). Journal = traçabilité.
+ *  📡 TRACKING   — GPS du chantier & des outils : position temps réel de
  *                  l'inventaire (placement sur carte) + journal des positions.
  *  🕳 SOUS-SOL   — scanner OSM des réseaux enterrés (conduites, câbles,
  *                  drains, tunnels) + vue souterraine (globe translucide).
@@ -19,6 +23,43 @@
 
 import * as Cesium from 'cesium';
 import { lireProfil } from './intelTwin.js';
+import { ajouterTrace } from './tracabilite.js';
+
+/** Distance orthodromique (m) entre deux points lat/lon. */
+function distM(lat1, lon1, lat2, lon2) {
+  const R = 6371000; const rad = Math.PI / 180;
+  const a = Math.sin(((lat2 - lat1) * rad) / 2) ** 2
+    + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(((lon2 - lon1) * rad) / 2) ** 2;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+}
+
+/** Un élément est « actif » s'il a un fait relevé dans les 15 dernières minutes. */
+function actifRecent(it) {
+  const d = (it.logs || []).slice(-1)[0];
+  return Boolean(d && Date.now() - Number(d.t) < 15 * 60 * 1000);
+}
+
+/** Pastille 2D d'un élément du chantier (canvas → data-URL). */
+function spritePastille(ic = '📦') {
+  try {
+    const c = document.createElement('canvas');
+    c.width = 96; c.height = 96;
+    const g = c.getContext('2d');
+    if (!g) return '';
+    g.beginPath();
+    g.arc(48, 42, 30, 0, Math.PI * 2);
+    g.fillStyle = 'rgba(8,14,20,0.92)';
+    g.fill();
+    g.lineWidth = 5;
+    g.strokeStyle = '#00d4ff';
+    g.stroke();
+    g.font = '34px "Segoe UI Emoji","Noto Color Emoji",sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(ic, 48, 44);
+    return c.toDataURL();
+  } catch { return ''; }
+}
 
 const S_ZONES = 'watchtower.chantier.v1';
 const S_PROJETS = 'watchtower.projets.v1';
@@ -133,8 +174,10 @@ export function initChantier(viewer) {
 
   const ds = new Cesium.CustomDataSource('wt-chantier');
   const dsSol = new Cesium.CustomDataSource('wt-soussol');
+  const dsSuivi = new Cesium.CustomDataSource('wt-suivi');
   viewer.dataSources.add(ds);
   viewer.dataSources.add(dsSol);
+  viewer.dataSources.add(dsSuivi);
 
   let zones = lireJson(S_ZONES, []);
   let projets = lireJson(S_PROJETS, []);
@@ -144,6 +187,11 @@ export function initChantier(viewer) {
   let sims = lireJson(S_SIM, {});
   let modeCarte = null; // {type:'dessin'|'parcelle'|'placer', ...}
   let suiviId = null; let marqueurEngin = null; let dateCourante = Date.now();
+  // 📶 DIRECT : multi-vues + suivi carte
+  const S_CELL = 'watchtower.chantier.cellules.v1';
+  let nbCellules = Number(lireJson(S_CELL, 4)) || 4;
+  let suiviDirect = null; // minuteur du direct
+  const RAYON_ENSEMBLE = 40; // m : deux éléments à moins de 40 m « travaillent ensemble »
 
   const el = document.createElement('div');
   el.id = 'wt-chantier';
@@ -155,7 +203,8 @@ export function initChantier(viewer) {
       <button class="ong" data-p="gestion" type="button">💶 GESTION</button>
       <button class="ong" data-p="equipe" type="button">👥 ÉQUIPE</button>
       <button class="ong" data-p="simulation" type="button">▶ SIMUL.</button>
-      <button class="ong" data-p="suivi" type="button">🚜 SUIVI</button>
+      <button class="ong" data-p="suivi" type="button">📶 SUIVI</button>
+      <button class="ong" data-p="tracking" type="button">📡 TRACKING</button>
       <button class="ong" data-p="soussol" type="button">🕳 SOUS-SOL</button>
     </div>
     <div class="page"></div>`;
@@ -842,7 +891,7 @@ export function initChantier(viewer) {
       rendreSim();
     }
 
-    if (p === 'suivi') {
+    if (p === 'tracking') {
       const rendreSuivi = () => {
         page.innerHTML = `
           <div class="statut">🚜 GPS temps réel : ta position (appareil) + POSITION DES OUTILS de
@@ -891,6 +940,135 @@ export function initChantier(viewer) {
       // rafraîchi après placement
       el._apresPlacement = rendreSuivi;
       rendreSuivi();
+    }
+
+    // ═════════ 📶 SUIVI — DIRECT : multi-vues + carte temps réel ═════════
+    if (p === 'suivi') {
+      const majCarte = () => {
+        dsSuivi.entities.removeAll();
+        const poses = inventaire.filter((it) => it.pos && Number.isFinite(it.pos.lat));
+        for (const it of poses) {
+          const pastille = spritePastille(it.ic || '📦');
+          dsSuivi.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(it.pos.lon, it.pos.lat, 8),
+            properties: { wtSuivi: it.id || it.nom },
+            ...(pastille ? {
+              billboard: {
+                image: pastille,
+                width: 34, height: 34,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+              },
+            } : {}),
+            label: {
+              text: `${it.ic || '📦'} ${it.nom}`,
+              font: '11px "JetBrains Mono", monospace',
+              fillColor: Cesium.Color.WHITE,
+              showBackground: true,
+              backgroundColor: Cesium.Color.fromCssColorString('#0a0a0f').withAlpha(0.8),
+              pixelOffset: new Cesium.Cartesian2(0, -40),
+              disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            },
+          });
+        }
+        // 🔗 « travaillent ensemble » : deux éléments proches ET actifs
+        let liens = 0;
+        for (let i = 0; i < poses.length; i += 1) {
+          for (let j = i + 1; j < poses.length; j += 1) {
+            const a = poses[i]; const b = poses[j];
+            const d = distM(a.pos.lat, a.pos.lon, b.pos.lat, b.pos.lon);
+            if (d > RAYON_ENSEMBLE) continue;
+            const actifs = actifRecent(a) && actifRecent(b);
+            dsSuivi.entities.add({
+              polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArray([a.pos.lon, a.pos.lat, b.pos.lon, b.pos.lat]),
+                width: actifs ? 4 : 2,
+                material: Cesium.Color.fromCssColorString(actifs ? '#7ef0c0' : '#00d4ff')
+                  .withAlpha(actifs ? 0.95 : 0.45),
+                clampToGround: true,
+              },
+            });
+            liens += 1;
+          }
+        }
+        viewer.scene.requestRender?.();
+        return liens;
+      };
+
+      const rendreDirect = () => {
+        const cols = Math.max(1, Math.min(4, Math.ceil(Math.sqrt(nbCellules))));
+        page.innerHTML = `
+          <div class="statut">📶 <b>SUIVI EN DIRECT</b> : une cellule par élément du chantier
+          (vue POV à la demande), les icônes sur la carte principale, et un trait
+          🔗 entre deux éléments qui <b>travaillent ensemble</b> (moins de ${RAYON_ENSEMBLE} m
+          et actifs dans les 15 dernières minutes).</div>
+          <div class="ligne" style="display:flex;gap:5px;align-items:center;margin-bottom:6px">
+            <button class="c-btn direct" type="button">${suiviDirect ? '⏹ ARRÊTER LE DIRECT' : '▶ DÉMARRER LE DIRECT'}</button>
+            <span style="opacity:.6">cellules</span>
+            <button class="c-btn mini moins" type="button">−</button>
+            <b class="nb">${nbCellules}</b>
+            <button class="c-btn mini plus" type="button">+</button>
+          </div>
+          <div class="multicam" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:5px"></div>
+          <div class="etat statut" style="margin-top:6px"></div>`;
+
+        const grille = page.querySelector('.multicam');
+        const etat = page.querySelector('.etat');
+        const poses = inventaire.filter((it) => it.pos && Number.isFinite(it.pos.lat));
+        const cellules = poses.length ? poses.slice(0, nbCellules) : inventaire.slice(0, nbCellules);
+
+        if (!cellules.length) {
+          grille.innerHTML = '<div class="statut">Aucun élément : ajoute du matériel dans 💶 GESTION puis pose-le avec 📡 TRACKING.</div>';
+        }
+        for (const it of cellules) {
+          const c = document.createElement('div');
+          c.className = 'cam';
+          c.style.cssText = 'border:1px solid rgba(0,212,255,0.35);border-radius:9px;padding:6px;background:rgba(0,212,255,0.05)';
+          const dernier = (it.logs || []).slice(-1)[0];
+          c.innerHTML = `<div style="font-size:8px;letter-spacing:2px;color:#00d4ff">🎥 ${it.nom}</div>
+            <div style="font-size:9px;line-height:1.5;margin-top:3px">
+            ${it.pos ? `📍 ${it.pos.lat.toFixed(5)}, ${it.pos.lon.toFixed(5)}` : 'non localisé'}<br>
+            <span style="opacity:.6">${dernier ? `dernier fait : ${dernier.txt}` : 'aucun fait relevé'}</span></div>
+            <button class="c-btn mini aller" type="button" style="width:100%;margin-top:4px">👁 VUE POV</button>`;
+          c.querySelector('.aller').addEventListener('click', () => {
+            if (!it.pos) { window.__wtToast?.('📶 Élément non localisé — 📡 TRACKING pour le placer.'); return; }
+            viewer.camera.flyTo({
+              destination: Cesium.Cartesian3.fromDegrees(it.pos.lon, it.pos.lat, 45),
+              orientation: { heading: 0, pitch: Cesium.Math.toRadians(-28), roll: 0 },
+              duration: 1.4,
+            });
+          });
+          grille.appendChild(c);
+        }
+
+        const liens = majCarte();
+        etat.innerHTML = `🔎 ${poses.length} élément(s) localisé(s) · ${liens} lien(s) « travaillent ensemble » ·
+          ${suiviDirect ? 'direct <b style="color:#7ef0c0">ACTIF</b> (rafraîchi toutes les 5 s)' : 'direct arrêté'}`;
+
+        page.querySelector('.direct').addEventListener('click', () => {
+          if (suiviDirect) {
+            window.clearInterval(suiviDirect); suiviDirect = null;
+            window.__wtToast?.('📶 Direct arrêté.');
+          } else {
+            suiviDirect = window.setInterval(() => {
+              if (page.querySelector('.etat')) rendreDirect();
+            }, 5000);
+            window.__wtToast?.('📶 Direct démarré : carte et multi-vues rafraîchies toutes les 5 s.');
+          }
+          rendreDirect();
+        });
+        page.querySelector('.moins').addEventListener('click', () => {
+          nbCellules = Math.max(1, nbCellules - 1); ecrireJson(S_CELL, nbCellules); rendreDirect();
+        });
+        page.querySelector('.plus').addEventListener('click', () => {
+          nbCellules = Math.min(16, nbCellules + 1); ecrireJson(S_CELL, nbCellules); rendreDirect();
+        });
+      };
+      rendreDirect();
+      // traçabilité : chaque ouverture du direct est horodatée
+      try {
+        ajouterTrace({ nom: 'SUIVI DIRECT — chantier', sources: ['osm'], note: `${inventaire.filter((it) => it.pos).length} élément(s) localisé(s)` });
+      } catch { /* journal indisponible */ }
     }
 
     if (p === 'soussol') {
