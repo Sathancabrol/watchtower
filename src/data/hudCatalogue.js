@@ -76,6 +76,7 @@ export const NOMS = {
   'wt-mascotte': ['Mascotte', 'divers', '🐦'],
   'wt-urgence-bandeau': ['Bandeau d’urgence', 'divers', '🚨'],
   'wt-loc-station': ['Station de localisation', 'barres', '📡'],
+  'wt-boussole': ['Boussole (ruban de cap sur la hauteur)', 'modes', '🧭'],
 };
 
 /** Éléments qu'on ne propose jamais de masquer (la carte, le panneau lui-même). */

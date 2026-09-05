@@ -4,9 +4,10 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 12** (🖥 HUD central : un œil toujours
-visible + la liste de tout ce qui s'affiche, pour ne plus perdre un bouton).
-Itérations précédentes : **11** = 🕰 mode historique (la ville se construit à
+Dernière mise à jour : **itération 13** (🧭 boussole « casque » sur la
+hauteur, ▚ MATRIX sur la minicarte, 🎨 peau néon, 👁 œil dans le logo).
+Itérations précédentes : **12** = 🖥 HUD central (un œil toujours visible +
+la liste de tout ce qui s'affiche) · **11** = 🕰 mode historique (la ville se construit à
 partir des dates OpenStreetMap) · **10** = parcours de vol traçés & rejoués, 3ᵉ personne
 réparée, routes + cadastre visibles en satellite, bouton « ME LOCALISER »
 explicité · **9** = 🧠 palais mental, 😴 veille du HUD, 🔑 comptes & IA locale,
@@ -18,7 +19,19 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 12 — en cours
+## 0. Itération 13 — en cours
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Boussole** | 🧭 **Ruban sur la hauteur** (défaut) : pleine hauteur, collé au bord gauche/droite — ne recouvre plus les boutons du haut | ✅ | `compassTape.js` | — |
+| **Boussole** | ⚙ **Réglable** : hauteur/largeur, côté, épaisseur, opacité, degrés visibles, masquage — mémorisés | ✅ | `compassTape.js`, `reglagesValides()` | localStorage |
+| **Boussole** | Présentation « casque » : index central, degrés, N/E/S/O, coins de visière | ✅ | `compassTape.js` | — |
+| **Minicarte** | ▚ **MATRIX** : la couche OpenStreetMap posée SUR le satellite, teintée vert néon + grille et balayage | ✅ | `minimap.js` | tuiles OSM + Esri |
+| **Apparence** | 🎨 **Peau néon** : bordures, séparateurs et ascenseurs blancs → cyan (désactivable, AFFICHAGE → F2) | ✅ | `theme.js` | — |
+| **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
+| **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
+
+## 0 bis. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -29,7 +42,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 bis. Itération 11 — terminée
+## 0 ter. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -40,7 +53,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 ter. Itération 10 — terminée
+## 0 quater. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -57,7 +70,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 quater. Itération 9 — terminée
+## 0 quinquies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -110,6 +123,27 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **13** :
+
+* **« la boussole bloque la vue des fenêtres et des boutons »** — le ruban
+  horizontal de 380 px trônait au centre du haut de l'écran, par-dessus les
+  boutons d'actions. Il devient un **ruban pleine hauteur** collé au bord
+  (gauche ou droite), façon affichage de casque, et il est **réglable**
+  (⚙ : hauteur ↔ largeur, côté, épaisseur, opacité, degrés visibles).
+* **« la minicarte doit proposer un filtre MATRIX »** — bouton ▚ : l'OSM est
+  dessiné **par-dessus** le satellite, teinté vert néon, avec grille et
+  balayage ; un clic revient à l'affichage normal.
+* **« les side bars des fenêtres font blanc »** — peau néon : bordures,
+  séparateurs et ascenseurs blancs passent au cyan, en-têtes en dégradé
+  sombre (désactivable dans AFFICHAGE).
+* **« l'œil doit être dans le logo »** — l'œil est inséré juste après le logo
+  animé, avant le texte WATCHTOWER : il fait partie du titre, il ne bouge
+  plus. Le titre est exempté de veille et survit à la vue propre pour que
+  l'œil reste **toujours** cliquable.
+* **« je n'ai plus accès à HQ / INTEL / VOL »** — impossible de tout masquer
+  (la barre du bas est rendue d'office) et un bouton « REMETTRE LA BARRE DU
+  BAS » apparaît dès qu'elle est masquée.
 
 Itération **12** :
 

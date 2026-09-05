@@ -42,7 +42,16 @@ const FILTRES = [
   { nom: 'infra', css: 'grayscale(1) contrast(1.3)' },
   { nom: 'sépia', css: 'sepia(0.7) contrast(1.08)' },
   { nom: 'dur', css: 'contrast(1.6) saturate(1.25)' },
+  // ▚ MATRIX : l'OSM par-dessus le satellite, le tout en vert néon.
+  { nom: 'MATRIX', css: 'none', matrice: true },
 ];
+
+/** Rang du satellite et de l'OSM dans `SOURCES` (robuste si on réordonne). */
+const idSource = (mot) => SOURCES.findIndex((s) => s.nom.includes(mot));
+const ID_SATELLITE = Math.max(0, idSource('Satellite'));
+const ID_OSM = Math.max(0, idSource('OSM'));
+/** Teinte « matrice » : niveaux de gris → sépia → vert néon saturé. */
+const TEINTE_MATRIX = 'grayscale(1) brightness(0.55) sepia(1) hue-rotate(62deg) saturate(9) contrast(1.9)';
 
 const CSS = `
 #wt-minimap {
@@ -121,6 +130,7 @@ export function initMinimap(viewer) {
         <button type="button" data-a="suivre" class="actif" title="Suivre la vue principale">🔒</button>
         <button type="button" data-a="fond" title="Changer le fond de carte">🛰</button>
         <button type="button" data-a="filtre" title="Filtre d’affichage (nuit, infra, sépia…)">🎨</button>
+        <button type="button" data-a="matrix" title="▚ MATRIX : la couche OpenStreetMap sur le satellite, en vert néon">▚</button>
         <button type="button" data-a="puce" title="Replier en puce">▣</button>
         <button type="button" data-a="fermer" title="Fermer (revenir via la puce 🗺)">✕</button>
       </span>
@@ -156,14 +166,15 @@ export function initMinimap(viewer) {
   /** @type {Map<string, HTMLImageElement>} */
   const tuiles = new Map();
 
-  function tuile(x, y, z) {
-    const cle = `${z}/${x}/${y}`;
+  /** @param {number} [src] rang de la source (défaut : le fond choisi). */
+  function tuile(x, y, z, src = source) {
+    const cle = `${src}:${z}/${x}/${y}`; // une source = une entrée de cache
     const connue = tuiles.get(cle);
     if (connue) return connue;
     const img = new Image();
     img.decoding = 'async';
     img.onload = () => { if (!document.hidden) dessiner(); };
-    img.src = SOURCES[source].url(x, y, z);
+    img.src = SOURCES[src].url(x, y, z);
     tuiles.set(cle, img);
     if (tuiles.size > 400) {
       const plusVieille = tuiles.keys().next().value;
@@ -240,18 +251,53 @@ export function initMinimap(viewer) {
     ctx.fillStyle = '#08111c';
     ctx.fillRect(0, 0, LARGEUR, HAUTEUR);
 
-    const filtreCss = FILTRES[filtre]?.css || 'none';
+    const mode = FILTRES[filtre] || FILTRES[0];
+    const matrice = Boolean(mode.matrice);
     const filtrable = 'filter' in ctx;
-    if (filtrable) ctx.filter = filtreCss;
-    for (const t of tuilesVisibles({
+    // couleurs : vert néon en MATRIX, cyan WATCHTOWER sinon
+    const vif = matrice ? '#7dff4a' : '#00d4ff';
+    const doux = (a) => (matrice ? `rgba(125,255,74,${a})` : `rgba(0,212,255,${a})`);
+    const grille = tuilesVisibles({
       lon: centre.lon, lat: centre.lat, mpp, largeur: LARGEUR, hauteur: HAUTEUR, z,
-    })) {
-      const img = tuile(t.x, t.y, z);
-      if (img.complete && img.naturalWidth > 0) {
-        try { ctx.drawImage(img, t.dx, t.dy, t.taille, t.taille); } catch { /* image morte */ }
+    });
+    const peindre = (src, css, alpha) => {
+      ctx.save();
+      if (alpha < 1) ctx.globalAlpha = alpha;
+      if (filtrable && css && css !== 'none') ctx.filter = css;
+      for (const t of grille) {
+        const img = tuile(t.x, t.y, z, src);
+        if (img.complete && img.naturalWidth > 0) {
+          try { ctx.drawImage(img, t.dx, t.dy, t.taille, t.taille); } catch { /* image morte */ }
+        }
       }
+      ctx.restore();
+    };
+    // 1) le fond : le satellite en MATRIX (l'OSM vient se poser dessus),
+    //    sinon la source choisie avec son filtre.
+    peindre(matrice ? ID_SATELLITE : source, mode.css, 1);
+    // 2) ▚ MATRIX : la couche OpenStreetMap PROJETÉE sur le satellite, en
+    //    vert néon — on lit la voirie et les noms par-dessus la photo.
+    if (matrice) {
+      peindre(ID_OSM, TEINTE_MATRIX, 0.78);
+      // grille + balayage, pour l'ambiance « affichage de casque »
+      ctx.save();
+      ctx.strokeStyle = 'rgba(125,255,74,0.13)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx <= LARGEUR; gx += 12) {
+        ctx.beginPath(); ctx.moveTo(gx + 0.5, 0); ctx.lineTo(gx + 0.5, HAUTEUR); ctx.stroke();
+      }
+      for (let gy = 0; gy <= HAUTEUR; gy += 12) {
+        ctx.beginPath(); ctx.moveTo(0, gy + 0.5); ctx.lineTo(LARGEUR, gy + 0.5); ctx.stroke();
+      }
+      const balayage = (Date.now() / 9) % (HAUTEUR + 40) - 20;
+      const degr = ctx.createLinearGradient(0, balayage - 18, 0, balayage + 18);
+      degr.addColorStop(0, 'rgba(125,255,74,0)');
+      degr.addColorStop(0.5, 'rgba(125,255,74,0.16)');
+      degr.addColorStop(1, 'rgba(125,255,74,0)');
+      ctx.fillStyle = degr;
+      ctx.fillRect(0, balayage - 18, LARGEUR, 36);
+      ctx.restore();
     }
-    if (filtrable) ctx.filter = 'none';
 
     // ——— emprise RÉELLE de la vue principale (2D, à l'échelle) ———
     const coins = empreintePrincipale();
@@ -269,9 +315,9 @@ export function initMinimap(viewer) {
       ctx.beginPath();
       proj.forEach((p, i) => (i ? ctx.lineTo(p.px, p.py) : ctx.moveTo(p.px, p.py)));
       ctx.closePath();
-      ctx.fillStyle = 'rgba(0,212,255,0.10)';
+      ctx.fillStyle = doux(0.10);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(0,212,255,0.85)';
+      ctx.strokeStyle = doux(0.85);
       ctx.lineWidth = 1.4;
       ctx.stroke();
     }
@@ -290,14 +336,14 @@ export function initMinimap(viewer) {
     ctx.lineTo(LARGEUR / 2 + Math.cos(a1) * porte, HAUTEUR / 2 + Math.sin(a1) * porte);
     ctx.lineTo(LARGEUR / 2 + Math.cos(a2) * porte, HAUTEUR / 2 + Math.sin(a2) * porte);
     ctx.closePath();
-    ctx.fillStyle = 'rgba(0,212,255,0.14)';
+    ctx.fillStyle = doux(0.14);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(0,212,255,0.55)';
+    ctx.strokeStyle = doux(0.55);
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.restore();
 
-    ctx.strokeStyle = '#00d4ff';
+    ctx.strokeStyle = vif;
     ctx.lineWidth = 1.4;
     ctx.beginPath();
     ctx.moveTo(LARGEUR / 2 - 7, HAUTEUR / 2);
@@ -307,11 +353,11 @@ export function initMinimap(viewer) {
     ctx.stroke();
     ctx.beginPath();
     ctx.arc(LARGEUR / 2, HAUTEUR / 2, 9, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0,212,255,0.5)';
+    ctx.strokeStyle = doux(0.5);
     ctx.stroke();
 
     // ——— nord ———
-    ctx.fillStyle = 'rgba(0,212,255,0.85)';
+    ctx.fillStyle = doux(0.85);
     ctx.font = 'bold 9px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('N', 12, 13);
@@ -321,7 +367,7 @@ export function initMinimap(viewer) {
     ctx.lineTo(9, 21);
     ctx.moveTo(12, 17);
     ctx.lineTo(15, 21);
-    ctx.strokeStyle = 'rgba(0,212,255,0.85)';
+    ctx.strokeStyle = doux(0.85);
     ctx.stroke();
 
     // ——— échelle ———
@@ -430,10 +476,17 @@ export function initMinimap(viewer) {
     tuiles.clear();
     dessiner();
   });
-  div.querySelector('[data-a="filtre"]').addEventListener('click', () => {
-    filtre = (filtre + 1) % FILTRES.length;
+  const ID_MATRIX = FILTRES.findIndex((f) => f.matrice);
+  const appliquerFiltre = (n) => {
+    filtre = ((n % FILTRES.length) + FILTRES.length) % FILTRES.length;
+    for (const b of div.querySelectorAll('[data-a="matrix"], [data-a="filtre"]')) {
+      b.classList.toggle('actif', filtre === ID_MATRIX);
+    }
     dessiner();
-  });
+  };
+  div.querySelector('[data-a="filtre"]').addEventListener('click', () => appliquerFiltre(filtre + 1));
+  // ▚ un seul clic : MATRIX (OSM vert néon sur le satellite), re-clic = retour
+  div.querySelector('[data-a="matrix"]').addEventListener('click', () => appliquerFiltre(filtre === ID_MATRIX ? 0 : ID_MATRIX));
   const replier = () => { div.style.display = 'none'; puce.style.display = 'flex'; };
   div.querySelector('[data-a="puce"]').addEventListener('click', replier);
   div.querySelector('[data-a="fermer"]').addEventListener('click', replier);

@@ -319,6 +319,24 @@ compact (**M**). Trois réponses :
   l'œil seulement ; un clic sur l'œil fait apparaître l'interface bloc par
   bloc, en cascade.
 
+### 🧭 Boussole « casque » · ▚ MATRIX sur la minicarte · 🎨 peau néon
+
+* **Boussole** : le ruban de cap se déploie désormais **sur toute la hauteur
+  de l'écran**, collé au bord gauche (ou droite) — plus rien n'est caché au
+  centre. L'engrenage ⚙ en bas du ruban règle tout : **hauteur ↔ largeur**,
+  côté, épaisseur, opacité, nombre de degrés visibles, masquage. Glisser fait
+  toujours tourner la caméra, double-clic = plein nord. Réglages mémorisés.
+* **Minicarte ▚ MATRIX** : un clic superpose la couche **OpenStreetMap** sur
+  le fond satellite, teintée **vert néon**, avec grille et balayage — on lit
+  la voirie et les noms par-dessus la photo. Les autres filtres (nuit, infra,
+  sépia) restent au bouton 🎨.
+* **Peau néon** : les contours, séparateurs et ascenseurs blancs hérités de
+  l'app d'origine passent au cyan WATCHTOWER (désactivable : AFFICHAGE →
+  🎨 Peau néon).
+* **👁 L'œil est dans le logo** : inséré juste après le logo animé, avant le
+  texte WATCHTOWER. Il ne bouge plus jamais et reste cliquable même en vue
+  propre ou après la veille.
+
 ### 🗺 Feuille de route
 
 La feuille de route vivante (fonctions, état, sources ouvertes branchées et à

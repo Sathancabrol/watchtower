@@ -38,6 +38,7 @@ import { initMinimap } from './minimap.js';
 import { creerBatiRapide } from './batiRapide.js';
 import { initHistorique } from './historique.js';
 import { initHudCentral } from './hudCentral.js';
+import { initTheme } from './theme.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
 import { initNomsLieux } from './nomsLieux.js';
@@ -421,6 +422,9 @@ async function init() {
     // Boussole FPS (ruban de cap : glisser = tourner, double-clic = nord).
     try {
       window.__godsEyeView.boussole = initCompassTape(viewer);
+      // 🎨 PEAU NÉON : les contours et ascenseurs blancs de l'app d'origine
+      // passent au cyan WATCHTOWER (désactivable dans AFFICHAGE → F2).
+      window.__godsEyeView.theme = initTheme();
     } catch (e) { console.error('[watchtower] boussole:', e); }
     // Dock MobiGlas : TOUTES les options en bas, par catégories de fonctions.
     try {

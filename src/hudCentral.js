@@ -35,16 +35,25 @@ const IGNORES = new Set([
 const CSS = `
 .wt-hud-off { display: none !important; }
 #wt-hud-oeil {
-  position: fixed; top: 6px; left: 6px; z-index: 9998;
+  position: static !important; z-index: 9998;
+  display: inline-flex !important; visibility: visible !important;
   width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; font-size: 16px;
-  background: rgba(6,12,20,0.72); color: #00d4ff;
+  align-items: center; justify-content: center; font-size: 19px; line-height: 1;
+  background: rgba(6,12,20,0.72); color: #00d4ff; padding: 0; flex: 0 0 auto;
   border: 1px solid rgba(0,212,255,0.45); box-shadow: 0 0 12px rgba(0,212,255,0.25);
   transition: transform 160ms ease, background 160ms ease;
 }
 #wt-hud-oeil:hover { transform: scale(1.12); background: rgba(0,212,255,0.18); }
 #wt-hud-oeil.cligne { animation: wt-oeil-pulse 1.6s ease-in-out infinite; }
 @keyframes wt-oeil-pulse { 0%,100% { box-shadow: 0 0 0 rgba(0,212,255,0); } 50% { box-shadow: 0 0 18px rgba(0,212,255,0.7); } }
+/* Vue propre (V) : le titre reste, mais seul l'œil y survit — sinon plus
+   aucun moyen de sortir de la vue propre sans connaître la touche. */
+body.ui-clean-view #title-bar { opacity: 1 !important; visibility: visible !important; pointer-events: none !important; }
+body.ui-clean-view #title-bar .title-glow,
+body.ui-clean-view #title-bar .subtitle,
+body.ui-clean-view #title-bar h1 > *:not(#wt-hud-oeil) { opacity: 0 !important; }
+body.ui-clean-view #wt-hud-oeil { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+
 #wt-hud-central {
   position: fixed; left: 12px; top: 96px; z-index: 9990; width: min(360px, 94vw);
   max-height: 74vh; display: flex; flex-direction: column;
@@ -87,7 +96,7 @@ body.wt-hud-boot > *:not(#cesiumContainer):not(#world-overlay-root):not(#wt-hud-
 }
 body.wt-hud-boot #title-bar { opacity: .85; pointer-events: auto; }
 #wt-hud-indice {
-  position: fixed; top: 46px; left: 8px; z-index: 9997; display: none;
+  position: fixed; top: 78px; left: 36px; z-index: 9997; display: none;
   padding: 6px 9px; border-radius: 8px; font-family: var(--font-mono, monospace); font-size: 9px;
   background: rgba(0,212,255,0.14); border: 1px solid rgba(0,212,255,0.45); color: #bff0ff;
 }
@@ -127,7 +136,9 @@ export function initHudCentral(options = {}) {
     } catch { /* stockage plein */ }
   };
 
-  // ── l'œil, toujours visible quoi qu'il arrive ──────────────────────────
+  // ── l'œil, DANS le logo WATCHTOWER (demandé : ne jamais bouger) ────────
+  // Il remplace le logo du titre : il est donc au même endroit que la marque,
+  // en haut à gauche, et rien ne peut le déplacer ni le masquer.
   const oeil = document.createElement('button');
   oeil.type = 'button';
   oeil.id = 'wt-hud-oeil';
@@ -135,12 +146,27 @@ export function initHudCentral(options = {}) {
   oeil.setAttribute('aria-label', 'Affichage : rouvre tout le HUD et ouvre les réglages');
   oeil.setAttribute('data-veille-exclu', '1');
   oeil.textContent = '👁';
-  document.body.appendChild(oeil);
+  const h1 = document.querySelector('#title-bar h1');
+  const logo = document.querySelector('#title-bar .title-logo');
+  if (h1) {
+    // #title-bar est en `pointer-events: none` : on réactive l'œil (et lui seul).
+    oeil.style.pointerEvents = 'auto';
+    // juste APRÈS le logo animé (qui regarde autour), AVANT le texte
+    // WATCHTOWER : l'œil fait donc partie du titre et ne bouge jamais.
+    if (logo) logo.after(oeil); else h1.prepend(oeil);
+  } else {
+    document.body.appendChild(oeil); // repli : pas de titre, on reste visible
+  }
+
+  // L'œil vit dans le titre : sans cela, la veille (HUD qui s'efface) et la
+  // vue propre escamotent le titre… et avec lui le seul moyen de revenir.
+  const barreTitre = document.getElementById('title-bar');
+  if (barreTitre) barreTitre.setAttribute('data-veille-exclu', '1');
 
   const indice = document.createElement('div');
   indice.id = 'wt-hud-indice';
   indice.setAttribute('data-veille-exclu', '1');
-  indice.textContent = '👁 Clique sur l’œil pour afficher l’interface';
+  indice.textContent = '👁 Clique sur l’œil du logo pour afficher l’interface';
   document.body.appendChild(indice);
 
   // ── la fenêtre de réglages ─────────────────────────────────────────────
@@ -165,6 +191,9 @@ export function initHudCentral(options = {}) {
       <div class="hc-titre-groupe">MODES QUI MASQUENT L’ÉCRAN</div>
       <div class="hc-modes"></div>
       <label class="hc-item"><input type="checkbox" class="hc-progressif"><span>🕰 HUD progressif au démarrage (écran nu → clic sur l’œil)</span></label>
+      <label class="hc-item"><input type="checkbox" class="hc-peau"><span>🎨 Peau néon (bordures et ascenseurs cyan au lieu de blanc)</span></label>
+      <label class="hc-item"><input type="checkbox" class="hc-boussole"><span>🧭 Boussole en ruban (hauteur / largeur, ⚙ pour la régler)</span></label>
+      <div class="hc-secours hc-rang"></div>
       <div class="hc-liste"></div>
       <div class="hc-compte"></div>
       <div class="hc-note">Tout est mémorisé. L’œil en haut à gauche reste
@@ -178,6 +207,9 @@ export function initHudCentral(options = {}) {
   const compteEl = el.querySelector('.hc-compte');
   const modesEl = el.querySelector('.hc-modes');
   const cbProgressif = el.querySelector('.hc-progressif');
+  const cbPeau = el.querySelector('.hc-peau');
+  const cbBoussole = el.querySelector('.hc-boussole');
+  const secours = el.querySelector('.hc-secours');
   rendreDeplacable(el, el.querySelector('.hc-tete'));
   el.querySelector('.hc-tete button').addEventListener('click', () => basculer(false));
 
@@ -210,6 +242,10 @@ export function initHudCentral(options = {}) {
    *   jamais pour une case cochée une par une (l'utilisateur reste maître).
    */
   function appliquer(deplier = false) {
+    // Filet de sécurité : si plus rien n'est visible, on rend la barre du bas.
+    // Sans cela, un utilisateur qui décoche tout n'a plus aucun bouton — même
+    // pas de quoi revenir en arrière autrement que par le raccourci F2.
+    if (elements.size && masques.size >= elements.size) masques.delete('wt-dock');
     for (const [id, n] of elements) {
       if (IGNORES.has(id)) continue;
       const masque = masques.has(id);
@@ -275,6 +311,22 @@ export function initHudCentral(options = {}) {
 
   function rendre() {
     const trouves = filtrer(items, chercher.value);
+    // Bouée : si la barre du bas (HQ · INTEL · VOL · CHAT…) est masquée, on
+    // propose de la remettre d'un clic — c'est le piège le plus fréquent.
+    secours.className = 'hc-rang';
+    secours.innerHTML = masques.has('wt-dock')
+      ? '<button class="hc-btn fort" data-s="dock">⚠ REMETTRE LA BARRE DU BAS (HQ · INTEL · VOL…)</button>'
+      : '';
+    if (secours.firstElementChild) {
+      secours.firstElementChild.addEventListener('click', () => {
+        masques.delete('wt-dock');
+        const it = items.find((x) => x.id === 'wt-dock');
+        if (it) it.visible = true;
+        appliquer();
+        sauver();
+        rendre();
+      });
+    }
     listeEl.innerHTML = grouper(trouves).map((g) => `<div class="hc-titre-groupe">${g.nom}</div>`
       + g.items.map((i) => `<label class="hc-item"><input type="checkbox" data-i="${i.id}"${i.visible ? ' checked' : ''}>`
         + `<span>${i.icone} ${i.nom}</span></label>`).join('')).join('');
@@ -288,7 +340,8 @@ export function initHudCentral(options = {}) {
         compteEl.textContent = resumer(items);
       });
     }
-    compteEl.textContent = resumer(items);
+    compteEl.textContent = resumer(items)
+      + (masques.has('wt-dock') ? ' · ⚠ la barre du bas est masquée (l’œil la remet)' : '');
     if (!trouves.length) listeEl.innerHTML = '<div class="hc-note">Rien ne correspond — essaye « dock », « carte », « vol »…</div>';
   }
 
@@ -297,6 +350,7 @@ export function initHudCentral(options = {}) {
     document.body.classList.remove('wt-hud-boot');
     // on sort de tous les modes qui vident l'écran
     for (const m of MODES) if (lireMode(m.id) && m.id !== 'tactique') ecrireMode(m.id, false);
+    try { window.__godsEyeView?.boussole?.visible?.(true); } catch { /* pas de boussole */ }
     // on réveille la veille (opacité + pointeur) : sinon le HUD revient
     // « transparent » et on croit encore qu'il manque des boutons.
     document.documentElement.classList.remove('wt-veille-masque', 'wt-veille-active');
@@ -315,6 +369,12 @@ export function initHudCentral(options = {}) {
       void n.offsetWidth; // force le redémarrage de l'animation
       n.style.animationDelay = `${Math.min(i, 14) * 45}ms`;
       n.classList.add('wt-hud-revele');
+      // une animation avec `fill: both` continue d'écraser les règles
+      // `!important` de l'app (vue propre…). On la retire dès la fin.
+      setTimeout(() => {
+        n.classList.remove('wt-hud-revele');
+        n.style.animationDelay = '';
+      }, 400 + Math.min(i, 14) * 45 + 250);
       i += 1;
     }
     if (surMessage) surMessage('👁 HUD réaffiché — la liste complète est dans « AFFICHAGE » (F2).');
@@ -325,7 +385,12 @@ export function initHudCentral(options = {}) {
 
   function basculer(force) {
     const ouvert = force === undefined ? el.classList.contains('wt-hud-off') : force;
-    if (ouvert) { reconstruire(); rendre(); rendreModes(); cbProgressif.checked = progressif; }
+    if (ouvert) {
+      reconstruire(); rendre(); rendreModes();
+      cbProgressif.checked = progressif;
+      cbPeau.checked = Boolean(window.__godsEyeView?.theme?.actif?.());
+      cbBoussole.checked = Boolean(window.__godsEyeView?.boussole?.reglages?.().visible);
+    }
     el.classList.toggle('wt-hud-off', !ouvert);
   }
 
@@ -335,14 +400,7 @@ export function initHudCentral(options = {}) {
     if (!nu) basculer();
     else basculer(true);
   });
-  // le logo WATCHTOWER (l'œil du titre) fait la même chose
-  const logo = document.querySelector('#title-bar .title-logo, #title-bar h1');
-  if (logo) {
-    logo.style.pointerEvents = 'auto';
-    logo.style.cursor = 'pointer';
-    logo.title = 'Afficher / régler l’interface (F2)';
-    logo.addEventListener('click', () => { reveler(); basculer(true); });
-  }
+  // (l'œil EST le logo du titre : il porte déjà le gestionnaire de clic)
   el.querySelector('[data-p="reafficher"]').addEventListener('click', reveler);
   for (const b of el.querySelectorAll('[data-p]')) {
     if (b.dataset.p === 'reafficher') continue;
@@ -361,6 +419,15 @@ export function initHudCentral(options = {}) {
     surMessage?.(progressif
       ? '🕰 HUD progressif activé : au prochain démarrage, l’écran sera nu — un clic sur l’œil fait apparaître l’interface.'
       : '🕰 HUD progressif désactivé : l’interface s’affichera entièrement au démarrage.');
+  });
+  cbPeau.addEventListener('change', () => {
+    const theme = window.__godsEyeView?.theme;
+    if (theme) theme.appliquer(cbPeau.checked);
+    surMessage?.(cbPeau.checked ? '🎨 Peau néon appliquée.' : '🎨 Habillage d’origine restauré.');
+  });
+  cbBoussole.addEventListener('change', () => {
+    const b = window.__godsEyeView?.boussole;
+    if (b?.visible) b.visible(cbBoussole.checked);
   });
   chercher.addEventListener('input', rendre);
   window.addEventListener('keydown', (e) => {
