@@ -191,109 +191,192 @@ const GLYPHES = {
   bouclier: glypheBouclier,
 };
 
+/** Mélange une couleur hex vers le noir (`f` < 1) ou le blanc (`f` > 1). */
+export function nuancerCouleur(hex, f) {
+  const h = String(hex || '').replace('#', '');
+  if (!/^[0-9a-f]{6}$/i.test(h)) return hex || '#00d4ff';
+  const r = parseInt(h.slice(0, 2), 16);
+  const v = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  const mel = (c) => Math.max(0, Math.min(255, Math.round(f <= 1 ? c * f : c + (255 - c) * (f - 1))));
+  const hex2 = (c) => c.toString(16).padStart(2, '0');
+  return `#${hex2(mel(r))}${hex2(mel(v))}${hex2(mel(b))}`;
+}
+
+/** Plaque arrondie (chemin seulement). */
+function cheminPlaque(ctx, dx, dy, w, h, r) {
+  const rr = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(dx + rr, dy);
+  ctx.arcTo(dx + w, dy, dx + w, dy + h, rr);
+  ctx.arcTo(dx + w, dy + h, dx, dy + h, rr);
+  ctx.arcTo(dx, dy + h, dx, dy, rr);
+  ctx.arcTo(dx, dy, dx + w, dy, rr);
+  ctx.closePath();
+}
+
 /**
- * Dessine une icône AR complète (badge + glyphe + barre de vie + nom).
+ * Pastille de texte bien lisible : fond opaque sombre, contours nets.
+ * `largeurMax` tronque proprement avec une ellipse.
+ */
+function pastilleTexte(ctx, texte, cx, cy, { police, hauteur, couleurTexte = '#ffffff', largeurMax, opacite = 0.92 } = {}) {
+  if (!texte) return;
+  ctx.font = `bold ${Math.round(police)}px "JetBrains Mono", "DejaVu Sans Mono", monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  let t = String(texte);
+  const limite = largeurMax || 1e6;
+  if (ctx.measureText) {
+    let l = ctx.measureText(t).width;
+    while (l > limite && t.length > 2) {
+      t = t.slice(0, -2);
+      l = ctx.measureText(`${t}…`).width;
+    }
+    if (l > limite) t = `${t}…`;
+  }
+  const m = ctx.measureText ? ctx.measureText(t).width : t.length * police * 0.6;
+  const pad = police * 0.42;
+  cheminPlaque(ctx, cx - m / 2 - pad, cy - hauteur / 2, m + pad * 2, hauteur, hauteur * 0.34);
+  ctx.fillStyle = `rgba(6,10,16,${opacite})`;
+  ctx.fill();
+  ctx.lineWidth = Math.max(1, police * 0.10);
+  ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+  ctx.stroke();
+  ctx.fillStyle = couleurTexte;
+  ctx.fillText(t, cx, cy + police * 0.04);
+}
+
+/**
+ * Dessine une icône AR : un **jeton 3D** posé sur le territoire.
+ *
+ * Le badge n'est plus une barre de vie plate (qu'on prenait pour un kit de
+ * soin) : c'est une plaque épaisse — ombre au sol, pied, tranche sombre,
+ * reflet spéculaire, biseau — avec :
+ *   · le **glyphe** de la fonction (santé, écoles, économie, services, loisirs) ;
+ *   · un **anneau de niveau** coloré (l'indice de la commune, arc + chiffre) ;
+ *   · le **nom réel de l'équipement** sur une pastille opaque (lisible de loin) ;
+ *   · une **seconde ligne** de détail (nombre d'équipements, précision…).
+ *
  * @param {CanvasRenderingContext2D} ctx
  * @param {number} taille Côté du sprite (px).
  * @param {object} categorie Entrée de `CATEGORIES_AR`.
- * @param {{valeur?:number, nom?:string, sansNom?:boolean}} [options]
+ * @param {{valeur?:number, nom?:string, detail?:string, sansNom?:boolean, compte?:number}} [options]
  */
 export function dessinerIconeAR(ctx, taille, categorie, options = {}) {
   const S = taille;
   const coul = categorie?.couleur || '#00d4ff';
   const valeur = Math.max(0, Math.min(100, Number(options.valeur ?? 60)));
+  const sansNom = Boolean(options.sansNom);
   ctx.clearRect(0, 0, S, S);
   ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
 
-  const bx = S * 0.16;
-  const by = S * 0.06;
-  const bw = S * 0.68;
-  const bh = options.sansNom ? S * 0.78 : S * 0.62;
+  // ── géométrie ──
+  const marge = S * 0.13;
+  const bw = S - marge * 2;
+  const bh = (sansNom ? S * 0.62 : S * 0.50);
+  const bx = marge;
+  const by = S * 0.05;
+  const r = S * 0.15;
+  const epaisseur = S * 0.055;              // épaisseur de la tranche (effet 3D)
+  const fonce = nuancerCouleur(coul, 0.42);
+  const tresFonce = nuancerCouleur(coul, 0.28);
 
-  // ombre portée
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  // 1 · ombre portée au sol
+  ctx.fillStyle = 'rgba(0,0,0,0.42)';
   ctx.beginPath();
-  ctx.ellipse(S / 2, by + bh + S * 0.06, bw * 0.42, S * 0.05, 0, 0, Math.PI * 2);
+  ctx.ellipse(S / 2, by + bh + epaisseur + S * 0.075, bw * 0.40, S * 0.045, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // plaque : contour noir épais + dégradé saturé
-  const r = S * 0.14;
-  const plaque = (dx, dy, w, h) => {
-    const rr = Math.min(r, w / 2, h / 2);
-    ctx.beginPath();
-    ctx.moveTo(dx + rr, dy);
-    ctx.arcTo(dx + w, dy, dx + w, dy + h, rr);
-    ctx.arcTo(dx + w, dy + h, dx, dy + h, rr);
-    ctx.arcTo(dx, dy + h, dx, dy, rr);
-    ctx.arcTo(dx, dy, dx + w, dy, rr);
-    ctx.closePath();
-  };
-  plaque(bx, by, bw, bh);
-  ctx.fillStyle = '#0b0e14';
+  // 2 · pied (le jeton est posé, il ne flotte pas dans le vide)
+  ctx.fillStyle = tresFonce;
+  ctx.beginPath();
+  ctx.moveTo(S / 2 - S * 0.055, by + bh * 0.62);
+  ctx.lineTo(S / 2 + S * 0.055, by + bh * 0.62);
+  ctx.lineTo(S / 2 + S * 0.085, by + bh + epaisseur + S * 0.05);
+  ctx.lineTo(S / 2 - S * 0.085, by + bh + epaisseur + S * 0.05);
+  ctx.closePath();
   ctx.fill();
-  ctx.lineWidth = S * 0.045;
-  ctx.strokeStyle = '#0b0e14';
-  ctx.stroke();
-  plaque(bx + S * 0.045, by + S * 0.045, bw - S * 0.09, bh - S * 0.09);
+
+  // 3 · tranche (extrusion) : la plaque décalée vers le bas, en plus sombre
+  cheminPlaque(ctx, bx, by + epaisseur, bw, bh, r);
+  ctx.fillStyle = tresFonce;
+  ctx.fill();
+
+  // 4 · face avant : dégradé clair → couleur, liseré noir épais
+  cheminPlaque(ctx, bx, by, bw, bh, r);
   const grad = ctx.createLinearGradient(0, by, 0, by + bh);
-  grad.addColorStop(0, '#ffffff');
-  grad.addColorStop(0.18, coul);
-  grad.addColorStop(1, coul);
+  grad.addColorStop(0, nuancerCouleur(coul, 1.28));
+  grad.addColorStop(0.52, coul);
+  grad.addColorStop(1, nuancerCouleur(coul, 0.72));
   ctx.fillStyle = grad;
   ctx.fill();
   ctx.save();
   ctx.clip();
+  // reflet spéculaire (haut gauche) + biseau bas
+  const reflet = ctx.createLinearGradient(0, by, 0, by + bh);
+  reflet.addColorStop(0, 'rgba(255,255,255,0.42)');
+  reflet.addColorStop(0.42, 'rgba(255,255,255,0.05)');
+  reflet.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = reflet;
+  ctx.fillRect(bx, by, bw, bh * 0.62);
   ctx.fillStyle = 'rgba(0,0,0,0.20)';
-  ctx.fillRect(bx, by + bh * 0.72, bw, bh * 0.28);
+  ctx.fillRect(bx, by + bh * 0.80, bw, bh * 0.20);
   ctx.restore();
+  ctx.lineWidth = S * 0.045;
+  ctx.strokeStyle = '#0b0e14';
+  cheminPlaque(ctx, bx, by, bw, bh, r);
+  ctx.stroke();
+  // liseré interne clair (biseau haut)
+  ctx.lineWidth = S * 0.016;
+  ctx.strokeStyle = 'rgba(255,255,255,0.38)';
+  cheminPlaque(ctx, bx + S * 0.035, by + S * 0.028, bw - S * 0.07, bh - S * 0.06, r * 0.8);
+  ctx.stroke();
 
-  // glyphe : contour noir large + remplissage blanc (sauf croix suisse : blanc)
-  const gs = Math.min(bw, bh) * 0.56;
+  // 5 · glyphe (contour noir épais puis blanc)
+  const gs = Math.min(bw, bh) * 0.54;
   const gx = S / 2 - gs / 2;
-  const gy = by + bh * 0.5 - gs / 2;
+  const gy = by + bh * 0.46 - gs / 2;
   const dessiner = GLYPHES[categorie?.glyphe] || glypheBouclier;
   ctx.lineWidth = S * 0.055;
   ctx.strokeStyle = '#0b0e14';
   ctx.save();
-  ctx.translate(S * 0.006, S * 0.008); // ombre du glyphe
+  ctx.translate(S * 0.008, S * 0.010);
   dessiner(ctx, gx, gy, gs, '#0b0e14');
   ctx.restore();
   dessiner(ctx, gx, gy, gs, '#ffffff');
 
-  // barre de vie (segmentée, façon jeu) + cœur pour santé/bonheur
-  const hbY = by + bh + S * 0.05;
-  const hbH = S * 0.11;
-  const hbX = S * 0.14;
-  const hbW = S * 0.72;
+  // 6 · anneau de niveau + chiffre (plus de « barre de vie » ambiguë)
+  const [clair] = couleurBarre(valeur);
+  const aY = by + bh * 0.80;
+  const aR = S * 0.10;
+  const aX = S / 2;
+  ctx.lineWidth = S * 0.045;
+  ctx.strokeStyle = 'rgba(6,10,16,0.92)';
   ctx.beginPath();
-  ctx.rect(hbX, hbY, hbW, hbH);
-  ctx.fillStyle = '#0b0e14';
-  ctx.fill();
-  ctx.lineWidth = S * 0.03;
-  ctx.strokeStyle = '#0b0e14';
+  ctx.arc(aX, aY, aR, Math.PI * 0.82, Math.PI * 2.18);
   ctx.stroke();
-  const [clair, sombre] = couleurBarre(valeur);
-  const g2 = ctx.createLinearGradient(0, hbY, 0, hbY + hbH);
-  g2.addColorStop(0, clair);
-  g2.addColorStop(1, sombre);
-  ctx.fillStyle = g2;
-  ctx.fillRect(hbX + S * 0.02, hbY + S * 0.02, (hbW - S * 0.04) * (valeur / 100), hbH - S * 0.04);
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  for (let i = 1; i < 10; i += 1) {
-    ctx.fillRect(hbX + (hbW / 10) * i, hbY + S * 0.02, S * 0.012, hbH - S * 0.04);
-  }
+  ctx.strokeStyle = clair;
+  ctx.lineWidth = S * 0.036;
+  ctx.beginPath();
+  ctx.arc(aX, aY, aR, Math.PI * 0.82, Math.PI * 0.82 + (Math.PI * 1.36 * (valeur / 100)));
+  ctx.stroke();
+  pastilleTexte(ctx, `${Math.round(valeur)}`, aX, aY + S * 0.005, {
+    police: S * 0.115, hauteur: S * 0.155, couleurTexte: '#ffffff', largeurMax: S * 0.20, opacite: 0.95,
+  });
 
-  // nom de la catégorie
-  if (!options.sansNom) {
+  // 7 · nom réel + détail : pastilles opaques, texte contrasté
+  if (!sansNom) {
     const nom = (options.nom || categorie?.nom || '').toUpperCase();
-    ctx.font = `bold ${Math.round(S * 0.135)}px "JetBrains Mono", monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.lineWidth = S * 0.05;
-    ctx.strokeStyle = '#0b0e14';
-    ctx.strokeText(nom, S / 2, hbY + hbH + S * 0.075);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(nom, S / 2, hbY + hbH + S * 0.075);
+    pastilleTexte(ctx, nom, S / 2, by + bh + epaisseur + S * 0.135, {
+      police: S * 0.135, hauteur: S * 0.20, largeurMax: S * 0.96,
+    });
+    const detail = options.detail || (Number.isFinite(options.compte) ? `${options.compte} équipement(s)` : '');
+    if (detail) {
+      pastilleTexte(ctx, detail, S / 2, by + bh + epaisseur + S * 0.255, {
+        police: S * 0.105, hauteur: S * 0.165, couleurTexte: nuancerCouleur(coul, 1.45), largeurMax: S * 0.96,
+      });
+    }
   }
 }
 

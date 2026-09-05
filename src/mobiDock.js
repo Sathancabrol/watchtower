@@ -132,6 +132,8 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
   function creerAncre(p) {
     const wrap = document.createElement('div');
     wrap.className = `wt-dock-panel ${p.cote === 'droite' ? 'droite' : 'gauche'} wt-dock-cache`;
+    // identifiant stable : le mode urgence agrandit par ex. #wt-dock-chat
+    wrap.id = `wt-dock-${p.id}`;
     wrap.innerHTML = `
       <div class="wt-dock-titre"><span>${p.titre}</span>
         <button class="wt-dock-fermer" title="Fermer">✕</button></div>

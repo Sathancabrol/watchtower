@@ -111,6 +111,14 @@ export function initVuesTerritoire(viewer, deps = {}) {
   let chip = null;
   let primCategorie = null; // primitives de la catégorie AR activée
   let animationEnCours = null;
+  // 🐛 BUG CORRIGÉ : les couches AR / contour restaient vivantes quand on
+  // changeait de vue — les icônes continuaient de flotter (CallbackProperty) et
+  // le rendu CONTINU n'était jamais relâché : l'application ne redevenait
+  // jamais idle (« animation de scan en continu », ventilateur qui tourne).
+  // `generationContour` invalide un tracé devenu obsolète, et `AR_FLOTTEMENT_MS`
+  // borne la durée du flottement : ensuite les icônes se posent et on relâche.
+  let generationContour = 0;
+  const AR_FLOTTEMENT_MS = 18_000;
 
   function dire(texte, duree = 4200) {
     surMessage?.(texte);
@@ -166,6 +174,7 @@ export function initVuesTerritoire(viewer, deps = {}) {
   // ═══════════ 2 · tracé animé « plan cadastral » ═══════════
   function tracerContour(anneaux, dureeMs = 2600) {
     dsContour.entities.removeAll();
+    const generation = ++generationContour;
     // L'app tourne en `requestRenderMode` (gouverneur de rendu) : sans cette
     // demande de rendu CONTINU, une animation en CallbackProperty ne produit
     // aucune image — c'est la cause des « icônes AR invisibles ».
@@ -213,6 +222,8 @@ export function initVuesTerritoire(viewer, deps = {}) {
         resoudre();
         releaseContinuousRender('wt-vues-contour');
         governorRequestRender('wt-contour-fin');
+        // tracé devenu obsolète (changement de vue) : on ne repeint pas
+        if (generation !== generationContour) return;
         // remplissage « plan » translucide, une fois le contour fermé
         dsContour.entities.add({
           polygon: {
@@ -278,14 +289,28 @@ export function initVuesTerritoire(viewer, deps = {}) {
           .slice(0, 14);
       }
       if (!pois.length) pois = iconesDeRepli(cat, centre, 3);
-      pois.slice(0, 14).forEach((p, i) => {
-        const image = spriteAR(cat, { taille: 160, valeur: indice });
+      const gardes = pois.slice(0, 14);
+      const nommes = gardes.filter((p) => p.nom && p.nom !== cat.nom).length;
+      gardes.forEach((p, i) => {
+        // ℹ️ l'icône porte le NOM RÉEL de l'équipement (et non plus seulement
+        // la catégorie) + le nombre d'équipements de la zone : c'est lisible et
+        // ça veut dire quelque chose.
+        const image = spriteAR(cat, {
+          taille: 192,
+          valeur: indice,
+          nom: p.nom || cat.nom,
+          detail: `${nommes || gardes.length} équipement(s) · indice ${Math.round(indice)}%`,
+          compte: nommes || gardes.length,
+        });
         if (!image) return;
         const sol = bati?.solDe?.(p.lon, p.lat) || 0;
         const flottant = sol + 95 + (i % 6) * 16; // étagé → lisibilité
         dsAR.entities.add({
           position: new Cesium.CallbackProperty(() => Cesium.Cartesian3.fromDegrees(
-            p.lon, p.lat, flottant + Math.sin((Date.now() - t0) / 700 + i) * 4.5,
+            p.lon, p.lat,
+            // le flottement s'arrête : au-delà de AR_FLOTTEMENT_MS l'icône se
+            // pose, l'écran redevient tranquille et le rendu continu se relâche
+            flottant + (Date.now() - t0 < AR_FLOTTEMENT_MS ? Math.sin((Date.now() - t0) / 700 + i) * 4.5 : 0),
           ), false),
           properties: {
             wtAR: cat.id,
@@ -295,11 +320,21 @@ export function initVuesTerritoire(viewer, deps = {}) {
           },
           billboard: {
             image,
-            width: 58,
-            height: 58,
+            width: 78,
+            height: 78,
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            scaleByDistance: new Cesium.NearFarScalar(400, 1.15, 14000, 0.45),
+            scaleByDistance: new Cesium.NearFarScalar(400, 1.2, 14000, 0.5),
+          },
+          label: {
+            text: p.nom || cat.nom,
+            font: '600 12px "JetBrains Mono", monospace',
+            fillColor: Cesium.Color.WHITE,
+            showBackground: true,
+            backgroundColor: Cesium.Color.fromCssColorString('#070c12').withAlpha(0.82),
+            pixelOffset: new Cesium.Cartesian2(0, 44),
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 2600),
           },
         });
         total += 1;
@@ -307,8 +342,15 @@ export function initVuesTerritoire(viewer, deps = {}) {
     }
     // Les icônes FLOTTENT (CallbackProperty) : en `requestRenderMode` il faut
     // demander un rendu continu, sinon rien ne s'affiche.
-    if (total) holdContinuousRender('wt-ar');
-    else releaseContinuousRender('wt-ar');
+    if (total) {
+      holdContinuousRender('wt-ar');
+      // les icônes se posent au bout de AR_FLOTTEMENT_MS → on rend la main
+      window.clearTimeout(activerAR._t);
+      activerAR._t = window.setTimeout(() => {
+        releaseContinuousRender('wt-ar');
+        governorRequestRender('wt-ar-pose');
+      }, AR_FLOTTEMENT_MS + 400);
+    } else releaseContinuousRender('wt-ar');
     governorRequestRender('wt-ar-icones');
     dire(total
       ? `🛰 <b>COUCHE AR ACTIVE</b> — ${total} icônes flottantes. Clique une icône (✚ santé, ❤️ bonheur…) : les bâtiments de sa catégorie se modélisent en 3D.`
@@ -469,8 +511,26 @@ export function initVuesTerritoire(viewer, deps = {}) {
     },
   };
 
-  async function appliquer(id) {
+  /**
+   * Range les couches que la vue demandée n'utilise pas. Sans ça, les icônes
+   * AR et le contour communal restaient affichés (et animés) sur les autres
+   * vues — le bug « animation de scan en continu ».
+   */
+  function nettoyerPour(id) {
+    const gardeAR = id === 'communale';
+    if (!gardeAR) {
+      window.clearTimeout(activerAR._t);
+      dsAR.entities.removeAll();
+      releaseContinuousRender('wt-ar');
+      dsContour.entities.removeAll();
+      generationContour += 1; // annule un tracé en cours
+      releaseContinuousRender('wt-vues-contour');
+    }
     if (id === 'bati3d' || id === 'communale') effacerCategorie();
+  }
+
+  async function appliquer(id) {
+    nettoyerPour(id);
     const fn = vues[id];
     if (!fn) return;
     try {

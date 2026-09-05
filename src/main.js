@@ -49,6 +49,7 @@ import { initEntites } from './entites.js';
 import { initMobiglas } from './mobiglas.js';
 import { initCadrans } from './cadrans.js';
 import { initIntelVues } from './vuesIntel.js';
+import { initUrgenceMode } from './urgenceMode.js';
 import { initRadio } from './radio.js';
 import { amenagerFenetres, amenagerToutes } from './fenetres.js';
 import { creerCockpit } from './cockpit.js';
@@ -416,6 +417,17 @@ async function init() {
       const chat = initChatConsole(viewer, {
         affichage: window.__godsEyeView.watchtower?.displayOptions,
       });
+      // 🚨 MODE URGENCE : « /urgence » — temps gelé, mascotte qui veille, chat
+      // en grand au centre, procédure officielle + secours proches + itinéraire
+      // le plus rapide + guidage pas à pas. Le panneau du chat est résolu à la
+      // volée (#wt-dock-chat) : le dock n'existe pas encore ici.
+      const urgence = initUrgenceMode(viewer, {
+        dire: (t) => chat.dire(t),
+        surMessage: (m) => window.__wtToast?.(m),
+        geocoder: chat.geocoder,
+      });
+      window.__godsEyeView.urgence = urgence;
+      chat.setUrgence(urgence);
       const autour = initNearbyPlaces(viewer);
       const filtres = initVisualFilters();
       // ⚡ Bâti 3D : pipeline rapide (cache mémoire, géométrie par lots sur un
