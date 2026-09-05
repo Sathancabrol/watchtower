@@ -138,6 +138,36 @@ export function canvasVersLonLat({ px, py, lon, lat, mpp, largeur, hauteur, z })
 }
 
 /**
+ * Inverse de `canvasVersLonLat` : projette un point géographique dans le
+ * repère du canvas de la minicarte (pour y dessiner l'emprise de la vue
+ * principale, un tracé, une épingle…).
+ *
+ * @param {object} p
+ * @param {number} p.lon Longitude du point à projeter.
+ * @param {number} p.lat Latitude du point à projeter.
+ * @param {number} p.centreLon Longitude au centre du canvas.
+ * @param {number} p.centreLat Latitude au centre du canvas.
+ * @param {number} p.mpp Échelle (m/px).
+ * @param {number} p.largeur
+ * @param {number} p.hauteur
+ * @param {number} p.z
+ * @returns {{px:number, py:number}}
+ */
+export function lonLatVersCanvas({
+  lon, lat, centreLon, centreLat, mpp, largeur, hauteur, z,
+}) {
+  const resTuile = metresParPixel(z, centreLat);
+  const echelle = resTuile / (Number(mpp) || 1);
+  const monde = mondePixels(z);
+  let dx = lonVersPxMonde(lon, z) - lonVersPxMonde(centreLon, z);
+  // passage de l'antiméridien : on prend le chemin le plus court
+  if (dx > monde / 2) dx -= monde;
+  if (dx < -monde / 2) dx += monde;
+  const dy = latVersPxMonde(lat, z) - latVersPxMonde(centreLat, z);
+  return { px: largeur / 2 + dx * echelle, py: hauteur / 2 + dy * echelle };
+}
+
+/**
  * Portée (m) couverte par la minicarte selon l'altitude de la caméra :
  * plus on est haut, plus la minicarte dézoomé pour rester lisible.
  */

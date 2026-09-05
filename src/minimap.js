@@ -17,6 +17,7 @@ import * as Cesium from 'cesium';
 import { rendreDeplacable } from './draggable.js';
 import {
   canvasVersLonLat,
+  lonLatVersCanvas,
   porteeSelonAltitude,
   tuilesVisibles,
   zoomPourMetresParPixel,
@@ -25,11 +26,22 @@ import {
 const LARGEUR = 216;
 const HAUTEUR = 150;
 
-/** Fonds de carte gratuits (sans clé, CORS ouvert). */
+/** Fonds de carte gratuits (sans clé, CORS ouvert) — dont le satellite Esri,
+ *  qui est aussi le fond de la vue principale. */
 const SOURCES = [
   { nom: 'CARTO Voyager', url: (x, y, z) => `https://basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}.png` },
+  { nom: '🛰 Satellite', url: (x, y, z) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}` },
   { nom: 'CARTO Dark', url: (x, y, z) => `https://basemaps.cartocdn.com/rastertiles/dark_all/${z}/${x}/${y}.png` },
   { nom: 'OSM Classic', url: (x, y, z) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png` },
+];
+
+/** Filtres d'affichage de la minicarte (canvas `ctx.filter`). */
+const FILTRES = [
+  { nom: 'aucun', css: 'none' },
+  { nom: 'nuit', css: 'brightness(0.62) saturate(0.75) hue-rotate(190deg)' },
+  { nom: 'infra', css: 'grayscale(1) contrast(1.3)' },
+  { nom: 'sépia', css: 'sepia(0.7) contrast(1.08)' },
+  { nom: 'dur', css: 'contrast(1.6) saturate(1.25)' },
 ];
 
 const CSS = `
@@ -63,6 +75,25 @@ const CSS = `
 }
 `;
 
+/**
+ * Visibilité réelle d'un panneau. Les panneaux WATCHTOWER sont en
+ * `position: fixed` : `offsetParent` y vaut null par spécification, donc on
+ * combine style calculé et boîte à l'écran.
+ * @param {HTMLElement|null} el
+ * @returns {boolean}
+ */
+export function estVisible(el) {
+  if (!el || !el.isConnected) return false;
+  if (el.classList?.contains('wt-mm-cachée') || el.classList?.contains('wt-dock-cache')) return false;
+  if (el.style?.display === 'none') return false;
+  if (typeof window !== 'undefined' && window.getComputedStyle) {
+    const cs = window.getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) return false;
+  }
+  const r = el.getBoundingClientRect?.();
+  return !r || (r.width > 0 && r.height > 0);
+}
+
 /** Formatte une distance pour l'échelle graphique. */
 export function formaterEchelle(metres) {
   const m = Math.max(0, Number(metres) || 0);
@@ -89,6 +120,7 @@ export function initMinimap(viewer) {
       <span style="margin-left:auto;display:flex;gap:4px">
         <button type="button" data-a="suivre" class="actif" title="Suivre la vue principale">🔒</button>
         <button type="button" data-a="fond" title="Changer le fond de carte">🛰</button>
+        <button type="button" data-a="filtre" title="Filtre d’affichage (nuit, infra, sépia…)">🎨</button>
         <button type="button" data-a="puce" title="Replier en puce">▣</button>
         <button type="button" data-a="fermer" title="Fermer (revenir via la puce 🗺)">✕</button>
       </span>
@@ -110,6 +142,7 @@ export function initMinimap(viewer) {
 
   let suivre = true;
   let source = 0;
+  let filtre = 0;
   /** @type {Map<string, HTMLImageElement>} */
   const tuiles = new Map();
 
@@ -155,10 +188,38 @@ export function initMinimap(viewer) {
     return defaut;
   }
 
+  /**
+   * Emprise au sol de la vue PRINCIPALE (les 4 coins de l'écran projetés sur
+   * l'ellipsoïde). Rend la minicarte lisible comme un vrai plan 2D à
+   * l'échelle : on voit exactement ce que la caméra couvre.
+   * @returns {Array<{lon:number,lat:number}>|null} null si l'horizon est dans
+   * le champ (les coins hauts ne touchent pas le globe).
+   */
+  function empreintePrincipale() {
+    try {
+      const c = viewer.camera;
+      const ecran = viewer.scene.canvas;
+      const w = ecran.clientWidth || ecran.width;
+      const h = ecran.clientHeight || ecran.height;
+      if (!w || !h) return null;
+      const out = [];
+      for (const [px, py] of [[2, 2], [w - 2, 2], [w - 2, h - 2], [2, h - 2]]) {
+        const p = c.pickEllipsoid(new Cesium.Cartesian2(px, py), viewer.scene.globe.ellipsoid);
+        if (!p) return null;
+        const g = Cesium.Cartographic.fromCartesian(p);
+        out.push({ lon: Cesium.Math.toDegrees(g.longitude), lat: Cesium.Math.toDegrees(g.latitude) });
+      }
+      return out;
+    } catch { return null; }
+  }
+
   function dessiner() {
     // rien à dessiner si la minicarte est repliée, fermée ou masquée par un
     // panneau : on économise le CPU (et les tuiles) plutôt que de boucler.
-    if (!ctx || div.classList.contains('wt-mm-cachée') || div.offsetParent === null) return;
+    // NB : `offsetParent` vaut TOUJOURS null sur un élément `position: fixed`
+    // (spécification) — s'en servir pour tester la visibilité vidait la
+    // minicarte en permanence. On passe par le style calculé + la boîte.
+    if (!ctx || !estVisible(div)) return;
     const centre = centreVue();
     const portee = porteeSelonAltitude(centre.altitude);
     const mpp = portee / LARGEUR;
@@ -167,6 +228,9 @@ export function initMinimap(viewer) {
     ctx.fillStyle = '#08111c';
     ctx.fillRect(0, 0, LARGEUR, HAUTEUR);
 
+    const filtreCss = FILTRES[filtre]?.css || 'none';
+    const filtrable = 'filter' in ctx;
+    if (filtrable) ctx.filter = filtreCss;
     for (const t of tuilesVisibles({
       lon: centre.lon, lat: centre.lat, mpp, largeur: LARGEUR, hauteur: HAUTEUR, z,
     })) {
@@ -174,6 +238,30 @@ export function initMinimap(viewer) {
       if (img.complete && img.naturalWidth > 0) {
         try { ctx.drawImage(img, t.dx, t.dy, t.taille, t.taille); } catch { /* image morte */ }
       }
+    }
+    if (filtrable) ctx.filter = 'none';
+
+    // ——— emprise RÉELLE de la vue principale (2D, à l'échelle) ———
+    const coins = empreintePrincipale();
+    if (coins && coins.length >= 3) {
+      const proj = coins.map((c) => lonLatVersCanvas({
+        lon: c.lon,
+        lat: c.lat,
+        centreLon: centre.lon,
+        centreLat: centre.lat,
+        mpp,
+        largeur: LARGEUR,
+        hauteur: HAUTEUR,
+        z,
+      }));
+      ctx.beginPath();
+      proj.forEach((p, i) => (i ? ctx.lineTo(p.px, p.py) : ctx.moveTo(p.px, p.py)));
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(0,212,255,0.10)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,212,255,0.85)';
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
     }
 
     // ——— réticule + cône de vue (cap de la caméra) ———
@@ -240,9 +328,11 @@ export function initMinimap(viewer) {
     ctx.textAlign = 'left';
     ctx.fillText(formaterEchelle(barre * mpp), 8, HAUTEUR - 15);
 
-    note.innerHTML = suivre
-      ? `🔒 suit la vue · <b>${formaterEchelle(portee)}</b> de large · ${SOURCES[source].nom}`
-      : `✋ navigation libre · <b>${formaterEchelle(portee)}</b> de large · ${SOURCES[source].nom}`;
+    const nomFiltre = filtre ? ` · 🎨 ${FILTRES[filtre].nom}` : '';
+    note.innerHTML = (suivre
+      ? `🔒 suit la vue · <b>${formaterEchelle(portee)}</b> de large`
+      : `✋ navigation libre · <b>${formaterEchelle(portee)}</b> de large`)
+      + ` · ${SOURCES[source].nom}${nomFiltre}`;
   }
 
   // ——— navigation ———
@@ -328,6 +418,10 @@ export function initMinimap(viewer) {
     tuiles.clear();
     dessiner();
   });
+  div.querySelector('[data-a="filtre"]').addEventListener('click', () => {
+    filtre = (filtre + 1) % FILTRES.length;
+    dessiner();
+  });
   const replier = () => { div.style.display = 'none'; puce.style.display = 'flex'; };
   div.querySelector('[data-a="puce"]').addEventListener('click', replier);
   div.querySelector('[data-a="fermer"]').addEventListener('click', replier);
@@ -349,11 +443,9 @@ export function initMinimap(viewer) {
   }
 
   // ——— anti-collision : laisse la place aux panneaux du dock ———
-  const visible = (el) => Boolean(el) && el.offsetParent !== null
-    && window.getComputedStyle(el).display !== 'none';
   function syncCache() {
     const gaucheVisible = [...document.querySelectorAll('.wt-dock-panel.gauche, #wti-gauche, #wt-fiche, #wt-pins')]
-      .some(visible);
+      .some(estVisible);
     div.classList.toggle('wt-mm-cachée', gaucheVisible);
   }
 

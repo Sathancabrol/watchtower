@@ -33,6 +33,11 @@ import {
   portionAnneau,
 } from './contours.js';
 import { pointDansEmprise } from './batiMath.js';
+import {
+  governorRequestRender,
+  holdContinuousRender,
+  releaseContinuousRender,
+} from './renderGovernor.js';
 
 /** Boutons proposés dans la fenêtre CONTEXTE (ordre d'affichage). */
 export const VUES = Object.freeze([
@@ -161,6 +166,10 @@ export function initVuesTerritoire(viewer, deps = {}) {
   // ═══════════ 2 · tracé animé « plan cadastral » ═══════════
   function tracerContour(anneaux, dureeMs = 2600) {
     dsContour.entities.removeAll();
+    // L'app tourne en `requestRenderMode` (gouverneur de rendu) : sans cette
+    // demande de rendu CONTINU, une animation en CallbackProperty ne produit
+    // aucune image — c'est la cause des « icônes AR invisibles ».
+    holdContinuousRender('wt-vues-contour');
     const principal = anneaux[0];
     const plat = [];
     for (const p of principal) plat.push(p[0], p[1]);
@@ -202,6 +211,8 @@ export function initVuesTerritoire(viewer, deps = {}) {
     animationEnCours = new Promise((resoudre) => {
       const fin = () => {
         resoudre();
+        releaseContinuousRender('wt-vues-contour');
+        governorRequestRender('wt-contour-fin');
         // remplissage « plan » translucide, une fois le contour fermé
         dsContour.entities.add({
           polygon: {
@@ -228,9 +239,28 @@ export function initVuesTerritoire(viewer, deps = {}) {
       .map((p) => ({ lon: p.lon, lat: p.lat, nom: p.nom || cat.nom, indice }));
   }
 
+  /**
+   * Dispose des icônes en couronne autour du centre quand la catégorie n'a
+   * aucun équipement connu : la couche AR reste visible et cliquable même
+   * sur une zone peu renseignée (mieux vaut une icône « à vérifier » qu'un
+   * écran vide).
+   */
+  function iconesDeRepli(cat, centre, combien = 3) {
+    const out = [];
+    for (let i = 0; i < combien; i += 1) {
+      const angle = (i / combien) * Math.PI * 2 + 0.6;
+      const rayon = 900 + i * 260; // m
+      const dLat = (rayon * Math.cos(angle)) / 111000;
+      const dLon = (rayon * Math.sin(angle)) / (111000 * Math.cos((centre.lat * Math.PI) / 180));
+      out.push({ lon: centre.lon + dLon, lat: centre.lat + dLat, nom: cat.nom, indice: 50, repli: true });
+    }
+    return out;
+  }
+
   async function activerAR(centre) {
     dsAR.entities.removeAll();
     dsBatCat.entities.removeAll();
+    effacerCategorie();
     const t0 = Date.now();
     let total = 0;
     for (const cat of CATEGORIES_AR) {
@@ -247,6 +277,7 @@ export function initVuesTerritoire(viewer, deps = {}) {
           .filter((p) => Number.isFinite(p.lon) && Number.isFinite(p.lat))
           .slice(0, 14);
       }
+      if (!pois.length) pois = iconesDeRepli(cat, centre, 3);
       pois.slice(0, 14).forEach((p, i) => {
         const image = spriteAR(cat, { taille: 160, valeur: indice });
         if (!image) return;
@@ -274,9 +305,14 @@ export function initVuesTerritoire(viewer, deps = {}) {
         total += 1;
       });
     }
+    // Les icônes FLOTTENT (CallbackProperty) : en `requestRenderMode` il faut
+    // demander un rendu continu, sinon rien ne s'affiche.
+    if (total) holdContinuousRender('wt-ar');
+    else releaseContinuousRender('wt-ar');
+    governorRequestRender('wt-ar-icones');
     dire(total
       ? `🛰 <b>COUCHE AR ACTIVE</b> — ${total} icônes flottantes. Clique une icône (✚ santé, ❤️ bonheur…) : les bâtiments de sa catégorie se modélisent en 3D.`
-      : '⚠ Aucun équipement trouvé : lance « ⟳ ANALYSER LA VUE » puis recharge la vue communale.');
+      : '⚠ Couche AR indisponible (aucune donnée et aucune source joignable).');
     return total;
   }
 
@@ -341,7 +377,7 @@ export function initVuesTerritoire(viewer, deps = {}) {
       });
     }
     dire(`✅ <b>${cat.nom}</b> — ${retenus.size} bâtiment(s) modélisé(s) en 3D · indice ${indice}% · ${cat.legende}.`, 7000);
-    viewer.scene.requestRender?.();
+    governorRequestRender('wt-bati-categorie');
   }
 
   async function poisDeCategorie(cat, centre) {
@@ -471,6 +507,9 @@ export function initVuesTerritoire(viewer, deps = {}) {
       dsContour.entities.removeAll();
       dsAR.entities.removeAll();
       effacerCategorie();
+      releaseContinuousRender('wt-ar');
+      releaseContinuousRender('wt-vues-contour');
+      governorRequestRender('wt-vues-effacer');
     },
     chip: () => chip,
   };

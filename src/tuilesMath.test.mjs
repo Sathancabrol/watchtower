@@ -6,6 +6,7 @@ import {
   TUILE,
   canvasVersLonLat,
   indexTuile,
+  lonLatVersCanvas,
   latVersPxMonde,
   lonVersPxMonde,
   metresParPixel,
@@ -118,4 +119,21 @@ test('porteeSelonAltitude : croissante, plancher à 700 m', () => {
   assert.ok(porteeSelonAltitude(1000) > porteeSelonAltitude(500));
   assert.ok(Math.abs(porteeSelonAltitude(2000) - 3800) < 1, '1,9 × l’altitude au-dessus de 200 m');
   assert.equal(porteeSelonAltitude(undefined), 1900, 'valeur par défaut 1000 m');
+});
+
+test('lonLatVersCanvas : inverse exact de canvasVersLonLat', () => {
+  const p = { lon: 3.69, lat: 43.4, mpp: 12, largeur: 216, hauteur: 150, z: 14 };
+  for (const [px, py] of [[0, 0], [108, 75], [216, 150], [37, 12]]) {
+    const geo = canvasVersLonLat({ px, py, ...p });
+    const retour = lonLatVersCanvas({ ...geo, centreLon: p.lon, centreLat: p.lat, mpp: p.mpp, largeur: p.largeur, hauteur: p.hauteur, z: p.z });
+    assert.ok(Math.abs(retour.px - px) < 1e-6, `px ${px}`);
+    assert.ok(Math.abs(retour.py - py) < 1e-6, `py ${py}`);
+  }
+});
+
+test('lonLatVersCanvas : franchit l’antiméridien par le chemin court', () => {
+  const p = { centreLon: 179.5, centreLat: 0, mpp: 500, largeur: 216, hauteur: 150, z: 6 };
+  const avant = lonLatVersCanvas({ lon: -179.5, ...p }); // 1° à l’est, pas 359°
+  assert.ok(avant.px > 108, `le point passe à droite du centre (px ${avant.px.toFixed(1)})`);
+  assert.ok(avant.px < 400, 'et reste dans une plage de canvas raisonnable');
 });

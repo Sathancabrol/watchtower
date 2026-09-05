@@ -125,8 +125,11 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
     }
   }
 
+  // sera créé plus bas (les panneaux ajoutés à la volée se glissent AVANT)
+  let btnHud = null;
+
   // ── catégories à panneau ancré (chat, autour…) ──
-  for (const p of panneauxAncres) {
+  function creerAncre(p) {
     const wrap = document.createElement('div');
     wrap.className = `wt-dock-panel ${p.cote === 'droite' ? 'droite' : 'gauche'} wt-dock-cache`;
     wrap.innerHTML = `
@@ -152,9 +155,14 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
       wrap.classList.add('wt-dock-cache');
       btn.classList.remove('actif');
     });
-    dock.appendChild(btn);
+    // les panneaux créés APRÈS l'init se glissent avant « RÉDUIRE »
+    if (btnHud) dock.insertBefore(btn, btnHud);
+    else dock.appendChild(btn);
     ancres.set(p.id, { wrap, btn });
+    return { wrap, btn };
   }
+
+  for (const p of panneauxAncres) creerAncre(p);
 
   // ── ouverture programmatique : « chaque bouton envoie vers sa fenêtre » ──
   function ouvrir(id) {
@@ -207,7 +215,7 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
   for (const ev of ['pointermove', 'pointerdown', 'keydown', 'wheel']) {
     window.addEventListener(ev, reveiller, { passive: true });
   }
-  const btnHud = document.createElement('button');
+  btnHud = document.createElement('button');
   btnHud.type = 'button';
   btnHud.className = `wt-dock-btn${hudAuto ? ' actif' : ''}`;
   btnHud.title = 'HUD auto-masqué après 9 s d\u2019inactivité (bouge la souris pour le rappeler)';
@@ -222,5 +230,12 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
   dock.appendChild(btnHud);
   reveiller();
 
-  return { dock, fermerAncres, ouvrir, ouvrirExistant };
+  return {
+    dock,
+    fermerAncres,
+    ouvrir,
+    ouvrirExistant,
+    /** Ajoute un panneau ancré APRÈS l'initialisation du dock. */
+    ajouter: (p) => creerAncre(p),
+  };
 }

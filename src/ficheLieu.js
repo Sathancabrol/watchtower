@@ -19,6 +19,7 @@
 
 import * as Cesium from 'cesium';
 import { rendreDeplacable } from './draggable.js';
+import { amenagerFenetre } from './fenetres.js';
 import { resolvePickId } from './data/pickRegistry.js';
 import { spriteEpingle } from './marqueurs.js';
 
@@ -281,6 +282,7 @@ export function initFicheLieu(viewer) {
         <button class="v-btn orbite">🚁 ORBITE DRONE</button>
         <button class="v-btn scene">🎬 SCÈNE SUIVANTE</button>
         <button class="v-btn interieur">🚶 VUE POV (street)</button>
+        <button class="v-btn rue">🛣 STREET VIEW (photo libre)</button>
         <button class="v-btn" data-x="intel" title="Ouvrir l'analyse INTEL de ce point">🧠 INTEL</button>
         <button class="v-btn" data-x="chantier" title="Ouvrir le hub CHANTIER (prospection ici)">🏗 CHANTIER</button>
         <button class="v-btn stop">⏹ STOP</button>
@@ -290,7 +292,8 @@ export function initFicheLieu(viewer) {
       ZQSD pour se déplacer). En mode payant (Google 3D), l'extérieur est photoréaliste.</div>`;
 
     panneau.querySelector('.fermer').addEventListener('click', fermer);
-    rendreDeplacable(panneau, panneau.querySelector('.entete'));
+    // fenêtre déplaçable + redimensionnable + formes (⚙), géométrie mémorisée
+    amenagerFenetre(panneau, { cle: 'wt-fiche', poignee: panneau.querySelector('.entete') });
 
     // ── onglets : institutions / commerces / services autour (OSM) ──
     const REQ = {
@@ -343,6 +346,21 @@ export function initFicheLieu(viewer) {
       );
     });
     panneau.querySelector('.stop').addEventListener('click', arreterOrbite);
+    // 🛣 STREET VIEW : vraies photos de rue libres (Panoramax / IGN)
+    panneau.querySelector('.rue')?.addEventListener('click', () => {
+      const sv = window.__godsEyeView?.streetView;
+      const note = panneau?.querySelector('.note3d');
+      if (!sv) { if (note) note.textContent = '⚠ Module street view non prêt — recharge la page.'; return; }
+      if (note) note.textContent = '🛣 Recherche d’une photo de rue libre (Panoramax)…';
+      sv.ouvrir(lon, lat).then((p) => {
+        if (!panneau) return;
+        const n = panneau.querySelector('.note3d');
+        if (!n) return;
+        n.textContent = p
+          ? `🛣 Photo de rue ${p.source}${p.date ? ` du ${p.date}` : ''} — fenêtre en bas à droite.`
+          : '⚠ Pas de photo de rue libre à moins de 1,5 km (Panoramax couvre surtout la France). Réessaie « VUE POV ».';
+      });
+    });
     panneau.querySelector('.interieur').addEventListener('click', () => vuePOVStreet(lat, lon, {
       nom: nom,
       onEtat: (msg) => { const n = panneau?.querySelector('.note3d'); if (n) n.textContent = msg; },

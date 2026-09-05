@@ -38,6 +38,13 @@ import { initMinimap } from './minimap.js';
 import { creerBatiRapide } from './batiRapide.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
+import { initNomsLieux } from './nomsLieux.js';
+import { initTrajets } from './trajets.js';
+import { initPhotoSearch } from './photoSearch.js';
+import { initStreetView } from './streetView.js';
+import { initLocalisation } from './localisation.js';
+import { initSystemeSolaire } from './systemeSolaire.js';
+import { amenagerFenetres } from './fenetres.js';
 import { initCctvCam } from './cctvCam.js';
 import { MapStackController } from './mapStackController.js';
 import { initAnnotations } from './annotations/index.js';
@@ -474,6 +481,72 @@ async function init() {
         surMessage: (m) => window.__wtToast?.(m),
       });
       window.__godsEyeView.pins = pins;
+
+      // 🎬 ME LOCALISER : cinématique orbite → station WATCHTOWER → zoom
+      // séquentiel → création du bâtiment → périmètre cadastral → présence.
+      const localisation = initLocalisation(viewer, {
+        bati: batiRapide,
+        fiche: (lat, lon) => window.__godsEyeView.fiche?.ouvrir(lon, lat),
+        pins,
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.localisation = localisation;
+
+      // 🛣 VUE DE RUE (Panoramax/IGN, open source) — bouton dans MOI + fiche.
+      const streetView = initStreetView(viewer, { surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.streetView = streetView;
+
+      // 🖼 IDENTIFIER UN LIEU : photo → coordonnées GPS EXIF (+ bouton dock
+      // juste à côté de MOI, et glisser-déposer n'importe où sur l'app).
+      const photoSearch = initPhotoSearch(viewer, {
+        fiche: (lat, lon, nom) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom),
+        poserEpingle: (o) => {
+          if (Number.isFinite(o?.lon)) pins.poser(o.lon, o.lat, o.nom);
+          else pins.armer(true);
+        },
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.photoSearch = photoSearch;
+      // bouton permanent collé au bouton MOI dans la barre du dock
+      try {
+        const boutonMoi = Array.from(window.__godsEyeView.dock?.dock?.querySelectorAll?.('.wt-dock-btn') || [])
+          .find((b) => /MOI/.test(b.textContent || ''));
+        if (boutonMoi) boutonMoi.insertAdjacentElement('afterend', photoSearch.boutonDock());
+        else window.__godsEyeView.dock?.dock?.appendChild?.(photoSearch.boutonDock());
+      } catch { /* dock absent */ }
+
+      // 🛣 TRAJETS : vol d'oiseau ou suivi des routes/chemins (OSRM).
+      const trajets = initTrajets(viewer, {
+        fiche: (lat, lon) => window.__godsEyeView.fiche?.ouvrir(lon, lat),
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.trajets = trajets;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'trajets', icone: '🛣', libelle: 'TRAJETS',
+        titre: '🛣 TRAJETS — VOL D’OISEAU OU SUIVRE LA ROUTE', element: trajets.element, cote: 'gauche',
+      });
+
+      // 🪐 SYSTÈME SOLAIRE : entités réelles autour de la Terre (JPL/ELP2000).
+      const systeme = initSystemeSolaire(viewer, { surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.systeme = systeme;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'systeme', icone: '🪐', libelle: 'SYSTÈME',
+        titre: '🪐 SYSTÈME SOLAIRE — POSITIONS RÉELLES AUTOUR DE LA TERRE', element: systeme.element, cote: 'droite',
+      });
+
+      // 🗺 NOMS DE LIEUX : étiquettes toujours lisibles (pays → villes →
+      // hameaux) + fenêtre du lieu central sous la boussole.
+      const nomsLieux = initNomsLieux(viewer, { fenetres: true });
+      window.__godsEyeView.nomsLieux = nomsLieux;
+
+      // 🪟 Toutes les fenêtres flottantes : déplaçables, redimensionnables,
+      // transformables (⚙) et mémorisées d'une session à l'autre.
+      amenagerFenetres([
+        { selecteur: '#wt-panel', poignee: '.wt-tete' },
+        { selecteur: '#wt-pins', poignee: '.t' },
+        { selecteur: '#wt-minimap', poignee: '.wt-mm-titre' },
+        { selecteur: '#wt-fiche', poignee: '.entete' },
+      ]);
       // « chaque bouton envoie vers sa fenêtre / fiche » — navigation globale
       window.wtAller = {
         pageChantier: (p) => {

@@ -80,6 +80,69 @@ Le chargement « très long » venait de la construction, pas du réseau. Désor
 * **zones gardées en mémoire** : revenir sur une vue déjà chargée est instantané
   (c'est là que le gain se voit).
 
+### 🎬 « ME LOCALISER » — la cinématique (panneau **📍 MOI**)
+
+Le bouton **📡 ME LOCALISER** ne se contente plus de voler : il joue une
+séquence complète.
+
+1. **Mise en orbite** : dézoom jusqu'à 20 000 km, vue satellite de la Terre ;
+2. **Station WATCHTOWER** : illustration vectorielle (aucune image externe) +
+   **filtre d'écran** appliqué par-dessus la carte (grade satellite, balayage,
+   coins de visée) et anneau de **scan** animé autour du bâtiment de l'adresse ;
+3. **Position** : ancrage T0 mémorisé → domicile → géolocalisation du
+   navigateur → sinon une fenêtre demande une **adresse d'encrage** (point T0) ;
+4. **Zoom séquentiel** : une fenêtre s'ouvre et se ferme en clignotant
+   (« LOCALISATION ») et affiche le facteur **×1 → ×10 → ×100 → ×1000 …** ;
+   le numéro de **cadastre** (section · n° · commune, apicarto IGN) s'affiche ;
+5. **Création du bâtiment** : il pousse depuis le sol, puis **vue drone** en 3D,
+   **entourage du périmètre** cadastral tracé en animation, et une
+   **boule lumineuse** à l'intérieur = la présence de l'utilisateur.
+
+### 🖼 Identifier un lieu par photo (bouton à côté de **MOI**)
+
+Le bouton **🖼 IDENTIFIER** est collé au bouton **MOI** dans la barre du dock,
+et l'app accepte une photo **glissée-déposée n'importe où**. Les coordonnées
+GPS sont lues **dans le navigateur** depuis l'en-tête EXIF (JPEG/PNG) — aucune
+image ne quitte l'appareil. Sans GPS, la photo s'affiche et tu poses le point
+toi-même (il devient l'ancrage **T0**).
+
+### 🛣 Trajets — vol d'oiseau ou suivi de la voirie
+
+Dock **🛣 TRAJETS** : « TRACER » puis un clic par étape. Mode **VOL
+D'OISEAU** (calcul local) ou **ROUTE / À PIED / À VÉLO** : l'itinéraire réel
+est calculé par **OSRM** (serveur de démonstration ouvert). Distance et durée
+s'affichent, les trajets sont mémorisés.
+
+### 🗺 Noms de lieux & fenêtre du lieu central
+
+Une fenêtre sous la **boussole** donne en permanence le lieu central de la vue
+(commune + population via geo.api.gouv.fr en France, Nominatim ailleurs). Les
+noms de **pays → régions → villes → quartiers → hameaux** sont étiquetés sur le
+globe avec une distance d'affichage propre à chaque rang, pour rester lisible
+quel que soit le zoom.
+
+### 🪟 Fenêtres déplaçables, redimensionnables, transformables
+
+Toutes les fenêtres flottantes se déplacent par leur barre de titre, se
+redimensionnent par la poignée en bas à droite, et changent de **forme** avec
+le bouton ⚙ (normale → compacte → large → bandeau → pilule). Position, taille
+et forme sont **mémorisées** ; un double-clic sur ⚙ remet tout à zéro.
+
+### 🛣 Street view (photos de rue libres)
+
+Bouton **🛣 STREET VIEW** dans **MOI** et dans la fiche lieu : interroge
+**Panoramax** (IGN / OpenStreetMap France, API STAC ouverte, sans clé), avec
+défilement de la photo et repère sur le globe. À défaut, la vue de synthèse 3D
+(« VUE POV ») reste disponible.
+
+### 🪐 Système solaire autour de la Terre
+
+Dock **🪐 SYSTÈME** : Soleil, Lune et 7 planètes placés à leurs **positions
+réelles** (éléments képleriens JPL, domaine public ; Lune par ELP2000). Les
+directions et rotations sont vraies — la Terre tourne sous le ciel — et les
+orbites dessinées montrent les boucles de rétrogradation. Seules les distances
+sont comprimées (échelle logarithmique) ; la Lune garde ses 384 400 km.
+
 **Démarrage rapide (Windows PowerShell) :**
 
 ```powershell

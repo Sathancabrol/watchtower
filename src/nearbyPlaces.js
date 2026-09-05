@@ -112,6 +112,10 @@ export function initNearbyPlaces(viewer) {
       <button class="act vert maison" type="button">🏠 C'EST MA MAISON</button>
       <button class="act pov" type="button">🚶 VUE POV MA RUE</button>
     </div>
+    <div class="actions" style="padding-top:0">
+      <button class="act photo" type="button">🖼 IDENTIFIER UN LIEU (PHOTO → GPS)</button>
+      <button class="act street" type="button">🛣 STREET VIEW (VUE DE RUE LIBRE)</button>
+    </div>
     <div class="saisie"><input class="s-addr" type="text" placeholder="Adresse ou rue + ville (BAN, sans clé)" /><button class="act go" type="button" style="flex:none;padding:8px 12px">OK</button></div>
     <div class="statut">Ta position → info du lieu + vue POV de ta rue (devant chez toi).
     Position envoyée uniquement aux APIs ouvertes (BAN / OSM / Open-Meteo).</div>
@@ -177,6 +181,11 @@ export function initNearbyPlaces(viewer) {
   }
 
   el.querySelector('.loc').addEventListener('click', () => {
+    // 🎬 Cinématique complète (orbite → station → zoom ×1 ×10 ×100 ×1000 →
+    // bâtiment 3D + périmètre + présence) si le module est prêt :
+    // elle gère elle-même GPS → domicile → adresse d'encrage T0.
+    const cin = window.__godsEyeView?.localisation;
+    if (cin) { statut.textContent = '🎬 Localisation cinématique en cours…'; cin.demarrer(); return; }
     if (!navigator.geolocation) { statut.textContent = 'Géolocalisation non disponible dans ce navigateur.'; return; }
     statut.textContent = '📡 Demande de localisation… (accepte la permission du navigateur)';
     navigator.geolocation.getCurrentPosition(
@@ -230,6 +239,32 @@ export function initNearbyPlaces(viewer) {
     const dom = (() => { try { return JSON.parse(window.localStorage.getItem(DOM_KEY) || 'null'); } catch { return null; } })();
     if (dom) { vuePOV(dom.lat, dom.lon, dom.label || 'ma rue'); return; }
     statut.textContent = '🚶 D\'abord localise-toi (GPS / saisie / domicile).';
+  });
+
+  // 🖼 IDENTIFIER UN LIEU — photo → GPS (EXIF, lu dans le navigateur).
+  // Le bouton est aussi présent en permanence dans le dock, juste à côté de MOI.
+  el.querySelector('.photo').addEventListener('click', () => {
+    // résolu à l'appel : le module photo est créé après ce panneau
+    const ps = window.__godsEyeView?.photoSearch;
+    if (ps) { ps.ouvrir(); return; }
+    statut.textContent = '⚠ Module photo non prêt — recharge la page.';
+  });
+
+  // 🛣 STREET VIEW : photos de rue libres (Panoramax / IGN), sinon vue 3D.
+  el.querySelector('.street').addEventListener('click', async () => {
+    const point = posMoi
+      || (() => { try { return JSON.parse(window.localStorage.getItem(DOM_KEY) || 'null'); } catch { return null; } })()
+      || null;
+    const c = viewer.camera.positionCartographic;
+    const lat = point?.lat ?? Cesium.Math.toDegrees(c.latitude);
+    const lon = point?.lon ?? Cesium.Math.toDegrees(c.longitude);
+    const sv = window.__godsEyeView?.streetView;
+    if (!sv) { statut.textContent = '⚠ Module street view non prêt — recharge la page.'; return; }
+    statut.textContent = '🛣 Recherche d’une vue de rue libre…';
+    const p = await sv.ouvrir(lon, lat);
+    statut.textContent = p
+      ? `🛣 Vue de rue trouvée (${p.source}${p.date ? `, ${p.date}` : ''}).`
+      : '⚠ Aucune vue de rue libre ici — Panoramax couvre surtout la France et l’Europe. Essaie « VUE POV MA RUE » (vue de synthèse 3D).';
   });
 
   // ——— lieux autour (contexte) ———
