@@ -1,0 +1,21 @@
+# Stack locale : secrets, environnements, poids de modèles — jamais dans le repo
+audit/stack/.env
+audit/stack/.venv/
+audit/stack/voices/
+audit/stack/models/
+audit/stack/INSTALL-REPORT.txt
+audit/stack/config/searxng/*
+!audit/stack/config/searxng/.gitkeep
+# App installée à côté du repo
+/app/
+node_modules/
+.env
+.env.*
+!.env.example
+# Poids et artefacts d'agent
+**/__pycache__/
+*.onnx
+*.gguf
+*.splat
+*.spz
+*.ply

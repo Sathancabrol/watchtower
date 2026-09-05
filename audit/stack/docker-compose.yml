@@ -1,0 +1,108 @@
+# Watchtower · stack « yeux + cerveau » 100 % open source, 0 clé payante, 0 compte
+# Tout sur 127.0.0.1 : rien n'est exposé sur le réseau. (Consigne du README amont :
+# partager un serveur qui broker tes clés API = fuite de clés.)
+# Démarrer :  docker compose up -d      Voir README.md pour les ports et la suite.
+# Secrets :   cp .env.example .env  puis ./gen-secrets.sh   (aucun service ne prend de clé IA externe :
+#             ils parlent tous à Ollama local, ou à rien du tout.)
+name: watchtower-stack
+
+services:
+
+  # ── méta-recherche privée (AGPL-3.0) : tes requêtes ne sont pas attachées à ton identité
+  searxng:
+    image: searxng/searxng:latest
+    container_name: wt-searxng
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      SEARXNG_BASE_URL: "http://localhost:8080/"
+      SEARXNG_SECRET: "${SEARXNG_SECRET:-change-me-with-gen-secrets}"
+    volumes:
+      - ./config/searxng:/etc/searxng
+    networks: [wt]
+
+  # ── moteur de réponse citée, ex-Perplexica (MIT, 36,6 k★) : remplace Perplexity Pro
+  #    embarque son propre SearXNG ; le notre sert aussi au moteur de recherche de la tour.
+  vane:
+    image: itzcrazykns1337/vane:latest
+    container_name: wt-vane
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - vane-data:/home/vane/data
+    environment:
+      SEARXNG_API_URL: "http://searxng:8080"
+      SEARXNG_API_KEY: "${SEARXNG_API_KEY:-}"
+    networks: [wt]
+    depends_on: [searxng]
+
+  # ── collecte OSINT automatisée (MIT, 21,7 k★, 200+ modules) : domaines, IP, e-mails,
+  #    empreinte d'infrastructure. PAS de recherche de personne (ligne du projet amont).
+  spiderfoot:
+    image: blacktop/spiderfoot:latest
+    container_name: wt-spiderfoot
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5001:5001"
+    volumes:
+      - spiderfoot-data:/root/.spiderfoot
+    networks: [wt]
+
+  # ── automatisations « boring qui rapportent » (Activepieces = MIT, l'anti-n8n-fair-code) :
+  #    veille de flux, triage mail, briefing matin, alertes Telegram… runs illimités.
+  postgres:
+    image: postgres:16-alpine
+    container_name: wt-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: activepieces
+      POSTGRES_USER: pieces
+      POSTGRES_PASSWORD: "${PIECES_PG_PASSWORD:-change-me}"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks: [wt]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pieces"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  pieces:
+    image: activepieces/activepieces:latest
+    container_name: wt-pieces
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      AP_ENVIRONMENT: "prod"
+      AP_LICENSE: ""
+      AP_URL: "http://localhost:4200"
+      AP_API_KEY: "${AP_API_KEY:-change-me}"
+      AP_QUEUE_MODE: "NULL"
+      AP_TELEMETRY_ENABLED: "false"
+      DATABASE_URL: "postgresql://pieces:${PIECES_PG_PASSWORD:-change-me}@postgres:5432/activepieces"
+    ports:
+      - "127.0.0.1:4200:4200"
+    volumes:
+      - pieces-data:/root/.activepieces
+    networks: [wt]
+
+  # ── optionnel : traces / evals de tes runs d'agents (MIT). Lourd (Postgres+ClickHouse+MinIO) :
+  #    préfère le compose officiel https://github.com/langfuse/langfuse/blob/main/docker-compose.yml
+  #    et décommente seulement si ta tour a ≥16 Go de RAM.
+  # langfuse:
+  #   image: langfuse/langfuse:latest
+  #   ports: ["127.0.0.1:3001:3000"]
+  #   networks: [wt]
+
+volumes:
+  vane-data:
+  spiderfoot-data:
+  pg-data:
+  pieces-data:
+
+networks:
+  wt:
+    driver: bridge
