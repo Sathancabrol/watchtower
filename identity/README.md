@@ -5,11 +5,11 @@ raisonnement, génération ou recommandation concernant la personne.
 
 | Fichier | Usage |
 |---|---|
-| `sathan-cabrol.identity.json` | Source de vérité machine. Spec `gobonet.identity/2.0`. |
-| `sathan-cabrol.context.md` | Même contenu en texte, prêt à injecter dans un prompt système. |
+| `nathan-cabrol.identity.json` | Source de vérité machine. Spec `gobonet.identity/2.0`. |
+| `nathan-cabrol.context.md` | Même contenu en texte, prêt à injecter dans un prompt système. |
 | `coverage.py` | Rapport de couverture et de confiance. `python3 identity/coverage.py` |
 
-Version narrative et déclinaisons par audience : `../docs/profil-sathan-cabrol.md`.
+Version narrative et déclinaisons par audience : `../docs/profil-nathan-cabrol.md`.
 
 ## Modèle de provenance
 
@@ -47,8 +47,8 @@ Seuils d'exposition de `trust` : `≥80` affirmable · `60-79` à modaliser ·
 
 ```python
 import json, pathlib
-ident  = json.loads(pathlib.Path("identity/sathan-cabrol.identity.json").read_text("utf-8"))
-prompt = pathlib.Path("identity/sathan-cabrol.context.md").read_text("utf-8")
+ident  = json.loads(pathlib.Path("identity/nathan-cabrol.identity.json").read_text("utf-8"))
+prompt = pathlib.Path("identity/nathan-cabrol.context.md").read_text("utf-8")
 ```
 
 Filtrer les faits selon le destinataire :

@@ -3,7 +3,7 @@
 import json, pathlib, sys
 from collections import Counter
 
-SRC = pathlib.Path(__file__).parent / "sathan-cabrol.identity.json"
+SRC = pathlib.Path(__file__).parent / "nathan-cabrol.identity.json"
 d = json.loads(SRC.read_text("utf-8"))
 
 rows, counts, trusts = [], Counter(), []
@@ -25,13 +25,13 @@ def walk(o, path=""):
 
 walk(d)
 n = len(rows)
-known = counts["declared"] + counts["referential"] + counts["verified"]
+known = counts["cv"] + counts["declared"] + counts["referential"] + counts["verified"] + counts["contradicted"]
 avg = sum(trusts) / n if n else 0
 
 print(f"Fiche : {d['entity_id']}  v{d['version']}  ({d['updated']})")
 print(f"Champs tracés : {n}\n")
 print(f"{'source':<14}{'n':>5}{'%':>8}")
-for s in ("verified", "declared", "referential", "inferred", "unknown"):
+for s in ("verified", "cv", "declared", "referential", "inferred", "contradicted", "unknown"):
     print(f"{s:<14}{counts[s]:>5}{100*counts[s]/n:>7.1f}%")
 print(f"\nConnu (verified+declared+referential) : {known}/{n} = {100*known/n:.1f}%")
 print(f"Inféré  : {counts['inferred']}/{n} = {100*counts['inferred']/n:.1f}%")

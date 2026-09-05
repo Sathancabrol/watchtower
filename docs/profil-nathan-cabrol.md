@@ -1,4 +1,4 @@
-# Säthan Cabrol — Fiche d'identité & positionnement
+# Näthan Cabrol — Fiche d'identité & positionnement
 
 > Document de référence. Sert de « carte d'identité » de base (Gobonet / Cognitorium),
 > puis se relie aux expériences, compétences, événements de vie, projets et objectifs.
@@ -85,7 +85,7 @@ responsabilité**.
 
 ## 3. Fiche 250 mots (version de référence)
 
-**Säthan Cabrol** — France, Occitanie (Bassin de Thau). Français natif, anglais courant.
+**Näthan Cabrol** — France, Occitanie (Bassin de Thau). Français natif, anglais courant.
 
 **Profil.** Concepteur transdisciplinaire spécialisé dans la compréhension, la
 modélisation et la conception de systèmes complexes mêlant humain, cognition,
@@ -129,7 +129,7 @@ complexes assistés par IA.
 
 ## 4. Version 100 mots (fiche d'identité Gobonet)
 
-Säthan Cabrol, France, Occitanie — Bassin de Thau. Français natif, anglais courant.
+Näthan Cabrol, France, Occitanie — Bassin de Thau. Français natif, anglais courant.
 Concepteur transdisciplinaire de systèmes cognitifs, numériques et interactifs.
 Master en psychologie cognitive, Bac STI2D SIN, formation conducteur de travaux TP.
 Expériences en recherche, enseignement, BTP/VRD et projets numériques. Compétences :
