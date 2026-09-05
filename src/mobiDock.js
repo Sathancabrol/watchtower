@@ -1,21 +1,24 @@
 /**
- * WATCHTOWER — dock MobiGlas.
+ * WATCHTOWER — dock MobiGlas : LE LANCEUR (toutes les fonctions, par
+ * catégories et par préréglages).
  *
- * TOUTES les options passent EN BAS de l'écran, regroupées par catégories de
- * fonctions, dans un style « mobiGlas » (coins biseautés, cyan lumineux,
- * libellés majuscules). La barre principale LOCATION · VOICE · VISUEL reste
- * juste au-dessus, intacte.
+ * Pourquoi cette réécriture : avec une seule ligne de boutons, la barre
+ * débordait sur plusieurs rangs et le rang du haut passait SOUS la barre
+ * micro (`#command-dock`, calée à 72 px) — le bouton ✈ VOL devenait
+ * invisible et inatteignable. Des modules entiers (cadastre, radio, trajets,
+ * entités, cadrans, système, dispositifs…) n'avaient aucun bouton nulle part.
  *
- *   💬 CHAT      → console de commandes textuelles (gratuit, sans clé)
- *   📍 AUTOUR    → lieux autour de toi (partage de localisation, gratuit)
- *   🗼 FRANCE    → panneau Watchtower FR (info vue, météo, domicile, vues, import, calques)
- *   🧠 INTEL     → HUD intel d'origine
- *   🎚 VISUEL+   → réglages visuels avancés
- *   🎛 PARAMS    → curseurs de paramètres
- *   ⚙ ACTIONS   → partager, réinitialiser la vue…
+ * Le dock devient donc un vrai lanceur, en trois étages :
+ *  1. **les préréglages** (toujours visibles) : TOUT · EXPLORER · VOL ·
+ *     CHANTIER · EXPERT · ÉPURÉ — chacun affiche les catégories utiles ;
+ *  2. **les catégories** : une ligne par famille, avec son nom à gauche ;
+ *  3. **les boutons** de la catégorie.
  *
- * Une seule catégorie « à panneau ancré » ouverte à la fois (chat/autour) ;
- * les panneaux d'origine se basculent indépendamment. Tout est mémorisé.
+ * Deux garanties :
+ *  · **MODES fait partie de TOUS les préréglages** → ✈ VOL et 👁 AFFICHAGE
+ *    restent toujours atteignables, quel que soit le préréglage choisi ;
+ *  · **la hauteur du dock est publiée** dans `--wt-hauteur-dock` et la barre
+ *    micro se cale AU-DESSUS : plus aucun bouton ne peut être recouvert.
  */
 
 const ETAT_KEY = 'watchtower.dock.v1';
@@ -23,42 +26,90 @@ const HUD_AUTO_KEY = 'watchtower.hudAuto.v1';
 
 import { rendreDeplacable } from './draggable.js';
 
+/** Catégories par défaut (ordre d'affichage). */
+export const GROUPES_DEFAUT = [
+  { id: 'nav', nom: 'NAVIGATION' },
+  { id: 'vues', nom: 'VUES' },
+  { id: 'donnees', nom: 'DONNÉES' },
+  { id: 'outils', nom: 'OUTILS' },
+  { id: 'modes', nom: 'MODES' },
+];
+
+/**
+ * Préréglages : quelles catégories montrer.
+ * `null` = toutes. `modes` est dans tous les préréglages : c'est la règle
+ * qui garantit que VOL et les réglages d'affichage ne disparaissent jamais.
+ */
+export const PRESETS_DEFAUT = [
+  { id: 'tout', nom: 'TOUT', groupes: null },
+  { id: 'explorer', nom: 'EXPLORER', groupes: ['nav', 'vues', 'modes'] },
+  { id: 'vol', nom: 'VOL', groupes: ['nav', 'vues', 'modes'] },
+  { id: 'chantier', nom: 'CHANTIER', groupes: ['nav', 'donnees', 'modes'] },
+  { id: 'expert', nom: 'EXPERT', groupes: ['donnees', 'vues', 'outils', 'modes'] },
+  { id: 'epure', nom: 'ÉPURÉ', groupes: ['modes'] },
+];
+
 const CSS = `
 #wt-dock {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 960;
-  display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 7px;
-  padding: 6px 10px 8px;
-  background: linear-gradient(180deg, rgba(5,8,14,0) 0%, rgba(5,8,14,0.85) 55%);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 4px 8px 7px;
+  background: linear-gradient(180deg, rgba(5,8,14,0) 0%, rgba(5,8,14,0.88) 46%);
   pointer-events: none;
   font-family: var(--font-mono, monospace);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+#wt-dock > * { pointer-events: auto; }
+#wt-dock .wt-dock-ligne {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 5px;
+  max-width: 100%;
+}
+#wt-dock .wt-dock-presets { gap: 4px; }
+#wt-dock .wt-dock-groupe {
+  gap: 4px; padding: 2px 6px; border-radius: 8px;
+  background: rgba(8,14,22,0.42); border: 1px solid rgba(0,212,255,0.10);
+}
+#wt-dock .wt-dock-gn {
+  font-size: 7px; letter-spacing: 2px; font-weight: 700; opacity: .5;
+  min-width: 62px; text-align: right; padding-right: 2px; white-space: nowrap;
+}
+.wt-dock-chip {
+  cursor: pointer; padding: 3px 9px; border-radius: 999px; font-family: inherit;
+  font-size: 7.5px; font-weight: 700; letter-spacing: 1.5px;
+  background: rgba(10,16,24,0.8); color: rgba(232,234,237,0.7);
+  border: 1px solid rgba(0,212,255,0.22);
+}
+.wt-dock-chip:hover { border-color: #00d4ff; color: #e8eaed; }
+.wt-dock-chip.actif {
+  background: rgba(0,212,255,0.18); border-color: #00d4ff; color: #00d4ff;
+  box-shadow: 0 0 10px rgba(0,212,255,0.3);
 }
 .wt-dock-btn {
-  pointer-events: auto; cursor: pointer; width: 74px; padding: 8px 4px 6px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  background: rgba(10, 16, 24, 0.82); color: var(--text-primary, #e8eaed);
-  border: 1px solid rgba(0, 212, 255, 0.28);
-  clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+  cursor: pointer; width: 58px; padding: 4px 2px 3px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  background: rgba(10,16,24,0.82); color: var(--text-primary, #e8eaed);
+  border: 1px solid rgba(0,212,255,0.28);
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
   transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
 }
 .wt-dock-btn:hover { border-color: #00d4ff; transform: translateY(-2px); }
-.wt-dock-btn .ic { font-size: 17px; line-height: 1; }
-.wt-dock-btn .lb { font-size: 8px; letter-spacing: 1.5px; font-weight: 700; color: rgba(232,234,237,0.75); }
+.wt-dock-btn .ic { font-size: 14px; line-height: 1; }
+.wt-dock-btn .lb { font-size: 6.8px; letter-spacing: 1px; font-weight: 700; color: rgba(232,234,237,0.72); }
 .wt-dock-btn.actif {
-  background: rgba(0, 212, 255, 0.14); border-color: #00d4ff;
-  box-shadow: 0 0 14px rgba(0, 212, 255, 0.35), inset 0 0 10px rgba(0, 212, 255, 0.08);
+  background: rgba(0,212,255,0.14); border-color: #00d4ff;
+  box-shadow: 0 0 12px rgba(0,212,255,0.32), inset 0 0 8px rgba(0,212,255,0.08);
 }
 .wt-dock-btn.actif .lb { color: #00d4ff; }
-/* la barre LOCATION/VOICE/VISUEL remonte au-dessus du dock */
-#command-dock { bottom: 72px !important; }
-/* panneaux ancrés (chat, autour) — au-dessus du dock, côté gauche/droit */
+/* la barre micro se cale AU-DESSUS du dock, quelle que soit sa hauteur */
+#command-dock { bottom: calc(var(--wt-hauteur-dock, 72px) + 8px) !important; transition: bottom .25s ease; }
+/* panneaux ancrés (chat, autour…) */
 .wt-dock-panel {
-  position: fixed; bottom: 78px; z-index: 955; width: min(360px, 92vw);
-  max-height: 52vh; display: flex; flex-direction: column;
-  background: rgba(8, 12, 20, 0.92); color: var(--text-primary, #e8eaed);
-  border: 1px solid rgba(0, 212, 255, 0.35);
+  position: fixed; bottom: calc(var(--wt-hauteur-dock, 72px) + 62px); z-index: 955;
+  width: min(360px, 92vw); max-height: 52vh; display: flex; flex-direction: column;
+  background: rgba(8,12,20,0.92); color: var(--text-primary, #e8eaed);
+  border: 1px solid rgba(0,212,255,0.35);
   clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
-  backdrop-filter: blur(10px);
-  font-family: var(--font-mono, monospace);
+  backdrop-filter: blur(10px); font-family: var(--font-mono, monospace);
   animation: wt-dock-pop 160ms ease;
 }
 @keyframes wt-dock-pop { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
@@ -66,7 +117,7 @@ const CSS = `
 .wt-dock-panel.droite { right: 12px; }
 .wt-dock-panel .wt-dock-titre {
   padding: 8px 12px; font-size: 9px; letter-spacing: 3px; font-weight: 700;
-  color: #00d4ff; border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+  color: #00d4ff; border-bottom: 1px solid rgba(0,212,255,0.2);
   display: flex; justify-content: space-between; align-items: center;
 }
 .wt-dock-panel .wt-dock-fermer {
@@ -75,7 +126,7 @@ const CSS = `
 }
 .wt-dock-panel .wt-dock-corps { overflow-y: auto; flex: 1; }
 .wt-dock-cache { display: none !important; }
-/* œil animé du bouton HQ (logo de l'app : il regarde autour puis cligne) */
+/* œil animé du bouton « ME LOCALISER » (logo de l'app) */
 .wt-oeil { display: inline-block; animation: wt-oeil 3.4s ease-in-out infinite; }
 @keyframes wt-oeil {
   0%, 52%, 100% { transform: none; }
@@ -84,11 +135,9 @@ const CSS = `
   68% { transform: scaleY(0.15); }
   74% { transform: none; }
 }
-/* HUD auto-masquable : glisse élégamment hors de l'écran si inactif */
-#wt-dock { transition: transform 0.5s ease, opacity 0.5s ease; }
-#command-dock { transition: transform 0.5s ease, opacity 0.5s ease; }
 body.wt-hud-cache #wt-dock { transform: translateY(130%); opacity: 0; pointer-events: none; }
-body.wt-hud-cache #command-dock { transform: translate(-50%, 200%) !important; opacity: 0; pointer-events: none; }
+body.wt-hud-cache #command-dock { opacity: 0; pointer-events: none; }
+.wt-dock-replie .wt-dock-groupe { display: none; }
 `;
 
 function lireEtat() {
@@ -100,12 +149,17 @@ function ecrireEtat(etat) {
 
 /**
  * @param {object} opts
- * @param {Array<{id,icone,libelle,titre,element,cote}>} opts.panneauxAncres
- *   Panneaux fournis par l'app (chat, autour…) affichés ancrés au dock.
- * @param {Array<{id,icone,libelle,cibleId}>} opts.panneauxExistants
- *   Panneaux DOM existants basculés en visibilité.
+ * @param {Array} [opts.groupes] voir `GROUPES_DEFAUT`.
+ * @param {Array} [opts.presets] voir `PRESETS_DEFAUT`.
+ * @param {Array} opts.panneauxAncres panneaux fournis par l'app.
+ * @param {Array} opts.panneauxExistants panneaux DOM existants basculés.
  */
-export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {}) {
+export function initMobiDock({
+  groupes = GROUPES_DEFAUT,
+  presets = PRESETS_DEFAUT,
+  panneauxAncres = [],
+  panneauxExistants = [],
+} = {}) {
   const style = document.createElement('style');
   style.textContent = CSS;
   document.head.appendChild(style);
@@ -115,7 +169,29 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
   document.body.appendChild(dock);
 
   const etat = lireEtat();
-  const ancres = new Map(); // id → {wrap, btn}
+  const ancres = new Map();
+  const boutonsExistants = new Map();
+  const rangs = new Map(); // id de catégorie → élément ligne
+
+  const barrePresets = document.createElement('div');
+  barrePresets.className = 'wt-dock-ligne wt-dock-presets';
+  dock.appendChild(barrePresets);
+
+  // ── catégories ─────────────────────────────────────────────────────────
+  function rangDe(idGroupe) {
+    if (rangs.has(idGroupe)) return rangs.get(idGroupe);
+    const g = groupes.find((x) => x.id === idGroupe) || groupes[groupes.length - 1];
+    const ligne = document.createElement('div');
+    ligne.className = 'wt-dock-ligne wt-dock-groupe';
+    ligne.dataset.groupe = g.id;
+    const nom = document.createElement('span');
+    nom.className = 'wt-dock-gn';
+    nom.textContent = g.nom;
+    ligne.appendChild(nom);
+    dock.appendChild(ligne);
+    rangs.set(g.id, ligne);
+    return ligne;
+  }
 
   function fermerAncres(sauf) {
     for (const [id, a] of ancres) {
@@ -125,14 +201,24 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
     }
   }
 
-  // sera créé plus bas (les panneaux ajoutés à la volée se glissent AVANT)
-  let btnHud = null;
+  /** Crée un bouton de dock standard. */
+  function bouton({ icone, libelle, titre, surClic, classe = '' }) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `wt-dock-btn ${classe}`.trim();
+    btn.innerHTML = `<span class="ic">${icone}</span><span class="lb">${libelle}</span>`;
+    if (titre) btn.title = titre;
+    if (surClic) btn.addEventListener('click', surClic);
+    return btn;
+  }
 
-  // ── catégories à panneau ancré (chat, autour…) ──
+  // toutes les catégories sont créées d'avance, dans l'ordre voulu
+  for (const g of groupes) rangDe(g.id);
+
+  // ── panneaux à ancre ───────────────────────────────────────────────────
   function creerAncre(p) {
     const wrap = document.createElement('div');
     wrap.className = `wt-dock-panel ${p.cote === 'droite' ? 'droite' : 'gauche'} wt-dock-cache`;
-    // identifiant stable : le mode urgence agrandit par ex. #wt-dock-chat
     wrap.id = `wt-dock-${p.id}`;
     wrap.innerHTML = `
       <div class="wt-dock-titre"><span>${p.titre}</span>
@@ -142,70 +228,98 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
     document.body.appendChild(wrap);
     rendreDeplacable(wrap, wrap.querySelector('.wt-dock-titre'));
 
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'wt-dock-btn';
-    btn.innerHTML = `<span class="ic">${p.icone}</span><span class="lb">${p.libelle}</span>`;
-    btn.addEventListener('click', () => {
-      const ouvert = !wrap.classList.contains('wt-dock-cache');
-      fermerAncres(p.id);
-      wrap.classList.toggle('wt-dock-cache', ouvert);
-      btn.classList.toggle('actif', !ouvert);
-      if (!ouvert && typeof p.surOuverture === 'function') p.surOuverture();
+    const btn = bouton({
+      icone: p.icone,
+      libelle: p.libelle,
+      titre: p.titre,
+      surClic: () => {
+        const ouvert = !wrap.classList.contains('wt-dock-cache');
+        fermerAncres(p.id);
+        wrap.classList.toggle('wt-dock-cache', ouvert);
+        btn.classList.toggle('actif', !ouvert);
+        if (!ouvert && typeof p.surOuverture === 'function') p.surOuverture();
+      },
     });
     wrap.querySelector('.wt-dock-fermer').addEventListener('click', () => {
       wrap.classList.add('wt-dock-cache');
       btn.classList.remove('actif');
     });
-    // les panneaux créés APRÈS l'init se glissent avant « RÉDUIRE »
-    if (btnHud) dock.insertBefore(btn, btnHud);
-    else dock.appendChild(btn);
+    rangDe(p.groupe || 'outils').appendChild(btn);
     ancres.set(p.id, { wrap, btn });
     return { wrap, btn };
   }
 
   for (const p of panneauxAncres) creerAncre(p);
 
-  // ── ouverture programmatique : « chaque bouton envoie vers sa fenêtre » ──
   function ouvrir(id) {
     const a = ancres.get(id);
     if (a && a.wrap.classList.contains('wt-dock-cache')) a.btn.click();
     return !!a;
   }
-  const boutonsExistants = new Map();
   function ouvrirExistant(cibleId) {
     const b = boutonsExistants.get(cibleId);
     if (b) b.click();
     return !!b;
   }
 
-  // ── catégories basculant des panneaux DOM existants ──
+  // ── panneaux existants ─────────────────────────────────────────────────
   for (const p of panneauxExistants) {
     const cible = document.getElementById(p.cibleId);
     if (!cible) continue;
-    const ouvert = etat[p.cibleId] === true; // défaut : replié (écran épuré)
+    const ouvert = etat[p.cibleId] === true;
     if (!ouvert) cible.classList.add('wt-dock-cache');
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `wt-dock-btn${ouvert ? ' actif' : ''}`;
-    btn.innerHTML = `<span class="ic">${p.iconeHtml || p.icone}</span><span class="lb">${p.libelle}</span>`;
+    const btn = bouton({
+      icone: p.iconeHtml || p.icone,
+      libelle: p.libelle,
+      titre: p.titre || p.libelle,
+      classe: ouvert ? 'actif' : '',
+      surClic: () => {
+        if (typeof p.surClic === 'function') p.surClic();
+        const visible = !cible.classList.contains('wt-dock-cache');
+        cible.classList.toggle('wt-dock-cache', visible);
+        btn.classList.toggle('actif', !visible);
+        btn.setAttribute('aria-pressed', String(!visible));
+        const e2 = lireEtat();
+        e2[p.cibleId] = !visible;
+        ecrireEtat(e2);
+      },
+    });
     btn.setAttribute('aria-pressed', String(ouvert));
     boutonsExistants.set(p.cibleId, btn);
-    btn.addEventListener('click', () => {
-      if (typeof p.surClic === 'function') p.surClic();
-      const visible = !cible.classList.contains('wt-dock-cache');
-      cible.classList.toggle('wt-dock-cache', visible);
-      btn.classList.toggle('actif', !visible);
-      btn.setAttribute('aria-pressed', String(!visible));
-      const e2 = lireEtat();
-      e2[p.cibleId] = !visible;
-      ecrireEtat(e2);
-    });
-    dock.appendChild(btn);
+    rangDe(p.groupe || 'outils').appendChild(btn);
   }
 
-  // ── réduction élégante du HUD : bouton ⤓ + auto-masquage si inactif ──
+  // ── préréglages + réduction ────────────────────────────────────────────
+  let preset = typeof etat.preset === 'string' ? etat.preset : 'tout';
+  let replie = etat.replie === true;
+
+  function appliquerPreset(id) {
+    const pr = presets.find((x) => x.id === id) || presets[0];
+    preset = pr.id;
+    for (const [gid, ligne] of rangs) {
+      const montre = !pr.groupes || pr.groupes.includes(gid);
+      ligne.style.display = montre && ligne.children.length > 1 ? '' : 'none';
+    }
+    for (const c of barrePresets.querySelectorAll('.wt-dock-chip[data-preset]')) {
+      c.classList.toggle('actif', c.dataset.preset === preset);
+    }
+    dock.classList.toggle('wt-dock-replie', replie);
+    const e2 = lireEtat();
+    e2.preset = preset;
+    ecrireEtat(e2);
+    mesurer();
+  }
+
+  for (const p of presets) {
+    const c = bouton({});
+    c.className = `wt-dock-chip${p.id === preset ? ' actif' : ''}`;
+    c.dataset.preset = p.id;
+    c.textContent = p.nom;
+    c.title = p.groupes ? `Catégories : ${p.groupes.join(', ')}` : 'Toutes les catégories';
+    c.addEventListener('click', () => { replie = false; appliquerPreset(p.id); });
+    barrePresets.appendChild(c);
+  }
+
   let hudAuto = false;
   try { hudAuto = window.localStorage.getItem(HUD_AUTO_KEY) === '1'; } catch { /* défaut off */ }
   let hudTimer = null;
@@ -217,19 +331,50 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
   for (const ev of ['pointermove', 'pointerdown', 'keydown', 'wheel']) {
     window.addEventListener(ev, reveiller, { passive: true });
   }
-  btnHud = document.createElement('button');
-  btnHud.type = 'button';
-  btnHud.className = `wt-dock-btn${hudAuto ? ' actif' : ''}`;
-  btnHud.title = 'HUD auto-masqué après 9 s d\u2019inactivité (bouge la souris pour le rappeler)';
-  btnHud.innerHTML = `<span class="ic">⤓</span><span class="lb">RÉDUIRE</span>`;
-  btnHud.addEventListener('click', () => {
-    hudAuto = !hudAuto;
-    btnHud.classList.toggle('actif', hudAuto);
-    try { window.localStorage.setItem(HUD_AUTO_KEY, hudAuto ? '1' : '0'); } catch { /* plein */ }
-    if (hudAuto) document.body.classList.add('wt-hud-cache');
-    else { document.body.classList.remove('wt-hud-cache'); if (hudTimer) window.clearTimeout(hudTimer); }
+  const btnHud = bouton({
+    icone: '⤓', libelle: 'RÉDUIRE', classe: hudAuto ? 'actif' : '',
+    titre: 'HUD auto-masqué après 9 s d’inactivité (bouge la souris pour le rappeler)',
+    surClic: () => {
+      hudAuto = !hudAuto;
+      btnHud.classList.toggle('actif', hudAuto);
+      try { window.localStorage.setItem(HUD_AUTO_KEY, hudAuto ? '1' : '0'); } catch { /* plein */ }
+      if (hudAuto) document.body.classList.add('wt-hud-cache');
+      else { document.body.classList.remove('wt-hud-cache'); if (hudTimer) window.clearTimeout(hudTimer); }
+    },
   });
-  dock.appendChild(btnHud);
+  barrePresets.appendChild(btnHud);
+  btnHud.className = `wt-dock-chip${hudAuto ? ' actif' : ''}`;
+  const btnReplier = bouton({
+    icone: '▾', libelle: 'CACHER', classe: '',
+    titre: 'Replier / déplier les catégories du lanceur',
+    surClic: () => {
+      replie = !replie;
+      dock.classList.toggle('wt-dock-replie', replie);
+      btnReplier.querySelector('.ic').textContent = replie ? '▸' : '▾';
+      const e2 = lireEtat();
+      e2.replie = replie;
+      ecrireEtat(e2);
+      mesurer();
+    },
+  });
+  barrePresets.appendChild(btnReplier);
+  btnReplier.className = 'wt-dock-chip';
+  if (replie) btnReplier.querySelector('.ic').textContent = '▸';
+
+  // ── hauteur publiée : la barre micro ne recouvre plus rien ──────────────
+  function mesurer() {
+    const h = Math.round(dock.getBoundingClientRect().height) || 72;
+    document.documentElement.style.setProperty('--wt-hauteur-dock', `${h}px`);
+  }
+  mesurer();
+  if (typeof ResizeObserver !== 'undefined') {
+    try { new ResizeObserver(mesurer).observe(dock); } catch { /* ancien navigateur */ }
+  }
+  window.addEventListener('resize', mesurer);
+  window.setTimeout(mesurer, 600);
+  window.setTimeout(mesurer, 2500);
+
+  appliquerPreset(preset);
   reveiller();
 
   return {
@@ -237,7 +382,11 @@ export function initMobiDock({ panneauxAncres = [], panneauxExistants = [] } = {
     fermerAncres,
     ouvrir,
     ouvrirExistant,
-    /** Ajoute un panneau ancré APRÈS l'initialisation du dock. */
     ajouter: (p) => creerAncre(p),
+    /** Place un bouton déjà construit dans une catégorie. */
+    ranger: (btn, idGroupe = 'outils') => { rangDe(idGroupe).appendChild(btn); mesurer(); },
+    preset: () => preset,
+    appliquerPreset,
+    mesurer,
   };
 }

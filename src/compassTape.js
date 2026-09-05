@@ -190,6 +190,15 @@ export function initCompassTape(viewer) {
   const ecrire = () => { try { window.localStorage.setItem(CLE, JSON.stringify(reglages)); } catch { /* plein */ } };
   let reglages = lire();
 
+  // ── hébergement : dans la minicarte, ou au bord de l'écran ─────────────
+  let hote = null;
+  function heberger(conteneur) {
+    hote = conteneur || null;
+    if (hote) hote.appendChild(racine); else document.body.appendChild(racine);
+    placer();
+    return Boolean(hote);
+  }
+
   // ── mise en page ───────────────────────────────────────────────────────
   let geo = null;
   function placer() {
@@ -392,7 +401,14 @@ export function initCompassTape(viewer) {
   // ── réglages ───────────────────────────────────────────────────────────
   racine.querySelector('.wt-b-roue').addEventListener('click', () => panneau.classList.toggle('ouvert'));
   for (const b of panneau.querySelectorAll('button[data-r]')) {
-    b.addEventListener('click', () => { reglages = reglagesValides({ ...reglages, orientation: b.dataset.r }); ecrire(); placer(); });
+    b.addEventListener('click', () => {
+      // Repasser en ruban vertical alors qu'on est dans la minicarte ?
+      // On se détache : le ruban retourne au bord de l'écran.
+      if (b.dataset.r === 'vertical' && hote) heberger(null);
+      reglages = reglagesValides({ ...reglages, orientation: b.dataset.r });
+      ecrire();
+      placer();
+    });
   }
   for (const b of panneau.querySelectorAll('button[data-c]')) {
     b.addEventListener('click', () => { reglages = reglagesValides({ ...reglages, cote: b.dataset.c }); ecrire(); placer(); });
@@ -431,6 +447,9 @@ export function initCompassTape(viewer) {
       return { ...reglages };
     },
     reglages: () => ({ ...reglages }),
+    /** Pose la boussole dans un conteneur (`null` = retour au bord d'écran). */
+    heberger,
+    hebergement: () => hote,
     /** Masque / affiche (depuis la fenêtre AFFICHAGE par exemple). */
     visible(on = true) { return this.regler({ visible: Boolean(on) }).visible; },
     element: racine,

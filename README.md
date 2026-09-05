@@ -319,13 +319,38 @@ compact (**M**). Trois réponses :
   l'œil seulement ; un clic sur l'œil fait apparaître l'interface bloc par
   bloc, en cascade.
 
-### 🧭 Boussole « casque » · ▚ MATRIX sur la minicarte · 🎨 peau néon
+### 🎛 Le lanceur : toutes les fonctions, par catégories et par préréglages
 
-* **Boussole** : le ruban de cap se déploie désormais **sur toute la hauteur
-  de l'écran**, collé au bord gauche (ou droite) — plus rien n'est caché au
-  centre. L'engrenage ⚙ en bas du ruban règle tout : **hauteur ↔ largeur**,
-  côté, épaisseur, opacité, nombre de degrés visibles, masquage. Glisser fait
-  toujours tourner la caméra, double-clic = plein nord. Réglages mémorisés.
+La barre du bas est un **lanceur** en trois étages :
+
+1. **les préréglages** (toujours visibles) : **TOUT · EXPLORER · VOL ·
+   CHANTIER · EXPERT · ÉPURÉ**, plus ⤓ RÉDUIRE et ▾ CACHER ;
+2. **les catégories** : une ligne nommée par famille — **NAVIGATION · VUES ·
+   DONNÉES · OUTILS · MODES** ;
+3. **les boutons** de chaque catégorie (26 au total).
+
+Deux garanties : **MODES fait partie de tous les préréglages** (donc ✈ VOL et
+🖥 AFFICHAGE ne peuvent pas disparaître), et la **hauteur du dock est
+publiée** pour que la barre micro se cale au-dessus — plus aucun bouton
+recouvert. Sont enfin atteignables depuis le lanceur : CADRANS, CADASTRE,
+RADIO, ENTITÉS, DISPOSITIFS, ÉPINGLES, RUE (street view), PHOTO, GLOBE
+(minicarte) et ACTIONS.
+
+### 🗺 Minicarte en globe · 🧭 boussole dedans · ▚ MATRIX · 🎨 peau néon
+
+* **Minicarte = globe** : dessin circulaire de 178 px avec graticule
+  (méridiens et parallèles), ombre de limbe, reflet et anneau. Nord et
+  échelle recentrés ; clic/glisser pour se déplacer, molette pour zoomer,
+  🔒 pour suivre la vue.
+* **La boussole est posée dans la fenêtre de la minicarte**, juste au-dessus
+  du globe. Son engrenage ⚙ permet de la remettre en **ruban pleine
+  hauteur** au bord de l'écran (elle se détache alors de la minicarte).
+
+* **Boussole** : le ruban de cap vit dans la minicarte, mais l'engrenage ⚙
+  permet de le remettre en **ruban pleine hauteur** collé au bord gauche (ou
+  droite) de l'écran. Réglable : **hauteur ↔ largeur**, côté, épaisseur,
+  opacité, degrés visibles, masquage. Glisser = tourner la caméra,
+  double-clic = plein nord. Réglages mémorisés.
 * **Minicarte ▚ MATRIX** : un clic superpose la couche **OpenStreetMap** sur
   le fond satellite, teintée **vert néon**, avec grille et balayage — on lit
   la voirie et les noms par-dessus la photo. Les autres filtres (nuit, infra,

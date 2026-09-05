@@ -583,27 +583,32 @@ async function init() {
       window.__godsEyeView.poste = poste;
       window.__godsEyeView.dock = initMobiDock({
         panneauxAncres: [
-          { id: 'chat', icone: '💬', libelle: 'CHAT', titre: 'CHAT — CONSOLE DE COMMANDES', element: chat.element, cote: 'gauche', surOuverture: chat.focus },
-          { id: 'moi', icone: '📍', libelle: 'MOI', titre: '📍 MA LOCALISATION — ME LOCALISER', element: autour.element, cote: 'droite', surOuverture: autour.focus },
-          { id: 'filtres', icone: '🎨', libelle: 'FILTRES', titre: 'FILTRES DE VUE', element: filtres.element, cote: 'droite' },
-          { id: 'bati', icone: '🏙', libelle: 'BÂTI 3D', titre: 'BÂTIMENTS 3D (OSM, GRATUIT, RAPIDE)', element: bati.element, cote: 'gauche' },
-          { id: 'chantier', icone: '🏗', libelle: 'CHANTIER', titre: 'HUB CHANTIER — CONDUITE DE TRAVAUX', element: chantier.element, cote: 'gauche' },
-          { id: 'vol', icone: '✈', libelle: 'VOL', titre: 'MODE PILOTAGE — DRONE / AVION (ZQSD + JOYSTICK)', element: vol.element, cote: 'droite' },
-          { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: poste.panneaux.lieux.element, cote: 'gauche' },
-          { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: poste.panneaux.histo.element, cote: 'droite' },
-          { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: poste.panneaux.favoris.element, cote: 'gauche' },
-          { id: 'temps', icone: '🕰', libelle: 'ÉPOQUES', titre: '🕰 MODE HISTORIQUE — LA VILLE À TRAVERS LE TEMPS (OSM)', element: historique.element, cote: 'gauche' },
-          { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: cctv.element, cote: 'droite' },
+          { id: 'chat', icone: '💬', libelle: 'CHAT', titre: 'CHAT — CONSOLE DE COMMANDES', element: chat.element, cote: 'gauche', groupe: 'outils', surOuverture: chat.focus },
+          { id: 'moi', icone: '📍', libelle: 'MOI', titre: '📍 MA LOCALISATION — ME LOCALISER', element: autour.element, cote: 'droite', groupe: 'nav', surOuverture: autour.focus },
+          { id: 'filtres', icone: '🎨', libelle: 'FILTRES', titre: 'FILTRES DE VUE', element: filtres.element, cote: 'droite', groupe: 'vues' },
+          { id: 'bati', icone: '🏙', libelle: 'BÂTI 3D', titre: 'BÂTIMENTS 3D (OSM, GRATUIT, RAPIDE)', element: bati.element, cote: 'gauche', groupe: 'vues' },
+          { id: 'chantier', icone: '🏗', libelle: 'CHANTIER', titre: 'HUB CHANTIER — CONDUITE DE TRAVAUX', element: chantier.element, cote: 'gauche', groupe: 'donnees' },
+          { id: 'vol', icone: '✈', libelle: 'VOL', titre: 'MODE PILOTAGE — DRONE / AVION (ZQSD + JOYSTICK)', element: vol.element, cote: 'droite', groupe: 'modes' },
+          { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: poste.panneaux.lieux.element, cote: 'gauche', groupe: 'nav' },
+          { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: poste.panneaux.histo.element, cote: 'droite', groupe: 'donnees' },
+          { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: poste.panneaux.favoris.element, cote: 'gauche', groupe: 'nav' },
+          { id: 'temps', icone: '🕰', libelle: 'ÉPOQUES', titre: '🕰 MODE HISTORIQUE — LA VILLE À TRAVERS LE TEMPS (OSM)', element: historique.element, cote: 'gauche', groupe: 'vues' },
+          { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: cctv.element, cote: 'droite', groupe: 'donnees' },
         ],
         panneauxExistants: [
           {
             iconeHtml: '<span class="wt-oeil">👁</span>', icone: '👁', libelle: 'ME LOCALISER',
-            cibleId: 'wt-panel', surClic: recentrerHQ,
+            cibleId: 'wt-panel', groupe: 'nav', titre: '👁 ME LOCALISER — cinématique depuis l’espace jusqu’à ta position',
+            surClic: recentrerHQ,
           },
-          { icone: '🧠', libelle: 'INTEL', cibleId: 'wt-intel' },
-          { icone: '🎚', libelle: 'VISUEL+', cibleId: 'pp-toggles' },
-          { icone: '🎛', libelle: 'PARAMS', cibleId: 'param-slider-panel' },
-          { icone: '⚙', libelle: 'ACTIONS', cibleId: 'top-center-actions' },
+          { icone: '🧠', libelle: 'INTEL', cibleId: 'wt-intel', groupe: 'donnees', titre: '🧠 INTEL — tableau de bord expert' },
+          { icone: '🎚', libelle: 'VISUEL+', cibleId: 'pp-toggles', groupe: 'vues', titre: '🎚 Réglages visuels' },
+          { icone: '🎛', libelle: 'PARAMS', cibleId: 'param-slider-panel', groupe: 'outils', titre: '🎛 Curseurs de paramètres' },
+          { icone: '⚙', libelle: 'ACTIONS', cibleId: 'top-center-actions', groupe: 'outils', titre: '⚙ Actions (calques, partage, globe)' },
+          { icone: '📌', libelle: 'ÉPINGLES', cibleId: 'wt-pins', groupe: 'vues', titre: '📌 Mes épingles' },
+          { icone: '🗺', libelle: 'GLOBE', cibleId: 'wt-minimap', groupe: 'vues', titre: '🗺 Minicarte globe (boussole + matrice)' },
+          { icone: '🛣', libelle: 'RUE', cibleId: 'wt-sv', groupe: 'vues', titre: '🛣 Street view — photos de rue libres' },
+          { icone: '🖼', libelle: 'PHOTO', cibleId: 'wt-photo', groupe: 'vues', titre: '🖼 Identifier un lieu par photo' },
         ],
       });
       poste.setDock(window.__godsEyeView.dock);
@@ -627,6 +632,11 @@ async function init() {
         surMessage: (m) => window.__wtToast?.(m),
       });
       window.__godsEyeView.cadrans = cadrans;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'cadrans', icone: '🔲', libelle: 'CADRANS', groupe: 'vues',
+        titre: '🔲 CADRANS — LA COMMUNE DÉCOUPÉE EN QUARTIERS NOMMÉS',
+        element: cadrans.element, cote: 'gauche',
+      });
       // 🧠 INTEL ÉLARGI : 6 nouvelles vues (jumeau AR, communal, individuel,
       // politique, économique, production) + bandeau « fil » façon Bloomberg.
       const intelVues = initIntelVues(document.getElementById('wt-intel'), {
@@ -681,7 +691,7 @@ async function init() {
       });
       window.__godsEyeView.trajets = trajets;
       window.__godsEyeView.dock?.ajouter?.({
-        id: 'trajets', icone: '🛣', libelle: 'TRAJETS',
+        id: 'trajets', icone: '🛣', libelle: 'TRAJETS', groupe: 'nav',
         titre: '🛣 TRAJETS — VOL D’OISEAU OU SUIVRE LA ROUTE', element: trajets.element, cote: 'gauche',
       });
 
@@ -689,7 +699,7 @@ async function init() {
       const systeme = initSystemeSolaire(viewer, { surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.systeme = systeme;
       window.__godsEyeView.dock?.ajouter?.({
-        id: 'systeme', icone: '🪐', libelle: 'SYSTÈME',
+        id: 'systeme', icone: '🪐', libelle: 'SYSTÈME', groupe: 'vues',
         titre: '🪐 SYSTÈME SOLAIRE — POSITIONS RÉELLES AUTOUR DE LA TERRE', element: systeme.element, cote: 'droite',
       });
 
@@ -697,7 +707,7 @@ async function init() {
       const radio = initRadio(viewer, { surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.radio = radio;
       window.__godsEyeView.dock?.ajouter?.({
-        id: 'radio', icone: '📻', libelle: 'RADIO',
+        id: 'radio', icone: '📻', libelle: 'RADIO', groupe: 'donnees',
         titre: '📻 RADIO — FLUX EN DIRECT (RADIO-BROWSER, LIBRE)', element: radio.element, cote: 'droite',
       });
 
@@ -706,7 +716,7 @@ async function init() {
       const cadastre = initCadastre(viewer, { surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.cadastre = cadastre;
       window.__godsEyeView.dock?.ajouter?.({
-        id: 'cadastre', icone: '🗺', libelle: 'CADASTRE',
+        id: 'cadastre', icone: '🗺', libelle: 'CADASTRE', groupe: 'nav',
         titre: '🗺 CADASTRE — CONTOURS DE PARCELLES (IGN, SANS CLÉ)', element: cadastre.element, cote: 'gauche',
       });
 
@@ -718,7 +728,7 @@ async function init() {
       });
       window.__godsEyeView.entites = entites;
       window.__godsEyeView.dock?.ajouter?.({
-        id: 'entites', icone: '🏷', libelle: 'ENTITÉS',
+        id: 'entites', icone: '🏷', libelle: 'ENTITÉS', groupe: 'vues',
         titre: '🏷 ENTITÉS DE LA CARTE — FONCTION RÉELLE DE CHAQUE LIEU (OSM)',
         element: entites.element, cote: 'gauche',
       });
@@ -739,7 +749,7 @@ async function init() {
       });
       window.__godsEyeView.dispositifs = dispositifs;
       window.__godsEyeView.dock?.ajouter?.({
-        id: 'dispositifs', icone: '🎥', libelle: 'DISPOSITIFS',
+        id: 'dispositifs', icone: '🎥', libelle: 'DISPOSITIFS', groupe: 'donnees',
         titre: '🎥 DISPOSITIFS — CAMÉRAS, MICROS ET CAPTEURS (DIRECT)',
         element: dispositifs.element, cote: 'droite',
       });
@@ -811,11 +821,12 @@ async function init() {
           b.className = 'wt-dock-btn';
           b.title = 'PALAIS MENTAL — chambre 7 (touche P) : les dossiers au mur, les outils sur le bureau';
           b.innerHTML = '<span class="ic">🛏</span><span class="lb">PALAIS</span>';
+        b.dataset.groupe = 'outils';
           b.addEventListener('click', () => {
             if (palais.estOuvert()) palais.fermer();
             else { nourrirPalais(); palais.ouvrir(); }
           });
-          dockEl.appendChild(b);
+          window.__godsEyeView.dock?.ranger?.(b, b.dataset.groupe || 'outils');
         }
       } catch { /* dock absent */ }
       // touche P : bascule du palais (Échap pour en sortir)
@@ -898,6 +909,10 @@ async function init() {
     try {
       const minimap = initMinimap(viewer);
       window.__godsEyeView.minimap = minimap;
+      // 🧭 La boussole quitte le bord de l'écran : elle se pose DANS la
+      // fenêtre de la minicarte, juste au-dessus du globe (⚙ pour la
+      // remettre en ruban sur la hauteur).
+      try { minimap.accueillirBoussole?.(window.__godsEyeView.boussole); } catch (e) { console.error('[watchtower] boussole:', e); }
     } catch (e) { console.error('[watchtower] minimap:', e); }
 
     // 🖥 HUD CENTRAL : « je ne trouve plus mes boutons ».
@@ -919,8 +934,9 @@ async function init() {
         b.className = 'wt-dock-btn';
         b.title = 'AFFICHAGE — voir et régler TOUT le HUD (touche F2, ou l’œil en haut à gauche)';
         b.innerHTML = '<span class="ic">🖥</span><span class="lb">AFFICHAGE</span>';
+        b.dataset.groupe = 'modes';
         b.addEventListener('click', () => hudCentral.basculer());
-        dockEl.appendChild(b);
+        window.__godsEyeView.dock?.ranger?.(b, 'modes');
       }
     } catch (e) { console.error('[watchtower] hud central:', e); }
 

@@ -23,8 +23,10 @@ import {
   zoomPourMetresParPixel,
 } from './tuilesMath.js';
 
-const LARGEUR = 216;
-const HAUTEUR = 150;
+/** La minicarte est un GLOBE : format carré, dessin circulaire. */
+const LARGEUR = 178;
+const HAUTEUR = 178;
+const RAYON = LARGEUR / 2 - 1;
 
 /** Fonds de carte gratuits (sans clé, CORS ouvert) — dont le satellite Esri,
  *  qui est aussi le fond de la vue principale. */
@@ -72,8 +74,18 @@ const CSS = `
   color: #00d4ff; border-radius: 5px; font-size: 9px; padding: 1px 5px; font-family: inherit;
 }
 #wt-minimap .wt-mm-titre button.actif { background: rgba(0,212,255,0.25); }
-#wt-minimap .wt-mm-vid { width: ${LARGEUR}px; height: ${HAUTEUR}px; position: relative; background: #08111c; }
-#wt-minimap .wt-mm-vid canvas { display: block; width: ${LARGEUR}px; height: ${HAUTEUR}px; cursor: grab; outline: none; }
+#wt-minimap .wt-mm-vid {
+  width: ${LARGEUR}px; height: ${HAUTEUR}px; position: relative; background: #08111c;
+  display: flex; align-items: center; justify-content: center;
+}
+#wt-minimap .wt-mm-vid canvas {
+  display: block; width: ${LARGEUR}px; height: ${HAUTEUR}px; cursor: grab; outline: none;
+  border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,212,255,0.35), 0 0 18px rgba(0,212,255,0.18);
+}
+/* la boussole vit DANS la minicarte, au-dessus du globe */
+#wt-minimap .wt-mm-boussole { padding: 4px 0 2px; display: flex; justify-content: center; }
+#wt-minimap .wt-mm-boussole:empty { display: none; }
+#wt-minimap .wt-mm-boussole #wt-boussole { position: static !important; transform: none !important; }
 #wt-minimap .wt-mm-note { padding: 3px 7px; font-size: 7.5px; letter-spacing: 0.5px; color: rgba(232,234,237,0.5); }
 #wt-minimap .wt-mm-note b { color: #00d4ff; font-weight: 700; }
 #wt-minimap-puce {
@@ -135,12 +147,14 @@ export function initMinimap(viewer) {
         <button type="button" data-a="fermer" title="Fermer (revenir via la puce 🗺)">✕</button>
       </span>
     </div>
+    <div class="wt-mm-boussole"></div>
     <div class="wt-mm-vid"></div>
     <div class="wt-mm-note">🔒 suit la vue · clic/glisser = se déplacer · molette = zoom</div>`;
   document.body.appendChild(div);
   rendreDeplacable(div, div.querySelector('.wt-mm-titre'));
 
   const zone = div.querySelector('.wt-mm-vid');
+  const logementBoussole = div.querySelector('.wt-mm-boussole');
   const note = div.querySelector('.wt-mm-note');
   const canvas = document.createElement('canvas');
   const dpr = Math.min(2, (typeof window !== 'undefined' && window.devicePixelRatio) || 1);
@@ -248,6 +262,13 @@ export function initMinimap(viewer) {
     const mpp = portee / LARGEUR;
     const z = zoomPourMetresParPixel(mpp, centre.lat);
 
+    // ── le GLOBE : tout le dessin est découpé dans un cercle ──
+    const CX = LARGEUR / 2;
+    const CY = HAUTEUR / 2;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(CX, CY, RAYON, 0, Math.PI * 2);
+    ctx.clip();
     ctx.fillStyle = '#08111c';
     ctx.fillRect(0, 0, LARGEUR, HAUTEUR);
 
@@ -360,31 +381,64 @@ export function initMinimap(viewer) {
     ctx.fillStyle = doux(0.85);
     ctx.font = 'bold 9px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('N', 12, 13);
+    ctx.fillText('N', LARGEUR / 2, 12);
     ctx.beginPath();
-    ctx.moveTo(12, 30);
-    ctx.lineTo(12, 17);
-    ctx.lineTo(9, 21);
-    ctx.moveTo(12, 17);
-    ctx.lineTo(15, 21);
+    ctx.moveTo(LARGEUR / 2, 29);
+    ctx.lineTo(LARGEUR / 2, 16);
+    ctx.lineTo(LARGEUR / 2 - 3, 20);
+    ctx.moveTo(LARGEUR / 2, 16);
+    ctx.lineTo(LARGEUR / 2 + 3, 20);
     ctx.strokeStyle = doux(0.85);
     ctx.stroke();
 
     // ——— échelle ———
     const barre = 56;
+    const bx = (LARGEUR - barre) / 2;
     ctx.strokeStyle = 'rgba(232,234,237,0.8)';
     ctx.lineWidth = 1.4;
     ctx.beginPath();
-    ctx.moveTo(8, HAUTEUR - 10);
-    ctx.lineTo(8 + barre, HAUTEUR - 10);
-    ctx.moveTo(8, HAUTEUR - 13);
-    ctx.lineTo(8, HAUTEUR - 7);
-    ctx.moveTo(8 + barre, HAUTEUR - 13);
-    ctx.lineTo(8 + barre, HAUTEUR - 7);
+    ctx.moveTo(bx, HAUTEUR - 10);
+    ctx.lineTo(bx + barre, HAUTEUR - 10);
+    ctx.moveTo(bx, HAUTEUR - 13);
+    ctx.lineTo(bx, HAUTEUR - 7);
+    ctx.moveTo(bx + barre, HAUTEUR - 13);
+    ctx.lineTo(bx + barre, HAUTEUR - 7);
     ctx.stroke();
     ctx.fillStyle = 'rgba(232,234,237,0.85)';
     ctx.textAlign = 'left';
-    ctx.fillText(formaterEchelle(barre * mpp), 8, HAUTEUR - 15);
+    ctx.fillText(formaterEchelle(barre * mpp), (LARGEUR - barre) / 2, HAUTEUR - 15);
+
+    // ——— graticule (méridiens/parallèles) : donne le relief de sphère ———
+    ctx.save();
+    ctx.strokeStyle = doux(0.10);
+    ctx.lineWidth = 1;
+    for (let i = 1; i < 6; i += 1) {
+      const y = (HAUTEUR / 6) * i;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(LARGEUR, y); ctx.stroke();
+      const x = (LARGEUR / 6) * i;
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, HAUTEUR); ctx.stroke();
+    }
+    ctx.restore();
+
+    // ——— ombre de limbe + reflet : la sphère ———
+    const limbe = ctx.createRadialGradient(CX, CY, RAYON * 0.55, CX, CY, RAYON);
+    limbe.addColorStop(0, 'rgba(0,0,0,0)');
+    limbe.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = limbe;
+    ctx.fillRect(0, 0, LARGEUR, HAUTEUR);
+    const reflet = ctx.createRadialGradient(CX - RAYON * 0.4, CY - RAYON * 0.45, 1, CX - RAYON * 0.4, CY - RAYON * 0.45, RAYON * 0.85);
+    reflet.addColorStop(0, 'rgba(255,255,255,0.16)');
+    reflet.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = reflet;
+    ctx.fillRect(0, 0, LARGEUR, HAUTEUR);
+    ctx.restore(); // fin du découpage circulaire
+
+    // ——— anneau du globe ———
+    ctx.beginPath();
+    ctx.arc(CX, CY, RAYON, 0, Math.PI * 2);
+    ctx.strokeStyle = doux(0.55);
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
     const nomFiltre = filtre ? ` · 🎨 ${FILTRES[filtre].nom}` : '';
     note.innerHTML = (suivre
@@ -584,7 +638,23 @@ export function initMinimap(viewer) {
 
   let arretAnimation = false;
 
+  /**
+   * Accueille la boussole DANS la fenêtre de la minicarte, juste au-dessus
+   * du globe (demandé : « mets la sur la minicarte, mais dans sa fenêtre »).
+   * @param {{element:HTMLElement, regler?:Function, heberger?:Function}} boussole
+   */
+  function accueillirBoussole(boussole) {
+    if (!boussole?.element || !logementBoussole) return false;
+    logementBoussole.appendChild(boussole.element);
+    try {
+      boussole.regler?.({ orientation: 'horizontal', longueur: LARGEUR - 6, largeur: 30, visible: true });
+      boussole.heberger?.(logementBoussole);
+    } catch { /* boussole absente */ }
+    return true;
+  }
+
   return {
+    accueillirBoussole,
     dessiner,
     suivreCamera,
     centreVue,

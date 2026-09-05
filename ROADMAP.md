@@ -4,9 +4,11 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 13** (🧭 boussole « casque » sur la
-hauteur, ▚ MATRIX sur la minicarte, 🎨 peau néon, 👁 œil dans le logo).
-Itérations précédentes : **12** = 🖥 HUD central (un œil toujours visible +
+Dernière mise à jour : **itération 14** (🎛 lanceur par catégories +
+préréglages : TOUTES les fonctions atteignables ; 🧭 boussole dans la
+minicarte ; 🗺 minicarte en globe).
+Itérations précédentes : **13** = 🧭 boussole « casque » sur la hauteur, ▚
+MATRIX sur la minicarte, 🎨 peau néon, 👁 œil dans le logo · **12** = 🖥 HUD central (un œil toujours visible +
 la liste de tout ce qui s'affiche) · **11** = 🕰 mode historique (la ville se construit à
 partir des dates OpenStreetMap) · **10** = parcours de vol traçés & rejoués, 3ᵉ personne
 réparée, routes + cadastre visibles en satellite, bouton « ME LOCALISER »
@@ -19,7 +21,19 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 13 — en cours
+## 0. Itération 14 — en cours
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Dock** | 🎛 **Lanceur par catégories** : NAVIGATION · VUES · DONNÉES · OUTILS · MODES — une ligne nommée par famille | ✅ | `mobiDock.js` | — |
+| **Dock** | 🧩 **Préréglages visuels** : TOUT · EXPLORER · VOL · CHANTIER · EXPERT · ÉPURÉ (mémorisés) + repli ▾ | ✅ | `mobiDock.js` | localStorage |
+| **Dock** | **Règle : MODES dans TOUS les préréglages** → ✈ VOL et 🖥 AFFICHAGE ne peuvent plus disparaître | ✅ | `mobiDock.js` | — |
+| **Dock** | **+10 fonctions enfin atteignables** : CADRANS · CADASTRE · RADIO · ENTITÉS · DISPOSITIFS · ÉPINGLES · RUE · PHOTO · GLOBE · ACTIONS | ✅ | `main.js` | modules existants |
+| **Dock** | Hauteur publiée dans `--wt-hauteur-dock` : la barre micro se cale AU-DESSUS — plus aucun bouton recouvert (cause du ✈ VOL invisible) | ✅ | `mobiDock.js` | — |
+| **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
+| **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
+
+## 0 bis. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -31,7 +45,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 bis. Itération 12 — terminée
+## 0 ter. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -42,7 +56,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 ter. Itération 11 — terminée
+## 0 quater. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -53,7 +67,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 quater. Itération 10 — terminée
+## 0 quinquies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -70,7 +84,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 quinquies. Itération 9 — terminée
+## 0 sexies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -123,6 +137,29 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **14** :
+
+* **« j'ai toujours pas accès à VOL »** — deux causes, deux corrections :
+  * la barre du bas débordait sur plusieurs rangs et le rang du haut passait
+    **sous la barre micro** (`#command-dock`, calée en dur à 72 px). Le dock
+    publie maintenant sa hauteur (`--wt-hauteur-dock`) et la barre micro se
+    cale au-dessus ;
+  * des modules entiers n'avaient **aucun bouton** nulle part. Le dock passe
+    de 19 boutons en vrac à **26 boutons rangés en 5 catégories**
+    (NAVIGATION · VUES · DONNÉES · OUTILS · MODES) : CADRANS, CADASTRE,
+    RADIO, ENTITÉS, DISPOSITIFS, ÉPINGLES, RUE, PHOTO, GLOBE et ACTIONS
+    deviennent atteignables.
+  * **Préréglages visuels** (TOUT · EXPLORER · VOL · CHANTIER · EXPERT ·
+    ÉPURÉ) + repli ▾ pour ceux qui veulent un écran nu. **MODES fait partie
+    de tous les préréglages** : ✈ VOL et 🖥 AFFICHAGE restent toujours là.
+* **« la boussole est sur la gauche de l'écran, mets-la sur la minicarte »** —
+  elle se pose DANS la fenêtre de la minicarte, juste au-dessus du globe.
+  L'engrenage ⚙ la remet en ruban pleine hauteur (elle se détache au bord de
+  l'écran).
+* **« change la forme de la minicarte en globe »** — dessin circulaire :
+  graticule (méridiens/parallèles), ombre de limbe, reflet et anneau. Nord
+  et échelle recentrés, ▚ MATRIX et les filtres conservés.
 
 Itération **13** :
 
