@@ -4,10 +4,35 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 6** (entités de la carte, sources
-cliquables & traçabilité, mode mobiGlas + VTOL + 3ᵉ personne, INTEL élargi à
-6 vues avec bandeaux « fil », cadrans de commune, fenêtres réductibles,
-SUIVI direct du chantier, analyse comparée de 25 sites gratuits).
+Dernière mise à jour : **itération 9** (🧠 palais mental, 😴 veille du HUD,
+🔑 comptes & IA locale, 🎥 dispositifs en direct, 🔲 cadrans au tracé
+communal, 🌀 rotation 360° des icônes AR).
+Itérations précédentes : **8** = chat à réponses rapides, `/aide`, mode urgence
+guidé, icônes AR lisibles · **7** = … · **6** = entités de la carte, sources
+cliquables & traçabilité, mobiGlas + VTOL + 3ᵉ personne, INTEL élargi à 6 vues,
+cadrans, fenêtres réductibles, SUIVI direct, analyse de 25 sites gratuits.
+
+---
+
+## 0. Itération 9 — en cours
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Interface** | 🧠 **PALAIS MENTAL** : chambre de motel 70 (CSS/SVG, aucun asset) — mur, tableau, bureau, lit, néon, porte | ✅ | `palais.js`, `data/vignettes.js`, `data/dossiers.js` | — |
+| **Interface** | Dossiers épinglés au mur : ouverture en cascade jusqu'au plus petit élément + recherche qui affine en direct | ✅ | `data/dossiers.js` | données vivantes de l'app |
+| **Interface** | Objets du bureau = outils de l'app (carte, drone, téléphone/chat, calendrier, radio, moniteur, chemise) | ✅ | `palais.js#ouvrirObjet` | modules existants |
+| **Interface** | 😴 **Veille** : plus aucun HUD après 15 s (fondu de 10 s à 15 s), retour au premier geste | ✅ | `veille.js` | — |
+| **IA** | 🦙 Chat branché sur **Ollama local** (détection, modèles, `/api/chat`) + tout service compatible OpenAI | ✅ | `llm.js` | Ollama (machine de l'utilisateur) |
+| **IA** | Repli **hors-ligne** honnête : commandes locales + sources, jamais d'invention | ✅ | `llm.js`, `commandes.js` | — |
+| **Comptes** | 🔑 Fenêtre de connexion « comme un site » + niveaux 🟢 gratuit / 🔵 compte / 🟣 payant | ✅ | `compte.js` | localStorage (clés locales) |
+| **Dispositifs** | 🎥 Caméras / micros / capteurs sur la carte, icône cliquable → fiche + **mini-fenêtre de direct** | ✅ | `dispositifs.js` | Overpass, `getUserMedia`, flux ajoutés |
+| **Dispositifs** | Fiche détaillée : site, type d'objet, outils, **activité estimée**, description de scène (mesuré localement) | ✅ | `dispositifs.js` | mesure locale (aucun envoi) |
+| **Cadrans** | Découpage **au tracé communal** : intersection exacte case × contour (ear clipping + Sutherland–Hodgman) | ✅ | `data/geoCadrans.js` | géométrie pure |
+| **Vue communale** | 🌀 Icônes AR : rotation 360° (24 images), 104 px, écartées pour ne plus se chevaucher | ✅ | `arIcons.js`, `vueCommunale.js` | — |
+
+### Mémoire des outils (ne rien refaire deux fois)
+→ voir **`docs/SOURCES_ET_OUTILS.md`** : ce qui a été vu, utilisé, écarté, et
+pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 

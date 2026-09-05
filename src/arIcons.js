@@ -267,6 +267,10 @@ export function dessinerIconeAR(ctx, taille, categorie, options = {}) {
   const coul = categorie?.couleur || '#00d4ff';
   const valeur = Math.max(0, Math.min(100, Number(options.valeur ?? 60)));
   const sansNom = Boolean(options.sansNom);
+  // rotation 360° : `phase` en radians. Le jeton tourne sur son axe vertical
+  // (le nom et les pastilles, eux, NE TOURNENT PAS : ils restent lisibles).
+  const phase = Number.isFinite(Number(options.phase)) ? Number(options.phase) : 0;
+  const echelleTour = Math.max(0.36, Math.abs(Math.cos(phase)));
   ctx.clearRect(0, 0, S, S);
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
@@ -287,6 +291,13 @@ export function dessinerIconeAR(ctx, taille, categorie, options = {}) {
   ctx.beginPath();
   ctx.ellipse(S / 2, by + bh + epaisseur + S * 0.075, bw * 0.40, S * 0.045, 0, 0, Math.PI * 2);
   ctx.fill();
+
+  // 2→5 : tout le JETON est dessiné dans un repère comprimé horizontalement
+  // (cosinus de la phase) — c'est la rotation 360° sur l'axe vertical.
+  ctx.save();
+  ctx.translate(S / 2, by + bh / 2);
+  ctx.scale(echelleTour, 1);
+  ctx.translate(-S / 2, -(by + bh / 2));
 
   // 2 · pied (le jeton est posé, il ne flotte pas dans le vide)
   ctx.fillStyle = tresFonce;
@@ -346,6 +357,19 @@ export function dessinerIconeAR(ctx, taille, categorie, options = {}) {
   ctx.restore();
   dessiner(ctx, gx, gy, gs, '#ffffff');
 
+  // 5 bis · tranche visible quand le jeton est de profil : un liseré clair du
+  // côté d'où vient la lumière (donne vraiment l'impression qu'il tourne)
+  if (echelleTour < 0.999) {
+    const cote = Math.sin(phase) >= 0 ? 1 : -1;
+    ctx.save();
+    ctx.globalAlpha = 0.85 * (1 - echelleTour);
+    ctx.fillStyle = nuancerCouleur(coul, 1.5);
+    cheminPlaque(ctx, bx + (cote > 0 ? bw * 0.62 : 0), by + epaisseur * 0.5, bw * 0.38, bh, r);
+    ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore(); // fin de la rotation
+
   // 6 · anneau de niveau + chiffre (plus de « barre de vie » ambiguë)
   const [clair] = couleurBarre(valeur);
   const aY = by + bh * 0.80;
@@ -390,6 +414,58 @@ export function spriteAR(categorie, options = {}) {
   const taille = Math.max(48, Math.min(320, Number(options.taille) || 160));
   const c = nouveauCanvas(taille);
   if (!c) return null;
-  dessinerIconeAR(c.getContext('2d'), taille, categorie, options);
+  dessinerIconeAR(c.getContext('2d'), taille, categorie, { ...options, phase: options.phase ?? 0 });
   try { return c.toDataURL('image/png'); } catch { return null; }
+}
+
+/**
+ * Écarte les points trop proches pour que les icônes ne se chevauchent pas :
+ * chacun est poussé sur un petit cercle autour de sa position d'origine.
+ * @param {Array<{lon:number,lat:number}>} points
+ * @param {number} [distanceMinDeg] écart minimal en degrés (~0.00018 ≈ 20 m)
+ * @returns {Array} nouveaux points (mêmes objets enrichis)
+ */
+export function espacer(points = [], distanceMinDeg = 0.00018) {
+  const dmin = Math.max(0, Number(distanceMinDeg) || 0);
+  const out = [];
+  const pris = [];
+  for (const p of points || []) {
+    const lon = Number(p?.lon); const lat = Number(p?.lat);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) { out.push(p); continue; }
+    let q = { ...p, lon, lat };
+    let essais = 0;
+    while (pris.some((o) => Math.hypot(o.lon - q.lon, o.lat - q.lat) < dmin) && essais < 12) {
+      const a = (essais / 12) * Math.PI * 2;
+      q = { ...p, lon: lon + Math.cos(a) * dmin * (1 + Math.floor(essais / 6)), lat: lat + Math.sin(a) * dmin * (1 + Math.floor(essais / 6)) };
+      essais += 1;
+    }
+    pris.push(q);
+    out.push(q);
+  }
+  return out;
+}
+
+/** Nombre d'images d'un tour complet (une toutes les 15°). */
+export const IMAGES_TOUR = 24;
+
+/** Facteur d'échelle horizontal d'une image de rotation (testable). */
+export function echelleRotation(phase = 0) {
+  return Math.max(0.36, Math.abs(Math.cos(Number(phase) || 0)));
+}
+
+/**
+ * Fabrique les IMAGES d'un tour complet de l'icône (rotation 360°).
+ * @param {object} categorie
+ * @param {{taille?:number, valeur?:number, nom?:string, detail?:string,
+ *          compte?:number, images?:number}} [options]
+ * @returns {string[]} tableau de data URL (vide hors navigateur)
+ */
+export function spriteARTournant(categorie, options = {}) {
+  const n = Math.max(6, Math.min(48, Math.round(options.images || IMAGES_TOUR)));
+  const images = [];
+  for (let i = 0; i < n; i += 1) {
+    const url = spriteAR(categorie, { ...options, phase: (i / n) * Math.PI * 2 });
+    if (url) images.push(url);
+  }
+  return images;
 }

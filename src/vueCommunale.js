@@ -23,6 +23,8 @@ import {
   CATEGORIES_AR,
   categorieAR,
   spriteAR,
+  spriteARTournant,
+  espacer,
 } from './arIcons.js';
 import {
   altitudePourBBox,
@@ -289,20 +291,27 @@ export function initVuesTerritoire(viewer, deps = {}) {
           .slice(0, 14);
       }
       if (!pois.length) pois = iconesDeRepli(cat, centre, 3);
-      const gardes = pois.slice(0, 14);
+      // les icônes trop proches se chevauchaient : on les écarte (~20 m)
+      const gardes = espacer(pois.slice(0, 14), 0.0002);
       const nommes = gardes.filter((p) => p.nom && p.nom !== cat.nom).length;
       gardes.forEach((p, i) => {
         // ℹ️ l'icône porte le NOM RÉEL de l'équipement (et non plus seulement
         // la catégorie) + le nombre d'équipements de la zone : c'est lisible et
         // ça veut dire quelque chose.
-        const image = spriteAR(cat, {
-          taille: 192,
+        // 🌀 ROTATION 360° : le jeton tourne sur lui-même pendant qu'il se
+        // pose (24 images, un tour ~4 s). Le nom reste fixe : lui seul doit
+        // rester lisible.
+        const images = spriteARTournant(cat, {
+          taille: 320,
           valeur: indice,
           nom: p.nom || cat.nom,
           detail: `${nommes || gardes.length} équipement(s) · indice ${Math.round(indice)}%`,
           compte: nommes || gardes.length,
+          images: 24,
         });
-        if (!image) return;
+        if (!images.length) return;
+        const image = images[0];
+        const tourne = (t) => images[Math.floor(((t / 4000) % 1) * images.length) % images.length];
         const sol = bati?.solDe?.(p.lon, p.lat) || 0;
         const flottant = sol + 95 + (i % 6) * 16; // étagé → lisibilité
         dsAR.entities.add({
@@ -319,12 +328,14 @@ export function initVuesTerritoire(viewer, deps = {}) {
             wtLat: p.lat,
           },
           billboard: {
-            image,
-            width: 78,
-            height: 78,
+            // l'image change à chaque tour : rotation 360° continue
+            image: new Cesium.CallbackProperty(() => tourne(Date.now() - t0), false),
+            width: 104,
+            height: 104,
             verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            scaleByDistance: new Cesium.NearFarScalar(400, 1.2, 14000, 0.5),
+            // plus gros et plus lisible de loin (avant : 78 px)
+            scaleByDistance: new Cesium.NearFarScalar(300, 1.35, 16000, 0.62),
           },
           label: {
             text: p.nom || cat.nom,

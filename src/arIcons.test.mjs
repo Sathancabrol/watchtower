@@ -7,6 +7,7 @@ import {
   couleurBarre,
   dessinerIconeAR,
   spriteAR,
+  IMAGES_TOUR, echelleRotation, espacer, spriteARTournant,
 } from './arIcons.js';
 
 /** Faux contexte 2D : enregistre les appels et les propriétés écrites. */
@@ -90,4 +91,29 @@ test('dessinerIconeAR : sans nom, valeur extrême, catégorie inconnue', () => {
 test('spriteAR : null hors navigateur (tests) au lieu d’une exception', () => {
   assert.equal(spriteAR(CATEGORIES_AR[0], { valeur: 50 }), null);
   assert.equal(spriteAR(null), null);
+});
+
+test('rotation 360° : une série d’images cohérente', () => {
+  assert.equal(IMAGES_TOUR, 24);
+  assert.equal(echelleRotation(0), 1, 'de face');
+  assert.ok(Math.abs(echelleRotation(Math.PI / 2)) < 0.4, 'de profil : très fin');
+  assert.ok(Math.abs(echelleRotation(Math.PI) - 1) < 1e-9, 'dos = face');
+  assert.ok(echelleRotation(Math.PI / 2) >= 0.36, 'jamais totalement invisible');
+  assert.equal(echelleRotation('x'), 1, 'entrée invalide → de face');
+  // hors navigateur, la fabrique rend une liste vide (jamais d’erreur)
+  const images = spriteARTournant({ id: 'sante', couleur: '#f00', glyphe: 'croix-suisse' }, { images: 8 });
+  assert.ok(Array.isArray(images));
+  assert.ok(images.length === 0 || images.length === 8);
+});
+
+test('espacer : deux points confondus sont écartés', () => {
+  const pts = [{ lon: 3.75, lat: 43.44 }, { lon: 3.75, lat: 43.44 }, { lon: 3.76, lat: 43.45 }];
+  const e = espacer(pts, 0.001);
+  assert.equal(e.length, 3);
+  const d = Math.hypot(e[0].lon - e[1].lon, e[0].lat - e[1].lat);
+  assert.ok(d >= 0.0009, `écart obtenu : ${d}`);
+  assert.equal(e[2].lon, 3.76, 'un point déjà éloigné ne bouge pas');
+  assert.deepEqual(espacer([]), []);
+  assert.deepEqual(espacer(null), []);
+  assert.equal(espacer([{ lon: null, lat: 2 }])[0].lat, 2, 'point invalide conservé tel quel');
 });

@@ -654,6 +654,32 @@ See [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md) for the authoritative runti
 
 ---
 
+## 🧠 WATCHTOWER — modes et outils maison (FR)
+
+Ajouts WATCHTOWER au-dessus de God's Eye View. Tout est **gratuit et sans clé**
+sauf mention (🟢 gratuit · 🔵 compte · 🟣 payant, jamais obligatoire).
+
+| Raccourci | Fonction | Module |
+|---|---|---|
+| 🛏 / **P** | 🧠 **PALAIS MENTAL** — chambre de motel 70 : le mur = tes dossiers (cartes analogiques fouillables jusqu'au plus petit élément), le bureau = tes outils (carte épinglée, drone, téléphone/chat, calendrier, radio, moniteur, chemise) | `palais.js` |
+| — | 😴 **Veille** : plus aucun HUD à l'écran après 15 s sans contact (fondu de 10 s à 15 s), retour au premier geste | `veille.js` |
+| 🔑 | **Comptes & niveaux** : fenêtre de connexion (Ollama local, services à clé, offres payantes optionnelles). Les clés restent dans ton navigateur | `compte.js` |
+| `/aide` | Chat : 16 commandes + réponses rapides proposées selon le contexte | `commandes.js` |
+| `/urgence` | Mode urgence : écran gelé, mascotte qui veille, procédures officielles, secours proches, itinéraire le plus rapide, guidage pas à pas | `urgence.js`, `urgenceMode.js`, `mascotte.js` |
+| 🎥 | **Dispositifs** : caméras / micros / capteurs sur la carte, fiche + mini-fenêtre de direct + fiche détaillée | `dispositifs.js` |
+| 🔲 | **Cadrans** découpés au **tracé communal** (intersection exacte) | `data/geoCadrans.js` |
+
+**🤖 Le chat parle à ton IA locale** : branche **Ollama** (déjà installé ?) dans
+🔑 SE CONNECTER → « Ollama (local) » → TESTER. Sinon n'importe quel service
+compatible OpenAI. Sinon le chat continue en **mode hors-ligne** : il répond
+avec ses commandes et cite ses sources — il n'invente rien (`llm.js`).
+
+**Traçabilité** : chaque donnée affichée porte sa source cliquable ; ce qui est
+estimé est annoté avec sa méthode. Mémoire des outils vus / utilisés / écartés :
+👉 [`docs/SOURCES_ET_OUTILS.md`](docs/SOURCES_ET_OUTILS.md) · feuille de route :
+👉 [`ROADMAP.md`](ROADMAP.md) · comparaison de 25 sites gratuits :
+👉 [`docs/COMPARAISON_SITES.md`](docs/COMPARAISON_SITES.md).
+
 ## 🔑 API Keys
 
 **The legend, one more time:** 🟢 **no signup** — works out of the box · 🟡 **free key** — register, paste, done · 🔴 **metered** — a billing-enabled account; costs are small but real.
