@@ -55,6 +55,18 @@ const CSS = `
 #wt-loc-hud .h-ligne { font-size: 9.5px; letter-spacing: 1px; color: rgba(207,232,255,0.75); line-height: 1.7; }
 #wt-loc-hud .h-barre { height: 4px; margin-top: 8px; border-radius: 2px; background: rgba(255,255,255,0.1); overflow: hidden; }
 #wt-loc-hud .h-barre > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #00d4ff, #43d17a); transition: width .4s ease; }
+#wt-loc-hud .h-vitesses { display: flex; gap: 5px; align-items: center; margin-top: 8px; font-size: 8px; letter-spacing: 2px; color: rgba(207,232,255,0.6); pointer-events: auto; }
+#wt-loc-hud .h-vitesses button {
+  cursor: pointer; padding: 3px 9px; border-radius: 6px; font-family: inherit; font-size: 10px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: rgba(207,232,255,0.8);
+}
+#wt-loc-hud .h-vitesses button.actif { background: rgba(0,212,255,0.22); border-color: #00d4ff; color: #fff; }
+#wt-loc-hud .h-stop {
+  margin-top: 9px; width: 100%; cursor: pointer; pointer-events: auto; padding: 7px; border-radius: 8px;
+  font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  background: rgba(240,90,90,0.12); border: 1px solid rgba(240,90,90,0.5); color: #f08a8a;
+}
+#wt-loc-hud .h-stop:hover { background: rgba(240,90,90,0.28); }
 #wt-loc-station { text-align: center; margin: 6px 0 8px; }
 #wt-loc-station svg { width: 190px; height: 120px; filter: drop-shadow(0 0 12px rgba(0,212,255,0.45)); }
 
@@ -101,6 +113,20 @@ const CSS = `
 export const ALTITUDE_ORBITALE = 20_000_000;
 
 /**
+ * Altitude d'ARRIVÉE : « hauteur d'oiseau ». La séquence s'arrête là —
+ * elle ne descend pas jusqu'au trottoir (c'est le rôle de la vue drone ou
+ * de la vue POV, déclenchées à la main).
+ */
+export const ALTITUDE_OISEAU = 220;
+
+/** Vitesses proposées (× et durées mini par palier). */
+export const VITESSES = Object.freeze([
+  { cle: 'lent', nom: 'LENT', facteur: 0.6, min: 1.8 },
+  { cle: 'normal', nom: 'NORMAL', facteur: 1, min: 1.4 },
+  { cle: 'rapide', nom: 'RAPIDE', facteur: 1.8, min: 1.0 },
+]);
+
+/**
  * Étapes de zoom : le facteur ×1, ×10, ×100… appliqué à l'altitude de départ
  * jusqu'à l'altitude d'arrivée. Fonction pure (testée).
  * @param {number} depart altitude de départ (m)
@@ -136,6 +162,24 @@ export function etiquetteFacteur(facteur) {
   return `×${(f / 1e6).toFixed(f < 1e7 ? 1 : 0)} M`;
 }
 
+/**
+ * `fetch` avec abandon au bout de `delai` ms.
+ * SANS ça, une source qui ne répond pas laisse la cinématique suspendue au
+ * milieu de l'espace — c'est exactement le « ça tourne en rond » signalé.
+ * @returns {Promise<Response|null>}
+ */
+export async function fetchAvecDelai(url, delai = 7_000, options = {}) {
+  const controle = new AbortController();
+  const minuteur = setTimeout(() => controle.abort(), delai);
+  try {
+    return await fetch(url, { ...options, signal: controle.signal });
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(minuteur);
+  }
+}
+
 /** Adresse → coordonnées (Nominatim, gratuit, sans clé). */
 export async function geocoder(adresse, signal = null) {
   if (!adresse || !adresse.trim()) return null;
@@ -154,7 +198,7 @@ export async function geocoder(adresse, signal = null) {
 /** Parcelle cadastrale (apicarto IGN, gratuit, sans clé). */
 export async function parcelle(lat, lon) {
   try {
-    const r = await fetch(`https://apicarto.ign.fr/api/cadastre/parcelle?lat=${lat}&lon=${lon}`);
+    const r = await fetchAvecDelai(`https://apicarto.ign.fr/api/cadastre/parcelle?lat=${lat}&lon=${lon}`, 8_000);
     if (!r.ok) return null;
     const fc = await r.json();
     const f = fc?.features?.[0];
@@ -248,7 +292,14 @@ export function initLocalisation(viewer, options = {}) {
     <div id="wt-loc-station" class="h-station" style="text-align:center;margin:6px 0 8px">${svgStation()}</div>
     <div class="h-phase">MISE EN ORBITE</div>
     <div class="h-ligne"></div>
-    <div class="h-barre"><i></i></div>`;
+    <div class="h-barre"><i></i></div>
+    <div class="h-vitesses">
+      <span>VITESSE</span>
+      <button type="button" data-v="lent">🐢</button>
+      <button type="button" data-v="normal" class="actif">▶</button>
+      <button type="button" data-v="rapide">⏩</button>
+    </div>
+    <button class="h-stop" type="button" title="Interrompre la cinématique">⏹ ARRÊTER LA SÉQUENCE</button>`;
   document.body.appendChild(hud);
 
   const scan = document.createElement('div');
@@ -273,6 +324,17 @@ export function initLocalisation(viewer, options = {}) {
   const ligneEl = hud.querySelector('.h-ligne');
   const barreEl = hud.querySelector('.h-barre > i');
   const stationEl = hud.querySelector('#wt-loc-station');
+  for (const b of hud.querySelectorAll('.h-vitesses button')) {
+    b.addEventListener('click', () => {
+      vitesse = b.dataset.v;
+      try { window.localStorage.setItem('watchtower.localisation.vitesse', vitesse); } catch { /* ok */ }
+      for (const o of hud.querySelectorAll('.h-vitesses button')) o.classList.toggle('actif', o === b);
+    });
+  }
+  hud.querySelector('.h-stop')?.addEventListener('click', () => {
+    arreter();
+    surMessage?.('🛰 Séquence interrompue — tu peux relancer « ME LOCALISER ».');
+  });
   const scanMot = scan.querySelector('.s-mot');
   const scanFacteur = scan.querySelector('.s-facteur');
 
@@ -282,11 +344,27 @@ export function initLocalisation(viewer, options = {}) {
 
   let annule = false;
   let timers = [];
+  let vitesse = 'normal';
+  try { vitesse = window.localStorage.getItem('watchtower.localisation.vitesse') || 'normal'; } catch { /* ok */ }
+  /** Minicarte (si elle est branchée) : c'est elle qui joue la descente. */
+  let minimap = options.minimap || window.__godsEyeView?.minimap || null;
 
+  // ⚠ Un `attendre` qui ne résout pas quand on annule laisse `demarrer()`
+  // suspendu pour de bon : le drapeau `__wtLocEnCours` restait à vrai et tout
+  // nouveau clic sur « ME LOCALISER » ne faisait plus rien. On résout TOUJOURS
+  // (l'appelant teste `annule` juste après) et on force la résolution à
+  // l'arrêt.
+  const enAttente = new Set();
   const attendre = (ms) => new Promise((res) => {
-    const t = window.setTimeout(() => { if (!annule) res(); }, ms);
+    const finir = () => { enAttente.delete(finir); res(); };
+    enAttente.add(finir);
+    const t = window.setTimeout(finir, ms);
     timers.push(t);
   });
+  const libererAttentes = () => {
+    for (const f of [...enAttente]) f();
+    enAttente.clear();
+  };
 
   function phase(nom, ligne, progression = null) {
     phaseEl.textContent = nom;
@@ -315,6 +393,20 @@ export function initLocalisation(viewer, options = {}) {
     scan.classList.add('ouvert');
     const t = window.setTimeout(() => scan.classList.remove('ouvert'), duree);
     timers.push(t);
+  }
+
+  /**
+   * Colle la fenêtre clignotante « LOCALISATION / ×100 » juste AU-DESSUS de
+   * la minicarte : l'œil suit l'animation là où elle se joue.
+   */
+  function placerSurMinimap() {
+    try {
+      const r = minimap?.rect?.();
+      if (!r || (!r.width && !r.height)) return;
+      scan.style.left = `${Math.round(r.left + r.width / 2)}px`;
+      scan.style.top = `${Math.max(90, Math.round(r.top - 46))}px`;
+      scan.style.transform = 'translate(-50%, -50%)';
+    } catch { /* la fenêtre reste au centre */ }
   }
 
   /** Demande une adresse à l'utilisateur (point d'ancrage T0). */
@@ -580,8 +672,11 @@ export function initLocalisation(viewer, options = {}) {
    * @param {{lat?:number, lon?:number}} [force] cible imposée (sinon résolue)
    */
   async function demarrer(force = {}) {
-    if (window.__wtLocEnCours) return null;
+    // garde-fou : si un ancien run a laissé le drapeau à vrai (onglet en
+    // veille, erreur réseau…), on le considère périmé après 3 minutes.
+    if (window.__wtLocEnCours && Date.now() - (window.__wtLocT0 || 0) < 180_000) return null;
     window.__wtLocEnCours = true;
+    window.__wtLocT0 = Date.now();
     annule = false;
     timers = [];
     ds.entities.removeAll();
@@ -609,8 +704,11 @@ export function initLocalisation(viewer, options = {}) {
       let adresse = cible.adresse || '';
       let numeroCadastre = '';
       if (!adresse || cible.source === 'GPS') {
-        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${cible.lat}&lon=${cible.lon}&zoom=18&addressdetails=1&accept-language=fr`)
-          .then((x) => x.json()).catch(() => null);
+        const rep = await fetchAvecDelai(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${cible.lat}&lon=${cible.lon}&zoom=18&addressdetails=1&accept-language=fr`,
+          7_000,
+        );
+        const r = rep ? await rep.json().catch(() => null) : null;
         adresse = r?.display_name || adresse || `${cible.lat.toFixed(5)}, ${cible.lon.toFixed(5)}`;
       }
       const par = await parcelle(cible.lat, cible.lon);
@@ -623,18 +721,42 @@ export function initLocalisation(viewer, options = {}) {
       if (annule) throw new Error('annulé');
       stationEl.style.display = 'none';
 
-      // ——— 3. ZOOM SÉQUENTIEL ×1 ×10 ×100 … ———
-      const etapes = etapesZoom(ALTITUDE_ORBITALE, 300, 10);
-      for (let i = 0; i < etapes.length; i += 1) {
+      // ——— 3. ZOOM SÉQUENTIEL ×1 ×10 ×100 … JOUÉ DANS LA MINICARTE ———
+      // La vue PRINCIPALE reste en orbite (station + filtre + anneau de scan) :
+      // c'est la minicarte qui dégringole vers le point, palier par palier.
+      const vit = VITESSES.find((v) => v.cle === vitesse) || VITESSES[1];
+      const etapes = etapesZoom(ALTITUDE_ORBITALE, ALTITUDE_OISEAU, 10);
+      const dureePalier = (i) => Math.max(vit.min, (i === 0 ? 2.6 : 1.9) / vit.facteur);
+      minimap?.forcer?.(true);
+      minimap?.definirVue?.({ lon: cible.lon, lat: cible.lat, altitude: ALTITUDE_ORBITALE });
+      placerSurMinimap();
+      for (let i = 0; i < etapes.length - 1; i += 1) {
         if (annule) throw new Error('annulé');
         const e = etapes[i];
         const suivant = etapes[i + 1];
-        phase('ZOOM SÉQUENTIEL', `Palier ${i + 1}/${etapes.length} · altitude ${Math.round(e.altitude).toLocaleString('fr-FR')} m`, 0.3 + 0.6 * (i / etapes.length));
-        clignoter(i % 2 ? 'LOCALISATION' : 'ZOOM', etiquetteFacteur(suivant ? suivant.facteur : e.facteur), 1500);
-        await voler(cible.lat, cible.lon, e.altitude, e.altitude > 100_000 ? 2.0 : 2.4);
-        await attendre(180);
+        const duree = dureePalier(i);
+        phase('ZOOM SÉQUENTIEL',
+          `Palier ${i + 1}/${etapes.length - 1} · minicarte ${Math.round(suivant.altitude).toLocaleString('fr-FR')} m`,
+          0.3 + 0.55 * (i / Math.max(1, etapes.length - 1)));
+        clignoter(i % 2 ? 'LOCALISATION' : 'ZOOM', etiquetteFacteur(suivant.facteur), Math.min(2600, duree * 1000));
+        await Promise.race([
+          minimap?.animer?.({
+            lon: cible.lon, lat: cible.lat,
+            altitudeDepart: e.altitude, altitudeFin: suivant.altitude,
+            duree: duree * 1000,
+          }) ?? attendre(duree * 1000),
+          attendre(duree * 1000 + 1_500), // garde-fou : jamais bloqué ici
+        ]);
+        if (annule) throw new Error('annulé');
+        await attendre(120);
       }
+      // la minicarte montre maintenant le quartier : la vue principale s'y
+      // pose d'un seul vol, SANS descendre plus bas que la hauteur d'oiseau.
+      phase('APPROCHE FINALE', `Descente à ${ALTITUDE_OISEAU} m — hauteur d’oiseau`, 0.9);
+      await voler(cible.lat, cible.lon, ALTITUDE_OISEAU, 3.2 / vit.facteur);
       if (annule) throw new Error('annulé');
+      minimap?.definirVue?.(null);
+      if (minimap) minimap.forcer(false);
 
       // ——— 4. CRÉATION DU BÂTIMENT + BÂTI 3D ———
       phase('CRÉATION DU BÂTIMENT', 'Chargement du bâti réel (OpenStreetMap)…', 0.8);
@@ -678,7 +800,8 @@ export function initLocalisation(viewer, options = {}) {
       clignoter('LOCALISATION', 'PRÉSENCE', 1800);
       poserPresence(cible.lat, cible.lon, hauteur);
       pins?.poser?.(cible.lon, cible.lat, 'MA POSITION (T0)');
-      await orbiterDrone(cible.lat, cible.lon, 190, 12);
+      // survol drone : on reste à hauteur d'oiseau, on ne rase pas les toits
+      await orbiterDrone(cible.lat, cible.lon, ALTITUDE_OISEAU - 20, 12 / (vitesse === 'rapide' ? 1.6 : 1));
 
       phase('LOCALISATION TERMINÉE', `📍 ${adresse.slice(0, 100)}<br>🛰 source : ${cible.source}`, 1);
       surMessage?.(`📍 Localisé : ${adresse.slice(0, 60)}${numeroCadastre ? ` — cadastre ${numeroCadastre}` : ''}`);
@@ -693,6 +816,8 @@ export function initLocalisation(viewer, options = {}) {
       return null;
     } finally {
       window.__wtLocEnCours = false;
+      // on rend toujours la minicarte à la caméra (même en cas d'erreur)
+      try { minimap?.arreterAnimation?.(); minimap?.definirVue?.(null); minimap?.forcer?.(false); } catch { /* ok */ }
       releaseContinuousRender('wt-loc');
       releaseContinuousRender('wt-loc-bati');
       releaseContinuousRender('wt-loc-perimetre');
@@ -709,6 +834,8 @@ export function initLocalisation(viewer, options = {}) {
     window.__wtLocEnCours = false;
     for (const t of timers) window.clearTimeout(t);
     timers = [];
+    libererAttentes();
+    try { viewer.camera.cancelFlight(); } catch { /* pas de vol en cours */ }
     activerFiltre(false);
     scan.classList.remove('ouvert');
     hud.style.display = 'none';

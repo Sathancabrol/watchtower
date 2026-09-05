@@ -37,7 +37,8 @@ const CSS = `
 }
 #wt-cockpit .bandeau {
   position: absolute; left: 50%; bottom: calc(3vh + 292px); transform: translateX(-50%);
-  display: flex; gap: 10px; align-items: stretch; pointer-events: auto;
+  display: flex; gap: 10px; align-items: stretch; pointer-events: auto; flex-wrap: wrap;
+  justify-content: center; max-width: 92vw;
 }
 #wt-cockpit .boite {
   background: rgba(6,14,10,0.72); border: 1px solid rgba(120,230,150,0.32);
@@ -296,6 +297,8 @@ export function creerCockpit(viewer, options = {}) {
       <div class="boite"><div class="k">CHRONO</div><div class="v" data-c="chrono">00:00</div></div>
       <div class="boite"><div class="k">MASSE kg</div><div class="v" data-c="masse">—</div></div>
       <div class="boite"><div class="k">SOL m</div><div class="v" data-c="sol">—</div></div>
+      <div class="boite" style="min-width:120px"><div class="k">ENGIN</div><div class="v" data-c="engin" style="font-size:10px">—</div></div>
+      <div class="boite" style="min-width:150px"><div class="k">ÉTAT</div><div class="v" data-c="etat" style="font-size:10px;color:#ffe66d">—</div></div>
     </div>
     <div class="gaz"><i style="height:0%"></i><div class="etiq">GAZ</div></div>`;
   document.body.appendChild(el);
@@ -381,6 +384,11 @@ export function creerCockpit(viewer, options = {}) {
     if (vals.dist) vals.dist.textContent = ((Number(etat.distance) || 0) / 1000).toFixed(2);
     if (vals.masse) vals.masse.textContent = Number.isFinite(etat.masse) ? String(Math.round(etat.masse)) : '—';
     if (vals.sol) vals.sol.textContent = Number.isFinite(etat.sol) ? String(Math.round(etat.sol)) : '—';
+    if (vals.engin) vals.engin.textContent = etat.engin || '—';
+    if (vals.etat) {
+      vals.etat.textContent = etat.bloque || (etat.decroche ? '⚠ DÉCROCHAGE' : etat.plafond ? 'PLAFOND' : 'NOMINAL');
+      vals.etat.style.color = (etat.bloque || etat.decroche) ? '#ffd166' : '#d6ffe2';
+    }
     if (vals.chrono) {
       const s = Math.max(0, Math.floor((Number(etat.duree) || 0) / 1000));
       vals.chrono.textContent = `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;

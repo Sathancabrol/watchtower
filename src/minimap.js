@@ -142,6 +142,16 @@ export function initMinimap(viewer) {
 
   let suivre = true;
   let source = 0;
+  /**
+   * Vue PROPRE à la minicarte (mode autonome). Quand elle est définie, la
+   * minicarte ne suit plus la caméra : elle montre son propre point et son
+   * propre zoom. C'est ce qui permet de jouer une animation (descente
+   * « ×1 ×10 ×1000 ») DANS la minicarte sans bouger la vue principale.
+   * @type {{lon:number, lat:number, altitude:number}|null}
+   */
+  let vue = null;
+  /** Quand vrai, la minicarte reste affichée même si un panneau s'ouvre. */
+  let forcee = false;
   let filtre = 0;
   /** @type {Map<string, HTMLImageElement>} */
   const tuiles = new Map();
@@ -162,8 +172,10 @@ export function initMinimap(viewer) {
     return img;
   }
 
-  /** Point visé par la caméra (centre de l'écran principal) + altitude. */
+  /** Point visé : la vue AUTONOME de la minicarte si elle existe, sinon le
+   *  centre de l'écran principal + altitude de la caméra. */
   function centreVue() {
+    if (vue) return { lon: vue.lon, lat: vue.lat, altitude: vue.altitude, vise: true };
     const cam = viewer.camera;
     const c = cam.positionCartographic;
     const defaut = {
@@ -436,7 +448,7 @@ export function initMinimap(viewer) {
    * Exposé pour les tests et pour un recentrage manuel.
    */
   function suivreCamera() {
-    if (!suivre) return false;
+    if (!suivre || vue) return false;
     const c = centreVue();
     const portee = porteeSelonAltitude(c.altitude);
     return { lon: c.lon, lat: c.lat, portee };
@@ -444,6 +456,7 @@ export function initMinimap(viewer) {
 
   // ——— anti-collision : laisse la place aux panneaux du dock ———
   function syncCache() {
+    if (forcee) return; // animation en cours : la minicarte reste visible
     const gaucheVisible = [...document.querySelectorAll('.wt-dock-panel.gauche, #wti-gauche, #wt-fiche, #wt-pins')]
       .some(estVisible);
     div.classList.toggle('wt-mm-cachée', gaucheVisible);
@@ -454,10 +467,86 @@ export function initMinimap(viewer) {
   const timerSync = window.setInterval(syncCache, 1200);
   syncCache();
 
+  /**
+   * Bascule la minicarte sur sa propre vue (ou la rend à la caméra).
+   * @param {{lon:number, lat:number, altitude:number}|null} v
+   */
+  function definirVue(v) {
+    if (v && Number.isFinite(v.lat) && Number.isFinite(v.lon)) {
+      vue = { lon: v.lon, lat: v.lat, altitude: Math.max(50, Number(v.altitude) || 1000) };
+      const bouton = div.querySelector('[data-a="suivre"]');
+      if (bouton) bouton.classList.remove('actif');
+    } else {
+      vue = null;
+      const bouton = div.querySelector('[data-a="suivre"]');
+      if (bouton && suivre) bouton.classList.add('actif');
+    }
+    dessiner();
+    return vue ? { ...vue } : null;
+  }
+
+  /**
+   * Anime la minicarte : descente (ou montée) progressive vers un point.
+   * Interpolation LOGARITHMIQUE de l'altitude — c'est ainsi que l'œil lit un
+   * zoom (passer de 20 000 km à 2 000 km doit sembler aussi long que de
+   * 200 m à 20 m).
+   *
+   * @param {object} p
+   * @param {number} p.lon @param {number} p.lat
+   * @param {number} p.altitudeDepart @param {number} p.altitudeFin
+   * @param {number} [p.duree] ms
+   * @param {(avancement:number, altitude:number) => void} [p.surProgres]
+   * @returns {Promise<boolean>} vrai si menée à son terme (faux si interrompue)
+   */
+  function animer(p = {}) {
+    const {
+      lon, lat, altitudeDepart, altitudeFin, duree = 2_000, surProgres = null,
+    } = p;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return Promise.resolve(false);
+    const a0 = Math.max(20, Math.log(Math.max(20, Number(altitudeDepart) || 20_000_000)));
+    const a1 = Math.max(20, Math.log(Math.max(20, Number(altitudeFin) || 200)));
+    const ms = Math.max(400, Number(duree) || 2_000);
+    const debut = performance.now();
+    let precedente = 0;
+    return new Promise((res) => {
+      const pas = (maintenant) => {
+        if (!vue || arretAnimation) { res(false); return; }
+        const t = Math.min(1, (maintenant - debut) / ms);
+        // ease-in-out : départ et arrivée doux
+        const k = t < 0.5 ? 4 * t * t * t : 1 - ((-2 * t + 2) ** 3) / 2;
+        const altitude = Math.exp(a0 + (a1 - a0) * k);
+        vue = { lon, lat, altitude };
+        // ~24 images/s suffisent pour une minicarte : on ménage le CPU
+        if (maintenant - precedente > 40) {
+          precedente = maintenant;
+          dessiner();
+        }
+        surProgres?.(t, altitude);
+        if (t >= 1) { res(true); return; }
+        requestAnimationFrame(pas);
+      };
+      requestAnimationFrame(pas);
+    });
+  }
+
+  let arretAnimation = false;
+
   return {
     dessiner,
     suivreCamera,
     centreVue,
+    definirVue,
+    animer,
+    /** Interrompt une animation en cours. */
+    arreterAnimation: () => { arretAnimation = true; window.setTimeout(() => { arretAnimation = false; }, 60); },
+    /** Garde la minicarte affichée même si un panneau du dock s'ouvre. */
+    forcer: (etat) => {
+      forcee = Boolean(etat);
+      if (forcee) div.classList.remove('wt-mm-cachée');
+      else syncCache();
+    },
+    /** Boîte de la minicarte (pour coller une fenêtre dessus). */
+    rect: () => div.getBoundingClientRect(),
     arreter: () => { window.clearInterval(timer); window.clearInterval(timerSync); },
     setSuivre: (v) => { suivre = Boolean(v); },
   };

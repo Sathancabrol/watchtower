@@ -80,6 +80,37 @@ Le chargement « très long » venait de la construction, pas du réseau. Désor
 * **zones gardées en mémoire** : revenir sur une vue déjà chargée est instantané
   (c'est là que le gain se voit).
 
+### 🏠 Mode vol : hangar, engins et filtres de caméra
+
+Le panneau **✈ VOL** propose un **hangar** de 12 engins (drone, mini-drone,
+hélicoptère, avion de tourisme, ULM, planeur, avion de ligne, jet d'affaires,
+chasse, dirigeable, véhicule au sol, vedette) classés par catégorie et
+filtrables par nom. Chacun a ses **performances réelles** — vitesse de
+croisière et maximale, vitesse de décrochage, taux de montée, plafond, rayon
+de virage, inertie, consommation — et le modèle de vol en découle : le chasseur
+monte à 55 m/s, l'A320 met des kilomètres à virer, le planeur perd de
+l'altitude en permanence, la vedette s'arrête sur la terre ferme. Sept
+**filtres de caméra** (nuit, infrarouge, thermique, archive, noir & blanc,
+brume) s'appliquent au rendu 3D pendant le vol.
+
+### 📻 Radio en direct (dock **📻 RADIO**)
+
+L'équivalent libre de Radio Garden : recherche les **stations autour du point
+visé** (ou par nom, pays, genre) dans **Radio-Browser**, annuaire communautaire
+mondial ouvert et sans clé. Lecteur intégré, favoris, pastilles sur le globe
+(clic = écouter), et lien vers la radio.
+
+### 💼 Empreinte du lieu (fiche lieu)
+
+Cliquer un site industriel ne doit pas dire « point GPS ». La fiche ajoute une
+section **EMPREINTE ÉCONOMIQUE · RISQUES · SOURCES** : exploitant et
+propriétaire (tags OSM + Wikidata), **SIREN/SIRET**, code NAF, tranche
+d'effectif, dirigeants, date de création, chiffre d'affaires quand il est
+publié, **risques Géorisques** (ICPE/SEVESO, sols pollués, catastrophes
+naturelles, radon, argiles, sismicité), les **tags OpenStreetMap** bruts et
+une série de liens pour vérifier et agir (annuaire des entreprises, Pappers,
+BODACC, Géorisques, INSEE, data.gouv.fr).
+
 ### 🎛 Mode vol : poste de pilotage (dock **✈ VOL** → 🛫 DÉCOLLER)
 
 En vol, l'écran n'est plus un bureau : **une seule instrumentation, centrée**,
@@ -186,6 +217,12 @@ réelles** (éléments képleriens JPL, domaine public ; Lune par ELP2000). Les
 directions et rotations sont vraies — la Terre tourne sous le ciel — et les
 orbites dessinées montrent les boucles de rétrogradation. Seules les distances
 sont comprimées (échelle logarithmique) ; la Lune garde ses 384 400 km.
+
+### 🗺 Feuille de route
+
+La feuille de route vivante (fonctions, état, sources ouvertes branchées et à
+brancher, prochaines étapes) est dans **[ROADMAP.md](./ROADMAP.md)** — elle est
+mise à jour à chaque itération.
 
 **Démarrage rapide (Windows PowerShell) :**
 

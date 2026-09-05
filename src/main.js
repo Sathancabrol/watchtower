@@ -45,6 +45,7 @@ import { initStreetView } from './streetView.js';
 import { initLocalisation } from './localisation.js';
 import { initSystemeSolaire } from './systemeSolaire.js';
 import { initCadastre } from './cadastre.js';
+import { initRadio } from './radio.js';
 import { amenagerFenetres } from './fenetres.js';
 import { creerCockpit } from './cockpit.js';
 import { initCinematique } from './cinematique.js';
@@ -584,6 +585,14 @@ async function init() {
         titre: '🪐 SYSTÈME SOLAIRE — POSITIONS RÉELLES AUTOUR DE LA TERRE', element: systeme.element, cote: 'droite',
       });
 
+      // 📻 RADIO : annuaire Radio-Browser (équivalent libre de Radio Garden).
+      const radio = initRadio(viewer, { surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.radio = radio;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'radio', icone: '📻', libelle: 'RADIO',
+        titre: '📻 RADIO — FLUX EN DIRECT (RADIO-BROWSER, LIBRE)', element: radio.element, cote: 'droite',
+      });
+
       // 🗺 CADASTRE LÉGER : contours de parcelles (apicarto/IGN) sous 2 500 m,
       // pour que la carte « raconte » l'environnement sans le surcharger.
       const cadastre = initCadastre(viewer, { surMessage: (m) => window.__wtToast?.(m) });
@@ -657,7 +666,8 @@ async function init() {
     } catch (e) { console.error('[watchtower] paywall:', e); }
     // MINICARTE en bas à gauche (suit la vue, anti-collision, repliable)
     try {
-      initMinimap(viewer);
+      const minimap = initMinimap(viewer);
+      window.__godsEyeView.minimap = minimap;
     } catch (e) { console.error('[watchtower] minimap:', e); }
 
   } catch (error) {

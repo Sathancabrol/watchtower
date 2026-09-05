@@ -23,6 +23,7 @@ import { amenagerFenetre } from './fenetres.js';
 import { resolvePickId } from './data/pickRegistry.js';
 import { spriteEpingle } from './marqueurs.js';
 import { CADRAGES_DRONE, capturerDrone, listerCommons } from './illustration.js';
+import { empreinteDuLieu, formaterEuros, trancheEffectif } from './empreinte.js';
 
 const TYPE_ICONES = {
   townhall: ['🏛', 'Mairie · bâtiment public'],
@@ -122,6 +123,25 @@ const CSS = `
 }
 #wt-fiche .ligne-poi:hover { border-color: #00d4ff; }
 #wt-fiche .ligne-poi .d { margin-left: auto; color: #00d4ff; white-space: nowrap; }
+#wt-fiche .sect-e { padding: 7px 12px 3px; font-size: 8px; letter-spacing: 2px; color: #00d4ff; border-top: 1px solid rgba(0,212,255,0.14); }
+#wt-fiche .empreinte { padding: 4px 12px 9px; font-size: 9px; line-height: 1.65; }
+#wt-fiche .empreinte .grille { display: grid; grid-template-columns: 96px 1fr; gap: 2px 8px; }
+#wt-fiche .empreinte .k { color: rgba(232,234,237,0.45); letter-spacing: 1px; }
+#wt-fiche .empreinte .v { color: rgba(232,234,237,0.9); }
+#wt-fiche .empreinte .v b { color: #fff; }
+#wt-fiche .empreinte .chips { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 5px; }
+#wt-fiche .empreinte .chip {
+  padding: 2px 6px; border-radius: 5px; font-size: 7.5px; letter-spacing: .5px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(232,234,237,0.7);
+}
+#wt-fiche .empreinte .liens { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+#wt-fiche .empreinte .liens a {
+  padding: 3px 7px; border-radius: 6px; font-size: 8px; text-decoration: none;
+  background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.3); color: #00d4ff;
+}
+#wt-fiche .empreinte .liens a:hover { background: rgba(0,212,255,0.22); }
+#wt-fiche .empreinte .risque { display: flex; gap: 5px; padding: 3px 0; border-bottom: 1px dashed rgba(255,255,255,0.06); }
+#wt-fiche .empreinte .risque .d { color: rgba(232,234,237,0.55); font-size: 8px; }
 #wt-fiche .visite { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 10px; border-top: 1px solid rgba(0,212,255,0.15); }
 #wt-fiche .v-btn {
   cursor: pointer; padding: 7px 9px; font-family: inherit; font-size: 8.5px; font-weight: 700;
@@ -173,7 +193,7 @@ function poisDepuis(elements, lat, lon) {
     .map((e) => {
       const la = e.lat ?? e.center?.lat; const lo = e.lon ?? e.center?.lon;
       const type = e.tags.amenity || e.tags.shop || e.tags.tourism || e.tags.office || e.tags.railway || e.tags.natural || '';
-      return { nom: e.tags.name, type, lat: la, lon: lo, dist: dist2(lat, lon, la, lo) };
+      return { nom: e.tags.name, type, lat: la, lon: lo, dist: dist2(lat, lon, la, lo), tags: e.tags, osmId: e.id };
     })
     .filter((p) => Number.isFinite(p.lat) && (vus.has(p.nom) ? false : vus.add(p.nom)))
     .sort((a, b) => a.dist - b.dist)
@@ -300,6 +320,8 @@ export function initFicheLieu(viewer) {
           <span class="k">MÉTÉO</span><span>${meteo ? `${Math.round(meteo.temperature_2m)}°C · vent ${Math.round(meteo.wind_speed_10m)} km/h · ${CODES_METEO[meteo.weather_code] || ''}` : '—'}</span>
         </div>
       </div>
+      <div class="sect-e">💼 EMPREINTE ÉCONOMIQUE · RISQUES · SOURCES</div>
+      <div class="empreinte"><div class="chargement">🔍 Enquête : exploitant, entreprise, risques…</div></div>
       <div class="visite">
         <button class="v-btn orbite">🚁 ORBITE DRONE</button>
         <button class="v-btn scene">🎬 SCÈNE SUIVANTE</button>
@@ -316,6 +338,51 @@ export function initFicheLieu(viewer) {
     panneau.querySelector('.fermer').addEventListener('click', fermer);
     // fenêtre déplaçable + redimensionnable + formes (⚙), géométrie mémorisée
     amenagerFenetre(panneau, { cle: 'wt-fiche', poignee: panneau.querySelector('.entete') });
+
+    // ── EMPREINTE : qui exploite, combien de salariés, quels risques ──
+    const zoneEmpreinte = panneau.querySelector('.empreinte');
+    (async () => {
+      const e = await empreinteDuLieu({
+        lat, lon, nom,
+        tagsOsm: poi?.tags || {},
+        codeCommune: commune?.code || '',
+      });
+      if (!panneau || id !== requeteId) return;
+      const ligne = (k, v) => (v ? `<span class="k">${k}</span><span class="v">${v}</span>` : '');
+      const W = e.wikidata || {};
+      const E = e.entreprise || {};
+      const bloc = [
+        ligne('EXPLOITANT', e.exploitant ? `<b>${e.exploitant}</b>` : ''),
+        ligne('PROPRIÉTAIRE', e.proprietaire || W.proprietaire || ''),
+        ligne('MAISON MÈRE', W.maisonMere || ''),
+        ligne('ACTIVITÉ', e.activite || E.libelleActivite || W.secteur || ''),
+        ligne('PRODUIT', e.produit || ''),
+        E.siren ? ligne('SIREN / SIRET', `<b>${E.siren}</b>${E.siret ? ` · ${E.siret}` : ''}`
+          + (E.lien ? ` <a href="${E.lien}" target="_blank" rel="noopener">fiche ↗</a>` : '')) : '',
+        ligne('EFFECTIF', E.effectif && E.effectif !== 'non renseigné'
+          ? `<b>${E.effectif}</b>` : (W.effectif ? `<b>${W.effectif.toLocaleString('fr-FR')}</b> salariés (Wikidata)` : '')),
+        W.chiffreAffaires != null ? ligne('CHIFFRE D’AFFAIRES', `<b>${formaterEuros(W.chiffreAffaires)}</b>`) : '',
+        ligne('DIRIGEANT', W.dirigeant || (E.dirigeants?.length ? E.dirigeants.join(' · ') : '')),
+        ligne('CRÉATION', E.dateCreation || W.creation || ''),
+        ligne('STATUT', E.etat || ''),
+        E.adresse ? ligne('SIÈGE', `${E.adresse}${E.ville ? ` · ${E.codePostal || ''} ${E.ville}` : ''}`) : ligne('SIÈGE', W.siege || ''),
+        ligne('CATÉGORIE', E.categorie || ''),
+        E.nombreEtablissements ? ligne('ÉTABLISSEMENTS', `${E.nombreEtablissements}`) : '',
+      ].filter(Boolean).join('');
+
+      const risques = e.risques.length
+        ? `<div class="risques">${e.risques.map((r) => `<div class="risque"><span>${r.ic || '⚠'}</span><span>${r.nom}<span class="d"> — ${r.detail || r.nomTheme}</span></span></div>`).join('')}</div>`
+        : '<div style="opacity:.5">Aucun risque répertorié (Géorisques) dans un rayon de 1 km.</div>';
+
+      zoneEmpreinte.innerHTML = `
+        <div class="grille">${bloc || '<span class="k">—</span><span class="v">Aucune information d’entreprise : le site n’est pas rattaché à un exploitant connu d’OpenStreetMap.</span>'}</div>
+        <div class="sect-e" style="padding-left:0">⚠ RISQUES &amp; ENVIRONNEMENT</div>
+        ${risques}
+        <div class="sect-e" style="padding-left:0">🏷 TAGS OPENSTREETMAP</div>
+        <div class="chips">${(e.tags || []).map(([k, v]) => `<span class="chip">${k} = ${v}</span>`).join('') || '<span class="chip">aucun tag</span>'}</div>
+        <div class="sect-e" style="padding-left:0">🔗 VÉRIFIER &amp; AGIR</div>
+        <div class="liens">${e.liens.map((l) => `<a href="${l.url}" target="_blank" rel="noopener">${l.nom} ↗</a>`).join('')}</div>`;
+    })();
 
     // ── ILLUSTRATION : photo libre du lieu, sinon capture drone ──
     // Une fiche doit toujours montrer à quoi ressemble l'endroit.
