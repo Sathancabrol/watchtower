@@ -386,10 +386,21 @@ export function initCadastre(viewer, options = {}) {
   voirRoutes?.addEventListener('change', () => { if (actif) { redessiner(); majRoutes(true); } });
   nomsRoutes?.addEventListener('change', () => { if (actif) redessiner(); });
 
+  /** Couche ROUTES : allumée / éteinte / état (pilotable depuis CALQUES). */
+  function routes(etat) {
+    if (etat === undefined) return Boolean(voirRoutes?.checked);
+    if (!voirRoutes) return false;
+    const on = Boolean(etat);
+    if (voirRoutes.checked !== on) voirRoutes.checked = on;
+    if (actif) { redessiner(); majRoutes(true); }
+    return on;
+  }
+
   return {
     element: el,
     activer,
     maj,
+    routes,
     visible: () => actif,
     statistiques: () => ({ ...stats }),
     effacer: () => { ds.entities.removeAll(); cache.clear(); },

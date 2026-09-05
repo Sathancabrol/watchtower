@@ -4,10 +4,11 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 14** (🎛 lanceur par catégories +
-préréglages : TOUTES les fonctions atteignables ; 🧭 boussole dans la
-minicarte ; 🗺 minicarte en globe).
-Itérations précédentes : **13** = 🧭 boussole « casque » sur la hauteur, ▚
+Dernière mise à jour : **itération 15** (🗂 CALQUES : les 27 couches de
+l'app, rien de bloqué · 🧭 médaillons de lieu 360° cliquables · 🎛 pastilles
+de catégories dans le lanceur).
+Itérations précédentes : **14** = 🎛 lanceur par catégories + préréglages,
+🧭 boussole dans la minicarte, 🗺 minicarte en globe · **13** = 🧭 boussole « casque » sur la hauteur, ▚
 MATRIX sur la minicarte, 🎨 peau néon, 👁 œil dans le logo · **12** = 🖥 HUD central (un œil toujours visible +
 la liste de tout ce qui s'affiche) · **11** = 🕰 mode historique (la ville se construit à
 partir des dates OpenStreetMap) · **10** = parcours de vol traçés & rejoués, 3ᵉ personne
@@ -21,7 +22,18 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 14 — en cours
+## 0. Itération 15 — en cours
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Calques** | 🗂 **Les 27 couches de l'app** dans le panneau CALQUES du panneau droit, rangées en 5 familles | ✅ | `calques.js` | modules + sources ouvertes |
+| **Calques** | Niveau par couche : 🟢 gratuit (24) · 🔵 compte (1) · 🔑 payant (2) — **aucun n'est bloqué**, 🔑 marche en repli gratuit | ✅ | `calques.js` | — |
+| **Calques** | L'état de chaque case est **lu dans l'application** (pas mémorisé à côté) et rafraîchi en continu | ✅ | `calques.js` | — |
+| **Lieux** | 🧭 **Médaillons 360°** : quand « noms de lieux » est actif, chaque niveau devient une grande icône qui **flotte** et **tourne lentement** | ✅ | `medaillons.js` | Nominatim (sans clé) |
+| **Lieux** | Au clic : **⬆ MONTER · ⬇ DESCENDRE** dans la hiérarchie pays → région → département → commune → quartier, + 📄 FICHE · 🎯 RECENTRER | ✅ | `medaillons.js` | Nominatim |
+| **Lanceur** | 🎛 **Une pastille par catégorie** dans la barre du haut : chaque famille se remet d'un clic (fin du « les outils / INTEL ont disparu ») | ✅ | `mobiDock.js` | — |
+
+## 0 bis. Itération 14 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -33,7 +45,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 bis. Itération 13 — terminée
+## 0 ter. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -45,7 +57,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 ter. Itération 12 — terminée
+## 0 quater. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -56,7 +68,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 quater. Itération 11 — terminée
+## 0 quinquies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -67,7 +79,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 quinquies. Itération 10 — terminée
+## 0 sexies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -84,7 +96,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 sexies. Itération 9 — terminée
+## 0 septies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -137,6 +149,28 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **15** :
+
+* **« les outils ne sont pas visibles, la vue INTEL a disparu »** — en
+  choisissant un préréglage, certaines catégories se masquent. Le lanceur a
+  maintenant **une pastille par catégorie** (NAVIGATION · VUES · DONNÉES ·
+  OUTILS · MODES) dans la barre du haut : chaque famille se remontre d'un
+  clic, quel que soit le préréglage actif.
+* **« dans CALQUES, mettre tous les calques disponibles selon le style de
+  compte, sans rien bloquer »** — 27 couches en 5 familles (TERRITOIRE ·
+  DONNÉES · TRAFIC · AMBIANCE · OUTILS) : bâti 3D, cadastre, routes, entités,
+  cadrans, noms de lieux, épingles, itinéraires, INTEL, zones de chaleur,
+  caméras & capteurs, détections, radios, avions 3D, CCTV, système solaire,
+  anneau céleste, éclairage soleil, brouillard, atmosphère, masque
+  circulaire, halo, peau néon, boussole, relief 3D 🔵, Google 3D 🔑,
+  commandes vocales 🔑. **Rien n'est bloqué** : un calque 🔑 s'active et
+  fonctionne avec le repli gratuit (un message l'explique).
+* **« quand noms de lieux est actif, le nom est une grande icône qui flotte
+  en 360° lent, cliquable »** — médaillons : un disque par niveau, rotation
+  lente (26 s/tour) et flottement vertical, posés sur la carte. Au clic :
+  fiche du lieu + **⬆ MONTER / ⬇ DESCENDRE** dans la hiérarchie
+  pays → région → département → commune → quartier (Nominatim, sans clé).
 
 Itération **14** :
 

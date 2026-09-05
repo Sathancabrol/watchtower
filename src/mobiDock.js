@@ -80,6 +80,7 @@ const CSS = `
   border: 1px solid rgba(0,212,255,0.22);
 }
 .wt-dock-chip:hover { border-color: #00d4ff; color: #e8eaed; }
+.wt-dock-sep { opacity: .3; font-size: 9px; }
 .wt-dock-chip.actif {
   background: rgba(0,212,255,0.18); border-color: #00d4ff; color: #00d4ff;
   box-shadow: 0 0 10px rgba(0,212,255,0.3);
@@ -292,13 +293,20 @@ export function initMobiDock({
   // ── préréglages + réduction ────────────────────────────────────────────
   let preset = typeof etat.preset === 'string' ? etat.preset : 'tout';
   let replie = etat.replie === true;
+  /** Catégories affichées. Une pastille par catégorie permet de les remettre
+   *  une à une : c'est le filet qui garantit que rien n'est jamais perdu. */
+  const actifs = new Set(
+    etat.groupes && typeof etat.groupes === 'object'
+      ? groupes.filter((g) => etat.groupes[g.id] !== false).map((g) => g.id)
+      : groupes.map((g) => g.id),
+  );
 
-  function appliquerPreset(id) {
-    const pr = presets.find((x) => x.id === id) || presets[0];
-    preset = pr.id;
+  function rendreGroupes() {
     for (const [gid, ligne] of rangs) {
-      const montre = !pr.groupes || pr.groupes.includes(gid);
-      ligne.style.display = montre && ligne.children.length > 1 ? '' : 'none';
+      ligne.style.display = actifs.has(gid) && ligne.children.length > 1 ? '' : 'none';
+    }
+    for (const c of barrePresets.querySelectorAll('.wt-dock-chip[data-groupe]')) {
+      c.classList.toggle('actif', actifs.has(c.dataset.groupe));
     }
     for (const c of barrePresets.querySelectorAll('.wt-dock-chip[data-preset]')) {
       c.classList.toggle('actif', c.dataset.preset === preset);
@@ -306,8 +314,24 @@ export function initMobiDock({
     dock.classList.toggle('wt-dock-replie', replie);
     const e2 = lireEtat();
     e2.preset = preset;
+    e2.groupes = Object.fromEntries(groupes.map((g) => [g.id, actifs.has(g.id)]));
     ecrireEtat(e2);
     mesurer();
+  }
+
+  function appliquerPreset(id) {
+    const pr = presets.find((x) => x.id === id) || presets[0];
+    preset = pr.id;
+    actifs.clear();
+    for (const g of pr.groupes || groupes.map((x) => x.id)) actifs.add(g);
+    rendreGroupes();
+  }
+
+  /** Bascule une catégorie (pastille) — jamais bloquée. */
+  function basculerGroupe(id) {
+    if (actifs.has(id)) actifs.delete(id); else actifs.add(id);
+    preset = 'libre';
+    rendreGroupes();
   }
 
   for (const p of presets) {
@@ -317,6 +341,21 @@ export function initMobiDock({
     c.textContent = p.nom;
     c.title = p.groupes ? `Catégories : ${p.groupes.join(', ')}` : 'Toutes les catégories';
     c.addEventListener('click', () => { replie = false; appliquerPreset(p.id); });
+    barrePresets.appendChild(c);
+  }
+
+  const separateur = document.createElement('span');
+  separateur.className = 'wt-dock-sep';
+  separateur.textContent = '│';
+  barrePresets.appendChild(separateur);
+  for (const g of groupes) {
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'wt-dock-chip';
+    c.dataset.groupe = g.id;
+    c.textContent = g.nom;
+    c.title = `Afficher / masquer la catégorie ${g.nom}`;
+    c.addEventListener('click', () => basculerGroupe(g.id));
     barrePresets.appendChild(c);
   }
 
@@ -387,6 +426,8 @@ export function initMobiDock({
     ranger: (btn, idGroupe = 'outils') => { rangDe(idGroupe).appendChild(btn); mesurer(); },
     preset: () => preset,
     appliquerPreset,
+    basculerGroupe,
+    categories: () => [...actifs],
     mesurer,
   };
 }

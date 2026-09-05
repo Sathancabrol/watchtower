@@ -22,6 +22,7 @@
 
 import * as Cesium from 'cesium';
 import { initDisplayOptions } from './displayOptions.js';
+import { initCalques } from './calques.js';
 
 const HOME_KEY = 'watchtower.domicile.v1';
 const VIEWS_KEY = 'watchtower.vues.v1';
@@ -228,7 +229,7 @@ export function initWatchtowerExtras({ viewer }) {
         <div class="wt-liens" data-wt="liens"></div>
       </div>
       <div class="wt-section">
-        <div class="wt-k">AFFICHAGE — CALQUES (OPEN SOURCE, SANS CLÉ)</div>
+        <div class="wt-k">AFFICHAGE — TOUS LES CALQUES (RIEN DE BLOQUÉ)</div>
         <div data-wt="calques"></div>
       </div>
       <div class="wt-section">
@@ -283,6 +284,15 @@ export function initWatchtowerExtras({ viewer }) {
 
   /* ── AFFICHAGE : calques activables (pluie, nuages, relief, noms, cadastre) ── */
   const displayOptions = initDisplayOptions(viewer, el('calques'));
+  /* 🗂 TOUS LES CALQUES de l'application, rangés par familles, avec leur
+     niveau de compte (🟢 gratuit · 🔵 compte · 🔑 payant) — aucun n'est
+     bloqué : 🔑 fonctionne avec le repli gratuit de l'app. */
+  try {
+    window.__godsEyeView.calques = initCalques(viewer, {
+      conteneur: el('calques'),
+      surMessage: (m) => (typeof window.__wtToast === 'function' ? window.__wtToast(m) : null),
+    });
+  } catch (e) { console.error('[watchtower] calques:', e); }
 
   /* ── horloge française ── */
   const majHorloge = () => {

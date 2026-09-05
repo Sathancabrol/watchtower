@@ -362,6 +362,33 @@ RADIO, ENTITÉS, DISPOSITIFS, ÉPINGLES, RUE (street view), PHOTO, GLOBE
   texte WATCHTOWER. Il ne bouge plus jamais et reste cliquable même en vue
   propre ou après la veille.
 
+### 🗂 CALQUES — les 27 couches de l'application, rien de bloqué
+
+Dans le panneau **WATCHTOWER · FR** (à droite), la section **CALQUES** liste
+**tout** ce que l'application sait afficher, en 5 familles :
+
+| Famille | Couches |
+|---|---|
+| TERRITOIRE | bâti 3D · cadastre · routes · entités · cadrans · noms de lieux · épingles · itinéraires |
+| DONNÉES | INTEL · zones de chaleur · caméras & capteurs · détections · radios |
+| TRAFIC | avions 3D · caméras live |
+| AMBIANCE | système solaire · anneau céleste · éclairage soleil · brouillard · atmosphère · masque circulaire · halo · peau néon · boussole |
+| OUTILS | relief 3D 🔵 · Google 3D 🔑 · commandes vocales 🔑 |
+
+Chaque couche porte son niveau : **🟢 gratuit** (24), **🔵 compte** (1),
+**🔑 payant** (2). **Aucune n'est bloquée** : une couche 🔑 s'allume et
+fonctionne avec le repli gratuit de l'app (un message l'explique). L'état des
+cases est **lu dans l'application**, pas mémorisé à côté.
+
+### 🧭 Médaillons de lieu (noms de lieux « 360° »)
+
+Quand **NOMS DE LIEUX** est actif, chaque niveau devient une **grande icône
+qui flotte** et **tourne lentement** (un tour en 26 s) au-dessus de la carte :
+pays, région, département, commune, quartier. Un clic ouvre la carte du lieu
+avec **⬆ MONTER** et **⬇ DESCENDRE** dans la hiérarchie (on remonte vers
+l'Occitanie, on descend vers Sète…), **📄 FICHE** et **🎯 RECENTRER**.
+Hiérarchie lue par **Nominatim** (données ouvertes, sans clé).
+
 ### 🗺 Feuille de route
 
 La feuille de route vivante (fonctions, état, sources ouvertes branchées et à

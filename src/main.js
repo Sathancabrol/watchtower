@@ -38,6 +38,7 @@ import { initMinimap } from './minimap.js';
 import { creerBatiRapide } from './batiRapide.js';
 import { initHistorique } from './historique.js';
 import { initHudCentral } from './hudCentral.js';
+import { initMedaillons } from './medaillons.js';
 import { initTheme } from './theme.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
@@ -737,6 +738,18 @@ async function init() {
       // hameaux) + fenêtre du lieu central sous la boussole.
       const nomsLieux = initNomsLieux(viewer, { fenetres: true });
       window.__godsEyeView.nomsLieux = nomsLieux;
+      // 🧭 MÉDAILLONS : quand les noms de lieux sont actifs, chaque niveau
+      // (pays → région → département → commune → quartier) devient une
+      // grande icône qui FLOTTE et tourne lentement en 360°. Au clic :
+      // fiche + monter / descendre dans la hiérarchie.
+      try {
+        const medaillons = initMedaillons(viewer, {
+          fiche: (lon, lat, nom) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom),
+          surMessage: (m) => window.__wtToast?.(m),
+          actif: true,
+        });
+        window.__godsEyeView.medaillons = medaillons;
+      } catch (e) { console.error('[watchtower] medaillons:', e); }
 
       // 🎥 DISPOSITIFS : caméras, micros, capteurs — visibles sur la carte en
       // vue INTEL. Un clic sur l'icône ouvre la FICHE avec sa MINI-FENÊTRE DE

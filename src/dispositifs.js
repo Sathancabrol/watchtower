@@ -581,8 +581,10 @@ export function initDispositifs(viewer, options = {}) {
 
   rendreListe();
 
-  return {
+  const api = {
     element: el,
+    /** État de la couche (et pilotage) — utilisé par les CALQUES. */
+    visible: (etat) => (etat === undefined ? actif : api.basculer(etat)),
     /** Le panneau + la couche carte. */
     basculer(etat) {
       const on = etat === undefined ? !actif : Boolean(etat);
@@ -607,4 +609,5 @@ export function initDispositifs(viewer, options = {}) {
     mesure: () => ({ ...mesure }),
     arreterFlux,
   };
+  return api;
 }
