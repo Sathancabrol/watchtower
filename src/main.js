@@ -44,7 +44,10 @@ import { initPhotoSearch } from './photoSearch.js';
 import { initStreetView } from './streetView.js';
 import { initLocalisation } from './localisation.js';
 import { initSystemeSolaire } from './systemeSolaire.js';
+import { initCadastre } from './cadastre.js';
 import { amenagerFenetres } from './fenetres.js';
+import { creerCockpit } from './cockpit.js';
+import { initCinematique } from './cinematique.js';
 import { initCctvCam } from './cctvCam.js';
 import { MapStackController } from './mapStackController.js';
 import { initAnnotations } from './annotations/index.js';
@@ -418,21 +421,68 @@ async function init() {
       const chantier = initChantier(viewer);
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
       const recentrerHQ = () => {
-        const voler = (lo, la, alt) => viewer.camera.flyTo({ destination: Cesium.Cartesian3.fromDegrees(lo, la, alt), duration: 2.2 });
+        // 🎬 approche cinématique (travelling descendant, bandes, grain)
+        const jouer = (lo, la, nom) => window.__godsEyeView.cinematique?.rechercheHQ(la, lo, nom);
         const replis = () => {
           try {
             const h = JSON.parse(window.localStorage.getItem('watchtower.domicile.v1') || 'null');
-            if (Number.isFinite(h?.lon)) { voler(h.lon, h.lat, 1800); return; }
+            if (Number.isFinite(h?.lon)) { jouer(h.lon, h.lat, h.label || 'MON DOMICILE'); return; }
           } catch { /* pas de domicile */ }
-          voler(3.75, 43.44, 21_000_000); // position inconnue → orbite de la Terre
+          jouer(3.75, 43.44, 'MÉDITERRANÉE'); // position inconnue
         };
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
-            (pos) => voler(pos.coords.longitude, pos.coords.latitude, 1800),
+            (pos) => jouer(pos.coords.longitude, pos.coords.latitude, 'MA POSITION'),
             replis, { timeout: 4000, maximumAge: 120000 },
           );
         } else replis();
       };
+      // 🎬 CINÉMATIQUE : approche « écran de jeu » (travelling + bandes +
+      // grain) utilisée par le bouton HQ et la recherche de lieu.
+      const cinematique = initCinematique(viewer, {
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      window.__godsEyeView.cinematique = cinematique;
+
+      // 🎛 COCKPIT : en mode vol, une seule instrumentation, centrée, façon
+      // simulateur. Le tiroir « SYSTÈMES » rouvre chaque fenêtre rangée.
+      const PANNEAUX_BORD = [
+        { libelle: '📍 MOI', dock: 'moi' },
+        { libelle: '🧠 INTEL', cible: 'wt-intel' },
+        { libelle: '🏙 BÂTI 3D', dock: 'bati' },
+        { libelle: '📌 ÉPINGLES', cible: 'wt-pins' },
+        { libelle: '🗺 MINICARTE', cible: 'wt-minimap' },
+        { libelle: '🛣 TRAJETS', dock: 'trajets' },
+        { libelle: '🪐 SYSTÈME', dock: 'systeme' },
+        { libelle: '💬 CHAT', dock: 'chat' },
+        { libelle: '🎨 FILTRES', dock: 'filtres' },
+        { libelle: '🎚 VISUEL+', cible: 'pp-toggles' },
+        { libelle: '🎛 PARAMS', cible: 'param-slider-panel' },
+        { libelle: '🏗 CHANTIER', dock: 'chantier' },
+      ];
+      const cockpit = creerCockpit(viewer, {
+        panneaux: PANNEAUX_BORD,
+        surMessageHud: (m) => window.__wtToast?.(m),
+        surOuvrirPanneau: (p, on) => {
+          const dock = window.__godsEyeView.dock;
+          for (const n of document.querySelectorAll('.wt-vol-force')) n.classList.remove('wt-vol-force');
+          if (!on) return;
+          if (p.dock) {
+            dock?.ouvrir?.(p.dock);
+            window.requestAnimationFrame(() => {
+              cockpit.forcer(document.querySelector('.wt-dock-panel:not(.wt-dock-cache)'));
+            });
+          } else if (p.cible) {
+            const n = document.getElementById(p.cible);
+            if (!n) return;
+            n.classList.remove('wt-dock-cache');
+            cockpit.forcer(n);
+          }
+        },
+      });
+      window.__godsEyeView.cockpit = cockpit;
+      const vol = initFlightMode(viewer, { cockpit });
+
       // INTEL nouvelle génération : tableau de bord « jumeau numérique »
       // (remplace le HUD intel d'origine — créé AVANT le dock qui le bascule).
       window.__godsEyeView.intel = initIntelTwin(viewer);
@@ -447,7 +497,7 @@ async function init() {
           { id: 'filtres', icone: '🎨', libelle: 'FILTRES', titre: 'FILTRES DE VUE', element: filtres.element, cote: 'droite' },
           { id: 'bati', icone: '🏙', libelle: 'BÂTI 3D', titre: 'BÂTIMENTS 3D (OSM, GRATUIT, RAPIDE)', element: bati.element, cote: 'gauche' },
           { id: 'chantier', icone: '🏗', libelle: 'CHANTIER', titre: 'HUB CHANTIER — CONDUITE DE TRAVAUX', element: chantier.element, cote: 'gauche' },
-          { id: 'vol', icone: '✈', libelle: 'VOL', titre: 'MODE PILOTAGE — DRONE / AVION (ZQSD + JOYSTICK)', element: initFlightMode(viewer).element, cote: 'droite' },
+          { id: 'vol', icone: '✈', libelle: 'VOL', titre: 'MODE PILOTAGE — DRONE / AVION (ZQSD + JOYSTICK)', element: vol.element, cote: 'droite' },
           { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: poste.panneaux.lieux.element, cote: 'gauche' },
           { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: poste.panneaux.histo.element, cote: 'droite' },
           { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: poste.panneaux.favoris.element, cote: 'gauche' },
@@ -532,6 +582,15 @@ async function init() {
       window.__godsEyeView.dock?.ajouter?.({
         id: 'systeme', icone: '🪐', libelle: 'SYSTÈME',
         titre: '🪐 SYSTÈME SOLAIRE — POSITIONS RÉELLES AUTOUR DE LA TERRE', element: systeme.element, cote: 'droite',
+      });
+
+      // 🗺 CADASTRE LÉGER : contours de parcelles (apicarto/IGN) sous 2 500 m,
+      // pour que la carte « raconte » l'environnement sans le surcharger.
+      const cadastre = initCadastre(viewer, { surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.cadastre = cadastre;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'cadastre', icone: '🗺', libelle: 'CADASTRE',
+        titre: '🗺 CADASTRE — CONTOURS DE PARCELLES (IGN, SANS CLÉ)', element: cadastre.element, cote: 'gauche',
       });
 
       // 🗺 NOMS DE LIEUX : étiquettes toujours lisibles (pays → villes →

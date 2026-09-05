@@ -8,8 +8,8 @@
  *   — synthèse Wikipédia + PHOTO du bâtiment (API Wikipédia, gratuite) ;
  *   — adresse (BAN), commune (population, CP — geo.gouv.fr), coordonnées,
  *     altitude, météo du point ;
- *   — onglets 🏛 POLITIQUE · 💶 ÉCONOMIE · 👥 CITOYEN (services, commerces,
- *     institutions autour, via Overpass/OSM) ;
+ *   — ILLUSTRATION garantie : photo libre Wikimedia Commons autour du point,
+ *     sinon capture « drone » fabriquée par le moteur 3D (jamais de fiche vide) ;
  *   — VISITE 3D : orbite drone 360° autour du bâtiment, ou scène par scène
  *     (N/E/S/O/plongée). En mode payant Google 3D, le bâtiment est en vraie
  *     3D photoréaliste ; l'intérieur nécessite des plans (feuille de route).
@@ -22,6 +22,7 @@ import { rendreDeplacable } from './draggable.js';
 import { amenagerFenetre } from './fenetres.js';
 import { resolvePickId } from './data/pickRegistry.js';
 import { spriteEpingle } from './marqueurs.js';
+import { CADRAGES_DRONE, capturerDrone, listerCommons } from './illustration.js';
 
 const TYPE_ICONES = {
   townhall: ['🏛', 'Mairie · bâtiment public'],
@@ -83,19 +84,37 @@ const CSS = `
 #wt-fiche .entete .type { font-size: 8px; letter-spacing: 2px; color: #00d4ff; text-transform: uppercase; }
 #wt-fiche .fermer { cursor: pointer; background: none; border: none; color: rgba(232,234,237,0.6); font-size: 13px; font-family: inherit; }
 #wt-fiche .corps { overflow-y: auto; flex: 1; }
-#wt-fiche .photo { width: 100%; max-height: 150px; object-fit: cover; display: block; }
+#wt-fiche .photo { width: 100%; max-height: 190px; object-fit: cover; display: block; }
+#wt-fiche .illustration { position: relative; border-bottom: 1px solid rgba(0,212,255,0.15); }
+#wt-fiche .illus-cadre { position: relative; height: 190px; background: #05080d; overflow: hidden; }
+#wt-fiche .illus-attente {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; letter-spacing: 2px; color: rgba(232,234,237,0.45);
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0 8px, transparent 8px 16px);
+}
+#wt-fiche .illus-credit {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 8px; font-size: 7.5px;
+  color: rgba(232,234,237,0.75); background: linear-gradient(0deg, rgba(3,6,10,0.92), transparent);
+  display: flex; gap: 6px; align-items: center;
+}
+#wt-fiche .illus-credit .src { color: #00d4ff; letter-spacing: 1px; }
+#wt-fiche .illus-credit .txt { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#wt-fiche .illus-credit a { color: #00d4ff; }
+#wt-fiche .illus-btns { display: flex; gap: 4px; padding: 6px 8px; }
+#wt-fiche .i-btn {
+  flex: 1; cursor: pointer; padding: 6px 4px; border-radius: 7px; font-family: inherit; font-size: 8px;
+  font-weight: 700; letter-spacing: 1px; background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.35); color: #00d4ff;
+}
+#wt-fiche .i-btn:hover { background: rgba(0,212,255,0.22); }
 #wt-fiche .extrait { padding: 9px 12px; font-size: 10px; line-height: 1.65; color: rgba(232,234,237,0.85); }
 #wt-fiche .extrait a { color: #00d4ff; }
 #wt-fiche .infos { padding: 4px 12px 8px; display: grid; grid-template-columns: 84px 1fr; gap: 3px 8px; font-size: 9px; line-height: 1.5; }
 #wt-fiche .infos .k { color: rgba(232,234,237,0.45); letter-spacing: 1px; }
-#wt-fiche .onglets { display: flex; gap: 4px; padding: 6px 10px; border-top: 1px solid rgba(0,212,255,0.15); }
-#wt-fiche .onglet {
   flex: 1; cursor: pointer; padding: 6px 2px; font-family: inherit; font-size: 8px;
   font-weight: 700; letter-spacing: 1px; border-radius: 7px;
   background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(232,234,237,0.75);
 }
-#wt-fiche .onglet.actif { background: rgba(0,212,255,0.14); border-color: #00d4ff; color: #00d4ff; }
-#wt-fiche .contenu-onglet { padding: 6px 10px 10px; font-size: 9px; }
 #wt-fiche .ligne-poi {
   cursor: pointer; width: 100%; text-align: left; display: flex; gap: 7px; align-items: center;
   padding: 5px 8px; margin-bottom: 3px; border-radius: 7px; font-family: inherit; font-size: 9.5px;
@@ -119,7 +138,6 @@ const dist2 = (la1, lo1, la2, lo2) => {
   const a = Math.sin(((la2 - la1) * rad) / 2) ** 2 + Math.cos(la1 * rad) * Math.cos(la2 * rad) * Math.sin(((lo2 - lo1) * rad) / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
 };
-const fd = (m) => (m < 1000 ? `${Math.round(m)} m` : `${(m / 1000).toFixed(1)} km`);
 
 async function wikiResume(tag) {
   let lang = 'fr'; let titre = tag;
@@ -260,8 +278,18 @@ export function initFicheLieu(viewer) {
         <div class="titres"><div class="nom">${nom}</div><div class="type">${typeLbl}</div></div>
         <button class="fermer" title="Fermer">✕</button>
       </div>
+      <div class="illustration">
+        <div class="illus-cadre"><div class="illus-attente">📷 illustration…</div>
+          <img class="photo" alt="" style="display:none" />
+        </div>
+        <div class="illus-credit"></div>
+        <div class="illus-btns">
+          <button class="i-btn autre" type="button">🔄 AUTRE IMAGE</button>
+          <button class="i-btn drone" type="button">🛩 VUE DRONE</button>
+          <button class="i-btn source" type="button" style="display:none">🖼 VOIR LA SOURCE</button>
+        </div>
+      </div>
       <div class="corps">
-        ${wiki?.image ? `<img class="photo" src="${wiki.image}" alt="" />` : ''}
         ${wiki?.extrait ? `<div class="extrait">${wiki.extrait.slice(0, 480)}${wiki.extrait.length > 480 ? '…' : ''}
           ${wiki.url ? ` <a href="${wiki.url}" target="_blank" rel="noopener">Wikipédia ↗</a>` : ''}</div>` : ''}
         <div class="infos">
@@ -271,12 +299,6 @@ export function initFicheLieu(viewer) {
           <span class="k">ALTITUDE</span><span>${Number.isFinite(alt) ? `${Math.round(alt)} m` : '—'}</span>
           <span class="k">MÉTÉO</span><span>${meteo ? `${Math.round(meteo.temperature_2m)}°C · vent ${Math.round(meteo.wind_speed_10m)} km/h · ${CODES_METEO[meteo.weather_code] || ''}` : '—'}</span>
         </div>
-        <div class="onglets">
-          <button class="onglet" data-o="politique">🏛 POLITIQUE</button>
-          <button class="onglet" data-o="economie">💶 ÉCONOMIE</button>
-          <button class="onglet" data-o="citoyen">👥 CITOYEN</button>
-        </div>
-        <div class="contenu-onglet"></div>
       </div>
       <div class="visite">
         <button class="v-btn orbite">🚁 ORBITE DRONE</button>
@@ -295,36 +317,84 @@ export function initFicheLieu(viewer) {
     // fenêtre déplaçable + redimensionnable + formes (⚙), géométrie mémorisée
     amenagerFenetre(panneau, { cle: 'wt-fiche', poignee: panneau.querySelector('.entete') });
 
-    // ── onglets : institutions / commerces / services autour (OSM) ──
-    const REQ = {
-      politique: `(node(around:600,${lat},${lon})[amenity~"townhall|courthouse|police|fire_station"];way(around:600,${lat},${lon})[amenity~"townhall|courthouse|police|fire_station"];node(around:600,${lat},${lon})[office=government];way(around:600,${lat},${lon})[office=government];);out tags center 30;`,
-      economie: `(node(around:400,${lat},${lon})[shop];node(around:400,${lat},${lon})[office][office!=government];node(around:400,${lat},${lon})[amenity~"restaurant|cafe|bar|bank|fast_food|marketplace"];);out tags center 40;`,
-      citoyen: `(node(around:500,${lat},${lon})[amenity~"school|kindergarten|library|post_office|pharmacy|hospital|community_centre|place_of_worship"];way(around:500,${lat},${lon})[amenity~"school|library|hospital|place_of_worship"];);out tags center 30;`,
-    };
-    const TITRES = {
-      politique: 'Institutions à proximité', economie: 'Commerces & entreprises à proximité', citoyen: 'Services au citoyen à proximité',
-    };
-    const zone = panneau.querySelector('.contenu-onglet');
-    for (const btn of panneau.querySelectorAll('.onglet')) {
-      btn.addEventListener('click', async () => {
-        panneau.querySelectorAll('.onglet').forEach((b) => b.classList.remove('actif'));
-        btn.classList.add('actif');
-        const o = btn.dataset.o;
-        zone.innerHTML = '<div class="chargement">🔍 Recherche…</div>';
-        try {
-          const liste = poisDepuis(await overpass(REQ[o]), lat, lon);
-          zone.innerHTML = `<div style="color:#00d4ff;letter-spacing:1px;margin:2px 0 6px">${TITRES[o].toUpperCase()} — ${liste.length}</div>`;
-          for (const p of liste) {
-            const b = document.createElement('button');
-            b.className = 'ligne-poi';
-            b.innerHTML = `<span>${icone(p.type)[0]}</span><span>${p.nom}</span><span class="d">${fd(p.dist)}</span>`;
-            b.addEventListener('click', () => ouvrir(p.lon, p.lat));
-            zone.appendChild(b);
-          }
-          if (!liste.length) zone.innerHTML += '<div style="color:rgba(232,234,237,0.45)">Rien de référencé dans OSM à proximité.</div>';
-        } catch { zone.innerHTML = '<div style="color:rgba(232,234,237,0.45)">Source saturée — réessaie dans quelques secondes.</div>'; }
-      });
+    // ── ILLUSTRATION : photo libre du lieu, sinon capture drone ──
+    // Une fiche doit toujours montrer à quoi ressemble l'endroit.
+    const illusCadre = panneau.querySelector('.illus-cadre');
+    const illusImg = panneau.querySelector('.photo');
+    const illusAttente = panneau.querySelector('.illus-attente');
+    const illusCredit = panneau.querySelector('.illus-credit');
+    const btnSource = panneau.querySelector('.i-btn.source');
+    const medias = [];
+    let indexMedia = -1;
+    let indexDrone = 0;
+
+    function afficherMedia(i) {
+      if (!illusImg || !medias.length) return;
+      indexMedia = ((i % medias.length) + medias.length) % medias.length;
+      const m = medias[indexMedia];
+      illusImg.src = m.url;
+      illusImg.style.display = '';
+      if (illusAttente) illusAttente.style.display = 'none';
+      illusCredit.innerHTML = `<span class="src">${m.source}</span><span class="txt">${m.credit || m.titre || ''}</span>`
+        + (m.page ? `<a href="${m.page}" target="_blank" rel="noopener">source ↗</a>` : '');
+      if (btnSource) {
+        btnSource.style.display = m.page ? '' : 'none';
+        btnSource.onclick = () => window.open(m.page, '_blank', 'noopener');
+      }
     }
+
+    async function chargerIllustration() {
+      if (wiki?.image) {
+        medias.push({
+          url: wiki.image, source: 'Wikipédia', credit: wiki.titre || 'illustration de l’article',
+          page: wiki.url || '', titre: wiki.titre || '',
+        });
+        afficherMedia(0);
+      }
+      try {
+        // 1) photos libres géolocalisées autour du point (Wikimedia Commons)
+        let photos = await listerCommons(lat, lon, nom, 2_500, 6);
+        // 2) rien tout près ? on élargit à 10 km (sommet isolé, hameau…)
+        if (!photos.length) photos = await listerCommons(lat, lon, nom, 10_000, 4);
+        for (const p of photos) {
+          medias.push({
+            url: p.url, source: 'Wikimedia Commons',
+            credit: `${p.auteur} · ${p.licence}`, page: p.page, titre: p.titre,
+          });
+        }
+      } catch { /* silencieux : le drone prend le relais */ }
+      if (medias.length) { afficherMedia(0); return; }
+      // 3) aucune photo n'existe : on fabrique une vue drone nous-mêmes
+      await vueDrone();
+    }
+
+    async function vueDrone() {
+      if (!illusAttente) return;
+      illusAttente.style.display = '';
+      illusAttente.textContent = '🛩 capture drone en cours…';
+      const cadrage = CADRAGES_DRONE[indexDrone % CADRAGES_DRONE.length];
+      indexDrone += 1;
+      const capture = await capturerDrone(viewer, { lat, lon }, cadrage);
+      if (!panneau) return;
+      if (!capture) {
+        illusAttente.textContent = '📷 aucune illustration disponible pour ce point';
+        return;
+      }
+      medias.push({
+        url: capture.url,
+        source: `drone · ${capture.cadrage}`,
+        credit: `vue générée par WATCHTOWER à ${capture.altitude} m — ${nom}`,
+        page: '', titre: capture.cadrage,
+      });
+      afficherMedia(medias.length - 1);
+    }
+
+    panneau.querySelector('.i-btn.autre')?.addEventListener('click', () => {
+      if (medias.length > 1) afficherMedia(indexMedia + 1);
+      else vueDrone();
+    });
+    panneau.querySelector('.i-btn.drone')?.addEventListener('click', vueDrone);
+    chargerIllustration();
 
     // ── visite 3D ──
     panneau.querySelector('.orbite').addEventListener('click', () => {

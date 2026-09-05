@@ -66,7 +66,8 @@ const CSS = `
 const deg = Cesium.Math.toDegrees;
 const rad = Cesium.Math.toRadians;
 
-export function initFlightMode(viewer) {
+export function initFlightMode(viewer, options = {}) {
+  const { cockpit = null } = options || {};
   const style = document.createElement('style');
   style.textContent = CSS;
   document.head.appendChild(style);
@@ -79,6 +80,7 @@ export function initFlightMode(viewer) {
     <button class="v-btn decoller" type="button">🛫 DÉCOLLER — MODE PILOTAGE POV</button>
     <div style="display:flex;gap:6px;align-items:center"><span>⚖ Masse (kg)</span>
       <input class="v-masse" type="number" value="1350" style="flex:1" /></div>
+    <button class="v-btn gris hud" type="button" style="background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.16);color:rgba(232,234,237,0.8)">🧹 HUD ÉPURÉ (touche H)</button>
     <div class="statut">La vue principale devient une caméra embarquée. Commandes :
     <b>Z/S</b> piquer/cabrer · <b>Q/D</b> virage incliné · <b>↑/↓</b> gaz · <b>MAJ</b> boost ·
     <b>ESPACE</b> stabilisation · <b>🕹 STICK</b> joystick souris (haut centre) · <b>ÉCHAP</b> quitter.
@@ -115,6 +117,9 @@ export function initFlightMode(viewer) {
     const hud = document.createElement('div');
     hud.id = 'wt-vol-hud';
     document.body.appendChild(hud);
+    // 🎛 MODE PILOTAGE : poste de pilotage unique (horizon + bandes), le reste
+    // de l'interface est rangé par la classe `wt-mode-vol` (voir cockpit.js).
+    cockpit?.activer();
     const H = window.innerHeight; const W = window.innerWidth;
     const wVit = creerWidget(hud, 'vit', 'VITESSE', 14, H * 0.32, 150);
     const wAlt = creerWidget(hud, 'alt', 'ALTITUDE · VARIO', W - 185, H * 0.32, 170);
@@ -247,11 +252,18 @@ export function initFlightMode(viewer) {
         const m = etat.meteo;
         wMet.innerHTML = m ? `hygrométrie <b>${m.relative_humidity_2m}%</b><br>vent ${Math.round(m.wind_speed_10m)} km/h @${Math.round(m.wind_direction_10m)}°<br>${Math.round(m.temperature_2m)}°C · ${Math.round(m.pressure_msl)} hPa` : 'mesure…';
         wMas.innerHTML = `masse <b>${etat.masse} kg</b><br>charge utile ${Math.max(0, 1900 - etat.masse)} kg<br>inertie ${(etat.masse / 1350).toFixed(2)}×`;
+        // 🎛 cockpit : horizon artificiel, bandes, gaz, télémétrie
+        cockpit?.maj({
+          vitesse: v, alt: etat.alt, sol, cap: etat.cap, tangage: etat.tangage,
+          roulis: etat.roulis, vario: etat.vario, g: etat.g, distance: etat.distance,
+          masse: etat.masse, gaz: etat.vitesse / 320, duree: Date.now() - etat.t0,
+        });
       }
     }, 50);
 
     function atterrir() {
       if (!vol) return;
+      cockpit?.desactiver();
       window.clearInterval(boucle);
       window.clearInterval(meteoTimer);
       window.removeEventListener('keydown', down, true);
@@ -268,6 +280,7 @@ export function initFlightMode(viewer) {
     vol = { atterrir };
   }
 
+  el.querySelector('.hud')?.addEventListener('click', () => cockpit?.basculerHud());
   el.querySelector('.decoller').addEventListener('click', decoller);
   return { element: el };
 }

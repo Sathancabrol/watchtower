@@ -80,6 +80,50 @@ Le chargement « très long » venait de la construction, pas du réseau. Désor
 * **zones gardées en mémoire** : revenir sur une vue déjà chargée est instantané
   (c'est là que le gain se voit).
 
+### 🎛 Mode vol : poste de pilotage (dock **✈ VOL** → 🛫 DÉCOLLER)
+
+En vol, l'écran n'est plus un bureau : **une seule instrumentation, centrée**,
+façon simulateur.
+
+* **horizon artificiel** (sky/ground, échelle de tangage, arc de roulis, cap) ;
+* **bandes** défilantes de vitesse et d'altitude de part et d'autre ;
+* **bandeau** vario / facteur G / distance / chrono / masse / hauteur sol, plus
+  une **manette des gaz** verticale ;
+* **tiroir « SYSTÈMES DU BORD »** : rouvre n'importe quelle fenêtre (MOI, INTEL,
+  BÂTI 3D, épingles, minicarte, trajets…) **sans quitter le vol** — aucune
+  fonction n'est perdue, elles sont simplement rangées ;
+* les instruments « classiques » restent disponibles d'un clic
+  (🧰 INSTRUMENTS CLASSIQUES) pour ceux qui préfèrent les fenêtres déplaçables ;
+* touche **H** (ou le bouton 🧹 du panneau VOL) : **HUD épuré** — comme dans un
+  jeu, on ne garde que la boussole et la minicarte.
+
+### 🎬 Approche cinématique (bouton **👁 HQ**, recherche de lieu)
+
+L'arrivée sur un lieu n'est plus un simple vol : c'est un **travelling de
+cinéma** (façon écran de chargement de jeu) — bandes letterbox, vignette, grain,
+étalonnage du rendu 3D, bandeau « lower-third » avec le nom du lieu qui
+s'écrit lettre par lettre, et indicateur de séquence (ORBITE → DESCENTE →
+APPROCHE → VERROUILLAGE). La caméra **descend en tournant** autour du point,
+comme une prise de vue hélicoptère.
+
+### 🖼 Fiche lieu : illustration garantie
+
+Une fiche sans image est une fiche morte. À l'ouverture, WATCHTOWER cherche une
+**photo libre géolocalisée** autour du point (Wikimedia Commons, rayon 2,5 km
+puis 10 km), avec auteur, licence et lien vers la source. **Si aucune photo
+n'existe** (un sommet, un champ…), il **fabrique une vue drone** : une caméra
+virtuelle se place au-dessus du point, le moteur rend l'image et la capture —
+quatre cadrages (large, approche, ras, piqué) via 🛩 VUE DRONE. Les onglets
+🏛 POLITIQUE · 💶 ÉCONOMIE · 👥 CITOYEN ont été supprimés : ils n'apportaient
+rien à la fiche d'un lieu.
+
+### 🗺 Cadastre léger (dock **🗺 CADASTRE**)
+
+Contours de parcelles (API apicarto de l'IGN, données ouvertes) en trait fin
+avec remplissage discret : juste assez pour lire l'environnement, jamais assez
+pour noyer l'écran. Se charge **sous 2 500 m d'altitude** seulement, emprise
+plafonnée, secteurs mis en cache.
+
 ### 🎬 « ME LOCALISER » — la cinématique (panneau **📍 MOI**)
 
 Le bouton **📡 ME LOCALISER** ne se contente plus de voler : il joue une
