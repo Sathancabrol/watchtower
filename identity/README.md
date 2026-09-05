@@ -1,42 +1,64 @@
 # identity/
 
-Fiche d'identité de référence, destinée à être **chargée par les agents IA de Gobonet**
-avant tout raisonnement ou génération concernant la personne.
+Fiche d'identité de référence, chargée par les agents IA de **Gobonet** avant tout
+raisonnement, génération ou recommandation concernant la personne.
 
 | Fichier | Usage |
 |---|---|
-| `sathan-cabrol.identity.json` | Source de vérité machine. À parser par Gobonet. Spec `gobonet.identity/1.0`. |
+| `sathan-cabrol.identity.json` | Source de vérité machine. Spec `gobonet.identity/2.0`. |
 | `sathan-cabrol.context.md` | Même contenu en texte, prêt à injecter dans un prompt système. |
+| `coverage.py` | Rapport de couverture et de confiance. `python3 identity/coverage.py` |
 
-Version narrative longue et déclinaisons par audience : `../docs/profil-sathan-cabrol.md`.
+Version narrative et déclinaisons par audience : `../docs/profil-sathan-cabrol.md`.
 
-## Charger le contexte dans un agent
+## Modèle de provenance
+
+Chaque fait porte un `_meta : {src, trust, why}`.
+
+| `src` | Sens |
+|---|---|
+| `verified` | Confirmé par une source publique. |
+| `declared` | Déclaré par la personne. Autoritatif, non vérifié. |
+| `referential` | Dérivé d'un référentiel officiel (RNCP, Éducation nationale, Legifrance). |
+| `inferred` | Déduit par raisonnement. Hypothèse, pas un fait. |
+| `unknown` | Manquant. À demander, jamais à combler. |
+
+Seuils d'exposition de `trust` : `≥80` affirmable · `60-79` à modaliser ·
+`40-59` hypothèse seulement · `<40` ne pas exposer.
+
+**Règle d'or** : préférer une lacune explicite à une inférence exposée.
+
+## État — v2.0.0 (2026-09-05)
+
+105 champs tracés.
+
+| Source | n | % |
+|---|---|---|
+| verified | 6 | 5,7 % |
+| declared | 34 | 32,4 % |
+| referential | 20 | 19,0 % |
+| inferred | 31 | 29,5 % |
+| unknown | 14 | 13,3 % |
+
+**Connu 57,1 % · inféré 29,5 % · manquant 13,3 % · trust moyen 75 %.**
+70 champs exposables sans réserve, 21 à modaliser, 14 non exposables.
+
+## Charger le contexte
 
 ```python
 import json, pathlib
-
-ident = json.loads(pathlib.Path("identity/sathan-cabrol.identity.json").read_text("utf-8"))
-system_prompt = pathlib.Path("identity/sathan-cabrol.context.md").read_text("utf-8")
+ident  = json.loads(pathlib.Path("identity/sathan-cabrol.identity.json").read_text("utf-8"))
+prompt = pathlib.Path("identity/sathan-cabrol.context.md").read_text("utf-8")
 ```
 
-Ou, pour un prompt système direct :
+Filtrer les faits selon le destinataire :
 
+```python
+def exposable(meta, seuil=70):
+    return meta.get("trust", 0) >= seuil and meta.get("src") != "unknown"
 ```
-<identity_context>
-{contenu de sathan-cabrol.context.md}
-</identity_context>
-```
 
-## Sections structurantes du JSON
+## Synchronisation
 
-- `identite_synthetique` — titre canonique, phrase de 25 mots, trois piliers, thèse centrale.
-- `disambiguation` — ce que le profil **n'est pas** + erreurs d'interprétation fréquentes.
-- `audiences` — 6 déclinaisons avec accroche, mises en avant et **mises en retrait**.
-- `regles_editoriales` — contraintes fortes, notamment sur le parcours personnel.
-- `instructions_agent` — directives explicites (`toujours` / `jamais`).
-- `lacunes_a_completer` — champs manquants à ne pas combler par déduction.
-
-## Règle de synchronisation
-
-Toute modification doit être portée dans **les deux** fichiers, puis `version` et
-`updated` incrémentés dans le JSON.
+Toute modification doit être portée dans **les deux** fichiers, puis `version` et `updated`
+incrémentés dans le JSON, et `coverage.py` relancé pour mettre à jour le bloc `couverture`.
