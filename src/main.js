@@ -50,6 +50,14 @@ import { initMobiglas } from './mobiglas.js';
 import { initCadrans } from './cadrans.js';
 import { initIntelVues } from './vuesIntel.js';
 import { initUrgenceMode } from './urgenceMode.js';
+import { initPalais } from './palais.js';
+import { initVeille } from './veille.js';
+import { initComptes } from './compte.js';
+import { creerAssistant as creerAssistantIA } from './llm.js';
+import { initDispositifs } from './dispositifs.js';
+import { COMMANDES } from './commandes.js';
+import { depuisObjet } from './data/dossiers.js';
+import { modelesOllama } from './llm.js';
 import { initRadio } from './radio.js';
 import { amenagerFenetres, amenagerToutes } from './fenetres.js';
 import { creerCockpit } from './cockpit.js';
@@ -428,6 +436,47 @@ async function init() {
       });
       window.__godsEyeView.urgence = urgence;
       chat.setUrgence(urgence);
+      // 🔑 COMPTES & NIVEAUX : fenêtre de connexion (Ollama local, services à
+      // clé, offres payantes optionnelles). Les clés restent dans le navigateur.
+      const testerService = async (c) => {
+        if (c.id === 'ollama') {
+          const l = await modelesOllama(c.url || 'http://localhost:11434');
+          return l.length ? `${l.length} modèle(s) : ${l.slice(0, 3).join(', ')}` : '';
+        }
+        if (!c.url) return '';
+        try {
+          const r = await fetch(`${String(c.url).replace(/\/+$/, '')}/models`, {
+            headers: c.cle ? { Authorization: `Bearer ${c.cle}` } : {},
+          });
+          return r.ok ? `service joignable (HTTP ${r.status})` : '';
+        } catch { return ''; }
+      };
+      const comptes = initComptes({
+        surMessage: (m) => window.__wtToast?.(m),
+        tester: testerService,
+      });
+      window.__godsEyeView.comptes = comptes;
+      // 🧠 ASSISTANT DU CHAT : Ollama local d'abord (gratuit, hors ligne),
+      // service à clé ensuite, repli honnête sinon.
+      const assistant = creerAssistantIA({
+        comptes,
+        commandes: COMMANDES,
+        surMessage: (m) => window.__wtToast?.(m),
+      });
+      chat.setAssistant(assistant);
+      window.__godsEyeView.assistant = assistant;
+      // bouton « se connecter » directement dans la barre de saisie du chat
+      try {
+        const saisie = chat.element.querySelector('.saisie');
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'envoyer';
+        b.title = 'Brancher un compte / une IA (Ollama local, clé…)';
+        b.textContent = '🔑';
+        b.style.padding = '8px 9px';
+        b.addEventListener('click', () => comptes.ouvrir());
+        saisie.appendChild(b);
+      } catch { /* barre absente */ }
       const autour = initNearbyPlaces(viewer);
       const filtres = initVisualFilters();
       // ⚡ Bâti 3D : pipeline rapide (cache mémoire, géométrie par lots sur un
@@ -653,6 +702,117 @@ async function init() {
       // hameaux) + fenêtre du lieu central sous la boussole.
       const nomsLieux = initNomsLieux(viewer, { fenetres: true });
       window.__godsEyeView.nomsLieux = nomsLieux;
+
+      // 🎥 DISPOSITIFS : caméras, micros, capteurs — visibles sur la carte en
+      // vue INTEL. Un clic sur l'icône ouvre la FICHE avec sa MINI-FENÊTRE DE
+      // DIRECT ; un clic sur la mini-fenêtre ouvre la fiche détaillée
+      // (site, type d'objet, outils, activité estimée, description de scène).
+      const dispositifs = initDispositifs(viewer, {
+        fiche: (lon, lat, nom, contexte) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom, contexte),
+        surMessage: (m) => window.__wtToast?.(m),
+        comptes: window.__godsEyeView.comptes,
+      });
+      window.__godsEyeView.dispositifs = dispositifs;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'dispositifs', icone: '🎥', libelle: 'DISPOSITIFS',
+        titre: '🎥 DISPOSITIFS — CAMÉRAS, MICROS ET CAPTEURS (DIRECT)',
+        element: dispositifs.element, cote: 'droite',
+      });
+
+      // 🧠 PALAIS MENTAL : à la place de la carte, une chambre de motel des
+      // années 70. Les outils de l'app sont des objets posés sur le bureau et
+      // les dossiers sont épinglés au mur — on descend jusqu'au plus petit
+      // élément, avec une recherche qui affine en direct.
+      const palais = initPalais({
+        surMessage: (m) => window.__wtToast?.(m),
+        surObjet: (id) => {
+          const toast = (t) => window.__wtToast?.(t);
+          if (id === 'carte') { palais.fermer(); toast('🗺 Retour à la vue principale.'); return; }
+          if (id === 'drone') { palais.ouvrirObjet('drone', vol.element, { titre: '🚁 PILOTAGE', largeur: 360 }); return; }
+          if (id === 'telephone') { palais.ouvrirObjet('telephone', chat.element, { titre: '📞 CHAT (+ IA)', largeur: 360 }); return; }
+          if (id === 'calendrier') { palais.ouvrirObjet('calendrier', chantier.element, { titre: '🗓 PLANNING · PHASAGE · BUDGET', largeur: 420 }); return; }
+          if (id === 'radio') { palais.ouvrirObjet('radio', radio.element, { titre: '📻 RADIO', largeur: 360 }); return; }
+          if (id === 'moniteur') { dispositifs.basculer(true); palais.ouvrirObjet('moniteur', dispositifs.live, { titre: '🎥 DIRECT — CAMÉRAS', largeur: 380 }); return; }
+          if (id === 'chemise') { palais.ouvrirObjet('chemise', chantier.element, { titre: '🗄 DOSSIERS SOURCES', largeur: 420 }); return; }
+          toast('Objet du bureau à brancher.');
+        },
+        surCarte: (n) => {
+          // feuille atteinte : on ouvre la fiche si elle porte une position
+          const v = n?.valeur;
+          const lat = Number(v?.lat ?? v?.latitude);
+          const lon = Number(v?.lon ?? v?.longitude);
+          if (Number.isFinite(lat) && Number.isFinite(lon)) {
+            window.__godsEyeView.fiche?.ouvrir(lon, lat, n.nom, { detail: n.detail });
+          }
+        },
+        surSortie: () => window.__wtToast?.('🚪 Retour à la carte.'),
+      });
+      window.__godsEyeView.palais = palais;
+
+      /** Alimente le mur du palais avec les données VIVANTES de l'app. */
+      function nourrirPalais() {
+        const dossiers = [];
+        try {
+          const e = window.__godsEyeView.entites?.entites?.() || [];
+          if (e.length) dossiers.push(depuisObjet(e.slice(0, 200), { nom: `🏷 Entités (${e.length})`, type: 'aerien' }));
+          const c = window.__godsEyeView.cadrans?.cadrans?.() || [];
+          if (c.length) dossiers.push(depuisObjet(c.map((x) => ({ nom: x.nom, centre: x.centre, couverture: Math.round((x.couverture ?? 1) * 100) / 100 })), { nom: `🔲 Cadrans (${c.length})`, type: 'plan' }));
+          const a = window.__godsEyeView.intel?.derniere?.();
+          if (a) dossiers.push(depuisObjet(a, { nom: '🧠 Analyse de la vue', type: 'polaroid' }));
+          const d = window.__godsEyeView.dispositifs?.liste?.() || [];
+          if (d.length) dossiers.push(depuisObjet(d, { nom: `🎥 Dispositifs (${d.length})`, type: 'video' }));
+        } catch { /* données pas prêtes */ }
+        if (!dossiers.length) {
+          dossiers.push({
+            id: 'demarrage', nom: 'DÉMARRER', type: 'plan', ic: '🧭',
+            detail: 'ouvre un module pour alimenter le mur',
+            enfants: [
+              { id: 'd1', nom: 'Chercher les entités de la carte', type: 'aerien', ic: '🏷' },
+              { id: 'd2', nom: 'Tracer les cadrans de la commune', type: 'plan', ic: '🔲' },
+              { id: 'd3', nom: 'Scanner les caméras autour', type: 'video', ic: '🎥' },
+            ],
+          });
+        }
+        palais.setDossiers(dossiers, 'PALAIS MENTAL');
+      }
+      window.__wtNourrirPalais = nourrirPalais;
+      palais.element.addEventListener('wt-palais-ouvert', nourrirPalais);
+      // bouton d'accès au palais, dans la barre du dock
+      try {
+        const dockEl = window.__godsEyeView.dock?.dock;
+        if (dockEl) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'wt-dock-btn';
+          b.title = 'PALAIS MENTAL — chambre 7 (touche P) : les dossiers au mur, les outils sur le bureau';
+          b.innerHTML = '<span class="ic">🛏</span><span class="lb">PALAIS</span>';
+          b.addEventListener('click', () => {
+            if (palais.estOuvert()) palais.fermer();
+            else { nourrirPalais(); palais.ouvrir(); }
+          });
+          dockEl.appendChild(b);
+        }
+      } catch { /* dock absent */ }
+      // touche P : bascule du palais (Échap pour en sortir)
+      window.addEventListener('keydown', (e) => {
+        if (e.target && /input|textarea|select/i.test(e.target.tagName || '')) return;
+        if (e.key === 'p' || e.key === 'P') {
+          if (palais.estOuvert()) palais.fermer();
+          else { nourrirPalais(); palais.ouvrir(); }
+        }
+      });
+
+      // 😴 VEILLE : plus aucun HUD à l'écran après 15 s sans contact
+      // (fondu de 10 s à 15 s, réapparition au moindre mouvement).
+      const veille = initVeille({ debut: 10_000, fin: 15_000 });
+      window.__godsEyeView.veille = veille;
+      // pendant une urgence (ou dans le palais), on ne laisse pas l'écran s'effacer
+      window.setInterval(() => {
+        const enUrgence = Boolean(window.__godsEyeView.urgence?.estActive?.());
+        const enPalais = palais.estOuvert();
+        if ((enUrgence || enPalais) && veille.estActif()) veille.activer(false);
+        else if (!enUrgence && !enPalais && !veille.estActif()) veille.activer(true);
+      }, 1000);
 
       // 🪟 Toutes les fenêtres flottantes : déplaçables, redimensionnables,
       // réductibles en icône (–), transformables (⚙) et mémorisées d'une

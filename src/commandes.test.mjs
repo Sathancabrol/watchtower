@@ -109,3 +109,14 @@ test('en mode urgence, les pastilles ne proposent QUE l’urgence', () => {
   assert.ok(envois.includes('/urgence suite'));
   assert.ok(envois.includes('/urgence fin'));
 });
+
+test('une question n’est pas un lieu (aiguillage du chat)', async () => {
+  const { ressembleAQuestion } = await import('./chatConsole.js');
+  assert.equal(ressembleAQuestion('comment ça marche ?'), true);
+  assert.equal(ressembleAQuestion('comment voler jusqu’à Sète'), true);
+  assert.equal(ressembleAQuestion('qui a construit ce pont'), true);
+  assert.equal(ressembleAQuestion('tour eiffel'), false, 'un lieu reste un lieu');
+  assert.equal(ressembleAQuestion('va à Marseille'), false);
+  assert.equal(ressembleAQuestion(''), false);
+  assert.equal(ressembleAQuestion(null), false);
+});

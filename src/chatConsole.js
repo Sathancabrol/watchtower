@@ -93,6 +93,18 @@ export async function geocoder(texte) {
   return null;
 }
 
+/**
+ * Vrai si la phrase est une QUESTION (et non un lieu). Les questions partent à
+ * l'assistant (IA locale ou repli hors-ligne) ; un lieu part au géocodeur.
+ * @param {string} texte
+ */
+export function ressembleAQuestion(texte = '') {
+  const t = String(texte || '').trim().toLowerCase();
+  if (!t) return false;
+  if (/\?$/.test(t)) return true;
+  return /^(comment|pourquoi|pourquoi|qui|quoi|que|quand|ou|où|peux|puis|explique|raconte|resume|résume|calcule|combien|donne|decris|décris|c'est quoi|qu'est-ce|c quoi|quel|quelle|quels|quelles|est-ce|ai-je|dois)\b/.test(t);
+}
+
 /** Initialise la console. Retourne {element, executer, dire, setUrgence, majRapides, focus}. */
 export function initChatConsole(viewer, { affichage } = {}) {
   const style = document.createElement('style');
@@ -112,7 +124,8 @@ export function initChatConsole(viewer, { affichage } = {}) {
   const rapides = el.querySelector('.rapides');
   const entree = el.querySelector('input');
 
-  let urgence = null; // piloté par `setUrgence` (mode urgence, voir urgenceMode.js)
+  let urgence = null;    // piloté par `setUrgence` (mode urgence, voir urgenceMode.js)
+  let assistant = null;  // piloté par `setAssistant` (IA : Ollama local, service, ou repli)
 
   function dire(texte, moi = false) {
     const m = document.createElement('div');
@@ -120,6 +133,7 @@ export function initChatConsole(viewer, { affichage } = {}) {
     m.textContent = texte;
     journal.appendChild(m);
     journal.scrollTop = journal.scrollHeight;
+    return m; // on peut retirer le message (ex : « je réfléchis… »)
   }
 
   /** Reconstruit la barre de pastilles selon le contexte courant. */
@@ -280,7 +294,17 @@ export function initChatConsole(viewer, { affichage } = {}) {
       return;
     }
 
-    // 3) sinon : c'est un lieu (on tolère les préfixes du langage courant)
+    // 3) une question → l'assistant (IA locale, ou repli hors-ligne honnête)
+    if (assistant && ressembleAQuestion(texte)) {
+      const attente = dire('🤔 Je réfléchis…');
+      const r = await assistant.demander(texte, contexte());
+      attente.remove();
+      dire(`🤖 ${r.texte}\n\n— ${r.source}`);
+      majRapides();
+      return;
+    }
+
+    // 4) sinon : c'est un lieu (on tolère les préfixes du langage courant)
     const t = texte.replace(/^(va à|va a|vas à|montre(-| )moi|montre|emmène(-| )moi à|allons à|go)\s+/i, '').trim();
     dire('🔍 Recherche…');
     const lieu = await geocoder(t);
@@ -313,6 +337,9 @@ export function initChatConsole(viewer, { affichage } = {}) {
     geocoder,
     /** Branche le mode urgence (voir `urgenceMode.js`). */
     setUrgence(u) { urgence = u || null; majRapides(); },
+    /** Branche l'assistant (voir `llm.js`) : Ollama local, service, ou repli. */
+    setAssistant(a) { assistant = a || null; return assistant; },
+    assistant: () => assistant,
     focus: () => entree.focus(),
   };
 }

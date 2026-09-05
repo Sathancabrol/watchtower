@@ -2,8 +2,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ALPHABET, bboxDe, cadranContient, decouper, nomCadran, nommerDepuisQuartiers,
-  quartiersDepuisReponse, requeteQuartiers,
+  ALPHABET, bboxDe, cadranContient, decouper, decouperContour, nomCadran,
+  nommerDepuisQuartiers, quartiersDepuisReponse, requeteQuartiers,
 } from './cadrans.js';
 
 const BBOX = { ouest: 3.60, sud: 43.40, est: 3.80, nord: 43.50 };
@@ -138,4 +138,57 @@ test('réponse Overpass → quartiers dédupliqués et localisés', () => {
 test('réponse invalide : aucun quartier, aucune erreur', () => {
   assert.deepEqual(quartiersDepuisReponse(null), []);
   assert.deepEqual(quartiersDepuisReponse({}), []);
+});
+
+// ── découpage AU TRACÉ COMMUNAL (itération 8) ──────────────────────────────
+const CARRE = [[3.60, 43.40], [3.80, 43.40], [3.80, 43.50], [3.60, 43.50]];
+// « L » : le quart sud-est est hors commune (la commune s'arrête au milieu)
+const L = [[3.60, 43.40], [3.80, 43.40], [3.80, 43.45], [3.70, 43.45], [3.70, 43.50], [3.60, 43.50]];
+
+test('decouperContour : les cadrans épousent le tracé communal', () => {
+  const plein = decouperContour([CARRE], { colonnes: 2, lignes: 2 });
+  assert.equal(plein.length, 4, 'commune carrée → 4 cadrans pleins');
+  for (const c of plein) {
+    assert.ok(Math.abs(c.couverture - 1) < 1e-6, 'case entièrement communale');
+    assert.ok(Array.isArray(c.pieces) && c.pieces.length >= 1);
+    assert.match(c.nom, /^(ALPHA|BRAVO|CHARLIE|DELTA)$/);
+  }
+  assert.equal(plein[0].nom, 'ALPHA');
+});
+
+test('decouperContour : les cases hors commune disparaissent', () => {
+  const cadrans = decouperContour([L], { colonnes: 2, lignes: 2 });
+  assert.equal(cadrans.length, 3, 'le quart sud-est (vide) est jeté');
+  // plus aucun cadran ne couvre le point « hors commune »
+  for (const c of cadrans) {
+    assert.equal(cadranContient(c, 3.76, 43.475), false, 'point hors tracé communal');
+  }
+  // un point bien dans le L, au nord-ouest
+  assert.equal(cadrans.some((c) => cadranContient(c, 3.63, 43.42)), true, 'point dans la commune');
+});
+
+test('decouperContour : les sous-cadrans restent dans la commune', () => {
+  const cadrans = decouperContour([L], { colonnes: 2, lignes: 2, niveau: 2 });
+  assert.ok(cadrans.length >= 3);
+  for (const c of cadrans) {
+    for (const morceau of c.pieces) {
+      const xs = morceau.map((p) => p[0]); const ys = morceau.map((p) => p[1]);
+      assert.ok(Math.max(...xs) <= 3.80 + 1e-9 && Math.min(...xs) >= 3.60 - 1e-9, 'dans l’emprise');
+      assert.ok(Math.max(...ys) <= 43.50 + 1e-9 && Math.min(...ys) >= 43.40 - 1e-9);
+    }
+  }
+});
+
+test('decouper() bascule automatiquement sur le contour quand il est fourni', () => {
+  const avec = decouper(BBOX, { colonnes: 2, lignes: 2, anneaux: [L] });
+  const sans = decouper(BBOX, { colonnes: 2, lignes: 2 });
+  assert.equal(avec.length, 3, 'découpage au tracé');
+  assert.equal(sans.length, 4, 'découpage à la boîte (repli)');
+  assert.equal(decouper(BBOX, { colonnes: 2, anneaux: [] }).length, 4, 'anneaux vides → boîte');
+});
+
+test('decouperContour : entrées invalides', () => {
+  assert.deepEqual(decouperContour([], { colonnes: 2 }), []);
+  assert.deepEqual(decouperContour(null, { colonnes: 2 }), []);
+  assert.deepEqual(decouperContour([[[3.6, 43.4], [3.7, 43.5]]], { colonnes: 2 }), [], 'anneau dégénéré');
 });

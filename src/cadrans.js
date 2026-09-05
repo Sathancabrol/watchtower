@@ -21,6 +21,7 @@
 
 import * as Cesium from 'cesium';
 import { rendreDeplacable } from './draggable.js';
+import { decouperCommune, pointDansPolygone } from './data/geoCadrans.js';
 
 /** Alphabet OTAN — utilisé quand un cadran n'a pas de nom officiel. */
 export const ALPHABET = Object.freeze([
@@ -42,7 +43,12 @@ export function nomCadran(index, sous = 0) {
 export function cadranContient(cadran, lon, lat) {
   if (!cadran) return false;
   const { ouest, sud, est, nord } = cadran.bbox;
-  return lon >= ouest && lon <= est && lat >= sud && lat <= nord;
+  if (!(lon >= ouest && lon <= est && lat >= sud && lat <= nord)) return false;
+  // cadran découpé au tracé communal : on vérifie les morceaux exacts
+  if (Array.isArray(cadran.pieces) && cadran.pieces.length) {
+    return cadran.pieces.some((poly) => pointDansPolygone([lon, lat], poly));
+  }
+  return true;
 }
 
 /**
@@ -51,11 +57,25 @@ export function cadranContient(cadran, lon, lat) {
  * @param {{colonnes?:number, lignes?:number, niveau?:number}} [options]
  * @returns {Array} cadrans {nom, niveau, index, sous, bbox, polygone, centre}
  */
+/**
+ * Découpe une emprise en cadrans, **au tracé communal** si `options.anneaux`
+ * est fourni : chaque cadran porte alors la liste exacte de ses morceaux
+ * (`pieces`) calculés par intersection avec le contour (voir
+ * `data/geoCadrans.js`) — plus de cadrans qui débordent sur la mer ou sur la
+ * commune voisine, et tous les périmètres de la commune sont couverts.
+ *
+ * @param {{ouest:number,sud:number,est:number,nord:number}} bbox
+ * @param {{colonnes?:number, lignes?:number, niveau?:number, anneaux?:Array, aireMin?:number}} [options]
+ * @returns {Array} cadrans {nom, niveau, index, sous, bbox, polygone, pieces, centre, couverture}
+ */
 export function decouper(bbox, options = {}) {
   const b = bbox || {};
   const ouest = Number(b.ouest); const sud = Number(b.sud);
   const est = Number(b.est); const nord = Number(b.nord);
   if (![ouest, sud, est, nord].every(Number.isFinite) || est <= ouest || nord <= sud) return [];
+  if (Array.isArray(options.anneaux) && options.anneaux.length) {
+    return decouperContour(options.anneaux, options);
+  }
   const colonnes = Math.max(1, Math.round(options.colonnes || 2));
   const lignes = Math.max(1, Math.round(options.lignes || 2));
   const niveau = Math.max(1, Math.round(options.niveau || 1));
@@ -82,6 +102,32 @@ export function decouper(bbox, options = {}) {
     }
   }
   return out;
+}
+
+/**
+ * Découpe le CONTOUR COMMUNAL en cadrans qui l'épousent exactement.
+ * @param {number[][][]} anneaux contour(s) de la commune ([[lon,lat],…])
+ * @param {{colonnes?:number, lignes?:number, niveau?:number, aireMin?:number}} [options]
+ */
+export function decouperContour(anneaux, options = {}) {
+  const colonnes = Math.max(1, Math.round(options.colonnes ?? 2));
+  const lignes = Math.max(1, Math.round(options.lignes ?? colonnes));
+  const niveau = Math.max(1, Math.round(options.niveau || 1));
+  const brut = decouperCommune(anneaux, { colonnes, lignes, aireMin: options.aireMin ?? 0.06 });
+  return brut.map((c) => {
+    const sous = niveau > 1 ? (c.index % 4) + 1 : 0;
+    return {
+      nom: nomCadran(c.index, sous),
+      niveau, index: c.index, sous,
+      bbox: c.bbox,
+      polygone: c.polygone,
+      pieces: c.pieces,
+      couverture: c.couverture,
+      centre: { lon: c.centre.lon, lat: c.centre.lat },
+      nomOfficiel: '',
+      quartiers: [],
+    };
+  });
 }
 
 /** Emprise d'un anneau [[lon,lat],…] (ou d'une liste d'anneaux). */
@@ -203,7 +249,8 @@ export function initCadrans(viewer, options = {}) {
       </div>
       <button class="b sous" type="button">🔳 SOUS-CADRANS (×4)</button>
       <div class="liste"></div>
-      <div class="note">Découpage lisible de la commune : les noms officiels des quartiers
+      <div class="note">Découpage de la commune <b>à l’intérieur de son tracé</b>
+      (intersection exacte case × contour communal) : les noms officiels des quartiers
       (OpenStreetMap) sont utilisés quand ils existent — sinon alphabet OTAN
       (ALPHA, BRAVO…). Clic sur un cadran pour y voler.
       <br><a href="https://www.openstreetmap.org/" target="_blank" rel="noopener">source : OpenStreetMap (ODbL)</a></div>
@@ -264,7 +311,14 @@ export function initCadrans(viewer, options = {}) {
     if (!bbox) { surMessage?.('🔲 Emprise inconnue — approche-toi de la commune.'); return; }
     ds.entities.removeAll();
     const cols = niveau >= 2 ? 3 : 2;
-    cadrans = decouper(bbox, { colonnes: cols, lignes: cols, niveau: avecSous ? 2 : 1 });
+    // 🔲 découpage AU TRACÉ COMMUNAL quand le contour est connu : les cadrans
+    // épousent la commune (plus de cases perdues dans la mer ou chez le voisin)
+    const anneaux = window.__godsEyeView?.contours?.anneauxCommune?.() || null;
+    cadrans = decouper(bbox, {
+      colonnes: cols, lignes: cols, niveau: avecSous ? 2 : 1,
+      anneaux: anneaux && anneaux.length ? anneaux : null,
+    });
+    const decoupeReelle = cadrans.some((c) => Array.isArray(c.pieces) && c.pieces.length);
 
     // noms officiels (OpenStreetMap) si la source répond
     try {
@@ -281,16 +335,24 @@ export function initCadrans(viewer, options = {}) {
     // ── tracé animé, façon carte tactique ──
     const lignes = [];
     for (const c of cadrans) {
-      lignes.push({
-        positions: Cesium.Cartesian3.fromDegreesArray(c.polygone.flat()),
-        nom: c.nom,
-      });
+      // un cadran découpé = plusieurs morceaux (union = case ∩ commune)
+      const morceaux = (Array.isArray(c.pieces) && c.pieces.length) ? c.pieces : [c.polygone];
+      for (const m of morceaux) {
+        lignes.push({
+          positions: Cesium.Cartesian3.fromDegreesArray(m.flat()),
+          nom: c.nom,
+        });
+      }
     }
     if (avecSous) {
       for (const c of cadrans) {
-        const s = decouper(c.bbox, { colonnes: 2, lignes: 2, niveau: 2 });
+        const forme = (Array.isArray(c.pieces) && c.pieces.length) ? c.pieces : [c.polygone];
+        const s = decouper(c.bbox, { colonnes: 2, lignes: 2, niveau: 2, anneaux: forme });
         for (const x of s) {
-          lignes.push({ positions: Cesium.Cartesian3.fromDegreesArray(x.polygone.flat()), nom: `${c.nom}-${x.index + 1}` });
+          const morceaux = (Array.isArray(x.pieces) && x.pieces.length) ? x.pieces : [x.polygone];
+          for (const m of morceaux) {
+            lignes.push({ positions: Cesium.Cartesian3.fromDegreesArray(m.flat()), nom: `${c.nom}-${x.index + 1}` });
+          }
         }
       }
     }
@@ -316,16 +378,19 @@ export function initCadrans(viewer, options = {}) {
             },
           });
         }
-        surMessage?.(`🔲 ${cadrans.length} cadran(s) tracé(s) — ${officiels} nommé(s) d’après OpenStreetMap.`);
+        surMessage?.(`🔲 ${cadrans.length} cadran(s) tracé(s)${decoupeReelle ? ' au tracé communal' : ''} — ${officiels} nommé(s) d’après OpenStreetMap.`);
         return;
       }
       const l = lignes[i];
       ds.entities.add({
-        polyline: {
-          positions: l.positions,
-          width: 3,
-          material: Cesium.Color.fromCssColorString('#00d4ff').withAlpha(0.75),
-          clampToGround: true,
+        name: l.nom,
+        polygon: {
+          hierarchy: new Cesium.PolygonHierarchy(l.positions),
+          material: Cesium.Color.fromCssColorString('#00d4ff').withAlpha(0.055),
+          outline: true,
+          outlineColor: Cesium.Color.fromCssColorString('#00d4ff').withAlpha(0.75),
+          outlineWidth: 3,
+          perPositionHeight: false,
         },
       });
       i += 1;
