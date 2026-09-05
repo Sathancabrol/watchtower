@@ -1,0 +1,62 @@
+{
+  "identite": {
+    "nom": "Cabrol",
+    "prenom": "Säthan",
+    "pays": "France",
+    "region": "Occitanie",
+    "zone": "Bassin de Thau",
+    "langues": [
+      {"langue": "français", "niveau": "natif"},
+      {"langue": "anglais", "niveau": "courant"}
+    ]
+  },
+  "positionnement": {
+    "titre": "Concepteur de systèmes cognitifs assistés par IA",
+    "phrase": "Je traduis des problèmes complexes (humains, techniques, territoriaux) en modèles, visualisations et outils décisionnels utilisables sur le terrain.",
+    "piliers": ["cognition humaine", "numérique et IA", "réel physique / BTP"],
+    "hors_perimetre": [
+      "développeur logiciel de production classique",
+      "chercheur académique en poste",
+      "conducteur de travaux exclusivement terrain"
+    ]
+  },
+  "formation": [
+    {"intitule": "Master Psychologie cognitive", "etablissement": "Université Paul-Valéry Montpellier 3"},
+    {"intitule": "Bac STI2D option Systèmes d'Information et Numérique", "etablissement": null},
+    {"intitule": "Conducteur de travaux Travaux Publics", "etablissement": "AFPA"}
+  ],
+  "domaines_experience": [
+    "recherche en psychologie cognitive",
+    "enseignement / transmission",
+    "BTP, VRD, génie civil, gestion de chantier",
+    "numérique et développement de projets",
+    "intelligence artificielle",
+    "visualisation de données et systèmes complexes",
+    "conception 3D et fabrication"
+  ],
+  "competences": {
+    "cognitives": ["analyse", "observation", "résolution de problèmes", "modélisation", "compréhension des systèmes complexes"],
+    "techniques": ["numérique", "données", "visualisation", "développement", "outils IA", "BTP/VRD", "gestion de projet", "3D / fabrication"],
+    "adaptatives": ["autonomie", "apprentissage", "adaptation aux contraintes", "prise de responsabilité", "polyvalence"]
+  },
+  "projets": [
+    {
+      "nom": "Cognitorium",
+      "role": "central",
+      "description": "Environnement visant à représenter et connecter connaissances, compétences, apprentissages, métiers, projets, territoires et intelligences humaines et artificielles."
+    }
+  ],
+  "vision": {
+    "chaine": ["Voir", "Comprendre", "Explorer", "Simuler", "Décider", "Concevoir", "Construire", "Mesurer"],
+    "principe": "L'IA augmente les capacités humaines (recherche, mémoire, analyse, programmation, simulation, orchestration) ; l'humain conserve les objectifs, les valeurs, le jugement et la responsabilité."
+  },
+  "audiences": {
+    "tech_data": {"mot_cle": "Product / data designer à profil cognitif"},
+    "btp": {"mot_cle": "Conducteur de travaux à profil numérique / BIM-data"},
+    "recherche": {"mot_cle": "Sciences cognitives appliquées & représentation des connaissances"},
+    "collectivite": {"mot_cle": "Ingénierie territoriale & cartographie des compétences"},
+    "financeur": {"mot_cle": "Founder — infrastructure cognitive"},
+    "freelance": {"mot_cle": "Cadrage, modélisation et prototypage de systèmes complexes"}
+  },
+  "regle_editoriale_parcours_personnel": "Citer uniquement par la compétence produite (responsabilité, adaptation, tenue sous contrainte), sans récit ni interprétation médicale ou psychologique."
+}
