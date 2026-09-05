@@ -5,6 +5,8 @@ Audit produit le 2026-09-05 · sources vérifiées en ligne · liens dans chaque
 > **Périmètre** : les 11 liens YouTube + 1 repo GitHub que tu as fournis, croisés avec **tes 8 repos publics** (`watchtower`, `COGNITORIUM`, `proto-cognitorium`, `reaserch-engine`, `HCSM`, `ETAT-DE-LART-PSYCHOLOGIE`, `Language-decoder`, `animation-chronos`).
 > **Verdict en une ligne** : **36 outils sur 44** cités par ces liens (≈ 82 %) sont faisables **100 % gratuit, en local** sur ta tour, sans abonnement ; et **20 tâches sur 22** (≈ 90 %) du travail d'installation/patching sont réalisables **par un agent IA** (moi) directement dans tes repos — il ne te reste que les clics de compte, le micro, et le matériel éventuel.
 
+> **Référence de travail pour les agents** : `audit/REFERENCE.md` (68 outils : rôle · faisabilité · prix · licence · URLs · étapes A→B→C), générée depuis `audit/reference/generate-reference.py`, avec `audit/reference/doctor.py` pour l'état réel. Les chiffres ci-dessus portent sur **44 outils** des vidéos ; le registre complet en compte **68** (58 🟢 100 % gratuits et locaux, 6 🟡 avec compte gratuit, 2 🔴).
+
 > **Méthode** : les 11 liens ont été récupérés et lus (titres, descriptions, chapitres, transcripts) ; les 8 repos GitHub ont été clonés/inspectés (dont les 57 modules de `COGNITORIUM/watchtower-mods/src`) ; les licences des 44 outils ont été vérifiées via GitHub API le 2026-09-05 (le compteur `44` = somme des lignes des 8 tableaux du §Catalogue).
 
 ---
@@ -221,7 +223,10 @@ Coûts de ce pipeline : **0 $** (Actions gratuit sur repo public, outils MIT/Apa
 | Fichier | Rôle |
 |---|---|
 | `AUDIT-OUTILS-2026.md` | ce document |
-| `audit/CATALOGUE-OUTILS.md` | tous les outils, lien officiel, licence, RAM/VRAM, note « agent ou pas », **liens de téléchargement** |
+| `audit/REFERENCE.md` ⭐ | **référence canonique des agents** : 68 outils × (rôle · faisabilité par palier · prix · licence · URLs · étapes A→B→C · intégration tour · vérif) |
+| `audit/reference/REGISTRE-OUTILS.json` | le même contenu en machine-readable (source unique : `audit/reference/generate-reference.py`) |
+| `audit/reference/doctor.py` | état réel de la tour : ce qui répond / manque / bloque (68 checks, `--json`) |
+| `audit/CATALOGUE-OUTILS.md` | catalogue court « vu de l’audit » (par vidéo d’origine) |
 | `audit/COUTS-LICENCES-LEGAL.md` | argent réel + pièges de licence (fair-code n8n, « Other » GobboNet/Mark-LII, AGPL, clause Open WebUI, RGPD/cadre FR) |
 | `audit/CAPACITES-AGENT.md` | ce que l'agent fait / ne fait pas, tâche par tâche, avec les prompts à me recoller |
 | `audit/stack/README.md` | mode d'emploi de la stack gratuite |

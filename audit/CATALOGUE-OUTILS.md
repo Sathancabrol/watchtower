@@ -1,4 +1,10 @@
-# 📦 CATALOGUE OUTILS — licence · coût · matériel · lien de téléchargement
+# 📦 CATALOGUE OUTILS (vu de l'audit) — licence · coût · matériel · download
+
+> ⚠️ **Document d'archive de l'audit.** La référence de travail pour construire, c'est
+> [`REFERENCE.md`](REFERENCE.md) (68 outils, étapes A→B→C) générée depuis
+> [`reference/generate-reference.py`](reference/generate-reference.py), lue par les agents via
+> [`reference/REGISTRE-OUTILS.json`](reference/REGISTRE-OUTILS.json) et vérifiée par
+> [`reference/doctor.py`](reference/doctor.py). Ne complète plus ce fichier : ajoute une entrée dans le générateur.
 
 Extraits des 11 liens audités. « Agent OK » = je peux installer/patcher sans toi. `●` = 8 Go RAM / sans GPU, `◐` = GPU 6-8 Go, `◯` = GPU 12-24 Go.
 

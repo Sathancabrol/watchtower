@@ -33,6 +33,15 @@ Option lourde (≥ 16 Go RAM) : **Langfuse** pour tracer tes runs → utiliser l
 - **Aucune clé payante** n'est lue par ces conteneurs. La tour, elle, garde son `keySetup.js` : si tu
   colles un jour une clé Cesium ion / Groq, elle reste dans ton `.env` local (chmod 600) et jamais dans le repo.
 
+## Boucle d'auto-vérification (à utiliser après chaque install)
+
+```bash
+python3 ../reference/doctor.py           # humain : ce qui répond, ce qui manque, les étapes à lire
+python3 ../reference/doctor.py --json    # agent : décision automatique (exit 1 = socle incomplet)
+```
+`doctor` ne devine rien : il exécute le champ `verifier` de chaque entrée du registre. Si tu ajoutes
+un service, ajoute l'entrée dans `../reference/generate-reference.py`, régénère, et `doctor` le teste.
+
 ## Arrêt / purge
 
 ```bash

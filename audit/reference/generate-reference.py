@@ -1,0 +1,958 @@
+#!/usr/bin/env python3
+"""Générateur de la référence outils de Watchtower.
+
+Source de vérité unique : OUTILS (ci-dessous).
+Produit, à partir des mêmes données :
+  - audit/reference/REGISTRE-OUTILS.json   (machine-readable, pour agents)
+  - audit/REFERENCE.md                     (humain + agent, tables par catégorie, étapes A→B→C)
+
+Règle d'or pour les agents : ne JAMAIS éditer REFERENCE.md / REGISTRE-OUTILS.json à la main.
+Modifier OUTILS ici, puis  :  python3 audit/reference/generate-reference.py
+"""
+from __future__ import annotations
+import json, datetime, pathlib, sys
+
+HERE = pathlib.Path(__file__).resolve().parent
+ROOT = HERE.parent.parent
+
+# cost: materiel | avec-compte | freemium | payant | option-publique | a-verifier | deja-en-place | non
+# tier: 0 = CPU/8 Go · 1 = GPU 6-8 Go · 2 = GPU 12-24 Go · None = pas de GPU requis (léger)
+# status: present | partiel | absent | reference (référence/documentation)
+OUTILS: list[dict] = []
+
+
+def T(**kw):
+    OUTILS.append(kw)
+
+
+C_INFRA = "0 · Socle local (aucune donnée ne sort)"
+C_SEARCH = "1 · Recherche & collecte web"
+C_RAG = "2 · Docs, RAG, sortie structurée"
+C_OSINT = "3 · OSINT infrastructures"
+C_GEO = "4 · Géoservices & imagerie de la tour"
+C_3D = "5 · Rendu 3D réel (splats)"
+C_VOICE = "6 · Voix (entendre / parler)"
+C_AGENT = "7 · Agents, chat, automatisation"
+C_COM = "8 · Communications hors-réseau"
+C_MEM = "9 · Mémoire, stockage, sauvegarde"
+C_REF = "10 · Références, modèles et pièges à éviter"
+
+# ─────────────────────────────────────────────────────────── 0 · Socle local
+T(id="ollama", nom="Ollama", cat=C_INFRA, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Moteur d'inférence local : sert les LLM à toute la tour via une API compatible OpenAI (http://127.0.0.1:11434/v1). Le socle de tout le reste.",
+  urls=["https://github.com/ollama/ollama", "https://ollama.com/download"],
+  install=["[A] Installer : Windows `winget install -e --id Ollama.Ollama` (ou https://ollama.com/download/OllamaSetup.exe) · Linux `curl -fsSL https://ollama.com/install.sh | sh` (à lire avant)",
+           "[B] Modèle selon le matériel : sans GPU `ollama pull qwen3:0.6b` · 6-8 Go VRAM `ollama pull llama3.1:8b` · 12-24 Go `ollama pull qwen3:30b-a3b`",
+           "[C] Embeddings : `ollama pull nomic-embed-text` (≈ 270 Mo, FR correct)",
+           "[D] Vérifier : `curl http://127.0.0.1:11434/api/tags` et `ollama run qwen3:0.6b 'prêt ?'`"],
+  integree="src/ai/llmClient.js lit OLLAMA_BASE_URL + OLLAMA_MODEL depuis .env ; repli silencieusement désactivé si l'API ne répond pas.",
+  verifier="curl -s http://127.0.0.1:11434/api/tags | head -c 200",
+  notes="Le seul composant obligatoire de la V2. Rien ne part sur internet avec un modèle local.",
+  gpu="CPU possible (lent), GPU recommandé ≥ 6 Go pour 8B")
+
+T(id="litellm", nom="LiteLLM", cat=C_INFRA, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Proxy unique devant Ollama + fournisseurs gratuits (Groq/OpenRouter :free) + payants : changer de modèle = changer une ligne de config, jamais du code.",
+  urls=["https://github.com/BerriAI/litellm", "https://docs.litellm.ai"],
+  install=["[A] `python3 -m pip install -U 'litellm[proxy]'`",
+           "[B] Créer `audit/stack/config/litellm.config.yaml` : `model_list` avec `ollama/qwen3:0.6b` en défaut + `groq/llama-3.3-70b-versatile` en secours",
+           "[C] Lancer : `litellm --config audit/stack/config/litellm.config.yaml --port 4000`",
+           "[D] La tour pointe désormais sur http://127.0.0.1:4000/v1"],
+  integree="Un seul endpoint pour `chatConsole`, `intelTwin`, `reaserch-engine`, les agents. Budgets/limits dans le config.",
+  verifier="curl -s http://127.0.0.1:4000/v1/models | head -c 300",
+  notes="Gratuit et local. Ne colle une clé payante que si tu choisis explicitement un secours cloud.")
+
+T(id="lm-studio", nom="LM Studio", cat=C_INFRA, statut="absent", prix="materiel", licence="gratuit / source fermée", tier=0,
+  role="Alternative GUI à Ollama pour charger/tester des GGUF sans ligne de commande (sert aussi une API locale).",
+  urls=["https://lmstudio.ai", "https://lmstudio.ai/docs"],
+  install=["[A] Télécharger l'installeur (Win/mac/Linux) → https://lmstudio.ai/download",
+           "[B] Developer → Local Server → charger un GGUF → activer le serveur sur 1234",
+           "[C] Alternative de secours pour la tour si Ollama est absent (décocher dans .env)"],
+  integree="Optionnel. À privilégier pour un usage non technique d'un proche, pas comme socle.",
+  verifier="curl -s http://127.0.0.1:1234/v1/models",
+  notes="Ferme = pas auditable par agent ; garder Ollama comme référence.")
+
+T(id="gobbonet", nom="GobboNet (Elodine)", cat=C_INFRA, statut="reference", prix="materiel", licence="« Other » (non-OSI)", tier=None,
+  role="Référence du scénario « un seul fichier qui installe tout » : .exe 699 Ko qui pose llama.cpp + un modèle choisi selon la VRAM, puis tourne débranché. C'est le modèle UX de notre installeur.",
+  urls=["https://goblincorps.com/gobbonet", "https://github.com/ElodineOfficial/GobboNet"],
+  install=["[A] ⚠️ Référence uniquement, pas une dépendance : licence non ouverte, binaire non signé (SmartScreen)",
+           "[B] Si envie de goûter : télécharger le setup sur la page, lire les .bat/.ps1 du repo (le code est du script Windows lisible)",
+           "[C] Ce qu'on en copie : probe matériel → liste de modèles adaptés → 1 mot de passe local → serveur LAN"],
+  integree="Ne pas lier. Nos équivalents : `audit/stack/install-stack.ps1|.sh` + Ollama + Open WebUI.",
+  verifier="—",
+  notes="Gratuit et honnête mais « open source » au sens large seulement. Windows only, Linux « probablement buggé » dixit l'auteur.")
+
+T(id="pinokio", nom="Pinokio", cat=C_INFRA, statut="absent", prix="materiel", licence="MIT (launcher)", tier=0,
+  role="Launcher « 1 clic » qui clone, installe et démarre des projets open source. Utile pour tester une idée vite.",
+  urls=["https://pinokio.computer", "https://github.com/cocktailpeanut/pinokio"],
+  install=["[A] Télécharger depuis le site officiel (Windows/macOS/Linux)",
+           "[B] Discover → Download from URL → coller l'URL du repo (ex. la tour amont)",
+           "[C] ⚠️ Toujours lire le `main.json`/script avant Install : un script Pinokio exécute du code tiers avec tes droits"],
+  integree="Ne remplace pas notre installeur versionné ; nos scripts restent la voie de référence (lisibles, relançables, dans ton repo).",
+  verifier="—",
+  notes="Communauté = certains scripts non revus ; ne jamais exécuter un lien reçu en DM comme un .exe.")
+
+T(id="whisper-cpp", nom="whisper.cpp", cat=C_INFRA, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Transcription locale de mémos/radios/captures audio, sur CPU. Alimente l'input texte de la tour.",
+  urls=["https://github.com/ggml-org/whisper.cpp", "https://huggingface.co/ggerganov/whisper.cpp"],
+  install=["[A] `git clone --depth 1 https://github.com/ggml-org/whisper.cpp && cd whisper.cpp`",
+           "[B] `make -j` (Windows : `cmake -B build && cmake --build build --config Release`)",
+           "[C] Télécharger un modèle : `sh ./models/download-ggml-model.sh base`",
+           "[D] Test : `./build/bin/whisper-cli -m models/ggml-base.bin -f note.wav -l fr`"],
+  integree="src/voice/sttLocal.js appelle le binaire en local (file d'attente de fichiers), pas de cloud.",
+  verifier="ls models/ggml-base.bin && ./build/bin/whisper-cli --help >/dev/null && echo ok",
+  notes="Si Python : faster-whisper est plus simple à brancher. GPU → vitesse x10.",
+  gpu="CPU OK (0,5-2x temps réel selon taille de modèle)")
+
+# ─────────────────────────────────────────────────────── 1 · Recherche/collecte
+T(id="searxng", nom="SearXNG", cat=C_SEARCH, statut="absent", prix="materiel", licence="AGPL-3.0", tier=0,
+  role="Méta-recherche privée auto-hébergée : tes requêtes ne sont plus attachées à ton identité auprès des moteurs. Devient le `SearxngRetriever` de `reaserch-engine` et le « cherche » de la tour.",
+  urls=["https://github.com/searxng/searxng", "https://docs.searxng.org"],
+  install=["[A] `docker run -d --name wt-searxng -p 127.0.0.1:8080:8080 -e SEARXNG_SECRET=$(openssl rand -hex 20) -v $PWD/config/searxng:/etc/searxng searxng/searxng:latest`",
+           "[B] Activer la sortie JSON (indispensable pour un agent) : dans `settings.yml`, `search.formats: [html, json]`",
+           "[C] Engines FR utiles à activer : duckduckgo, google, bing, wikipedia, wikidata, qwant, mojeek",
+           "[D] Vérifier : `curl -s 'http://127.0.0.1:8080/search?q=test&format=json' | head -c 200`"],
+  integree="SEARCH_BASE_URL=http://localhost:8080/search dans .env ; Vane peut l'utiliser comme backend.",
+  verifier="curl -s 'http://127.0.0.1:8080/search?q=frontignan&format=json' | python3 -c 'import json,sys;print(len(json.load(sys.stdin)[\"results\"]))'",
+  notes="Sans le `format=json`, un agent ne peut pas consommer le résultat : ne pas oublier le [B].")
+
+T(id="vane-perplexica", nom="Vane (ex-Perplexica)", cat=C_SEARCH, statut="absent", prix="materiel", licence="MIT (36,6 k★)", tier=0,
+  role="Moteur de réponse avec citations : lit le web via SearXNG, rerank, répond. Remplace un Perplexity à 20 $/mois. UI de recherche « dossier » pour la tour.",
+  urls=["https://github.com/ItzCrazyKns/Vane", "https://hub.docker.com/r/itzcrazykns1337/vane"],
+  install=["[A] `docker run -d --name wt-vane -p 127.0.0.1:3000:3000 -v vane-data:/home/vane/data itzcrazykns1337/vane:latest`",
+           "[B] Ouvrir http://localhost:3000 → Settings → Model : ajouter `http://host.docker.internal:11434/v1` (Ollama) → 0 API externe",
+           "[C] (option) Brancher notre SearXNG : `SEARXNG_API_URL=http://127.0.0.1:8080`",
+           "[D] Vérifier : poser « Quelle est la population de Frontignan ? » → réponse citée"],
+  integree="VANE_BASE_URL=http://localhost:3000/api ; les réponses citées nourrissent `hudSummaryResponse.js` et les dossiers de recherche.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://localhost:3000",
+  notes="⚠️ Le nom a changé en mars 2026 (repo `Perplexica` → `Vane`) : les vieux tutos donnent une image Docker obsolète. Vérifier le nom d'image au build.")
+
+T(id="crawl4ai", nom="Crawl4AI", cat=C_SEARCH, statut="absent", prix="materiel", licence="Apache-2.0 (66-80 k★)", tier=0,
+  role="Page web → markdown propre / JSON structuré, avec rendu JS. Le « yeux » qui manque à `reaserch-engine` pour lire les pages que SearXNG trouve.",
+  urls=["https://github.com/unclecode/crawl4ai", "https://docs.crawl4ai.com"],
+  install=["[A] `python3 -m venv .venv && source .venv/bin/activate` (Win : `.venv\\Scripts\\activate`)",
+           "[B] `pip install -U crawl4ai && crawl4ai-setup` (pose Chromium/Playwright)",
+           "[C] Test : `crwl https://example.com -o markdown`",
+           "[D] En service : `crawl4ai-server --port 11235` (API) ou `AsyncWebCrawler` dans le moteur"],
+  integree="engine/retrieval.py → `Crawl4AiRetriever(search_request)` renvoie du markdown horodaté, prêt pour l'extraction d'évidence.",
+  verifier="crwl https://en.wikipedia.org/wiki/Frontignan -o markdown | head -20",
+  notes="Pas de clé, pas de facture ; le mode extraction LLM est optionnel et marchera sur Ollama. ~300 Mo de RAM idle + Chromium.")
+
+T(id="firecrawl", nom="Firecrawl (self-host)", cat=C_SEARCH, statut="absent", prix="materiel", licence="AGPL-3.0 (core)", tier=1,
+  role="Alternative à Crawl4AI : crawl + scrape + map + extract en REST, avec SDK compatibles. À considérer seulement si tu veux un service multi-projets.",
+  urls=["https://github.com/firecrawl/firecrawl", "https://docs.firecrawl.dev/contributing/self-host"],
+  install=["[A] `git clone --depth 1 https://github.com/firecrawl/firecrawl && cd firecrawl`",
+           "[B] `docker compose -f apps/api/docker-compose.yaml up -d` (⚠️ nécessite Redis ; image ~500 Mo)",
+           "[C] Endpoint local : `http://localhost:3002/v1/scrape`"],
+  integree="Non recommandé pour une tour légère : Crawl4AI couvre le besoin à plus petite empreinte.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://localhost:3002/v0/scrape",
+  notes="AGPL + service lourd. Le cloud Firecrawl est freemium/crédités → éviter.")
+
+# ─────────────────────────────────────────────────── 2 · Docs, RAG, structured
+T(id="marker", nom="Marker", cat=C_RAG, statut="absent", prix="materiel", licence="Apache-2.0 (39,5 k★, a migré depuis GPLv3)", tier=1,
+  role="PDF/EPUB/DOCX → markdown propre (layout-aware : colonnes, tableaux, équations). La porte d'entrée de `ETAT-DE-LART-PSYCHOLOGIE` et des arrêtés/DOC d'urbanisme vers le RAG.",
+  urls=["https://github.com/datalab-to/marker", "https://pypi.org/project/marker-pdf/"],
+  install=["[A] `pip install marker-pdf`",
+           "[B] Un fichier : `marker_single chemin/vers/doc.pdf /sortie --use_llm False`",
+           "[C] Dossier entier : `marker /corpus /out --workers 4`",
+           "[D] CPU possible (lent) ; GPU ≈ x10. Modèles ≈ 1-2 Go téléchargés au premier run."],
+  integree="corpus/ + CLI `python -m engine.ingest <pdf>` → alimente le graphe d'évidence.",
+  verifier="marker_single --help >/dev/null && echo ok",
+  notes="La licence est revenue en Apache-2.0 : usage commercial redevenu propre (à re-vérifier au moment de l'install).")
+
+T(id="docling", nom="Docling (IBM)", cat=C_RAG, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Convertit PDF/DOCX/PPTX/HTML en markdown + JSON typé, robuste sur les documents de bureau. Alternative plus légère que Marker quand le GPU manque.",
+  urls=["https://github.com/docling-project/docling", "https://docling-project.github.io/docling/"],
+  install=["[A] `pip install docling`",
+           "[B] `docling conversion mondocument.pdf --to md`",
+           "[C] En Python : `DocumentConverter().convert(path).document.export_to_markdown()`"],
+  integree="Choix par défaut pour `ETAT-DE-LART-PSYCHOLOGIE` (pptx/pdf mélangés).",
+  verifier="docling --version",
+  notes="Moins bon que Marker sur les équations, plus simple sur les PPTX.")
+
+T(id="ocrmypdf", nom="OCRmyPDF", cat=C_RAG, statut="absent", prix="materiel", licence="MPL-2.0", tier=0,
+  role="Rend cherchable un PDF scanné (ajoute une couche texte), corrige l'inclinaison, déskew. Indispensable pour les documents anciens/arrêtés numérisés.",
+  urls=["https://gitlab.cern.ch/ocrmypdf/ocrmypdf", "https://ocrmypdf.readthedocs.io"],
+  install=["[A] `sudo apt install ocrmypdf ghostscript` (ou `pip install ocrmypdf`)",
+           "[B] `ocrmypdf -l fra entree.pdf sortie.pdf`",
+           "[C] Chaîne utile : `ocrmypdf` → `docling` → chunking → index"],
+  integree="Pré-traitement du `corpus/` de `reaserch-engine`.",
+  verifier="ocrmypdf --version",
+  notes="Ghostscript est AGPL mais appelé en CLI : pas d'obligation de licence sur tes documents.")
+
+T(id="tesseract", nom="Tesseract OCR", cat=C_RAG, statut="absent", prix="materiel", licence="Apache-2.0", tier=0,
+  role="OCR d'image (capture CCTV, photo de panneau, plan, capture d'écran). Ce qui manque à la tour pour « lire » ce qu'elle voit.",
+  urls=["https://github.com/tesseract-ocr/tesseract", "https://github.com/UB-Mannheim/tesseract/wiki"],
+  install=["[A] Linux : `sudo apt install tesseract-ocr tesseract-ocr-fra` · Windows : installeur UB-Mannheim (lien) · macOS : `brew install tesseract tesseract-lang`",
+           "[B] Test : `tesseract capture.png stdout -l fra+eng --psm 6`",
+           "[C] Dans le navigateur (zéro install serveur) : `npm i tesseract.js` + worker, ou `--lang fra`",
+           "[D] Pour les rendus lourds : PaddleOCR (Apache-2.0, 88,9 k★)"],
+  integree="src/ocr.js : bouton « lire cette image » sur `ficheLieu` et les flux CCTV ; texte → `reaserch-engine`.",
+  verifier="tesseract --version && tesseract --list-langs | grep -i fra",
+  notes="Sur captures basse qualité, PaddleOCR gagne ; Tesseract gagne en zéro-dépendance et vitesse CPU.")
+
+T(id="paddleocr", nom="PaddleOCR", cat=C_RAG, statut="absent", prix="materiel", licence="Apache-2.0 (88,9 k★)", tier=0,
+  role="OCR moderne robuste (manuscrits, tableaux, multilingue, PP-OCRv5). Le choix qualité.",
+  urls=["https://github.com/PaddlePaddle/PaddleOCR", "https://www.paddleocr.ai/latest/"],
+  install=["[A] `pip install paddlepaddle rapidocr-onnxruntime` (ou `pip install paddleocr`)",
+           "[B] CLI : `rapidocr --image_dir capture.png`",
+           "[C] En Python : `from rapidocr_onnxruntime import RapidOCR; RapidOCR()(path)`"],
+  integree="Remplaçable avec Tesseract derrière la même interface `src/ocr.js`.",
+  verifier="python3 -c 'import rapidocr_onnxruntime,sys;print(\"ok\")'",
+  notes="RapidOCR (ONNX) évite la grosse dépendance Paddle. ~1 Go de poids initial.")
+
+T(id="libretranslate", nom="LibreTranslate", cat=C_RAG, statut="absent", prix="materiel", licence="AGPL-3.0", tier=0,
+  role="Traduction hors-ligne (API) : documents étrangers lus par la tour sans upload chez un tiers.",
+  urls=["https://github.com/LibreTranslate/LibreTranslate", "https://libretranslate.com/docs"],
+  install=["[A] `docker run -d --name wt-translate -p 127.0.0.1:5000:5000 --init ghcr.io/argosopentech/argos-translate:latest`",
+           "[B] `curl -s -X POST http://127.0.0.1:5000/translate -d '{\"q\":\"bonjour\",\"source\":\"fr\",\"target\":\"en\"}'`",
+           "[C] Ou `pip install libretranslate && libretranslate --host 127.0.0.1`"],
+  integree="src/i18n/translateLocal.js, branché sur les fiches et les résultats de recherche.",
+  verifier="curl -s http://127.0.0.1:5000/languages | head -c 200",
+  notes="Qualité correcte FR↔EN/ES/DE ; loin de DeepL sur les langues hors européen. Version hébergée publique = dépannage, pas confidentiel.")
+
+T(id="chonkie", nom="Chonkie", cat=C_RAG, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Stratégies de découpe pour le RAG (token, sentence, recursive, semantic, late chunking) — la qualité de récupération se joue ici.",
+  urls=["https://github.com/chonkie-ai/chonkie", "https://docs.chonkie.ai"],
+  install=["[A] `pip install chonkie`",
+           "[B] `python -c \"from chonkie import SemanticChunker; print(SemanticChunker(model='ollama/qwen3:0.6b'))\"`",
+           "[C] Utiliser `RecursiveChunker` pour les DOC markdown issus de docling/marker"],
+  integree="`reaserch-engine` : l'étape d'ingestion d'évidence avant l'extraction.",
+  verifier="python3 -c 'import chonkie;print(chonkie.__version__)'",
+  notes="Léger, mono-mainteneur : épingler la version dans requirements.")
+
+T(id="qdrant", nom="Qdrant", cat=C_RAG, statut="absent", prix="materiel", licence="Apache-2.0", tier=0,
+  role="Base vectorielle (Rust) pour corpus importants (100 k+ chunks), avec filtres temporels/méta — pratique pour un graphe d'évidence daté.",
+  urls=["https://github.com/qdrant/qdrant", "https://qdrant.tech/documentation/"],
+  install=["[A] `docker run -d --name wt-qdrant -p 127.0.0.1:6333:6333 -v qdrant:/qdrant/storage qdrant/qdrant:latest`",
+           "[B] `curl -s http://127.0.0.1:6333/collections`",
+           "[C] Python : `from qdrant_client import QdrantClient; QdrantClient(url='http://127.0.0.1:6333')`"],
+  integree="Optionnel au-dessous de ~50 k chunks → sinon LanceDB.",
+  verifier="curl -s http://127.0.0.1:6333/readyz",
+  notes="Qdrant Cloud a un tier gratuit (avec compte) : inutile ici.")
+
+T(id="lancedb", nom="LanceDB", cat=C_RAG, statut="absent", prix="materiel", licence="Apache-2.0", tier=0,
+  role="Vecteurs + colonnes typées **en fichiers**, sans serveur : le choix par défaut d'une tour. Zéro conteneur, zéro port.",
+  urls=["https://github.com/lancedb/lancedb", "https://lancedb.com/docs"],
+  install=["[A] `pip install lancedb`",
+           "[B] `python -c \"import lancedb; db=lancedb.connect('data/lancedb'); print(db.table_names())\"`",
+           "[C] Indexer avec le même embedder qu'Ollama (`nomic-embed-text`)"],
+  integree="`reaserch-engine/engine/persistence.py` → store vectoriel local derrière l'interface existante.",
+  verifier="python3 -c 'import lancedb;print(\"ok\")'",
+  notes="Recommandé avant Qdrant : moins de pièces, mêmes usages jusqu'à ~1 M de lignes.")
+
+T(id="outlines", nom="Outlines", cat=C_RAG, statut="absent", prix="materiel", licence="Apache-2.0", tier=0,
+  role="Contraint la génération token par token → JSON **qui valide le schéma**, par construction. Fini le parsing fragile.",
+  urls=["https://github.com/dottxt-ai/outlines", "https://dottxt-ai.github.io/outlines/"],
+  install=["[A] `pip install outlines`",
+           "[B] Charger un de TES schémas : `json.loads(open('schemas/evidence.schema.json').read())` → `outlines.from_json(schema)`",
+           "[C] `Generator('hugging-quants/...', backend='transformers')` ou via un endpoint compatible",
+           "[D] Alternative sans GPU : valider avec `jsonschema` + retry (Instructor)"],
+  integree="`reaserch-engine` : chaque agent (claims/evidence/conclusion) sort du validé par `schemas/*.schema.json`.",
+  verifier="python3 -c 'import outlines;print(\"ok\")'",
+  notes="Marche avec modèles locaux (transformers/vLLM/llamacpp). Avec Ollama, préfère Instructor+jsonschema si Outlines refuse le backend.",
+  gpu="GPU utile, pas obligatoire")
+
+T(id="instructor", nom="Instructor", cat=C_RAG, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Sorties typées Pydantic + retries + validation, sur n'importe quel endpoint OpenAI-compatible → marche avec Ollama et LiteLLM.",
+  urls=["https://github.com/567-labs/instructor", "https://python.useinstructor.com"],
+  install=["[A] `pip install instructor pydantic`",
+           "[B] `client = instructor.from_openai(OpenAI(base_url='http://127.0.0.1:11434/v1', api_key='x'), mode=instructor.Mode.JSON)`",
+           "[C] Déclarer `class Evidence(BaseModel): ...` calqué sur `schemas/evidence.schema.json`",
+           "[D] `client.chat.completions.create(response_model=Evidence, messages=..., max_retries=3)`"],
+  integree="Le pont propre entre les LLM et les schémas JSON du repo.",
+  verifier="python3 -c 'import instructor;print(instructor.__version__)'",
+  notes="La voie la plus simple pour une tour sans GPU. Recommandé en premier choix.")
+
+T(id="dspy", nom="DSPy", cat=C_RAG, statut="absent", prix="materiel", licence="MIT", tier=1,
+  role="Optimise les prompts et les poids par programme (métrique → compilation) au lieu du tuning manuel.",
+  urls=["https://github.com/stanfordnlp/dspy", "https://dspy.ai"],
+  install=["[A] `pip install dspy`",
+           "[B] `dspy.LM('ollama_chat/qwen3:4b', api_base='http://127.0.0.1:11434')`",
+           "[C] Définir un `Signature` (question → claims) + un dataset de 20-50 exemples de ton domaine",
+           "[D] `dspy.GRPO`/`BootstrapFewShot` puis sauvegarder `program.json`"],
+  integree="`reaserch-engine` : optimiser la stratégie de décomposition de question sur tes dossiers archivés.",
+  verifier="python3 -c 'import dspy;print(dspy.__version__)'",
+  notes="Avant d'optimiser : il te faut des exemples annotés. Ne pas commencer par là.")
+
+T(id="langfuse", nom="Langfuse", cat=C_RAG, statut="absent", prix="materiel", licence="MIT (core)", tier=1,
+  role="Observabilité des runs : traces par étape, coûts, evals, gestion de prompts. Ce qui rend `reaserch-engine` débogable.",
+  urls=["https://github.com/langfuse/langfuse", "https://langfuse.com/self-hosting"],
+  install=["[A] `git clone --depth 1 https://github.com/langfuse/langfuse && cd langfuse`",
+           "[B] `cp .env.example .env` → générer les secrets → `docker compose up -d` (Postgres + ClickHouse + MinIO)",
+           "[C] `pip install langfuse` puis décorer les étapes : `@observe()`",
+           "[D] UI : http://localhost:3001 (projet créé en local, sans compte cloud)"],
+  integree="Chaque agent du moteur émet une trace nommée ; le `docs/` de l'audit recommande de logger `run.context`.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://localhost:3001",
+  notes="Lourd (~4 Go RAM) : sur une tour 8 Go, préfère des traces JSONL dans `data/traces/` — ton moteur écrit déjà des checkpoints JSON, c'est à 80 % ça.")
+
+# ───────────────────────────────────────────────────────── 3 · OSINT infra
+T(id="spiderfoot", nom="SpiderFoot", cat=C_OSINT, statut="absent", prix="materiel", licence="MIT (21,7 k★)", tier=0,
+  role="Collecte OSINT automatisée sur 200+ sources (domaine, IP, e-mail, empreinte d'infra), UI web + API + scans programmables.",
+  urls=["https://github.com/smicallef/spiderfoot", "https://www.spiderfoot.net/documentation/"],
+  install=["[A] `docker run -d --name wt-spiderfoot -p 127.0.0.1:5001:5001 -v spiderfoot:/root/.spiderfoot blacktop/spiderfoot:latest`",
+           "[B] (ou source) `git clone --depth 1 https://github.com/smicallef/spiderfoot && pip install -r requirements.txt && python sf.py -l 127.0.0.1:5001`",
+           "[C] Ouvrir http://localhost:5001 → New Scan → cible = un domaine d'infrastructure",
+           "[D] Désactiver les modules non conformes (personnes, réseaux sociaux de particuliers)"],
+  integree="Résultats → entités de `intelTwin.js` (ports, services, sous-domaines d'une collectivité, d'un site).",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://localhost:5001",
+  notes="La version hébergée « HX » est payante : inutile. Les modules les plus utiles demandent des clés gratuites (Shodan, VirusTotal, SecurityTrails) — optionnel.")
+
+T(id="theharvester", nom="theHarvester", cat=C_OSINT, statut="absent", prix="avec-compte", licence="GPL-3.0", tier=0,
+  role="E-mails + sous-domaines + hosts d'une organisation, en 5 minutes.",
+  urls=["https://github.com/laramies/theHarvester"],
+  install=["[A] `pipx install theHarvester` (ou `pip install theHarvester`)",
+           "[B] `theHarvester -d exemple.fr -b all`",
+           "[C] Sortie JSON : `-f out.json` pour la consommer dans le moteur"],
+  integree="Phase de cadrage d'un dossier `reaserch-engine`.",
+  verifier="theHarvester -h >/dev/null && echo ok",
+  notes="Certaines sources demandent une clé gratuite (Hunter, Shodan) : sinon le reste marche quand même.")
+
+T(id="amass", nom="Amass (OWASP)", cat=C_OSINT, statut="absent", prix="materiel", licence="Apache-2.0", tier=0,
+  role="Énumération de sous-domaines la plus complète en free (brute + passif + JS).",
+  urls=["https://github.com/owasp-amass/amass", "https://owasp-amass.com"],
+  install=["[A] `go install github.com/owasp-amass/amass/v4/...@master` (ou binaire release)",
+           "[B] `amass enum -passive -d exemple.fr -o sub.txt`",
+           "[C] Actif (optionnel) : `amass enum -active -brutes -d exemple.fr` ⚠️ plus intrusif"]
+  ,
+  integree="Alimente la carte des entités (infrastructures) de la tour.",
+  verifier="amass -version",
+  notes="Ne scanner que ce que tu as le droit de scanner ; mode passif par défaut.")
+
+T(id="maigret", nom="Maigret", cat=C_OSINT, statut="absent", prix="materiel", licence="MIT (37,3 k★)", tier=0,
+  role="Dossier de présence par pseudo sur 3000+ sites (professionnel : empreinte d'une organisation/marque).",
+  urls=["https://github.com/soxoj/maigret", "https://maigret.readthedocs.io"],
+  install=["[A] `pipx install maigret`",
+           "[B] `maigret -c data/cookies.jsonl nom_de_marque -f reports/x.html`",
+           "[C] Utiliser `--no-recursion` et un profil dédié pour ne rien polluer"],
+  integree="⚠️ Uniquement sur des identifiants **organisationnels** (entité publique, service, marque). Jamais sur une personne physique : la ligne du projet amont est explicite.",
+  verifier="maigret --version",
+  notes="Puissant donc sensible. En FR : droit à la vie privée (art. 9 C. civ.) + RGPD dès que tu stockes/exposes.")
+
+T(id="exiftool", nom="ExifTool", cat=C_OSINT, statut="absent", prix="materiel", licence="Perl Artistic", tier=0,
+  role="Métadonnées de fichiers (photo, PDF, capture) : géoloc, modèle d'appareil, dates, logiciel, historique de rédac.",
+  urls=["https://exiftool.org"],
+  install=["[A] `sudo apt install libimage-exiftool-perl` (ou télécharger le binaire)",
+           "[B] `exiftool capture.png`",
+           "[C] En masse : `exiftool -csv /corpus/images > meta.csv`"],
+  integree="Bouton « métadonnées » sur `ficheLieu` ; alerte « image sans géoloc » = potentiellement recadrée.",
+  verifier="exiftool -ver",
+  notes="Aussi l'outil de **nettoyage** (`-all=`) avant de publier une capture. Les 2 sens, à connaître.")
+
+T(id="osint-framework", nom="OSINT Framework", cat=C_OSINT, statut="reference", prix="materiel", licence="web", tier=None,
+  role="Index arborescent de sources ouvertes (la carte mentale du métier). À absorber comme catalogue de connecteurs, pas comme outil.",
+  urls=["https://osintframework.com", "https://github.com/lockfale/OSINT-Framework"],
+  install=["[A] Parcourir l'arbre, repérer les sources **gratuites sans clé** pertinentes pour ton territoire",
+           "[B] En dériver un fichier `connecteurs-osint.json` (id, url, auth: none|free-key, type de sortie)",
+           "[C] Brancher les 5 meilleurs dans `intelTwin.js` comme calques optionnels"],
+  integree="Le fichier de connecteurs devient la config lue par les agents : ils savent quoi est gratuit.",
+  verifier="—",
+  notes="Beaucoup d'entrées sont payantes ou mortes : filtrer, ne jamais intégrer sans tester.")
+
+T(id="maltego-ce", nom="Maltego CE", cat=C_OSINT, statut="reference", prix="avec-compte", licence="propriétaire (CE gratuit)", tier=None,
+  role="Graphe + transforms historique du domaine. Payant pour l'usage sérieux.",
+  urls=["https://www.maltego.com/pricing/", "https://www.maltego.com/continue-to-hub/?hub=https://www.maltego.com/editions/"],
+  install=["[A] À ne PAS installer : SpiderFoot (collecte) + Gephi (graphe) + `intelTwin` (visualisation dans le globe) couvrent le besoin à 0 €",
+           "[B] Si besoin absolu : CE = credits mensuels limités + compte obligatoire"],
+  integree="Non.",
+  verifier="—",
+  notes="Piège du « gratuit puis bloqué ». Notre stack maison fait le graphe dans le globe, c'est un avantage sur Maltego.")
+
+T(id="opencti", nom="OpenCTI", cat=C_OSINT, statut="reference", prix="materiel", licence="⚠️ NOASSERTION (vérifier la LICENSE du commit visé)", tier=None,
+  role="Plateforme de threat-intel (observable → infra → groupe). Très au-dessus du besoin d'une tour de veille.",
+  urls=["https://github.com/OpenCTI-Platform/opencti", "https://docs.opencti.io/latest/deployment/installation/"],
+  install=["[A] Non recommandé : 16-32 Go RAM, Elasticsearch + Redis + RabbitMQ + MinIO",
+           "[B] Si impératif : `docker compose` officiel + `opencti_worker`",
+           "[C] Équivalent léger pour toi : SpiderFoot → LanceDB → `intelTwin`"],
+  integree="Non.",
+  verifier="—",
+  notes="Licence ambigüe sur GitHub : à clarifier avant tout usage public.")
+
+T(id="gephi", nom="Gephi", cat=C_OSINT, statut="reference", prix="materiel", licence="GPL-3.0", tier=0,
+  role="Visualisation/analyse de graphes (layout, métriques) pour explorer les liens sortis de SpiderFoot.",
+  urls=["https://gephi.org", "https://github.com/gephi/gephi"],
+  install=["[A] Télécharger l'installeur (nécessite JDK 17+)",
+           "[B] Importer un CSV/GEXF généré par notre exporter",
+           "[C] ⚠️ Alternative intégrée : dessiner le graphe **dans le globe** (calque `linksGraph.js`), c'est mieux pour la tour"],
+  integree="Exporter `graph.gexf` depuis `evidence_graph.py` → utile pour les présentations.",
+  verifier="—",
+  notes="Desktop Java : pas automatisable par un agent au-delà de l'export.")
+
+# ─────────────────────────────────────────────────── 4 · Géoservices / imagerie
+T(id="esri-carto-tuiles", nom="Tuiles Esri World Imagery + CARTO (déjà en place)", cat=C_GEO, statut="present", prix="materiel", licence="Esri (usage perso) / CARTO-OSM", tier=None,
+  role="Le globe satellite et la carte routière de la tour, **sans clé** — l'avantage structurel de ton fork sur l'amont.",
+  urls=["https://github.com/Sathancabrol/watchtower-mods (mapStackController.js)", "https://basemaps.cartocdn.com"],
+  install=["[A] Rien : déjà dans `COGNITORIUM/watchtower-mods/src/mapStackController.js` (CARTO Voyager remplace osm.org, bloqué)",
+           "[B] Vérifier au build que les URL de tuiles ne sont pas rate-limitées (user-agent + cache)"],
+  integree="Base de tous les calques.",
+  verifier="curl -sI 'https://basemaps.cartocdn.com/rastertiles/voyager/12/2114/1437.png' | head -1",
+  notes="CGU : usage non commercial pour les tuiles « community » ; vérifier à chaque mise à jour de l'app.")
+
+T(id="photon-nominatim", nom="Photon → Nominatim (géocodage sans clé, déjà en place)", cat=C_GEO, statut="present", prix="materiel", licence="OSM (ODbL)", tier=None,
+  role="Recherche de lieux de la tour, sans clé Google. Déjà remplacé dans tes mods (`locations.js`).",
+  urls=["https://photon.komoot.io", "https://github.com/komoot/photon", "https://nominatim.org"],
+  install=["[A] Déjà en place dans `src/locations.js`",
+           "[B] Pour retirer la dépendance aux instances publiques : `docker run -d -p 127.0.1:2322 komoot/photon` (⚠️ nécessite l'import d'un dump ~30 Go → ne le faire que si tu as le disque)",
+           "[C] Respect du 1 req/s sur Nominatim public, User-Agent obligatoire"],
+  integree="Le cœur du « va à Marseille ».",
+  verifier="curl -s 'https://photon.komoot.io/api/?q=frontignan&limit=1' | head -c 200",
+  notes="Ne pas spammer les instances publiques, sinon bannissement : cache + throttle côté app.")
+
+T(id="cesium-ion", nom="Cesium ion (tuiles 3D photoréalistes)", cat=C_GEO, statut="partiel", prix="avec-compte", licence="Cesium (token gratuit usage perso)", tier=None,
+  role="Upgrade visuel optionnel de la tour : 3D photoréaliste + terrain. Ton startGate « MODE PAYANT » est fait pour ça.",
+  urls=["https://ion.cesium.com", "https://cesium.com/platform/cesium-for-unreal/cesium-ion-pricing", "https://github.com/Sathancabrol/watchtower-mods (keySetup.js)"],
+  install=["[A] Créer un compte gratuit → copier le token par défaut",
+           "[B] Le coller dans l'app (POWER UP / `keySetup.js`) → ✓ vert → redémarrage auto",
+           "[C] Vérifier le quota sur le dashboard ion, ne pas exposer l'instance"],
+  integree="`src/startGate.js` + `keySetup.js` : déjà conçus pour ça.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' 'https://assets.cesium.com/' ",
+  notes="Gratuit **avec compte** et quotas éligibles (perso/non commercial). L'alternative 0 compte = rester sur Esri (moins joli, gratuit).")
+
+T(id="opensky", nom="OpenSky Network", cat=C_GEO, statut="partiel", prix="avec-compte", licence="données ouvertes (compte = quota supérieur)", tier=None,
+  role="Positions de vol (le calque avions de la tour / des amonts).",
+  urls=["https://opensky-network.org", "https://opensky-network.org/monitor"],
+  install=["[A] Anonyme : `curl -s 'https://opensky-network.org/api/states/all?bbox=3.4,43.3,4.2,43.7'` (quota faible, souvent 429)",
+           "[B] Mieux : créer un compte gratuit (client_id/secret) ou utiliser `adsb.lol` (sans clé)",
+           "[C] Dans la tour, `OPENSKY_AUTH_MODE=anon` reste le mode par défaut"],
+  integree="Déjà traité par l'amont + ton fork.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' https://opensky-network.org/api/states/all",
+  notes="Avec un agent local, `adsb.lol` + un dongle RTL-SDR (~30 €) = zéro dépendance à un tiers et couverture locale. Voir P7.")
+
+# ─────────────────────────────────────────────────────────── 5 · 3D splats
+T(id="aholo-viewer", nom="aholo-viewer (Manycore)", cat=C_3D, statut="absent", prix="materiel", licence="MIT (1 k★)", tier=0,
+  role="Renderer 3DGS + mesh haute perf avec *Chunked Streaming LOD* (jusqu'à 1 Md splats en navigateur, WebGPU/WebGL2). Le saut visuel de la tour : friches/patrimoine/chantiers scannés dans le globe.",
+  urls=["https://github.com/manycoretech/aholo-viewer", "https://aholojs.dev/en-US/manual/getting-started/", "https://www.npmjs.com/package/@manycore/aholo-viewer"],
+  install=["[A] `npm i @manycore/aholo-viewer` (Node ≥ 22.22.1, pnpm pour le monorepo)",
+           "[B] Suivre **leur `docs/ai/skills/use-aholo-viewer/SKILL.md`** : il est écrit pour un agent d'implémentation",
+           "[C] Créer `src/splats.js` : conteneur monté sur la scène Cesium (ancrage géo via `SplatMesh` transform)",
+           "[D] Vérifier dans un navigateur avec WebGPU (Chrome ≥ 113) ; repli WebGL2"],
+  integree="Nouveau calque `splats` dans `displayOptions.js` ; partage d'URL via le pattern `sharelink.js`.",
+  verifier="node -e \"import('@manycore/aholo-viewer').then(m=>{if(!m)process.exit(1);console.log('ok')}).catch(()=>process.exit(1))\"",
+  notes="Le repo amont est **conçu pour le pilotage par agent** (AGENTS.md + skills) : c'est le cas d'usage n°1 de « copier un repo public et l'adapter ». Sous-module `external/egs-core` → cloner avec `--recurse-submodules`.")
+
+T(id="aholo-splat-transform", nom="@manycore/aholo-splat-transform", cat=C_3D, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="CLI de préparation des splats : formats (SPZ optimisé), découpe en chunks/LOD pour le streaming, et **génération des collisions** (marcher dans le scan).",
+  urls=["https://www.npmjs.com/package/@manycore/aholo-splat-transform", "https://github.com/manycoretech/aholo-viewer/tree/master/packages"],
+  install=["[A] `npm i -g @manycore/aholo-splat-transform`",
+           "[B] `aholo-splat-transform scan.ply --format spz --lod --out site/`",
+           "[C] Collisions : `--collider` (mesh simplifié) → à brancher sur un contrôleur de déplacement",
+           "[D] Servir le dossier en statique (le viewer charge les chunks à la demande)"],
+  integree="Pipeline `scripts/prepare-splat.sh` appelé par l'agent après chaque capture.",
+  verifier="aholo-splat-transform --help | head -5",
+  notes="C'est l'outil qui rend le 3DGS *utilisable* sur une tour : sans LOD/streaming, une scène de 20 Go plante le poste.")
+
+T(id="brush", nom="Brush", cat=C_3D, statut="absent", prix="materiel", licence="Apache-2.0 (5 k★)", tier=2,
+  role="Entraînement 3DGS/2DGS **local et gratuit** depuis tes photos/vidéos : tu n'achètes pas le scanner, tu produis les splats.",
+  urls=["https://github.com/ArthurBrussee/brush", "https://github.com/ArthurBrussee/brush#installation"],
+  install=["[A] `cargo install brush` ou télécharger le binaire release (Rust, CUDA/Metal)",
+           "[B] Préparer un dossier de 50-300 photos d'un site (recouvrement 80 %)",
+           "[C] `brush data=./site/ --output_dir ./out` puis `brush eval`",
+           "[D] Convertir `./out/*.ply` avec aholo-splat-transform"],
+  integree="`scripts/capture-to-globe.sh` : photos → splats → LOD → calque de la tour.",
+  verifier="brush --help | head -3",
+  notes="GPU nécessaire (~8-24 Go). Sans GPU : Colab (T4 gratuit) ou le cloud aholo3d (freemium, à éviter pour la souveraineté).",
+  gpu="NVIDIA/AMD/Metal requis")
+
+T(id="postshot", nom="Postshot", cat=C_3D, statut="reference", prix="materiel", licence="gratuit (⚠️ licence à vérifier)", tier=1,
+  role="GUI Windows capture → splats (le plus doux pour un non-technicien). Utile pour produire tes scans sans CLI.",
+  urls=["https://github.com/PostshotApp/postshot-desktop", "https://www.postshot.ai"],
+  install=["[A] Télécharger la release GitHub",
+           "[B] Importer photos/vidéo → entraîner → exporter .ply/.splat",
+           "[C] Passer le résultat par aholo-splat-transform pour le LOD"],
+  integree="Étape amont manuelle ; la tour consomme le `.spz`.",
+  verifier="—",
+  notes="Vérifier la licence avant d'en faire une dépendance ; sinon Brush.")
+
+T(id="opensplat", nom="OpenSplat / gsplat.tech", cat=C_3D, statut="reference", prix="materiel", licence="MIT", tier=None,
+  role="Viewer + éditeur de splats dans le navigateur (nettoyage, cadrage, export) ; gsplat.tech pour visualiser des scans CC.",
+  urls=["https://github.com/ElleXav/OpenSplat", "https://opensplattime.org", "https://gsplat.tech"],
+  install=["[A] Ouvrir OpenSplat (web), charger le `.ply`, supprimer les floches, exporter",
+           "[B] Télécharger des datasets CC-4 (ex. scans partagés) pour tester la couche splats sans rien capturer"],
+  integree="Prévisualisation pendant le dev de `src/splats.js`.",
+  verifier="—",
+  notes="Les datasets de démo sont souvent CC-BY/CC-4 : citer la source si tu exposes.")
+
+T(id="aholo-platform", nom="Aholo Platform (cloud)", cat=C_3D, statut="reference", prix="freemium", licence="service propriétaire", tier=None,
+  role="Génération de splats depuis images/vidéo sur le cloud du constructeur (la vidéo n°11 en parle comme accompagnement du repo).",
+  urls=["https://www.aholo3d.com"],
+  install=["[A] Non requis : Brush + Postshot font pareil en local",
+           "[B] Si un jour tu manques de GPU : uploade, récupère le .ply, puis supprime les données du service"],
+  integree="Non.",
+  verifier="—",
+  notes="⚠️ Comptes/crédits + tes photos chez un tiers. Le viewer GitHub reste MIT et gratuit : ne pas confondre les deux.")
+
+# ─────────────────────────────────────────────────────────────── 6 · Voix
+T(id="faster-whisper", nom="faster-whisper", cat=C_VOICE, statut="absent", prix="materiel", licence="MIT (25,2 k★)", tier=0,
+  role="STT Python rapide (CTranslate2) pour transcrire mémos, radios, réunions. Plus simple à brancher que whisper.cpp si tu es déjà en Python.",
+  urls=["https://github.com/SYSTRAN/faster-whisper"],
+  install=["[A] `pip install faster-whisper`",
+           "[B] Sans GPU : `WhisperModel('base','cpu','int8')` (int8 = x2 et tient en RAM)",
+           "[C] `segments,_ = model.transcribe(audio, language='fr', vad_filter=True)`",
+           "[D] Service : `docker run -p 127.0.0.1:9000:9000 ghcr.io/fedirz/faster-whisper-server:latest`"],
+  integree="src/voice/sttLocal.js (file d'attente + transcription → champ texte de `chatConsole`).",
+  verifier="python3 -c \"from faster_whisper import WhisperModel;WhisperModel('tiny','cpu','int8');print('ok')\"",
+  notes="`base` FR ≈ correct, `small` nettement mieux ; GPU = x5-x20.")
+
+T(id="piper", nom="Piper TTS", cat=C_VOICE, statut="absent", prix="materiel", licence="MIT (moteur) / voix CC-BY", tier=0,
+  role="TTS neural sur **CPU**, quasi instantané — la voix par défaut de la tour, choisie aussi par le projet `ada_local` pour ne pas consommer de VRAM.",
+  urls=["https://github.com/rhasspy/piper", "https://huggingface.co/rhasspy/piper-voices", "https://github.com/OHF-Voice/piper1-gpl"],
+  install=["[A] `pip install piper-tts` (ou `piper1-gpl`)",
+           "[B] Voix FR : télécharger `fr_FR-siwis-medium.onnx` + `.onnx.json` depuis le dépôt HF `piper-voices` (chemin `fr/fr_FR/siwis/medium/`) — repli `fr_FR-fr_FR-medium`",
+           "[C] Test : `echo 'Tour opérationnelle.' | piper --model fr_FR-siwis-medium.onnx --output_file out.wav`",
+           "[D] Serveur : `docker run -p 127.0.0.1:5002:5000 --rm -v $PWD/voices:/voice ghcr.io/rhasspy/piper:latest`"],
+  integree="Remplace la voix du navigateur dans `freeVoice.js` (garde le Web Speech en repli si `PIPER=off`).",
+  verifier="ls voices/*.onnx && piper --list-voices 2>/dev/null | head -3",
+  notes="Voix monocorde mais 0 latence GPU. Qualité supérieure → Qwen3-TTS (nécessite GPU).")
+
+T(id="qwen3-tts", nom="Qwen3-TTS", cat=C_VOICE, statut="absent", prix="materiel", licence="Apache-2.0", tier=1,
+  role="TTS open source SOTA (janv. 2026) : clonage de voix sur 3 s, design de voix par description, contrôle d'émotion/rythme, 10 langues **dont le français**, ~97 ms de latence, 0,6 B ≈ 4 Go VRAM.",
+  urls=["https://github.com/QwenLM/Qwen3-TTS", "https://huggingface.co/spaces/Qwen/Qwen3-TTS", "https://github.com/groxaxo/Qwen3-TTS-Openai-Fastapi", "https://github.com/flybirdxx/ComfyUI-Qwen-TTS"],
+  install=["[A] `pip install -U qwen3-tts` (+ `pip install flash-attn --no-build-isolation` pour économiser la VRAM)",
+           "[B] Poids : `huggingface-cli download Qwen/Qwen3-TTS-12Hz-0.6B` (≈ 1,5 Go ; 1,7 B ≈ 4 Go)",
+           "[C] Serveur OpenAI-compatible : `git clone https://github.com/groxaxo/Qwen3-TTS-Openai-Fastapi && docker compose up qwen3-tts-gpu` → `http://127.0.0.1:8880/v1/audio/speech`",
+           "[D] La tour appelle cet endpoint ; sans GPU : rester sur Piper, ou Colab T4 gratuit"],
+  integree="src/voice/ttsLocal.js : `PIPER` par défaut, `QWEN_TTS_URL` si l'endpoint répond (détection au boot).",
+  verifier="curl -s http://127.0.0.1:8880/v1/models | head -c 120",
+  notes="La vidéo n°7 montre ça dans ComfyUI : le workflow est pratique pour itérer, mais pour la tour un **endpoint HTTP** est plus simple à brancher. Cloner **ta** voix ; pas celle d'un tiers sans son accord.")
+
+T(id="kokoro", nom="Kokoro-82M", cat=C_VOICE, statut="reference", prix="materiel", licence="Apache-2.0", tier=0,
+  role="TTS ultra-léger (82 M) avec voix FR, tourne sur CPU correctement. Bon compromis entre Piper (moche) et Qwen (GPU).",
+  urls=["https://github.com/resemble-ai/kokoro", "https://huggingface.co/hexgrad/Kokoro-82M"],
+  install=["[A] `pip install kokoro-onnx soundfile`",
+           "[B] Télécharger `kokoro-v1.0.onnx` + `voices.bin`",
+           "[C] `python -c \"from kokoro import KPipeline; KPipeline(lang_code='f')('Tour prête.')\"` (lang `f` = français)"],
+  integree="Candidat n°2 pour `ttsLocal.js`.",
+  verifier="python3 -c 'import kokoro_onnx;print(\"ok\")'",
+  notes="Qualité/naturalité > Piper, coût CPU raisonnable. Voix FR moins expressive que Qwen3-TTS.")
+
+T(id="openwakeword", nom="openWakeWord", cat=C_VOICE, statut="absent", prix="materiel", licence="Apache-2.0", tier=0,
+  role="Mot d'éveil hors-ligne (« tour », « veille »…) : ce qui manque pour que la voix de la tour soit utilisable sans bouton.",
+  urls=["https://github.com/dscripka/openWakeWord", "https://github.com/dscripka/openWakeWord/releases"],
+  install=["[A] `pip install openwakeword`",
+           "[B] Télécharger un modèle (ou en entraîner un sur 15-30 échantillons de **ta** voix)",
+           "[C] Boucle : 16 kHz PCM → `model.predict(frame)` > 0,5 → armer le STT"],
+  integree="src/voice/wakeWord.js (worker), micro en continu, zéro cloud.",
+  verifier="python3 -c 'import openwakeword;print(\"ok\")'",
+  notes="Faux positifs en ambiance bruitée : exiger 2 frames > 0,6 + fenêtre de vérouillage 1,5 s.")
+
+# ─────────────────────────────────────────────────── 7 · Agents & automatisation
+T(id="hermes-agent", nom="Hermes Agent (Nous Research)", cat=C_AGENT, statut="absent", prix="materiel", licence="MIT (241 k★)", tier=0,
+  role="Agent auto-améliorant : skills persistés, mémoire 3 couches, outils, MCP, 15+ fournisseurs de modèles dont Ollama. **C'est le runtime que `reaserch-engine/docs/ARCHITECTURE_HERMES_INTEGRATION.md` vise déjà.**",
+  urls=["https://github.com/NousResearch/hermes-agent", "https://hermes-agent.nousresearch.com/docs/"],
+  install=["[A] `curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash` (lire avant)",
+           "[B] `hermes setup` → provider : `ollama` + base_url `http://127.0.0.1:11434` → 0 clé",
+           "[C] `hermes model` pour choisir `qwen3:4b`/`llama3.1:8b` ; `hermes tools` pour l'état",
+           "[D] `hermes` (CLI) puis créer un skill local `watchtower-osint` (recherche, scan, rapport)"],
+  integree="Le moteur de recherche devient un skill ; l'agent exécute, le moteur garde la vérité (principe de ton doc : ne pas refaire un framework).",
+  verifier="hermes --version 2>/dev/null || echo 'à relancer après install'",
+  notes="Version managée payante (~3 $/mois) : inutile, l'auto-hébergement est la voie prévue par ton architecture.")
+
+T(id="openclaw", nom="OpenClaw", cat=C_AGENT, statut="reference", prix="materiel", licence="⚠️ vérifier la LICENSE courante (GitHub: NOASSERTION)", tier=0,
+  role="Agent personnel « always-on » (gateway 18789, messageries, skills, cron). Très populaire en 2026.",
+  urls=["https://github.com/openclaw/openclaw", "https://docs.openclaw.ai"],
+  install=["[A] Node ≥ 22.14 ; `npm i -g openclaw` puis `openclaw onboard`",
+           "[B] Service : `openclaw gateway install` + `systemctl --user enable --now openclaw-gateway`",
+           "[C] Configurer un provider Ollama ; workspace `~/.openclaw` (⚠️ contient des secrets : 600)",
+           "[D] ⚠️ Relire la **license du tag installé** avant tout usage public ou distribution"],
+  integree="Concurrent de Hermes : choisir UN runtime. Hermes = skills appris + MIT clair ; OpenClaw = messageries + always-on.",
+  verifier="openclaw --version 2>/dev/null",
+  notes="388 k★ mais licence affichée ambiguë par l'API GitHub : à clarifier avant d'en faire une dépendance de la tour.")
+
+T(id="openhands", nom="OpenHands", cat=C_AGENT, statut="reference", prix="materiel", licence="MIT", tier=1,
+  role="Agent de code autonome (edite, exécute, teste) : le remplaçant libre de Cursor/Claude Code pour les grosses mécaniques.",
+  urls=["https://github.com/All-Hands-AI/OpenHands", "https://docs.all-hands.dev"],
+  install=["[A] `pip install openhands` (ou `docker run -it --pull=never -v /var/run/docker.sock:/var/run/docker-runtime allhandsai/openhands:latest`)",
+           "[B] `openhands config` → LLM : `ollama/qwen3:30b-a3b` (⚠️ un 8B code mal : viser ≥ 30 B ou une clé gratuite)",
+           "[C] Sandbox : Docker obligatoire pour lui laisser toucher des fichiers"],
+  integree="Les tâches de refactor lourdes (P1/P5) peuvent lui être confiées, sous revue de diff.",
+  verifier="openhands --version 2>/dev/null",
+  notes="Nécessite un bon modèle : sur un petit modèle local, il fait plus de dégâts que de bien. À utiliser avec garde-fous (branche dédiée, diffs revus).",
+  gpu="GPU fortement conseillé (ou secours cloud gratuit)")
+
+T(id="open-webui", nom="Open WebUI", cat=C_AGENT, statut="absent", prix="materiel", licence="BSD-3 (+ clause de marque >50 users)", tier=0,
+  role="ChatGPT local dans le navigateur : multi-modèles, RAG sur tes fichiers, outils/fonctions, pipelines. L'interface humaine au-dessus d'Ollama.",
+  urls=["https://github.com/open-webui/open-webui", "https://docs.openwebui.com/getting-started/quick-start/"],
+  install=["[A] `docker run -d --name wt-openwebui -p 127.0.0.1:3005:8080 -v openwebui:/app -e OLLAMA_BASE_URL=http://host.docker.internal:11434 ghcr.io/open-webui/open-webui:main`",
+           "[B] Premier compte = admin, **local uniquement** (ne jamais exposer 0.0.0.0 sans proxy auth)",
+           "[C] Documents → déposer le corpus → les chunks servent de RAG sans Qdrant",
+           "[D] (option) activer Whisper/Piper intégrés"],
+  integree="Console humaine de la tour ; `reaserch-engine` peut y lire des knowledge bases.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3005/health",
+  notes="Au-dessus de ~50 users la clause de branding s'applique → sans objet pour une tour. Alternative 100 % sans conteneur : `pip install open-webui`.")
+
+T(id="jan", nom="Jan", cat=C_AGENT, statut="reference", prix="materiel", licence="Apache-2.0 (40 k★)", tier=0,
+  role="App desktop 100 % offline, MCP, gestion de modèles GGUF. L'alternative « je veux un .exe propre et libre ».",
+  urls=["https://github.com/menloresearch/jan", "https://jan.ai/download"],
+  install=["[A] Télécharger Jan (Win/mac/Linux)",
+           "[B] Installer un modèle depuis le hub intégré (ou pointer `~/.jan/models`)",
+           "[C] Activer le serveur local `http://localhost:1337/v1` = endpoint pour la tour"],
+  integree="Repli de confort quand Ollama n'est pas voulu.",
+  verifier="curl -s http://127.0.0.1:1337/v1/models",
+  notes="Plus limité côté RAG/agents qu'Open WebUI.")
+
+T(id="activepieces", nom="Activepieces", cat=C_AGENT, statut="absent", prix="materiel", licence="MIT", tier=0,
+  role="Automatisation (le « boring » qui rapporte dans la vidéo n°3) : veille de flux, triage de boîte mail, briefing matin, alertes Telegram, runs illimités en self-host. **MIT là où n8n est fair-code.**",
+  urls=["https://github.com/activepieces/activepieces", "https://docs.activepieces.com/docs/activepieces/setup/installation"],
+  install=["[A] `docker run -d --name wt-pieces -p 127.0.0.1:4200:4200 -e AP_API_KEY=$(openssl rand -hex 16) -e DATABASE_URL=postgresql://... -v pieces:/root/.activepieces activepieces/activepieces:latest` (voir `audit/stack/docker-compose.yml`, déjà prêt)",
+           "[B] Ouvrir http://localhost:4200 → créer un flow `INBOX triage` (trigger IMAP → agent LLM Ollama → label + Telegram)",
+           "[C] Importer les flows JSON de `audit/stack/flows/` (si présents)",
+           "[D] Cron : `0 7 * * 1-5` pour le briefing de la tour"],
+  integree="Peut déclencher l'API de la tour, publier l'état quotidien dans un canal, et lancer `reaserch-engine` sur des sujets.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4200/health",
+  notes="n8n : 203 k★ mais **Sustainable Use License** (non-OSI) + fonctions enterprise → garder Activepieces comme choix par défaut.")
+
+T(id="n8n", nom="n8n", cat=C_AGENT, statut="reference", prix="materiel", licence="⚠️ fair-code (Sustainable Use, non-OSI)", tier=0,
+  role="Automatisation la plus populaire ; la vidéo n°3 la donne comme outil de métier.",
+  urls=["https://github.com/n8n-io/n8n", "https://docs.n8n.io/hosting/"],
+  install=["[A] `docker run -d --name n8n -p 127.0.0.1:5678:5678 -v n8n:/home/node/.n8n docker.n8n.io/n8nio/n8n`",
+           "[B] ⚠️ Licence : usage interne OK, revente de service = payant ; des features sont enterprise-only"],
+  integree="Pas de dépendance dans la tour : si besoin, passer par notre couche `audit/stack/flows` (agnostique).",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:5678/healthz",
+  notes="Acceptable pour toi en usage perso, mais ce n'est **pas** du logiciel libre : à dire clairement si tu publies.")
+
+T(id="scriberr", nom="Scriberr", cat=C_VOICE, statut="reference", prix="materiel", licence="MIT (3 k★)", tier=0,
+  role="Transcription de réunions/audios en Docker (Whisper dedans) : si tu veux une UI de transcription sans écrire le pont.",
+  urls=["https://github.com/rishikanthc/Scriberr", "https://scriberr.app"],
+  install=["[A] `docker run -d -p 127.0.0.1:8090:8080 -v scriberr:/data ghcr.io/rishikanthc/scriberr:latest`",
+           "[B] Uploader → SRT/TXT ; ou skip : faster-whisper + 20 lignes de Python"],
+  integree="Peut servir de « voutre de transcriptions » indexée par le RAG.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090",
+  notes="Petit projet mono-mainteneur : épingler l'image, ne pas en dépendre pour le cœur.")
+
+# ───────────────────────────────────────────────── 8 · Communications
+T(id="reticulum", nom="Reticulum (RNS)", cat=C_COM, statut="absent", prix="materiel", licence="AGPL-3.0 (logiciel)", tier=0,
+  role="Stack réseau chiffrée multi-média (LoRa, Wi-Fi, TCP, HF) sans IP, par destinations cryptographiques. Canal de secours pair-à-pair, auto-hébergé par la tour.",
+  urls=["https://github.com/softwaregroupdm/reticulum", "https://reticulum.network", "https://rmap.world", "https://github.com/buildwithparallel/crosstalk", "https://columba.network"],
+  install=["[A] `python3 -m venv .venv && pip install RNS LXMF RNS-Interface-Plugin-TCP`",
+           "[B] `~/.reticulum/config` : mode **local/LAN par défaut** (`interface_only`, `enabled: True` sur TCP), announcements à `enabled: True` seulement si tu choisis d'être public",
+           "[C] `python -m RNS.daemon` puis client : `pip install sideband` ou CrossTalk",
+           "[D] Vérifier : `rnsd` log → destination générée ; test en envoyant un LXMF à ta propre destination",
+           "[E] ⚠️ Ne jamais ouvrir un nœud TCP public sans firewall + `interface_only` + limites de taux"],
+  integree="`src/meshNodes.js` : afficher les nœuds announced (rmap) + l'état du canal dans le globe ; la tour peut **envoyer** une alerte par Reticulum quand internet tombe.",
+  verifier="python3 -c 'import RNS;print(RNS.__version__)' 2>/dev/null || echo absent",
+  notes="Logiciel 0 €. Le LoRa réel demande du matériel (~15-40 €). Exposer un backbone = responsabilité (abus, relai de trafic) : par défaut, garder privé.")
+
+T(id="meshtastic", nom="Meshtastic", cat=C_COM, statut="reference", prix="option-publique", licence="GPL-3.0 (fw/apps) + matériel", tier=None,
+  role="Mesh LoRa texte longue portée : 1 repeater + 3 radios ≈ 100 acres ; mesh municipal autonome (Austin). Zéro abonnement.",
+  urls=["https://meshtastic.org", "https://github.com/meshtastic/firmware", "https://meshtastic.org/docs/getting-started/hardware-suggestions/"],
+  install=["[A] ⚫ Achat : 2 radios minimum (Heltec V3 ≈ 25 €, RAK4631 ≈ 35 €, T-Echo ≈ 70 €)",
+           "[B] Flasher le firmware depuis https://flasher.meshtastic.org (USB, gratuit)",
+           "[C] App Android/iOS → joindre le canal long-fast, configurer la région 868 MHz (Europe)",
+           "[D] Pont vers la tour : activer le **MQTT** du nœud puis `meshtastic-mqtt-bridge.js` → calque `meshNodes.js`",
+           "[E] Agent : peut tout faire SAUF acheter et visser les antennes"],
+  integree="Calque « contacts mesh » sur le globe + alertes de la tour qui partent par mesh quand le net tombe.",
+  verifier="mosquitto_sub -h <noeud> -t msh/2/e/# 2>/dev/null | head -3",
+  notes="⚠️ Réglementation 868 MHz (puissance/duty), pas d'usurpation, pas de contenu illicite. Le seul vrai coût matériel de tout cet audit.")
+
+T(id="rtl-sdr", nom="RTL-SDR (option réception locale)", cat=C_COM, statut="reference", prix="materiel", licence="matériel ~30 € + logiciels libres", tier=None,
+  role="Recevoir ADS-B (avions), AIS (navires), météo, poches radio **chez toi** : transforme la tour en nœud de données au lieu d'emprunté à un tiers.",
+  urls=["https://www.rtl-sdr.com/buyers-guide/", "https://github.com/wiedehopf/tar1090", "https://github.com/adsb-feeder"],
+  install=["[A] ⚫ RTL-SDR v4 (≈ 30 €) + antenne 1090 MHz",
+           "[B] `git clone https://github.com/wiedehopf/tar1090 && sudo ./install.sh` (ou Docker)",
+           "[C] `readsb --json` → le serveur de la tour sert ses **propres** positions, sans quota ni OpenSky"],
+  integree="Calque avions/vaisseau « source locale », valeur souveraine énorme pour 30 €.",
+  verifier="curl -s http://127.0.0.1:8080/data/aircraft.json | head -c 200",
+  notes="Réception passive = légale ; ne pas émettre. Un des rares ajouts qui font vraiment monter la tour en gamme à coût minime.")
+
+# ─────────────────────────────────────────────────── 9 · Mémoire & stockage
+T(id="ai-memory-vault", nom="ai-memory-vault (jaredrhod)", cat=C_MEM, statut="reference", prix="materiel", licence="CC-BY-SA-4.0", tier=None,
+  role="Mémoire d'agent **en markdown dans un vault Obsidian, sans base vectorielle** : patterns (profil, tâches, décisions, leçons). Le modèle à copier pour `HCSM`/`Cognitorium`.",
+  urls=["https://github.com/jaredrhod/ai-memory-vault"],
+  install=["[A] `git clone --depth 1 https://github.com/jaredrhod/ai-memory-vault memory-vault` pour **lire** la structure",
+           "[B] Recréer chez toi `watchtower/memory/` avec les mêmes rôles (0 dépendance de licence : tu réécris les templates)",
+           "[C] Règle d'or pour les agents : 1 fichier = 1 sujet, front-matter YAML (`sujet`, `maj`, `sources`), jamais de secret dedans",
+           "[D] Index = `memory/INDEX.md` maintenu par l'agent à chaque tâche"],
+  integree="`HCSM` écrit son état T0 dans `memory/` ; `reaserch-engine` y puise le contexte persistant.",
+  verifier="test -f memory/INDEX.md && echo ok",
+  notes="Choix délibéré : markdown > vector DB pour un usage personnel. Ouvrage partagé → obligation d'attribution/partage à l'identique (CC-BY-SA) sur les templates, pas sur tes notes.)")
+
+T(id="obsidian", nom="Obsidian", cat=C_MEM, statut="reference", prix="materiel", licence="propriétaire gratuit (usage perso)", tier=None,
+  role="Éditeur/visualiseur du vault markdown : c'est l'UI humaine de la mémoire de la tour.",
+  urls=["https://obsidian.md", "https://help.obsidian.md"],
+  install=["[A] Télécharger l'installeur (gratuit pour usage personnel, compte non obligatoire pour le local)",
+           "[B] Ouvrir `watchtower/memory/` comme vault",
+           "[C] Plugins optionnels : Dataview (requêtes sur front-matter), Templater"],
+  integree="Aucune API nécessaire : les agents lisent/écrivent les fichiers, Obsidian n'est qu'un œil.",
+  verifier="—",
+  notes="Gratuit ≠ open source ; les **données** sont à toi (fichiers .md). Syncthing/git suffisent pour la synchro.")
+
+T(id="syncthing", nom="Syncthing", cat=C_MEM, statut="reference", prix="materiel", licence="MPL-2.0", tier=0,
+  role="Synchro/duplication P2P des dossiers de la tour (corpus, mémoire, scans 3D) vers NAS/portable, sans cloud.",
+  urls=["https://github.com/syncthing/syncthing", "https://syncthing.net"],
+  install=["[A] `sudo apt install syncthing` (ou paquet natif Win/mac)",
+           "[B] `systemctl --user enable --now syncthing` → UI http://127.0.0.1:8384",
+           "[C] Partager `corpus/`, `memory/`, `scans/` vers le 2e poste ; ne pas exposer l'UI"],
+  integree="Sauvegarde des 40 Go de modèles non ; sauvegarde des **données produites**, oui.",
+  verifier="curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8384/rest/2/system/status",
+  notes="La sauvegarde est le point mort de 90 % des tours : ce point-là est à 0 € et 100 % automatisable.")
+
+T(id="sqlite-vec", nom="SQLite + sqlite-vec", cat=C_MEM, statut="reference", prix="materiel", licence="MIT/Apache-2.0", tier=0,
+  role="La base « un fichier » avec recherche vectorielle : l'option la plus légère si LanceDB/Qdrant sont trop.",
+  urls=["https://github.com/asg017/sqlite-vec", "https://www.sqlite.org/intro.html"],
+  install=["[A] `pip install sqlite-vec`",
+           "[B] `CREATE VIRTUAL TABLE chunks USING vec0(embedding float[768]);`",
+           "[C] Alimenté par `nomic-embed-text` (768 dim)"],
+  integree="`persistence.py` du moteur a déjà un store JSON : ce n'est qu'un palier au-dessus.",
+  verifier="python3 -c 'import sqlite_vec;print(\"ok\")'",
+  notes="Simple, portable, sauvegardable par copie de fichier.")
+
+# ─────────────────────────────────────────────────── 10 · Références & pièges
+T(id="ada-local", nom="ada_local (Naz Louis)", cat=C_REF, statut="reference", prix="materiel", licence="❌ aucune licence (tous droits réservés)", tier=1,
+  role="Référence **d'architecture** : routeur FunctionGemma 270 M (fine-tuné sur 200 exemples → 95 % de précision de routage, 1,0 s) → Qwen3 think/no-think → Piper sur CPU. C'est LE patron « moindre coût ».",
+  urls=["https://github.com/nazirlouis/ada_local", "https://huggingface.co/nlouis/ada_model", "https://www.youtube.com/watch?v=7ffF3fumhcQ"],
+  install=["[A] Lire le repo (structure + tests), ne **pas** dépendre du code ni du modèle (licence absente)",
+           "[B] Réimplémenter : `src/ai/router.js` → petit modèle qui renvoie `{thinking: bool}` ; gros modèle derrière",
+           "[C] Fine-tuner le routeur sur tes 150-250 exemples (20 min de GPU en Colab gratuit)",
+           "[D] TTS CPU (Piper/Kokoro) pour ne pas manger la VRAM"],
+  integree="Modèle de `src/ai/router.js` + `.env` `ROUTER=on|off`.",
+  verifier="—",
+  notes="⚠️ Son tutoriel complet est derrière un Patreon : pas besoin, le motif est simple et on le documente ici.")
+
+T(id="mark-lii", nom="Mark-LII (FatihMakes)", cat=C_REF, statut="reference", prix="avec-compte", licence="❌ aucune licence dans le repo (GitHub: NOASSERTION)", tier=None,
+  role="Référence UX du « Jarvis PC » : système de plugins (1 fichier = 1 compétence), awareness audio (savoir qu'on ne lui parle pas), sessions longues, écran + webcam.",
+  urls=["https://github.com/FatihMakes/Mark-LII", "https://aistudio.google.com/apikey", "https://www.youtube.com/watch?v=u6c-6RF6J_g"],
+  install=["[A] ⚠️ Ne pas fork ni redistribuer (aucune licence). Et le titre « gratuit » vend une Academy/Whop payante pour les versions récentes",
+           "[B] Ce qui est copiable légalement (le comportement, pas le code) : `plugins/` chargés au boot, chaque plugin exportant `{nom, declencheurs, executer}`",
+           "[C] Si un jour tu veux son runtime : il impose une **clé Gemini API** (gratuite avec compte) → chez toi on met Ollama à la place"],
+  integree="Notre `src/plugins/` dans la tour, avec la même règle : un plugin cassé ne tue pas l'app (try/catch par module).",
+  verifier="—",
+  notes="Cas d'école de « open source sur GitHub » qui ne l'est pas juridiquement.")
+
+T(id="gods-eye-view", nom="God's Eye View (amont de ta tour)", cat=C_GEO, statut="partiel", prix="materiel", licence="⚠️ README dit MIT, l'API GitHub renvoie NOASSERTION", tier=None,
+  role="Le projet amont (17,9 k★) que ton fork adapte : globe + couches live + voix. Ta valeur ajoutée = le MODE GRATUIT sans clé et les modules FR.",
+  urls=["https://github.com/bilawalsidhu/gods-eye-view", "https://www.youtube.com/watch?v=GRJaKcXZS94"],
+  install=["[A] `git clone --depth 1 https://github.com/bilawalsidhu/gods-eye-view` puis appliquer `COGNITORIUM/watchtower-mods/APPLIQUER.md`",
+           "[B] `npm install && npm run dev` → http://localhost:4173 (le repo `watchtower` en ligne est encore vide de l'app)",
+           "[C] Vérifier le fichier `LICENSE` du commit `65bc522` et ouvrir une issue si ambigu",
+           "[D] Ne pas remonter tes clés sur une instance partagée (`--host 0.0.0.0` = fuite de clés, averti par leur SECURITY.md)"],
+  integree="C'est la base de la tour ; l'audit §0 décrit ce qui en a déjà été dérivé.",
+  verifier="test -d app/node_modules && echo 'déjà en place'",
+  notes="La ligne amont est claire : pas de recherche de personne, pas de visage, pas de pistage — à conserver.")
+
+T(id="jared-fullstack", nom="fullstack-agent (jaredrhod)", cat=C_REF, statut="reference", prix="payant", licence="AGPL-3.0", tier=None,
+  role="Installeur « tout-en-un » dont parle la vidéo n°5 : memory-vault + visualizer + backtalk + barehands.",
+  urls=["https://github.com/jaredrhod/fullstack-agent"],
+  install=["[A] ⚠️ Inutilisable sans **Claude Code** (abonnement) : son propre README le dit — donc payant dans les faits",
+           "[B] Ce qu'on retient : un installeur qui **demande ce qu'on veut** (les 4 briques cochables) et un wizard qui finit par « ouvre ça dans ton navigateur »",
+           "[C] Notre équivalent gratuit et lisible : `audit/stack/install-stack.{ps1,sh}` + `-DryRun`"],
+  integree="Modèle d'UX de l'installeur, rien de plus.",
+  verifier="—",
+  notes="AGPL + dépendance à un SDK propriétaire : ne pas mettre dans la chaîne de build.")
+
+T(id="tiers-gratuits-llm", nom="API LLM gratuites (secours, avec compte)", cat=C_REF, statut="reference", prix="avec-compte", licence="CGU des fournisseurs", tier=None,
+  role="Filet quand le modèle local est trop court : raisonnement long, gros contexte, réécriture. ⚠️ ne jamais y envoyer de données sensibles.",
+  urls=["https://console.groq.com/keys", "https://openrouter.ai/models?q=free", "https://aistudio.google.com/apikey", "https://ai.azure.com/... (GitHub Models : https://github.com/features/models)", "https://cerebras.ai"],
+  install=["[A] Choix par défaut : **aucune** (Ollama local)",
+           "[B] Groq : compte gratuit, 30 RPM / ~1 k req/j par modèle, pas d'entraînement → le meilleur secours",
+           "[C] OpenRouter `:free` : ~20 RPM, 50-1000 req/j selon modèle ; attention à la politique de données par modèle",
+           "[D] GitHub Models : 150-1000 req/j, pratique si tu as déjà un compte GitHub",
+           "[E] Gemini AI Studio : Flash-Lite ~15 RPM / Flash réduit en 2026 ; ⚠️ Google peut entraîner sur les prompts hors UE/EEE",
+           "[F] Les coller dans `.env` + `litellm.config.yaml` comme `fallbacks`, jamais en dur dans le code"],
+  integree="`src/ai/llmClient.js` : local d'abord, `if (cloud) fallback` conscient avec bannière d'avertissement dans l'UI.",
+  verifier="—",
+  notes="Chiffres de quotas = début/mi 2026, à revérifier : les tiers gratuits sont le premier poste de régression d'une année.")
+
+T(id="pistes-evitees", nom="À éviter (payant ou lock-in)", cat=C_REF, statut="reference", prix="payant", licence="—", tier=None,
+  role="Liste négative : ce que les vidéos vendent comme « gratuit » et qui ne l'est pas (ou pas durable).",
+  urls=["https://elevenlabs.io/pricing", "https://www.maltego.com/pricing/", "https://www.spiderfoot.net/pricing/", "https://app.make.com/pricing", "https://www.retellai.com/pricing", "https://lampyre.io/pricing", "https://si.social-links.io", "https://intelligencex.io", "https://www.whop.com/fatihmakes/", "https://www.patreon.com/cw/NazLouisYT"],
+  install=["[A] ElevenLabs (5-99 $/mois) → Qwen3-TTS / Piper / Kokoro",
+           "[B] OpenAI Realtime voice (centimes/min) → whisper + TTS local",
+           "[C] ChatGPT/Claude abonnements → Ollama (+ secours Groq gratuit)",
+           "[D] Perplexity Pro 20 $/mois → Vane + SearXNG",
+           "[E] Make/Zapier (runs facturés) → Activepieces",
+           "[F] Maltego Pro / Social Links / Lampyre / SpiderFoot HX / Intelligence X → SpiderFoot + Gephi + `intelTwin`",
+           "[G] Whop/Patreon des créateurs Jarvis → on réécrit le motif",
+           "[H] Google Maps billing (CB obligatoire, facturation au-delà de ~1000 sessions) → Esri + CARTO + Photon (déjà fait)",
+           "[I] Shodan/APIs payantes → free tier + crt.sh + Amass + le mode passif"],
+  integree="Cette table négative est celle que les agents doivent consulter avant d'ajouter une dépendance payante.",
+  verifier="—",
+  notes="Règle de conception de la tour : **toute** fonctionnalité a un chemin 0 € ; le payant n'est jamais un prérequis.")
+
+# ─────────────────────────────────────────────────────────────── Génération
+CATEGORIES = [C_INFRA, C_SEARCH, C_RAG, C_OSINT, C_GEO, C_3D, C_VOICE, C_AGENT, C_COM, C_MEM, C_REF]
+PRICE_ICON = {
+    "materiel": "🟢 gratuit",
+    "avec-compte": "🟡 compte gratuit",
+    "freemium": "🟠 semi-payant",
+    "payant": "🔴 payant",
+    "option-publique": "⚫ matériel optionnel",
+    "deja-en-place": "🟢 acquis",
+    "a-verifier": "⚠️ à vérifier",
+}
+LEGEND_COST = {
+    "materiel": "🟢 gratuit, 100 % local — seul coût : ton matériel/électricité",
+    "avec-compte": "🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas",
+    "freemium": "🟠 semi-payant : tier gratuit puis facturation à l'usage",
+    "payant": "🔴 payant — on documente le remplacement gratuit",
+    "option-publique": "⚫ option matérielle (achat one-shot), logiciel libre",
+    "deja-en-place": "🟢 déjà acquis dans la tour",
+    "a-verifier": "⚠️ statut à confirmer",
+}
+LEGEND_TIER = {
+    0: "**A** — CPU seul, 8-16 Go RAM",
+    1: "**B** — GPU NVIDIA 6-8 Go VRAM",
+    2: "**C** — GPU 12-24 Go VRAM (ou Colab gratuit)",
+    None: "A/B/C indifféremment",
+}
+LEGEND_STATUS = {
+    "present": "🟩 **présent** (déjà dans la tour, à consolider)",
+    "partiel": "🟨 **partiel** (existant à compléter/remplacer)",
+    "absent": "🟥 **absent** (à installer)",
+    "reference": "⬜ **référence** (à lire/copier le motif, pas de dépendance)",
+}
+
+
+def build_json() -> dict:
+    tools = []
+    for t in OUTILS:
+        t = dict(t)
+        t.setdefault("notes", "")
+        t.setdefault("gpu", "")
+        t.setdefault("integree", "")
+        t.setdefault("verifier", "")
+        tools.append(t)
+    return {
+        "version": 1,
+        "genere_le": datetime.date.today().isoformat(),
+        "source": "audit/reference/generate-reference.py (ne pas éditer ce fichier à la main)",
+        "legende": {
+            "prix": LEGEND_COST,
+            "statut": {k: v.strip("* ").replace("**", "") for k, v in LEGEND_STATUS.items()},
+            "materiel": LEGEND_TIER,
+        },
+        "categories": CATEGORIES,
+        "outils": tools,
+    }
+
+
+def build_md() -> str:
+    today = datetime.date.today().isoformat()
+    n = len(OUTILS)
+    gratuit = sum(1 for t in OUTILS if t["prix"] == "materiel")
+    L = []
+    L.append(f"""# 📖 RÉFÉRENCE OUTILS — Watchtower (source de vérité pour les agents)
+
+> **Statut** : référence canonique. Générée le `{today}` depuis `audit/reference/generate-reference.py`
+> — **ne pas éditer ce fichier à la main** : modifier le générateur, puis
+> `python3 audit/reference/generate-reference.py` (qui réécrit aussi `reference/REGISTRE-OUTILS.json`).
+> **{n} outils/catalogués**, dont **{gratuit} 🟢 100 % gratuits et locaux**. Toute décision d'outillage se prend ici, pas dans une vidéo.
+
+## 0. Règles d'ingénierie (à lire avant de toucher au code)
+
+1. **Zéro clé par défaut.** Un module ne doit pas échouer sans API : chemin 🟢 d'abord, 🔴/🟡 en `power-up` conscient (pattern `startGate.js` + `keySetup.js` déjà en place).
+2. **Local en premier, cloud en secours explicite.** Tout appel réseau sort par `src/ai/llmClient.js` (Ollama `http://127.0.0.1:11434/v1` → LiteLLM → fallback compte gratuit). Un fallback cloud affiche une bannière.
+3. **Secrets = `.env` (permissions 600), jamais commités** ; rien n'est exposé sur le LAN sans proxy authentifié (le serveur brokerait tes clés : cf. SECURITY amont).
+4. **Licences** : dépendance autorisée uniquement si licence explicite (MIT/Apache/BSD/ISC, AGPL accepté pour un service interne). **Refusés** : `NOASSERTION`, aucune licence, « Other », fair-code (n8n) comme dépendance de build. Voir le §4 de `COUTS-LICENCES-LEGAL.md`.
+5. **Un module = un fichier** dans `src/…` (pattern plugin) ; try/catch à l'enregistrement pour qu'un module cassé ne tue pas la tour.
+6. **Validé par schéma** : tout objet structuré passe par `schemas/*.schema.json` (Instructor/Outlines + `jsonschema`), pas de parsing ad hoc.
+7. **Pas de personnes.** Aucune fonctionnalité de recherche nominative, de visage ou de pistage individuel : la tour porte sur **infrastructures, flux, documents, données ouvertes**. (Ligne héritée de l'amont, et obligation juridique.)
+8. **Avant d'installer** : `python3 audit/reference/doctor.py` → ce qui tourne déjà, ce qui manque, ce qui bloque. Après : relancer `doctor` et consigner dans `audit/stack/INSTALL-REPORT.txt`.
+9. **Toujours vérifier les prix/quotas** au moment de l'écriture : les tiers gratuits sont le premier poste de régression (le tier Gemini l'a été en avril 2026).
+10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`.
+
+### Grilles de lecture
+
+- **Prix (colonne des tableaux)** : 🟢 gratuit = 0 €, 100 % local (seul coût : matériel + électricité) · 🟡 compte gratuit = clé/quota, sans CB au mieux · 🟠 semi-payant = tier gratuit puis facturation · 🔴 payant = on documente le remplacement gratuit · ⚫ matériel optionnel = achat one-shot, logiciel libre
+- **Faisabilité (colonne)** : 🅰 = tient sur le palier A (CPU, 8-16 Go RAM) · 🅱 = veut un GPU 6-8 Go · 🅲 = veut un GPU 12-24 Go · 🅰🅱🅲 = indifférent
+
+### Matériel : les 3 paliers
+| Palier | Config type | Ce qui devient possible |
+|---|---|---|
+| **A** | 8-16 Go RAM, **sans GPU**, SSD 512 Go | Tour + Ollama `qwen3:0.6b/4b` + SearXNG + Vane + Crawl4AI + Tesseract + LibreTranslate + whisper `base/int8` + **Piper** + LanceDB + Activepieces + SpiderFoot + Reticulum (logiciel) |
+| **B** | GPU NVIDIA 6-8 Go | + `llama3.1:8b`, **Qwen3-TTS 0,6 B (FR, clonage 3 s)**, `faster-whisper small`, Marker, Outlines, Hermes Agent, DSPy |
+| **C** | GPU 12-24 Go | + `qwen3:30b-a3b`, Qwen3-TTS 1,7 B, **entraînement 3DGS (Brush)**, OpenHands en autonomie, Qdrant sur gros corpus, Langfuse |
+| Hors-tour | Colab T4 **gratuit** | dépannage B/C à la demande : Marker, Brush, Qwen3-TTS, fine-tune du routeur |
+""")
+
+    for cat in CATEGORIES:
+        rows = [t for t in OUTILS if t["cat"] == cat]
+        if not rows:
+            continue
+        L.append(f"\n---\n\n## {cat}\n")
+        L.append("| Outil | Rôle (une phrase) | Faisabilité tour | Prix | Licence | URLs |")
+        L.append("|---|---|---|---|---|---|")
+        for t in rows:
+            role = t["role"].split(". ")[0]
+            if len(role) > 104:
+                role = role[:104].rsplit(" ", 1)[0] + "…"
+            feas = LEGEND_TIER.get(t["tier"], "—").replace("**", "")
+            icon = {"A": "🅰", "B": "🅱", "C": "🅲"}.get(feas[0], "🅰🅱🅲")
+            urls = " · ".join(f"[{u.split('/')[2].replace('www.','')}]({u})" for u in t["urls"][:3])
+            L.append(f"| **{t['nom']}** `{t['id']}` | {role} | {icon} | {PRICE_ICON.get(t['prix'],'⚪')} | {t['licence']} | {urls} |")
+        L.append("")
+        for t in rows:
+            L.append(f"### {t['nom']} — `{t['id']}`")
+            L.append(f"- **Statut** : {LEGEND_STATUS.get(t['statut'], t['statut'])} · **Prix** : {LEGEND_COST.get(t['prix'], t['prix'])} · **Licence** : {t['licence']} · **Tour** : {LEGEND_TIER.get(t['tier'], '')}")
+            if t.get("gpu"):
+                L.append(f"- **Matériel** : {t['gpu']}")
+            L.append(f"- **Rôle** : {t['role']}")
+            L.append("- **Étapes d'installation** :")
+            for st in t["install"]:
+                L.append(f"  - {st}")
+            if t.get("integree"):
+                L.append(f"- **Intégration dans la tour** : {t['integree']}")
+            if t.get("verifier"):
+                L.append(f"- **Vérification (à mettre dans `doctor`)** : `{t['verifier']}`")
+            if t.get("notes"):
+                L.append(f"- **Notes / pièges** : {t['notes']}")
+            L.append("- **Sources** : " + " · ".join(t["urls"]))
+            L.append(f"- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: \"{t['id']}\"` (généré par `generate-reference.py`, ne pas éditer le markdown)")
+            L.append("")
+
+    L.append("""---
+
+## 1. Tableau de décision rapide (ordre d'implémentation)
+
+| Phase | Ajouter (ids du registre) | Pourquoi cet ordre | Effort agent |
+|---|---|---|---|
+| **P0 socle** | `ollama`, `doctor.py`, `install-stack.ps1/sh` | sans LLM local, rien d'autre n'a de sens | ~1-2 h |
+| **P1 la tour pense** | `instructor`, `outlines`, `litellm`, `langfuse`(option) | sortie valide + traces → `chatConsole`, `intelTwin`, `hudSummaryResponse` | 2-3 sessions |
+| **P2 entendre/parler** | `faster-whisper`, `piper`, `openwakeword` → `qwen3-tts`, `kokoro` | remplace `freeVoice.js`, 0 cloud, 0 latence payante | 2 sessions |
+| **P3 lire le monde** | `tesseract`/`paddleocr`, `marker`/`docling`, `ocrmypdf`, `libretranslate`, `exiftool` | les captures et PDF de la tour deviennent interrogeables | 2-3 sessions |
+| **P4 chercher** | `searxng`, `vane-perplexica`, `crawl4ai`, `chonkie`, `lancedb`/`qdrant`, `dspy` | `reaserch-engine` reçoit des yeux web + RAG, sans API payante | 2-4 sessions |
+| **P5 se souvenir** | `ai-memory-vault` (motif réécrit), `obsidian`, `syncthing`, `sqlite-vec` | continuité entre runs, état `HCSM`, sauvegarde | 2 sessions |
+| **P6 agents + autos** | `hermes-agent`, `activepieces`, `openhands` (prudent) | le moteur devient un skill ; les boucles tournent sans toi | 2-3 sessions |
+| **P7 terrain réel** | `aholo-viewer`, `aholo-splat-transform`, `brush`/`postshot`, `opensplat` | splats LOD/collisions dans le globe | 3-5 sessions |
+| **P8 hors-réseau** | `reticulum`, `meshtastic`(⚫ matériel), `rtl-sdr`(⚫ ~30 €) | messagerie de secours + source de données locale souveraine | 1-3 sessions |
+| **P9 publier** | `pinokio`(option), release GitHub Actions + installeur | « l'agent clone, patche, et tu télécharges un installeur de **ton** repo » | 1 session |
+
+## 2. Ce que les agents font à ta place / ce qu'ils ne peuvent pas
+
+| Automatisable à 100 % (agent) | Nécessite toi (👆) | Hors de portée / refus |
+|---|---|---|
+| cloner + patcher + pousser (toute tâche des phases P0-P9) ; écrire `install-stack.*` et `doctor` ; config SearXNG `format=json` ; créer les flows Activepieces (hors login) ; convertir les splats ; câbler `schemas/*.json` ; rédiger les tests ; open `issues` amont pour clarifier une licence | créer les comptes gratuits (Cesium ion, Groq, OpenRouter, AISStream, FIRMS) · accepter CGU/licences · cliquer SmartScreen sur un installeur · brancher micro/haut-parleur · coller une clé dans `keySetup.js` | achat matériel (GPU, radios LoRa, RTL-SDR) · paywall d'abonnement (Claude Code, n8n enterprise, Maltego Pro) · signature de certificat · **toute fonctionnalité visant une personne physique** |
+
+## 3. Vérification d'installation (à faire tourner après chaque phase)
+
+```bash
+python3 audit/reference/doctor.py            # qui répond ? qui manque ?
+python3 audit/reference/doctor.py --json     # sortie machine, pour un agent
+bash audit/stack/install-stack.sh --dry-run  # ce qui serait fait, sans rien toucher
+```
+
+## 4. Contrôles de licence et de prix avant d'ajouter une dépendance (checklist)
+
+- [ ] `curl -s https://api.github.com/repos/<owner>/<repo> | jq .license` → `spdx_id` **non null** et dans la liste autorisée
+- [ ] page LICENSE lue (les README mentent : `gods-eye-view`, `Mark-LII`, `ada_local` en sont la preuve)
+- [ ] quota/prix relevés à la date du jour dans `notes`, avec le lien de la page de pricing
+- [ ] aucun secret dans le dépôt, aucun port ouvert sur `0.0.0.0`, `.env` en 600
+- [ ] plan de sortie documenté : comment on retire ce composant sans casser la tour
+""")
+    return "\n".join(L) + "\n"
+
+
+def main() -> int:
+    (HERE / "REGISTRE-OUTILS.json").write_text(
+        json.dumps(build_json(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    md_path = ROOT / "audit" / "REFERENCE.md"
+    md_path.write_text(build_md(), encoding="utf-8")
+    ids = [t["id"] for t in OUTILS]
+    assert len(ids) == len(set(ids)), "ids dupliqués"
+    print(f"✔ {len(OUTILS)} outils → {md_path.relative_to(ROOT)} + audit/reference/REGISTRE-OUTILS.json")
+    print("  gratuit/local :", sum(1 for t in OUTILS if t['prix'] == 'materiel'),
+          "| avec compte :", sum(1 for t in OUTILS if t['prix'] == 'avec-compte'),
+          "| payant :", sum(1 for t in OUTILS if t['prix'] == 'payant'))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
