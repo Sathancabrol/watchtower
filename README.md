@@ -301,6 +301,24 @@ répartition calculée d'après les bâtiments datés), **non daté** (masqué p
 défaut). Formats reconnus : `1850`, `1850s`, `C19`, `XIXe siècle`, `~1850`,
 `avant/après 1900`, `1850..1870`, dates ISO et époques en mots clés.
 
+### 🖥 AFFICHAGE — ne plus jamais perdre un bouton (dock **🖥 AFFICHAGE**, touche **F2**, ou l'œil 👁 en haut à gauche)
+
+L'interface est faite d'une trentaine de blocs indépendants, et cinq
+mécanismes peuvent les masquer : la vue propre (**V**), le HUD tactique (**H**),
+la veille (HUD qui s'efface), la réduction automatique du dock et le mode vol
+compact (**M**). Trois réponses :
+
+* **l'œil 👁**, toujours visible en haut à gauche (le logo du titre fait la
+  même chose) : un clic et **tout le HUD revient**, quoi qu'il l'ait caché ;
+* **la fenêtre AFFICHAGE** : la liste exhaustive de tous les blocs (barre du
+  bas, minicarte, INTEL, fiche lieu, panneaux repliés de l'app d'origine…),
+  une case à cocher chacun, une recherche, les préréglages **TOUT AFFICHER ·
+  ÉPURÉ · VOL · LECTURE**, et l'état des cinq modes qui vident l'écran.
+  Réglages mémorisés d'une session à l'autre ;
+* **le HUD progressif** (option) : au démarrage l'écran est nu — la carte et
+  l'œil seulement ; un clic sur l'œil fait apparaître l'interface bloc par
+  bloc, en cascade.
+
 ### 🗺 Feuille de route
 
 La feuille de route vivante (fonctions, état, sources ouvertes branchées et à

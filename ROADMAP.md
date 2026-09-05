@@ -4,9 +4,10 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 11** (🕰 mode historique : la ville se
-construit sous vos yeux à partir des dates OpenStreetMap).
-Itérations précédentes : **10** = parcours de vol traçés & rejoués, 3ᵉ personne
+Dernière mise à jour : **itération 12** (🖥 HUD central : un œil toujours
+visible + la liste de tout ce qui s'affiche, pour ne plus perdre un bouton).
+Itérations précédentes : **11** = 🕰 mode historique (la ville se construit à
+partir des dates OpenStreetMap) · **10** = parcours de vol traçés & rejoués, 3ᵉ personne
 réparée, routes + cadastre visibles en satellite, bouton « ME LOCALISER »
 explicité · **9** = 🧠 palais mental, 😴 veille du HUD, 🔑 comptes & IA locale,
 🎥 dispositifs en direct, 🔲 cadrans au tracé communal, 🌀 rotation 360° des
@@ -17,7 +18,18 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 11 — en cours
+## 0. Itération 12 — en cours
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **HUD** | 👁 **Œil toujours visible** (haut gauche + logo du titre) : un clic et TOUT le HUD revient — vue propre, veille, réduction auto ou mode vol compris | ✅ | `hudCentral.js` | — |
+| **HUD** | 🖥 **Fenêtre « AFFICHAGE »** (dock + **F2**) : la liste EXHAUSTIVE des ~30 blocs d'interface, une case chacun, recherche insensible aux accents | ✅ | `hudCentral.js`, `data/hudCatalogue.js` | — |
+| **HUD** | Préréglages **TOUT AFFICHER · ÉPURÉ · VOL · LECTURE** + dépliage des panneaux repliés de l'app d'origine | ✅ | `data/hudCatalogue.js` | — |
+| **HUD** | Les **5 modes qui vident l'écran** (vue propre V · HUD tactique H · veille · réduction auto du dock · mode vol M) sont listés et pilotables | ✅ | `hudCentral.js` | — |
+| **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
+| **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
+
+## 0 bis. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -28,7 +40,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 bis. Itération 10 — terminée
+## 0 ter. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -45,7 +57,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 ter. Itération 9 — terminée
+## 0 quater. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -98,6 +110,20 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **12** :
+
+* **« il manque plein de boutons, je n'ai pas de quoi les afficher »** —
+  l'interface est faite de ~30 blocs indépendants que CINQ mécanismes savent
+  masquer (vue propre **V**, HUD tactique **H**, veille auto, réduction auto
+  du dock, mode vol **M**). D'où trois réponses :
+  * un **👁 œil toujours visible** en haut à gauche (et sur le logo du titre) :
+    un clic et **tout** le HUD revient, quoi qu'il l'ait caché ;
+  * la fenêtre **AFFICHAGE** (dock 🖥 ou **F2**) : tous les blocs listés, une
+    case chacun, une recherche, les préréglages **TOUT AFFICHER · ÉPURÉ ·
+    VOL · LECTURE**, et l'état des cinq modes qui vident l'écran ;
+  * l'option **HUD progressif** : écran nu au démarrage, l'œil révèle
+    l'interface en cascade.
 
 Itérations **10** et **11** :
 
@@ -185,6 +211,8 @@ Plus ancien (itérations 6 → 9) :
 | 15 | **Étendre le mode historique** aux voies, POI et équipements datés (`start_date` sur tout OSM) | une ville complète, pas que le bâti | Overpass | 🟢 |
 | 16 | **Recouper les dates manquantes** (BDNB, cadastre napoléonien, archives départementales) | moins de « non daté » | BDNB (ouverte), archives open data | 🟠 |
 | 17 | **Imagerie ancienne** superposée au curseur d'année | juger l'évolution d'un coup d'œil | IGN remonter le temps (clé gratuite) | 🟠 |
+| 18 | **Réglage du CONTENU de chaque panneau** (« ce que j'affiche dans INTEL, dans CHAT… ») | un seul bouton = une seule vue utile | interne (prolongement de `hudCentral`) | 🟡 |
+| 19 | **Profils d'interface** exportables (bureau / terrain / vol / nuit) | changer de poste en un clic | localStorage | 🟢 |
 
 ## 4. Sources ouvertes : ce que j'utilise, et ce qui reste à brancher
 

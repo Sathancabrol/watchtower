@@ -37,6 +37,7 @@ import { initPosteCommandement } from './posteCommandement.js';
 import { initMinimap } from './minimap.js';
 import { creerBatiRapide } from './batiRapide.js';
 import { initHistorique } from './historique.js';
+import { initHudCentral } from './hudCentral.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
 import { initNomsLieux } from './nomsLieux.js';
@@ -894,6 +895,30 @@ async function init() {
       const minimap = initMinimap(viewer);
       window.__godsEyeView.minimap = minimap;
     } catch (e) { console.error('[watchtower] minimap:', e); }
+
+    // 🖥 HUD CENTRAL : « je ne trouve plus mes boutons ».
+    // Créé EN DERNIER (il recense tout ce qui existe déjà à l'écran) :
+    //  · un 👁 TOUJOURS VISIBLE en haut à gauche : un clic et TOUT le HUD
+    //    revient, quel que soit ce qui l'a masqué (vue propre, veille,
+    //    réduction auto, mode vol) ;
+    //  · la fenêtre « AFFICHAGE » (touche F2) : la liste de tous les blocs
+    //    d'interface avec une case chacun, une recherche, des préréglages ;
+    //  · option « HUD progressif » : écran nu au démarrage, l'œil révèle
+    //    l'interface bloc par bloc.
+    try {
+      const hudCentral = initHudCentral({ surMessage: (m) => window.__wtToast?.(m) });
+      window.__godsEyeView.hudCentral = hudCentral;
+      const dockEl = window.__godsEyeView.dock?.dock;
+      if (dockEl) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'wt-dock-btn';
+        b.title = 'AFFICHAGE — voir et régler TOUT le HUD (touche F2, ou l’œil en haut à gauche)';
+        b.innerHTML = '<span class="ic">🖥</span><span class="lb">AFFICHAGE</span>';
+        b.addEventListener('click', () => hudCentral.basculer());
+        dockEl.appendChild(b);
+      }
+    } catch (e) { console.error('[watchtower] hud central:', e); }
 
   } catch (error) {
     console.error("God's Eye View initialization failed:", error);
