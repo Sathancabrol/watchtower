@@ -3,7 +3,7 @@
 > **Statut** : référence canonique. Générée le `2026-09-05` depuis `audit/reference/generate-reference.py`
 > — **ne pas éditer ce fichier à la main** : modifier le générateur, puis
 > `python3 audit/reference/generate-reference.py` (qui réécrit aussi `reference/REGISTRE-OUTILS.json`).
-> **68 outils/catalogués**, dont **58 🟢 100 % gratuits et locaux**. Toute décision d'outillage se prend ici, pas dans une vidéo.
+> **86 outils catalogués** en **12 catégories**, dont **68 🟢 100 % gratuits et locaux**, **12 🟡 avec compte gratuit**, **4 🔴/🟠 payants ou semi-payants (remplacements écrits dans le §6 d’`AUDIT-OUTILS-2026.md`)**. Toute décision d'outillage se prend ici, pas dans une vidéo.
 
 ## 0. Règles d'ingénierie (à lire avant de toucher au code)
 
@@ -17,6 +17,8 @@
 8. **Avant d'installer** : `python3 audit/reference/doctor.py` → ce qui tourne déjà, ce qui manque, ce qui bloque. Après : relancer `doctor` et consigner dans `audit/stack/INSTALL-REPORT.txt`.
 9. **Toujours vérifier les prix/quotas** au moment de l'écriture : les tiers gratuits sont le premier poste de régression (le tier Gemini l'a été en avril 2026).
 10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`.
+11. **Journal d'abord, calque ensuite.** Tout flux public consommé par la tour est **aussi écrit** dans le `recorder-4d` (`data/4d/` → Parquet) : un flux interrogé à la demande est un flux perdu (caches TTL, latence imposée sur l'imagerie). Un nouveau calque sans collecteur est refusé en revue.
+12. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
 
 ### Grilles de lecture
 
@@ -408,6 +410,7 @@
 | **Maltego CE** `maltego-ce` | Graphe + transforms historique du domaine | 🅰 | 🟡 compte gratuit | propriétaire (CE gratuit) | [maltego.com](https://www.maltego.com/pricing/) · [maltego.com](https://www.maltego.com/continue-to-hub/?hub=https://www.maltego.com/editions/) |
 | **OpenCTI** `opencti` | Plateforme de threat-intel (observable → infra → groupe) | 🅰 | 🟢 gratuit | ⚠️ NOASSERTION (vérifier la LICENSE du commit visé) | [github.com](https://github.com/OpenCTI-Platform/opencti) · [docs.opencti.io](https://docs.opencti.io/latest/deployment/installation/) |
 | **Gephi** `gephi` | Visualisation/analyse de graphes (layout, métriques) pour explorer les liens sortis de SpiderFoot. | 🅰 | 🟢 gratuit | GPL-3.0 | [gephi.org](https://gephi.org) · [github.com](https://github.com/gephi/gephi) |
+| **GDELT (événements mondiaux géolocalisés)** `gdelt` | Un point par événement géopolitique (manifestation, incident aérien, explosion…) avec date, lieu, tons… | 🅰 | 🟢 gratuit | données ouvertes (usage gratuit, non commercial pour les gros volumes) | [gdeltproject.org](https://www.gdeltproject.org) · [blog.gdeltproject.org](https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/) · [api.gdeltproject.org](https://api.gdeltproject.org/api/v2/doc/doc) |
 
 ### SpiderFoot — `spiderfoot`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (21,7 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -526,6 +529,20 @@
 - **Sources** : https://gephi.org · https://github.com/gephi/gephi
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gephi"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+### GDELT (événements mondiaux géolocalisés) — `gdelt`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : données ouvertes (usage gratuit, non commercial pour les gros volumes) · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Un point par événement géopolitique (manifestation, incident aérien, explosion…) avec date, lieu, tons émotionnels : la **couche temporelle** qui transforme une carte en 4D, sans aucune clé.
+- **Étapes d'installation** :
+  - [A] DOC 2.0 API (GET, sans clé) : `curl 'https://api.gdeltproject.org/api/v2/doc/doc?query=location:FR&mode=artlist&format=json&maxrecords=50&timespan=1h'`
+  - [B] En gros volume : télécharger les 15-min GDELT 2.0 export CSV (3 GB/jour ⚠️ → ne garder que la bbox cible et 30 j)
+  - [C] GKG pour les tons : filtrer « conflict / protest » → pins colorés
+  - [D] Écrire dans le `recorder-4d` pour la lecture rétrospective
+- **Intégration dans la tour** : `src/gdelt.js` → pins « incidents » cliquables dans `ficheLieu` ; nourrit le MODE ANALYSE de `intelTwin`.
+- **Vérification (à mettre dans `doctor`)** : `curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=FRANCE&mode=artlist&format=json&maxrecords=1' | head -c 200`
+- **Notes / pièges** : ⚠️ **Ne jamais transformer cette couche en surveillance de personnes** : agrégats thématiques/géographiques uniquement. GDELT est bruyant : toujours afficher la source, jamais une interprétation seule.
+- **Sources** : https://www.gdeltproject.org · https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/ · https://api.gdeltproject.org/api/v2/doc/doc
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gdelt"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
 
 ---
 
@@ -538,6 +555,17 @@
 | **Cesium ion (tuiles 3D photoréalistes)** `cesium-ion` | Upgrade visuel optionnel de la tour : 3D photoréaliste + terrain | 🅰 | 🟡 compte gratuit | Cesium (token gratuit usage perso) | [ion.cesium.com](https://ion.cesium.com) · [cesium.com](https://cesium.com/platform/cesium-for-unreal/cesium-ion-pricing) · [github.com](https://github.com/Sathancabrol/watchtower-mods (keySetup.js)) |
 | **OpenSky Network** `opensky` | Positions de vol (le calque avions de la tour / des amonts). | 🅰 | 🟡 compte gratuit | données ouvertes (compte = quota supérieur) | [opensky-network.org](https://opensky-network.org) · [opensky-network.org](https://opensky-network.org/monitor) |
 | **God's Eye View (amont de ta tour)** `gods-eye-view` | Le projet amont (17,9 k★) que ton fork adapte : globe + couches live + voix | 🅰 | 🟢 gratuit | ⚠️ README dit MIT, l'API GitHub renvoie NOASSERTION | [github.com](https://github.com/bilawalsidhu/gods-eye-view) · [youtube.com](https://www.youtube.com/watch?v=GRJaKcXZS94) |
+| **ShadowBroker (réf. amont)** `shadowbroker` | La V2 4D de « God's Eye View » déjà construite par quelqu'un d'autre : 60+ flux OSINT (ADS-B, AIS 25… | 🅰 | 🟢 gratuit | AGPL-3.0 (11,1 k★, actif) | [github.com](https://github.com/BigBodyCobain/Shadowbroker) |
+| **Enregistreur temporel (le vrai manque)** `recorder-4d` | La leçon des vidéos Hormuz : ce qui rend une tour « 4D », ce n'est pas un calque de plus, c'est… | 🅰 | 🟢 gratuit | à écrire (nous) | [duckdb.org](https://duckdb.org/docs/stable/guides/ingestion/ingesting_parquet.html) · [cesium.com](https://cesium.com/learn/cesiumjs/ref-doc/Clock.html) |
+| **Prédictions de passage satellite (Skyfield + CelesTrak)** `satellite-passes` | Le calque « un satellite passe au-dessus de ce site à 14 h 07 » : TLE/OMM gratuits, propagation locale,… | 🅰 | 🟢 gratuit | MIT (Skyfield, sgp4) · CelesTrak = données gratuites | [github.com](https://github.com/skyfielders/python-skyfield) · [celestrak.org](https://celestrak.org) · [github.com](https://github.com/brandon-rhodes/python-sgp4) |
+| **aisstream.io (flux AIS temps réel)** `aisstream` | WebSocket mondial d'AIS : c'est la source qui a permis l'analyse du détroit d'Ormuz (130 traversées/j →… | 🅰 | 🟡 compte gratuit | service gratuit, clé sur inscription | [aisstream.io](https://aisstream.io) · [app.aisstream.io](https://app.aisstream.io) |
+| **GlobalFishingWatch/pipe-gaps (navires sombres)** `pipe-gaps` | Détection de **trous temporels dans les messages de position AIS** : l'algo public derrière le… | 🅰 | 🟢 gratuit | Apache-2.0 | [github.com](https://github.com/GlobalFishingWatch/pipe-gaps) |
+| **NOTAM / fermetures d'espace aérien** `notams` | Les « airspace closures » en cascade que la vidéo 2 montre en timeline : la tour doit savoir où et… | 🅰 | 🟢 gratuit | données publiques (FAA/EASA) ; parseurs MIT | [notamweb.faa.gov](https://notamweb.faa.gov) · [github.com](https://github.com/svoop/notam) · [easa.europa.eu](https://www.easa.europa.eu/en/domains/airspaces) |
+| **Surveillance des pannes internet (Cloudflare Radar / IODA / Restless)** `outages` | Le calque « Téhéran en blackout » : corréler coupures réseau et événements, sur une timeline. | 🅰 | 🟡 compte gratuit | API gratuites (compte) ; Restless MIT | [developers.cloudflare.com](https://developers.cloudflare.com/radar/) · [ioda.caida.org](https://ioda.caida.org) · [github.com](https://github.com/RIPE-NCC/restless) |
+| **SAR : NASA OPERA + Copernicus EGMS + Sentinel-1** `sar-opera` | Voir à travers les nuages et mesurer le déplacement du sol au millimètre : digues, friches,… | 🅰 | 🟡 compte gratuit | données ouvertes (comptes Earthdata / Copernicus gratuits) | [search.earthdata.nasa.gov](https://search.earthdata.nasa.gov/search?q=OPERA) · [asf.alaska.edu](https://asf.alaska.edu/datasets/operational-products/opera/) · [egms.land.copernicus.eu](https://egms.land.copernicus.eu) |
+| **NASA GIBS + Copernicus Browser (imagerie quotidienne gratuite)** `gibis` | Les images « before/after » du reportage, à 0 $ : tuiles WMTS quotidiennes MODIS/VIIRS/Sentinel-2, sans… | 🅰 | 🟢 gratuit | domaine public / Copernicus (citer) | [nasa-gibs.github.io](https://nasa-gibs.github.io/gibs-api-docs/) · [worldview.earthdata.nasa.gov](https://worldview.earthdata.nasa.gov) · [browser.dataspace.copernicus.eu](https://browser.dataspace.copernicus.eu) |
+| **EIA API (futures et prix du carburant)** `eia-oil` | Les courbes de brut du reportage (Brent, WTI, essai) synchronisées sur la timeline du globe. | 🅰 | 🟡 compte gratuit | données publiques US, clé gratuite immédiate | [eia.gov](https://www.eia.gov/api/) · [eia.gov](https://www.eia.gov/opendata/) |
+| **Infrastructures critiques : désalination + centrales** `desal-power` | Le chapitre « Desalination Plants & The Water Crisis » : la tour doit connaître l'infrastructure vitale… | 🅰 | 🟢 gratuit | OSM (ODbL) / datasets à vérifier | [ida-desalination.org](https://ida-desalination.org/publications/ida-desalination-performance-guide) · [powerplants.copernicus.fr](https://powerplants.copernicus.fr/) · [openstreetmap.fr](https://openstreetmap.fr) |
 
 ### Tuiles Esri World Imagery + CARTO (déjà en place) — `esri-carto-tuiles`
 - **Statut** : 🟩 **présent** (déjà dans la tour, à consolider) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Esri (usage perso) / CARTO-OSM · **Tour** : A/B/C indifféremment
@@ -603,6 +631,246 @@
 - **Notes / pièges** : La ligne amont est claire : pas de recherche de personne, pas de visage, pas de pistage — à conserver.
 - **Sources** : https://github.com/bilawalsidhu/gods-eye-view · https://www.youtube.com/watch?v=GRJaKcXZS94
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gods-eye-view"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### ShadowBroker (réf. amont) — `shadowbroker`
+- **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : AGPL-3.0 (11,1 k★, actif) · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : La V2 4D de « God's Eye View » déjà construite par quelqu'un d'autre : 60+ flux OSINT (ADS-B, AIS 25 000+ navires via aisstream.io, satellites, GPS jamming par dégradation NAC-P, pannes internet via IODA, SAR NASA OPERA/Copernicus EGMS, CCTV, Meshtastic, APRS, KiwiSDR, GDELT), 40 calques commutables, dossier pays au clic droit, toolkit de recon côté serveur **sans clé**, backend FastAPI self-host, aucun compte ni télémétrie, et un canal de commande pour agent (OpenClaw).
+- **Étapes d'installation** :
+  - [A] `git clone --depth 1 https://github.com/BigBodyCobain/Shadowbroker && cd Shadowbroker`
+  - [B] `docker compose pull && docker compose up -d` (frontend :3000, backend :8000 — `BACKEND_PORT` dans `.env` si collision)
+  - [C] **Ne pas l'adopter tel quel** : le faire comme banc d'essai, puis **piober les connecteurs** dans `watchtower-mods` (nos modules FR + notre startGate sans clé restent la base)
+  - [D] Désactiver/retirer avant toute publication les calques qui visent des **personnes** : superyachts de milliardaires, bases militaires, chefs d'État, Telegram de guerre. Notre ligne (audit §4.4) ne les admet pas
+  - [E] Clés optionnelles déjà prévues : `SHODAN_API_KEY` (gratuit avec compte) ; le reste fonctionne sans clé
+- **Intégration dans la tour** : Source de patterns pour 8 couches de la tour : `gpsJamming.js`, `darkVessels.js`, `satPasses.js`, `notams.js`, `outages.js`, `sarChanges.js`, `telegramPins.js`, `countryDossier.js`. Et surtout son **modèle serveur** : recon proxifiée côté backend + SSRF guard + auth opérateur local = exactement ce que notre tour doit imiter.
+- **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000`
+- **Notes / pièges** : AGPL : si tu **publies un service** dérivé, tu rediffuses les modifs (usage perso = aucun souci). Projet jeune (1 fork de migration de repo en mars 2026, README le dit) → ne jamais le mettre en dépendance de build, seulement en source d'idées et de connecteurs. **C'est la découverte la plus rentable de cet audit.**
+- **Sources** : https://github.com/BigBodyCobain/Shadowbroker
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "shadowbroker"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### Enregistreur temporel (le vrai manque) — `recorder-4d`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : à écrire (nous) · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : La leçon des vidéos Hormuz : ce qui rend une tour « 4D », ce n'est pas un calque de plus, c'est **l'enregistrement continu** (il « enregistrait depuis le 25 février ») + une timeline réplayable. Sans ça, la tour est éternellement au présent et tout disparaît quand le cache du fournisseur se vide.
+- **Étapes d'installation** :
+  - [A] Un collecteur par flux, idempotent et bon marché : `collector.mjs` (OpenSky, aisstream, CelesTrak, EONET, USGS) toutes les 60 s → lignes NDJSON gzippées dans `data/4d/YYYY-MM-DD/`
+  - [B] Consolidation nocturne en DuckDB/Parquet : `duckdb -c "COPY (SELECT * FROM read_ndjson_auto('data/4d/*/*.ndjson')) TO 'data/4d.parquet'"`
+  - [C] API de lecture temporale dans le serveur dev : `GET /api/4d?from=..&to=..&layer=ais` → renvoie l'état à t
+  - [D] UI : brancher `viewer.clock` Cesium (CurrentTime + timeline scrubber, multiplicateur x3600) + un calque « trajectoires » (lignes datées, pointillés = trous de signal)
+  - [E] Règle de rétention : 30 j en chaud, compression ensuite — jamais de données personnelles, jamais de contenus sous copyright tiers archivés
+- **Intégration dans la tour** : `src/timeline/replayer.js`, `src/recorder/collectors/*.mjs`, et le calque `darkVessels.js` qui n'existe **que** grâce à l'historique (un trou dans l'AIS = une détection, sinon rien à détecter).
+- **Vérification (à mettre dans `doctor`)** : `ls data/4d/ && sqlite3 data/4d.duckdb 'select count(*) from ais' 2>/dev/null || python3 -c "import duckdb;print(duckdb.sql('select count(*) from \u0027data/4d.parquet\u0027').fetchone())"`
+- **Notes / pièges** : Coût : 0 €. Disque : ~1-3 Go/mois pour 4-5 flux à 60 s. C'est le P8 prioritaire, avant tout nouveau calque.
+- **Sources** : https://duckdb.org/docs/stable/guides/ingestion/ingesting_parquet.html · https://cesium.com/learn/cesiumjs/ref-doc/Clock.html
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "recorder-4d"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### Prédictions de passage satellite (Skyfield + CelesTrak) — `satellite-passes`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (Skyfield, sgp4) · CelesTrak = données gratuites · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Le calque « un satellite passe au-dessus de ce site à 14 h 07 » : TLE/OMM gratuits, propagation locale, liens avec les couches imagerie et alertes.
+- **Étapes d'installation** :
+  - [A] `pip install skyfield sgp4`
+  - [B] Récupérer les TLE : `curl -s 'https://celestrak.org/NORAD/elements/gp.php?GROUP=visual&FORMAT=tle' -o data/tle/visual.tle` (groupes utiles : `stations`, `geodetic` (imagerie), `military` n'existe pas → catalogue complet + filtrage par nom)
+  - [C] Prédire : `from skyfield.api import load, EarthSatellite; …` → `satellite.at(t).subpoint()` pour la trace, `pass_of(t0,t1)` pour l'AOS/LOS
+  - [D] Rafraîchir 2x/jour via cron (Activepieces ou systemd timer) — les TLE pourrissent en ~3 jours
+- **Intégration dans la tour** : `src/satPasses.js` : lignes de visée vers une zone suivie + fenêtre d'imagerie Sentinel-2 (nuages via Open-Meteo) → la tour dit **quand** photographier.
+- **Vérification (à mettre dans `doctor`)** : `python3 -c 'import skyfield,sgp4;print(skyfield.__version__)'`
+- **Notes / pièges** : Space-Track (compte gratuit) = catalogue plus complet/à jour ; utile seulement si tu veux les objets classifiés légaux (USA-234 Topaz est public, lui).
+- **Sources** : https://github.com/skyfielders/python-skyfield · https://celestrak.org · https://github.com/brandon-rhodes/python-sgp4
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "satellite-passes"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### aisstream.io (flux AIS temps réel) — `aisstream`
+- **Statut** : 🟨 **partiel** (existant à compléter/remplacer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : service gratuit, clé sur inscription · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : WebSocket mondial d'AIS : c'est la source qui a permis l'analyse du détroit d'Ormuz (130 traversées/j → ~10, soit -92 %). L'amont de ta tour prévoyait déjà cette clé.
+- **Étapes d'installation** :
+  - [A] Inscription gratuite (e-mail) → clé
+  - [B] `wss://stream.aisstream.io/v0/stream` avec un message de souscription `{bounding_box, filters_type, mmsi}` — **se limiter à des bbox**, le flux mondial tuerait la tour
+  - [C] Parser avec `libais` (ou `pip install ais`) et écrire dans le `recorder-4d`
+  - [D] Sans clé : désactivation propre du calque (comportement actuel du fork — ne pas casser)
+- **Intégration dans la tour** : `src/vessels.js` (déjà prévu amont) + enregistrement → indispensable pour `darkVessels.js`.
+- **Vérification (à mettre dans `doctor`)** : `python3 -c "import websockets;print(1)"`
+- **Notes / pièges** : La clé ne doit jamais transiter par le navigateur : côté serveur uniquement (modèle déjà appliqué par `shadowbroker`).
+- **Sources** : https://aisstream.io · https://app.aisstream.io
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aisstream"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### GlobalFishingWatch/pipe-gaps (navires sombres) — `pipe-gaps`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Détection de **trous temporels dans les messages de position AIS** : l'algo public derrière le phénomène « dark transit » décrit dans l'article (Jag Vasant : pointillés = passage sous escorte).
+- **Étapes d'installation** :
+  - [A] `git clone --depth 1 https://github.com/GlobalFishingWatch/pipe-gaps`
+  - [B] Le faire tourner sur **notre** Parquet de positions (pas leur infra GFW)
+  - [C] Configurer le seuil de trou (les données de zones denses sont bruitées : signaux s'annulent → exclure les détroits saturés hors cible)
+  - [D] Croiser avec un registre de pavillon pour le tri (Inde/Pakistan/Liberia/Comores dans le cas Hormuz)
+- **Intégration dans la tour** : `src/darkVessels.js` : le navire disparaît → un pointillé + une fiche « dernière position connue » ; **aucune** identification de personne, uniquement des entités maritimes.
+- **Vérification (à mettre dans `doctor`)** : `python3 -c 'import pandas,shapely;print("deps gaps ok")'`
+- **Notes / pièges** : La GFW API (clé gratuite) fournit déjà des événements `ais_gaps` prêts à l'emploi : commencer par l'API, puis passer au calcul local pour les zones qui intéressent la tour.
+- **Sources** : https://github.com/GlobalFishingWatch/pipe-gaps
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "pipe-gaps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### NOTAM / fermetures d'espace aérien — `notams`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : données publiques (FAA/EASA) ; parseurs MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Les « airspace closures » en cascade que la vidéo 2 montre en timeline : la tour doit savoir où et quand le ciel est fermé.
+- **Étapes d'installation** :
+  - [A] Source : `GET https://notamweb.faa.gov/REST/AdcNotamSearch/api/v1/notam/list` (États-Unis) et Eurocontrol/EASA pour l'Europe ; en FR aussi l'INFOAéronautique (SIA)
+  - [B] Parser le format F-Series (regex ou `notam` gem MIT / `notam-parsers` JS) → `{icao, radius_nm, altitude, debut, fin}`
+  - [C] Alimenter le `recorder-4d` pour que les fermetures soient **réplayables**
+  - [D] Dessiner sur Cesium (cercles + fuseaux d'altitude, rouge = actif)
+- **Intégration dans la tour** : `src/airspace.js` (nouveau) + agrégat `nearbyPlaces.js` ; alerte quand une zone surveillée est couverte.
+- **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' https://notamweb.faa.gov/ 2>/dev/null || echo 'réseau à valider depuis la tour'`
+- **Notes / pièges** : Le parsing NOTAM est ingrat (format texte de 1970) : accepter un taux de faux positifs, et toujours afficher le texte brut à côté de l'interprétation.
+- **Sources** : https://notamweb.faa.gov · https://github.com/svoop/notam · https://www.easa.europa.eu/en/domains/airspaces
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "notams"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### Surveillance des pannes internet (Cloudflare Radar / IODA / Restless) — `outages`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : API gratuites (compte) ; Restless MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Le calque « Téhéran en blackout » : corréler coupures réseau et événements, sur une timeline.
+- **Étapes d'installation** :
+  - [A] Cloudflare Radar (gratuit, compte + jeton) : `GET /api/v1/networks/traffic/outages?countryCode=IR&since=…`
+  - [B] IODA (Georgia Tech, gratuit sans clé) : agrégat de connectivité par pays
+  - [C] En local : `docker run` de RIPE **Restless** (MIT) → surveillance des préfixes AS, alertes NRT en temps réel
+  - [D] Restless = le seul des trois qui ne dépend d'aucun tiers : à privilégier si la tour devient autonome
+- **Intégration dans la tour** : `src/outages.js` + un KPI `intelTwin.js` (« connectivité territoriale ») — très pertinent pour un usage FR (outre-mer, crises).
+- **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' https://api.cloudflare.com/client/v4/radar/datasets 2>/dev/null || echo 'nécessite jeton'`
+- **Notes / pièges** : API tier gratuit → prévoir cache 15 min et repli silencieux si le quota tombe.
+- **Sources** : https://developers.cloudflare.com/radar/ · https://ioda.caida.org · https://github.com/RIPE-NCC/restless · https://radar.cloudflare.com
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "outages"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### SAR : NASA OPERA + Copernicus EGMS + Sentinel-1 — `sar-opera`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : données ouvertes (comptes Earthdata / Copernicus gratuits) · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Voir à travers les nuages et mesurer le déplacement du sol au millimètre : digues, friches, affaissements, glissements — le calque qui rend la tour utile **en France** (et ce que la vidéo 2 appelle le « ground change detection »).
+- **Étapes d'installation** :
+  - [A] Créer 2 comptes gratuits : **NASA Earthdata** et **Copernicus Data Space Ecosystem**
+  - [B] OPERA CSLC/DISP → ASF DAAC via `pip install asf-search` + earthaccess ; EGMS (Service TMP) → téléchargement GeoTIFF par bbox + `snap`/`gdal`
+  - [C] Sentinelsat : `pip install sentinelsat` → requête Sentinel-1 GRD avant/après un événement
+  - [D] Rendu : `gdal_calc` sur les paires → image de différence → calque Cesium (opacité + curseur temporel lié au `recorder-4d`)
+- **Intégration dans la tour** : `src/sar.js` (diff avant/après) + alertes de déformation sur les sites suivis (via l'API alertes d'EGMS).
+- **Vérification (à mettre dans `doctor`)** : `python3 -c 'import asf_search;print(asf_search.__version__)'`
+- **Notes / pièges** : Traitement lourd : 20-60 s par interférométrie sur CPU, quelques minutes sur GPU → lancer en tâche de fond (Activepieces), jamais dans le cycle de rendu de la tour.
+- **Sources** : https://search.earthdata.nasa.gov/search?q=OPERA · https://asf.alaska.edu/datasets/operational-products/opera/ · https://egms.land.copernicus.eu · https://dataspace.copernicus.eu
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "sar-opera"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### NASA GIBS + Copernicus Browser (imagerie quotidienne gratuite) — `gibis`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : domaine public / Copernicus (citer) · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Les images « before/after » du reportage, à 0 $ : tuiles WMTS quotidiennes MODIS/VIIRS/Sentinel-2, sans clé.
+- **Étapes d'installation** :
+  - [A] Tuile test : `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-09-04/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`
+  - [B] Dans Cesium : `WebMapTileServiceImageryProvider` avec `Time` dans `GetResource` → tuiles datées → **déjà compatible avec le curseur temporel**
+  - [C] Sentinel-2 via Copernicus Browser pour le avant/après à 10 m ; PNA (Planet) = payant → ne pas promettre
+  - [D] Attribuer (« NASA GIBS », « Copernicus ») dans `DATA_SOURCES.md`
+- **Intégration dans la tour** : Calque `dailyImagery.js` dans la pile `mapStackController` (3e source gratuite, après Esri et CARTO).
+- **Vérification (à mettre dans `doctor`)** : `curl -sI 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-09-04/GoogleMapsCompatible_Level9/5/16/11.jpg' | head -1`
+- **Notes / pièges** : La force de GIBS : c'est **temporel par conception**. Avec le recorder, la tour devient rétrospective sans aucun abonnement.
+- **Sources** : https://nasa-gibs.github.io/gibs-api-docs/ · https://worldview.earthdata.nasa.gov · https://browser.dataspace.copernicus.eu
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gibis"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### EIA API (futures et prix du carburant) — `eia-oil`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : données publiques US, clé gratuite immédiate · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Les courbes de brut du reportage (Brent, WTI, essai) synchronisées sur la timeline du globe.
+- **Étapes d'installation** :
+  - [A] Clé gratuite : https://www.eia.gov/opendata/register.php
+  - [B] `curl 'https://api.eia.gov/v2/petroleum/pri/spw/data?frequency=weekly&data[]=Price&facets[series_id]=EMD_EPD2D_PTE_SCA_DPC&api_key=***'`
+  - [C] Alternative zéro-clé à tester : `pip install open-meteo` (le fournisseur a une API de prix du carburant dans ~20 pays) + Yahoo/Stooq pour le brut (non redistribuable ⚠️)
+  - [D] Séries → mini-graphe dans `splitFlap`/`hudSummaryResponse`, aligné sur l'horloge du `recorder-4d`
+- **Intégration dans la tour** : `src/markets.js` + un KPI dans le bandeau `intelTwin.js`.
+- **Vérification (à mettre dans `doctor`)** : `python3 -c 'import requests;print(requests.get("https://api.eia.gov/v2",timeout=8).status_code)'`
+- **Notes / pièges** : ⚠️ Les cotations (Bloomberg/Refinitiv) ne sont **pas** redistribuables : n'afficher que des données publiques (EIA) ou un lien sortant.
+- **Sources** : https://www.eia.gov/api/ · https://www.eia.gov/opendata/
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "eia-oil"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### Infrastructures critiques : désalination + centrales — `desal-power`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : OSM (ODbL) / datasets à vérifier · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Le chapitre « Desalination Plants & The Water Crisis » : la tour doit connaître l'infrastructure vitale du territoire qu'elle surveille.
+- **Étapes d'installation** :
+  - [A] Centrales : dataset Copernicus « European Power Plants » (CC-BY, à re-vérifier) **ou** requête Overpass `power=plant` sur l'emprise (ODbL)
+  - [B] Désalination : pas de jeu ouvert mondial fiable → créer `data/critical/desalination.yml` (source par entrée, date de relevé, capacité) ; la GDIDA/WAVES est payante — ne pas promettre
+  - [C] Overpass : `curl -s 'https://overpass-api.de/api/interpreter' --data-urlencode 'data=[out:json];area["name"="Hérault"]->.a;node[power=plant](area.a);out;'`
+  - [D] Calque `criticalInfra.js` avec niveau de criticité + sources par entité (règle : aucune entité sans source datée)
+- **Intégration dans la tour** : KPI « civilisation territoriale » déjà dans `intelTwin.js` → devient alimenté par des données sourcées au lieu d'heuristiques.
+- **Vérification (à mettre dans `doctor`)** : `curl -s 'https://overpass-api.de/api/interpreter?data=[out:json];node[power=plant](43.4,3.0,43.8,4.0);out%205;' | head -c 200`
+- **Notes / pièges** : La valeur ajoutée ici, c'est **la rigueur des sources**, pas la quantité de points. Chaque entité : lien + date + licence.
+- **Sources** : https://ida-desalination.org/publications/ida-desalination-performance-guide · https://powerplants.copernicus.fr/ · https://openstreetmap.fr
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "desal-power"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+
+---
+
+## 4b · Positionnement spatial (VPS) & ancrage des scans
+
+| Outil | Rôle (une phrase) | Faisabilité tour | Prix | Licence | URLs |
+|---|---|---|---|---|---|
+| **hloc (localisation visuelle 6-DoF)** `hloc` | La version **libre et auto-hébergée** du VPS montré avec les Ray-Bans : image requête → retrieval +… | 🅱 | 🟢 gratuit | Apache-2.0 (4,2 k★) | [github.com](https://github.com/cvg/Hierarchical-Localization) · [github.com](https://github.com/cvg/SuperGluePretrainedNetwork) |
+| **COLMAP (SfM de référence)** `colmap` | Reconstruction 3D + poses caméra à partir de photos : c'est la « 3D map pré-scanée » dont parle la… | 🅰 | 🟢 gratuit | new BSD (le fichier LICENSE l'affirme ; GitHub renvoie NOASSERTION ⚠️) | [github.com](https://github.com/colmap/colmap) · [colmap.github.io](https://colmap.github.io) |
+| **Google ARCore Geospatial API** `arcore-geospatial` | Le VPS « mondial » par défaut : Localisation VLM sur 15 ans d'images Street View dans 100+ pays | 🅰 | 🟡 compte gratuit | gratuit (sans facturation à l'appel), quota + compte obligatoire | [developers.google.com](https://developers.google.com/ar/develop/geospatial) · [developers.google.com](https://developers.google.com/ar/develop/geospatial/android/placecolors) |
+| **Niantic Spatial VPS + Scaniverse** `niantic-vps` | Le VPS communautaire : 30 Md de photos issues de Pokémon GO/Ingress, et **Scaniverse** qui produit des… | 🅰 | 🟡 compte gratuit | gratuit < 50 k MAU (VPS/ARDK) ; Scaniverse = app gratuite + crédits | [nianticspatial.com](https://www.nianticspatial.com/products/visual-positioning-system) · [scaniverse.com](https://scaniverse.com) · [nianticspatial.com](https://www.nianticspatial.com/en/faq/scaniverse) |
+| **MultiSet AI (VPS commercial)** `multiset-vps` | Le VPS utilisé dans la vidéo Ray-Ban : scan-agnostique (E57, Matterport, PLY, **3DGS**, Polycam,… | 🅰 | 🟠 semi-payant | service propriétaire (SDK Unity/iOS/Android/WebXR/Quest/ROS 2) | [multiset.ai](https://www.multiset.ai/visual-positioning-system) · [multiset.ai](https://www.multiset.ai/pricing) · [multiset.ai](https://www.multiset.ai/developers) |
+
+### hloc (localisation visuelle 6-DoF) — `hloc`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (4,2 k★) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
+- **Matériel** : 6 Go+ recommandé (PyTorch)
+- **Rôle** : La version **libre et auto-hébergée** du VPS montré avec les Ray-Bans : image requête → retrieval + SuperPoint/SuperGlue → pose 6-DoF contre un modèle SfM. Centimétrique, hors-ligne, aucune API.
+- **Étapes d'installation** :
+  - [A] `git clone --recurse-submodules https://github.com/cvg/Hierarchical-Localization && pip install -e .` + `pip install pycolmap`
+  - [B] Construire la carte : `python hloc/run_all.py --dataset path/to/site --sfm glomap|colmap --features local` (SuperPoint+SuperGlue)
+  - [C] Localiser une photo : étape 5 du pipeline → `predictions.h5` (position + orientation)
+  - [D] Version moderne plus rapide : `pablovela5620/hloc-glomap` (Apache-2.0, Pixi + UI Gradio + Rerun)
+- **Intégration dans la tour** : Anchoring des calques : positionner une caméra CCTV, un drone ou un téléphone **dans** le scan 3DGS, puis relier « qui regarde quoi » dans `cctvFocusPolicy.js` / `intelTwin.js`.
+- **Vérification (à mettre dans `doctor`)** : `python3 -c 'import hloc;print("hloc ok")'`
+- **Notes / pièges** : GPU fortement conseillé. C'est le chemin 100 % gratuit quand Google/Niantic/MultiSet coûtent ou exigent un compte — et le seul qui marche sans réseau sur un site isolé.
+- **Sources** : https://github.com/cvg/Hierarchical-Localization · https://github.com/cvg/SuperGluePretrainedNetwork
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "hloc"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### COLMAP (SfM de référence) — `colmap`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : new BSD (le fichier LICENSE l'affirme ; GitHub renvoie NOASSERTION ⚠️) · **Tour** : **A** — CPU seul, 8-16 Go RAM
+- **Rôle** : Reconstruction 3D + poses caméra à partir de photos : c'est la « 3D map pré-scanée » dont parle la vidéo — l'intrant de hloc **et** des splats.
+- **Étapes d'installation** :
+  - [A] `sudo apt install colmap` (ou binaire release ; GUI dispo)
+  - [B] CLI sans GUI pour un agent : `colmap feature_extractor && colmap exhaustive_matcher && colmap mapper && colmap bundle_adjuster`
+  - [C] Sortie `sparse/0/` → directement consommé par Brush (3DGS) et par hloc
+  - [D] ⚠️ **GLOMAP** (le successeur 10-100x plus rapide) est marqué `[DEPRECATED]` sur `colmap/glomap` depuis janv. 2026 : ne pas en faire une dépendance, tester `hloc-glomap` en option seulement
+- **Intégration dans la tour** : `scripts/photo-to-model.sh` : 150 photos d'un site → COLMAP → Brush → splats → ancrage via hloc.
+- **Vérification (à mettre dans `doctor`)** : `colmap help >/dev/null && echo 'colmap ok'`
+- **Notes / pièges** : ⚠️ Cas d'école de la règle n°4 du §0 : la licence est bonne (BSD) mais **l'API GitHub ne la voit pas** → vérifier le fichier LICENSE, pas l'auto-détection.
+- **Sources** : https://github.com/colmap/colmap · https://colmap.github.io
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "colmap"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### Google ARCore Geospatial API — `arcore-geospatial`
+- **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : gratuit (sans facturation à l'appel), quota + compte obligatoire · **Tour** : A/B/C indifféremment
+- **Rôle** : Le VPS « mondial » par défaut : Localisation VLM sur 15 ans d'images Street View dans 100+ pays. C'est ce que l'auteur a construit chez Google.
+- **Étapes d'installation** :
+  - [A] ⚠️ Nécessite un device ARCore compatible + le SDK Google AR : **pas embarquable dans la tour web**, utilisable depuis une app mobile
+  - [B] Si tu veux le tester : Android Studio + `com.google.ar:core` + API activée dans un projet Google Cloud (clé gratuite, quota)
+  - [C] Pour nous : **garder hloc en local**, et considérer ARCore uniquement comme benchmark de précision
+- **Intégration dans la tour** : Non (dépendance mobile + compte Google). Pattern utile : « match image → modèle 3D », c'est exactement `hloc`.
+- **Vérification (à mettre dans `doctor`)** : `—`
+- **Notes / pièges** : Gratuit mais : indoor = mort, zones sans Street View = mort, et tes images partent chez Google. Les deux cas où l'on paie ou où l'on est bloqué sont précisément ceux où hloc gagne.
+- **Sources** : https://developers.google.com/ar/develop/geospatial · https://developers.google.com/ar/develop/geospatial/android/placecolors
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "arcore-geospatial"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### Niantic Spatial VPS + Scaniverse — `niantic-vps`
+- **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : gratuit < 50 k MAU (VPS/ARDK) ; Scaniverse = app gratuite + crédits · **Tour** : A/B/C indifféremment
+- **Rôle** : Le VPS communautaire : 30 Md de photos issues de Pokémon GO/Ingress, et **Scaniverse** qui produit des splats 3D + maps VPS depuis un téléphone — la chaîne complète « capture → ancrage ».
+- **Étapes d'installation** :
+  - [A] Scaniverse (iOS ≥ 13, ARKit) : scanner un site → exporter Gaussian Splats / mesh → **alimente directement P6 de la tour**
+  - [B] Scaniverse est également open source (viewer GitHub) → vérifier la licence avant intégration
+  - [C] Lightship/ARDK VPS : gratuit en dessous de 50 000 utilisateurs actifs mensuels → très largement suffisant ; compte développeur requis
+  - [D] Coverage FR = dense en villes, vide en rural : tester sur le site cible avant de promettre quoi que ce soit
+- **Intégration dans la tour** : `scripts/scan-to-globe.sh` : Scaniverse export `.splat` → aholo-splat-transform (SPZ + LOD + collisions) → calque de la tour. Le VPS de Niantic, lui, ne sert pas si on reste en local.
+- **Vérification (à mettre dans `doctor`)** : `—`
+- **Notes / pièges** : Le meilleur compromis capture/gratuit pour un **site précis** (ton domicile, une friche, un poste de garde). Attention : tes scans partent dans leur cloud → lire la politique, et ne scanner aucun site sensible.
+- **Sources** : https://www.nianticspatial.com/products/visual-positioning-system · https://scaniverse.com · https://www.nianticspatial.com/en/faq/scaniverse
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "niantic-vps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+### MultiSet AI (VPS commercial) — `multiset-vps`
+- **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟠 semi-payant : tier gratuit puis facturation à l'usage · **Licence** : service propriétaire (SDK Unity/iOS/Android/WebXR/Quest/ROS 2) · **Tour** : A/B/C indifféremment
+- **Rôle** : Le VPS utilisé dans la vidéo Ray-Ban : scan-agnostique (E57, Matterport, PLY, **3DGS**, Polycam, NavVis, Leica, XGRIDs, captures 360°), 6-DoF annoncé **« < 10 cm »** au départ à froid, indoor-extérieur via indice GNSS, multi-utilisateur, et — seul point décisif — **supporte le SDK Meta Ray-Ban**.
+- **Étapes d'installation** :
+  - [A] Plan gratuit **de prototypage** : 5 cartes actives / 5 traitées / **1 000 appels API à vie** / ~11 600 m² → watermark, donc inutilisable en prod
+  - [B] Lite 49 $/mois (39 $ en annuel) = 10 000 appels/mois + retrait du watermark ; Plus 249 $/mois (199 $ en annuel) = 25 cartes, 50 000 appels/mois, 60 387 m² ; Enterprise = Private Cloud / On-Prem / **On-Device** (seul plan qui sort du cloud MultiSet)
+  - [B2] ⚠️ Sur Free et Lite, la latence est explicitement « best-effort » et chiffrée **1 500-2 500 ms (mono-image) / 2 700-3 500 ms (multi-images)** sur la page de tarifs : l'argument « 52 ms » de la vidéo n'est pas garanti contractuellement avant Enterprise
+  - [C] Usage recommandé : **tester la faisabilité**, jamais dépendance durable ; l'alternatif self-host = hloc + Brush + ton propre serveur d'ancrage
+  - [D] L'ingestion accepte nos `.ply`/`.splat` : on peut donc évaluer leur moteur **avec nos propres scans**, sans rien leur confier d'autre
+- **Intégration dans la tour** : Aucune. Si un jour du hardware (lunettes, drone, robot) doit être ancré sur un site, évaluer MultiSet **vs** hloc en coût total, pas en démo.
+- **Vérification (à mettre dans `doctor`)** : `—`
+- **Notes / pièges** : Tarifs relus le 2026-09-05 sur https://multiset.ai/pricing — **à re-vérifier le jour où tu décides** (règle n°9 : les tiers gratuits bougent tout seuls). « L'entreprise a un an et déjà notée plus robuste que Niantic » dixit la vidéo — c'est le seul acteur qui touche les lunettes grand public ; le modèle économique reste fragile, ne pas s'y marier. Point qui compte pour la tour : l'**on-device** n'existe qu'en Enterprise → aucun VPS du commerce ne te donne l'autonomie hors-ligne que `hloc` te donne à 0 €. 
+- **Sources** : https://www.multiset.ai/visual-positioning-system · https://www.multiset.ai/pricing · https://www.multiset.ai/developers
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "multiset-vps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
 ---
@@ -1033,6 +1301,7 @@
 | **fullstack-agent (jaredrhod)** `jared-fullstack` | Installeur « tout-en-un » dont parle la vidéo n°5 : memory-vault + visualizer + backtalk + barehands. | 🅰 | 🔴 payant | AGPL-3.0 | [github.com](https://github.com/jaredrhod/fullstack-agent) |
 | **API LLM gratuites (secours, avec compte)** `tiers-gratuits-llm` | Filet quand le modèle local est trop court : raisonnement long, gros contexte, réécriture | 🅰 | 🟡 compte gratuit | CGU des fournisseurs | [console.groq.com](https://console.groq.com/keys) · [openrouter.ai](https://openrouter.ai/models?q=free) · [aistudio.google.com](https://aistudio.google.com/apikey) |
 | **À éviter (payant ou lock-in)** `pistes-evitees` | Liste négative : ce que les vidéos vendent comme « gratuit » et qui ne l'est pas (ou pas durable). | 🅰 | 🔴 payant | — | [elevenlabs.io](https://elevenlabs.io/pricing) · [maltego.com](https://www.maltego.com/pricing/) · [spiderfoot.net](https://www.spiderfoot.net/pricing/) |
+| **Capture Meta Ray-Ban / téléphone (option硬件)** `rayban-capture` | La leçon matérielle : avec une simple caméra (+ un scan 3D préalable), on remplace un casque militaire… | 🅰 | ⚫ matériel optionnel | matériel (300 $) — SDK lunette gratuit | [anduril.com](https://www.anduril.com/eagleeye) · [developers.meta.com](https://developers.meta.com/horizon/) |
 
 ### ada_local (Naz Louis) — `ada-local`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : ❌ aucune licence (tous droits réservés) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
@@ -1109,6 +1378,20 @@
 - **Sources** : https://elevenlabs.io/pricing · https://www.maltego.com/pricing/ · https://www.spiderfoot.net/pricing/ · https://app.make.com/pricing · https://www.retellai.com/pricing · https://lampyre.io/pricing · https://si.social-links.io · https://intelligencex.io · https://www.whop.com/fatihmakes/ · https://www.patreon.com/cw/NazLouisYT
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "pistes-evitees"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+### Capture Meta Ray-Ban / téléphone (option硬件) — `rayban-capture`
+- **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : ⚫ option matérielle (achat one-shot), logiciel libre · **Licence** : matériel (300 $) — SDK lunette gratuit · **Tour** : A/B/C indifféremment
+- **Rôle** : La leçon matérielle : avec une simple caméra (+ un scan 3D préalable), on remplace un casque militaire à 30 000 $ (Anduril EagleEye). Un téléphone suffit ; les lunettes ne sont que l'ergonomie.
+- **Étapes d'installation** :
+  - [A] ⚫ Achat optionnel : Meta Ray-Ban (~300 $) — sinon **ton téléphone suffit**, c'est littéralement ce que la vidéo démontre
+  - [B] Côté logiciel : `pip install opencv-python` + enregistrement des frames + `hloc` pour les ancrer ; la tour sert de « mini-map » comme dans EagleEye
+  - [C] ⚠️ Filmer des personnes dans l'espace public = RGPD + droit à l'image ; la tour n'ancrera **jamais** une pose humaine (audit §4.4)
+  - [D] Ne pas acheter pour « faire EagleEye » : acheter seulement si un usage réel existe (relevé de site, inspection, suivi d'ouvrage)
+- **Intégration dans la tour** : `src/anchors/cameraPose.js` : recevoir des poses depuis un client mobile (WebSocket vers la tour) et les dessiner — c'est **tout** l'effet « voir à travers les murs » : plusieurs caméras, une seule carte.
+- **Vérification (à mettre dans `doctor`)** : `—`
+- **Notes / pièges** : Le vrai sujet n'est pas le hardware, c'est la carte ancrée partagée. Et là, tu l'as déjà (splats) — il manque l'API de pose, qui est une demi-journée de code.
+- **Sources** : https://www.anduril.com/eagleeye · https://developers.meta.com/horizon/
+- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "rayban-capture"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
 ---
 
 ## 1. Tableau de décision rapide (ordre d'implémentation)
@@ -1121,16 +1404,17 @@
 | **P3 lire le monde** | `tesseract`/`paddleocr`, `marker`/`docling`, `ocrmypdf`, `libretranslate`, `exiftool` | les captures et PDF de la tour deviennent interrogeables | 2-3 sessions |
 | **P4 chercher** | `searxng`, `vane-perplexica`, `crawl4ai`, `chonkie`, `lancedb`/`qdrant`, `dspy` | `reaserch-engine` reçoit des yeux web + RAG, sans API payante | 2-4 sessions |
 | **P5 se souvenir** | `ai-memory-vault` (motif réécrit), `obsidian`, `syncthing`, `sqlite-vec` | continuité entre runs, état `HCSM`, sauvegarde | 2 sessions |
-| **P6 agents + autos** | `hermes-agent`, `activepieces`, `openhands` (prudent) | le moteur devient un skill ; les boucles tournent sans toi | 2-3 sessions |
-| **P7 terrain réel** | `aholo-viewer`, `aholo-splat-transform`, `brush`/`postshot`, `opensplat` | splats LOD/collisions dans le globe | 3-5 sessions |
-| **P8 hors-réseau** | `reticulum`, `meshtastic`(⚫ matériel), `rtl-sdr`(⚫ ~30 €) | messagerie de secours + source de données locale souveraine | 1-3 sessions |
-| **P9 publier** | `pinokio`(option), release GitHub Actions + installeur | « l'agent clone, patche, et tu télécharges un installeur de **ton** repo » | 1 session |
+| **P6 terrain réel** | `aholo-viewer`, `aholo-splat-transform`, `brush`/`postshot`, `opensplat`, `niantic-vps`(capture Scaniverse) | splats LOD/collisions dans le globe | 3-5 sessions |
+| **P7 hors-réseau** | `reticulum`, `meshtastic`(⚫ matériel), `rtl-sdr`(⚫ ~30 €) | messagerie de secours + source de données locale souveraine | 1-3 sessions |
+| **P8 pendant que tu dors** | `hermes-agent`, `activepieces`, `openhands` (prudent) + release GitHub Actions/installeur | les boucles tournent sans toi, et « l'agent clone, patche, tu télécharges depuis **ton** repo » | 1-2 sessions |
+| **P9 rejouabilité 4D** ⭐ | `recorder-4d`, `aisstream`, `pipe-gaps`, `satellite-passes`, `notams`, `outages`, `gibis`, `sar-opera`, `eia-oil`, `gdelt` | **la leçon du 2ᵉ lot** : sans journal continu, la tour reste au présent et ne peut rien rejouer. À faire avant tout nouveau calque | 2-4 sessions |
+| **P10 ancrage spatial** | `hloc`, `colmap`, `rayban-capture`(option) | caméras/drones/téléphone positionnés au cm **dans** les splats de P6, hors-ligne ; remplace les VPS à compte | 2-3 sessions |
 
 ## 2. Ce que les agents font à ta place / ce qu'ils ne peuvent pas
 
 | Automatisable à 100 % (agent) | Nécessite toi (👆) | Hors de portée / refus |
 |---|---|---|
-| cloner + patcher + pousser (toute tâche des phases P0-P9) ; écrire `install-stack.*` et `doctor` ; config SearXNG `format=json` ; créer les flows Activepieces (hors login) ; convertir les splats ; câbler `schemas/*.json` ; rédiger les tests ; open `issues` amont pour clarifier une licence | créer les comptes gratuits (Cesium ion, Groq, OpenRouter, AISStream, FIRMS) · accepter CGU/licences · cliquer SmartScreen sur un installeur · brancher micro/haut-parleur · coller une clé dans `keySetup.js` | achat matériel (GPU, radios LoRa, RTL-SDR) · paywall d'abonnement (Claude Code, n8n enterprise, Maltego Pro) · signature de certificat · **toute fonctionnalité visant une personne physique** |
+| cloner + patcher + pousser (toute tâche des phases P0-P10) ; écrire `install-stack.*` et `doctor` ; config SearXNG `format=json` ; créer les flows Activepieces (hors login) ; convertir les splats ; câbler `schemas/*.json` ; rédiger les tests ; open `issues` amont pour clarifier une licence | créer les comptes gratuits (Cesium ion, Groq, OpenRouter, AISStream, FIRMS) · accepter CGU/licences · cliquer SmartScreen sur un installeur · brancher micro/haut-parleur · coller une clé dans `keySetup.js` | achat matériel (GPU, radios LoRa, RTL-SDR) · paywall d'abonnement (Claude Code, n8n enterprise, Maltego Pro) · signature de certificat · **toute fonctionnalité visant une personne physique** |
 
 ## 3. Vérification d'installation (à faire tourner après chaque phase)
 

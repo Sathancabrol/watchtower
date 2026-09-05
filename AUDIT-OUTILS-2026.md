@@ -2,12 +2,12 @@
 ### Ce que les liens que tu as envoyés apportent à **ta tour** (Watchtower + Cognitorium)
 Audit produit le 2026-09-05 · sources vérifiées en ligne · liens dans chaque ligne
 
-> **Périmètre** : les 11 liens YouTube + 1 repo GitHub que tu as fournis, croisés avec **tes 8 repos publics** (`watchtower`, `COGNITORIUM`, `proto-cognitorium`, `reaserch-engine`, `HCSM`, `ETAT-DE-LART-PSYCHOLOGIE`, `Language-decoder`, `animation-chronos`).
+> **Périmètre** : **14 liens** — les 11 liens YouTube + 1 repo GitHub du 1ᵉʳ lot, plus le 2ᵉ lot (2 vidéos + 1 article Substack, fourni le 5 sept. 2026), croisés avec **tes 8 repos publics** croisés avec **tes 8 repos publics** (`watchtower`, `COGNITORIUM`, `proto-cognitorium`, `reaserch-engine`, `HCSM`, `ETAT-DE-LART-PSYCHOLOGIE`, `Language-decoder`, `animation-chronos`).
 > **Verdict en une ligne** : **36 outils sur 44** cités par ces liens (≈ 82 %) sont faisables **100 % gratuit, en local** sur ta tour, sans abonnement ; et **20 tâches sur 22** (≈ 90 %) du travail d'installation/patching sont réalisables **par un agent IA** (moi) directement dans tes repos — il ne te reste que les clics de compte, le micro, et le matériel éventuel.
 
-> **Référence de travail pour les agents** : `audit/REFERENCE.md` (68 outils : rôle · faisabilité · prix · licence · URLs · étapes A→B→C), générée depuis `audit/reference/generate-reference.py`, avec `audit/reference/doctor.py` pour l'état réel. Les chiffres ci-dessus portent sur **44 outils** des vidéos ; le registre complet en compte **68** (58 🟢 100 % gratuits et locaux, 6 🟡 avec compte gratuit, 2 🔴).
+> **Référence de travail pour les agents** : `audit/REFERENCE.md` (rôle · faisabilité · prix · licence · URLs · étapes A→B→C), générée depuis `audit/reference/generate-reference.py`, avec `audit/reference/doctor.py` pour l'état réel. Les chiffres ci-dessus portent sur **44 outils** du 1ᵉʳ lot ; le registre complet en compte **86** (68 🟢 100 % gratuits et locaux, 12 🟡 avec compte gratuit, 2 🔴 payants, 2 🟠 semi-payants, 2 ⚫ matériel) répartis en **12 catégories** — dont une nouvelle : **« 4b · Positionnement spatial (VPS) & ancrage des scans »**.
 
-> **Méthode** : les 11 liens ont été récupérés et lus (titres, descriptions, chapitres, transcripts) ; les 8 repos GitHub ont été clonés/inspectés (dont les 57 modules de `COGNITORIUM/watchtower-mods/src`) ; les licences des 44 outils ont été vérifiées via GitHub API le 2026-09-05 (le compteur `44` = somme des lignes des 8 tableaux du §Catalogue).
+> **Méthode** : les 14 liens ont été récupérés et lus (titres, descriptions, chapitres, transcripts) ; les 8 repos GitHub ont été clonés/inspectés (dont les 57 modules de `COGNITORIUM/watchtower-mods/src`) ; les licences des 44 outils ont été vérifiées via GitHub API le 2026-09-05 (le compteur `44` = somme des lignes des 8 tableaux du §Catalogue).
 
 ---
 
@@ -28,7 +28,7 @@ Audit produit le 2026-09-05 · sources vérifiées en ligne · liens dans chaque
 
 ---
 
-## 1. Audit des 11 liens, outil par outil
+## 1. Audit des 14 liens, outil par outil
 
 Légende coût : 🟢 100 % gratuit local · 🟡 gratuit **avec compte/clé** (quota) · 🟠 semi-payant (gratuit puis usage) · 🔴 payant obligatoire · ⚫ matériel requis
 
@@ -68,6 +68,17 @@ Légende coût : 🟢 100 % gratuit local · 🟡 gratuit **avec compte/clé** (
 |---|---|---|---|
 | 11a | [A Billion 3D Splats Rendering in Your Browser (And It's Open Source)](https://www.youtube.com/watch?v=2t-PLeenqqA) | Stefan 3D AI · 6 juin 2026 · 10 min · 107 k vues. 3D Gaussian Splatting : LOD + streaming « game-dev », format **SPZ**, collisions générées, rendu dans un onglet, scène d'1 milliard de splats ; **aussi** capture par téléphone/drone, licence des scans = CC-4.0, écosystème de CLI de transformation | 🟢 |
 | 11b | [manycoretech/aholo-viewer](https://github.com/manycoretech/aholo-viewer) | **Renderer 3DGS + mesh haute performance** (npm [`@manycore/aholo-viewer`](https://www.npmjs.com/package/@manycore/aholo-viewer) + [`@manycore/aholo-splat-transform`](https://www.npmjs.com/package/@manycore/aholo-splat-transform)), schéma *Chunked Streaming LOD*, **MIT**, 1 k★ / 108 forks, Node ≥ 22.22.1 + pnpm, sous-module `external/egs-core`. Livré avec **`AGENTS.md` + `docs/ai/skills/use-aholo-viewer/SKILL.md`** (guide d'intégration écrit **pour** un agent IA) et un playground qui sérialise le code dans l'URL (`lz-string`) → site de démo [aholojs.dev](https://aholojs.dev/), plateforme constructeur [aholo3d.com](https://www.aholo3d.com/) | 🏆 **Le saut visuel de ta tour** : CesiumJS (ta base) + 3DGS (scans réels de sites : friches, patrimoine, chantier, digues) → une couche `splats.js` dans `watchtower-mods`. Et le repo est **conçu pour être piloté par un agent** (SKILL.md fourni) : c'est le cas d'usage n°1 de ton « l'IA copie un repo public, le modifie pour moi ». |
+
+
+### 1.6 Deuxième lot (5 sept. 2026) : rejouabilité 4D et ancrage spatial
+
+Ces trois liens ne sont **pas** des boîtes à outils : ils montrent **deux fonctions qui manquent à ta tour** et que 40 outils ne rattrapent pas.
+
+| # | Lien | Ce que c'est | Verdict pour ta tour |
+|---|---|---|---|
+| 12 | [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) | Bilawal Sidhu (l'auteur de God's Eye View, **votre amont**) · 19 avr. 2026 · 11 min · 263 k vues · 129 commentaires. Il remplace un casque Anduril EagleEye à 30 000 $ par des **Meta Ray-Ban à 300 $**. Le tour de force n'est pas la caméra : c'est le **VPS** (Visual Positioning System). Pas de LiDAR, pas de SLAM embarqué → la lunette envoie sa vue à un modèle 3D **pré-scané** du monde, et **Localiser** → « je suis ici, je regarde ça », 6-DoF, au **centimètre**, de jour comme de nuit, sur un téléphone. Une fois la pose connue, la direction du regard l'est aussi → plusieurs appareils ancrés **dans le même repère** = une caméra voit **à travers le mur** ce qu'une autre filme, par triangulation. Références citées : **Google ARCore Geospatial** (100+ pays, s'appuie sur Street View), **Niantic Spatial VPS**, **MultiSet AI** (VPS privé, seul à supporter le SDK Meta Ray-Ban, ~1 an d'existence, mieux noté que Niantic dans le rapport AR 2025). | 🏆 **Le chaînon de P6.** Ta tour a déjà la carte 3D pré-scanée (les splats) : il manque juste une **API de pose** qui accepte des positions entrantes. La voie 100 % gratuite et locale : **hloc (Apache-2.0)** + **COLMAP (BSD)** + tes propres splats → aucun compte, aucun cloud. Les VPS commerciaux (ARCore/Niantic/MultiSet) = `reference` uniquement, et jamais d'ancrage multi-personnes sur des individus (ligne §4.4). |
+| 13 | [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) | 3 mars 2026 · 11 min · **1,96 M vues**, 73 k likes. Il publie un proto (WorldView) **un week-end**, puis explique la vraie recette : **lâcher un essaim d'agents IA qui capture chaque flux OSINT avant que les caches publics n'expirent** → reconstruction **4D rejouable minute par minute** sur globe 3D. Calques cités : passes de satellites de surveillance (Maxar WorldView/Legion, Capella SAR, Gaofen 11/12, Pleiades Neo, SPOT, USA-234/Topaz) avec corrélation « un événement popupe ↔ un satellite au-dessus », **ADS-B** militaires et civils ( déroutements, holding patterns), **brouillage GPS dérivé de l'ADS-B**, **AIS** (détroit d'Ormuz), fermetures d'espace aérien sur 9 pays, **blackouts internet** (Téhéran). | 🎯 **Le V2 de ta tour n'est pas plus de couches, c'est le temps.** Deux signaux « gratuits » à fabriquer (aucune API payante ne les donne) : **brouillage = écart entre ADS-B et trajectoire attendue**, **événement = alignement temporel sur une passe orbitale** (Skyfield + TLE CelesTrak, 0 clé). |
+| 14 | [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) (Map the World, 41 k abonnés) + sa vidéo [Ex-Google PM Uses God's Eye to Reveal Iran's Chokehold](https://www.youtube.com/watch?v=ccZzOGnT4Cg) (3 avr. 2026 · 16 min · 688 k vues) | L'étude d'Ormuz : 21 mi de passage utile, ~130 traversées/jour → **chute de 92,2 %** (≈10/j, des jours à 0). Deux détails comptent : il **enregistrait en continu depuis le 25 février** (sinon rien à rejouer) et les **navires sombres** = coupure d'AIS pile au transit (pointillés, puis réapparition ; pavés Liberia/Comores/Indonésie ; « péage » rapporté 1-2 $/baril). La phrase-clé de l'article : *« the data layer for almost everything is just out there — different feeds, same principle »* ; l'enjeu dépasse le pétrole : pétrochimie → engrais → sécurité alimentaire. Les 8 calques de la vidéo (AIS, trous AIS, contournements par pipelines East-West/Habshan-Fujairah, Brent/WTI + spread, frappes OSINT, imagerie avant/après, infra critiques, données pays) sont **tous reproductibles en gratuit**. | 🟢 **Reproductible sans un euro.** Le seul vrai prérequis est le **journal continu** : `data/4d/` → Parquet/DuckDB, et un curseur temps dans Cesium. Note utile de la vidéo : *« pourquoi les images satellites sont désormais retardées »* → la latence des fournisseurs est structurelle, donc **cache local systématique**. |
 
 ---
 
@@ -152,6 +163,8 @@ Hypothèse : tour = PC de maison, **16-32 Go RAM, SSD ≥ 512 Go, sans GPU dédi
 | Voix : STT + TTS | `src/voice/sttLocal.js` (whisper) + `src/voice/ttsLocal.js` (Piper/Qwen3-TTS si GPU) → remplace `freeVoice.js` sans le casser (flag) | patch | 1-2 sessions |
 | Mémoire de tour (HCSM/Cognitorium) | dossier `memory/` en markdown (pattern `ai-memory-vault`), index SearXNG-local + RAG Chonkie/Qdrant | patch | 2 sessions |
 | Couche 3DGS (aholo-viewer) | `src/splats.js` (chunked LOD) + pipeline `@manycore/aholo-splat-transform` (LOD + collision), guidé par leur `SKILL.md` | patch | 2-4 sessions |
+| **Journal 4D** : collecteurs idempotents (OpenSky, aisstream, CelesTrak, EONET, USGS, GDELT) qui écrivent en NDJSON gzippé puis consolidés en DuckDB/Parquet, + `viewer.clock` Cesium | `src/recorder/*.mjs` + `src/timeline/replayer.js` (le registre `recorder-4d`) | 2-3 sessions |
+| **Essaim de capture** (la recette de la vidéo 13) : au déclenchement d'un événement, N agents en parallèle qui **archivent** chaque flux tant que le cache public est vivant, puis publient un dossier daté et signé | tâche Activepieces + file d'attente, jamais de ré-interrogation à la demande | patch + config Activepieces | 1-2 sessions |
 | Boucle « repo public → modifié pour moi → installeur » | **GitHub Actions** qui build l'app + génère un `watchtower-setup.exe`-ish (NSIS via action open source) à chaque tag ; tu télécharges depuis **ton** repo, pas un lien YouTube | `.github/workflows/release.yml` | 1 session |
 | Un agent **chez toi** qui fait le ménage, recherche, prépare tes dossiers | Hermes Agent (`install.sh` 1 ligne, MIT, Ollama) ou OpenClaw | patch de config | 1 session |
 
@@ -199,6 +212,29 @@ Coûts de ce pipeline : **0 $** (Actions gratuit sur repo public, outils MIT/Apa
 
 ---
 
+## 5 bis. Rejouabilité 4D et ancrage spatial : ce qui manque vraiment (2ᵉ lot)
+
+Deux trous, et dans les deux cas la réponse est **gratuite + locale** :
+
+**① Le temps.** La tour est en lecture seule sur le présent : OpenSky, aircraft.spot, Esri, Copernicus, Photon… répondent « maintenant ». Les vidéos 13-14 ne montrent pas des données différentes, elles montrent **les mêmes données avec une horloge**. D'où une règle nouvelle, à appliquer à tous les calques :
+
+> **Logger en continu dès le jour 0.** Un flux que l'on interroge à la demande est un flux que l'on perd : les caches TTL (souvent 15 min) expirent, les fournisseurs retardent volontairement l'imagerie, et après coup il n'y a plus rien à rejouer. Coût : 1-3 Go/mois pour 4-5 flux à 60 s, 0 € d'abonnement. C'est le contenu du registre `recorder-4d` et le P9 de la feuille de route.
+
+Et la règle d'écriture qui va avec : **un événement = un alignement temporel, jamais une assertion.** La tour affiche « 3 navires ont coupé leur AIS entre 02:10 et 03:40 dans cette zone », pas « ce navire fait la contrebande ».
+
+**② L'ancrage.** Le VPS (vidéo 12) est exactement le problème de `splats.js` vu de l'autre bout : une fois qu'un objet (téléphone, drone, caméra) est positionné **dans** le modèle 3D, deux appareils partagent le même repère et se voient l'un l'autre « à travers les murs ». Trois voies :
+
+| Voie | Coût | Licence | Avis |
+|---|---|---|---|
+| `hloc` + `colmap` + tes splats (auto-hébergé) | 🟢 0 €, GPU conseillé | Apache-2.0 / BSD | **la voie de la tour.** Marchera aussi bien en zone blanche, sans cloud |
+| `arcore-geospatial` (Google) | 🟡 gratuit, compte obligatoire | SDK Google | Ne fonctionne qu'avec Street View et en extérieur ; tes images partent chez Google → benchmark, pas dépendance |
+| `niantic-vps` + Scaniverse / `multiset-vps` | 🟡 gratuit < 50 k MAU / 🟠 49-249 $/mois | propriétaires | **Scaniverse** mérite un essai pour la *capture* (scan → `.splat` → aholo), pas pour l'ancrage. MultiSet = test de faisabilité, jamais une dépendance durable (1 000 appels à vie = watermark) |
+
+Deux mises en garde écrites noir sur blanc, parce que ces liens les survolent :
+- ⚠️ **`colmap/glomap` est marqué `[DEPRECATED]`** depuis janvier 2026 (2,35 k★) : la promesse « 10-100× plus rapide » ne vaut pas d'en faire une dépendance. `hloc-glomap` reste une *option* de build.
+- 🚨 Le « voir à travers les murs » devient, appliqué à des humains, une **surveillance de personnes**. La tour ancre des **poses d'appareils** et des **infrastructures** ; jamais la trajectoire d'une personne identifiable (audit §4.4, et la règle des entités publiques dans `gdelt`/`osint` de `REFERENCE.md`).
+
+
 ## 6. Tableau « payant → gratuit » (remplacements nets)
 
 | Payant / SaaS montré | Alternatif open source sur ta tour | Gain | Ce que tu perds |
@@ -223,9 +259,9 @@ Coûts de ce pipeline : **0 $** (Actions gratuit sur repo public, outils MIT/Apa
 | Fichier | Rôle |
 |---|---|
 | `AUDIT-OUTILS-2026.md` | ce document |
-| `audit/REFERENCE.md` ⭐ | **référence canonique des agents** : 68 outils × (rôle · faisabilité par palier · prix · licence · URLs · étapes A→B→C · intégration tour · vérif) |
+| `audit/REFERENCE.md` ⭐ | **référence canonique des agents** : 86 outils × (rôle · faisabilité par palier · prix · licence · URLs · étapes A→B→C · intégration tour · vérif) |
 | `audit/reference/REGISTRE-OUTILS.json` | le même contenu en machine-readable (source unique : `audit/reference/generate-reference.py`) |
-| `audit/reference/doctor.py` | état réel de la tour : ce qui répond / manque / bloque (68 checks, `--json`) |
+| `audit/reference/doctor.py` | état réel de la tour : ce qui répond / manque / bloque (checks pilotés par le registre, `--json`) |
 | `audit/CATALOGUE-OUTILS.md` | catalogue court « vu de l’audit » (par vidéo d’origine) |
 | `audit/COUTS-LICENCES-LEGAL.md` | argent réel + pièges de licence (fair-code n8n, « Other » GobboNet/Mark-LII, AGPL, clause Open WebUI, RGPD/cadre FR) |
 | `audit/CAPACITES-AGENT.md` | ce que l'agent fait / ne fait pas, tâche par tâche, avec les prompts à me recoller |
@@ -256,6 +292,8 @@ cd <repo-watchtower> ; npm install ; npm run dev   # http://localhost:4173 → M
 | **P6 — la tour voit le terrain réel** | `aholo-viewer` + `@manycore/aholo-splat-transform` (LOD/streaming/collision), scans via **Brush** gratuit (GPU requis) | 3-5 sessions | capture de quelques sites | friches/patrimoine scannés dans le globe, 60-120 FPS |
 | **P7 — la tour tient sans internet** | Reticulum (logiciel) + Sideband/CrossTalk ; option radios Meshtastic ; couche `meshNodes.js` sur le globe | 1-3 sessions | ⚫ achat radios éventuel | messagerie + état du territoire hors-réseau |
 | **P8 — la tour travaille pendant que tu dors** | Activepieces : veille de flux, triage mail, relances, briefing matin, publication de l'état de la tour | 1-2 sessions | 0 | les patterns « boring automations » de la vidéo n°3, à 0 €/mois |
+| **P9 — la tour a une mémoire du temps** ⭐ *prioritaire depuis le 2ᵉ lot* | `recorder-4d` : collecteurs NDJSON → DuckDB/Parquet, curseur `viewer.clock`, calques trajectoires + `darkVessels.js` (trous AIS, motif `pipe-gaps` Apache-2.0), `satellite-passes` (Skyfield+CelesTrak), `notams`, `outages` (Radar/IODA/**Restless** MIT), `gibis` (tuiles datées), `eia-oil` | 2-4 sessions | 0 | la tour passe du présent à la **rejouabilité** — et n'est plus jamais privée d'un événement manqué |
+| **P10 — la tour se positionne** | `hloc` (Apache-2.0) + `colmap` (BSD) sur les splats de P6, API de pose WebSocket, captures Scaniverse/Polycam en entrée ; ARCore/Niantic/MultiSet en `reference` seulement | 2-3 sessions | scanner 1 site au téléphone | ancrage cm de caméras/drones dans le modèle 3D, hors-ligne et sans cloud |
 
 ---
 
@@ -281,3 +319,5 @@ cd <repo-watchtower> ; npm install ; npm run dev   # http://localhost:4173 → M
 3. **P4** : je câble SearXNG + Crawl4AI + OpenAlex dans `reaserch-engine` (vraie recherche autonome, gratuite, sourcée).
 4. **P6** : je monte `aholo-viewer` comme couche 3DGS de la tour (leur `SKILL.md` est fait pour un agent).
 5. **P7** : je monte un nœud Reticulum local + la couche mesh dans le globe (0 €, radio optionnelle).
+6. **P9 (recommandé après le 2ᵉ lot)** : je pose le `recorder-4d` (journal continu + curseur temps) **avant** d'ajouter un calque de plus — c'est ce qui rend la tour utile dans six mois, et il ne coûte que du disque.
+7. **Lecture amont utile** : je clone `BigBodyCobain/Shadowbroker` (AGPL, V2 4D déjà faite) et j'en extrais les connecteurs AIS/ADS-B/jamming vers nos modules FR — sans ses calques qui visent des personnes, et sans en faire une dépendance de build.
