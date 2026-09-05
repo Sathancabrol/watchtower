@@ -18,6 +18,10 @@ import {
   VUES_VOL, ajusterDistance, bornerSite, cameraTroisiemePersonne, normaliserCap,
   orientationCamera, translationVtol,
 } from './data/volVues.js';
+import {
+  DEFAUTS as DEFAUTS_PARCOURS, PRESETS as PRESETS_PARCOURS, cumulees, echantillonner,
+  generer as genererParcours, positionA, resumer as resumerParcours, simplifier,
+} from './data/volParcours.js';
 
 const CSS = `
 #wt-vol-hud { position: fixed; inset: 0; z-index: 1500; pointer-events: none; font-family: var(--font-mono, monospace); }
@@ -107,6 +111,25 @@ const CSS = `
 #wt-vol .cv-bouts button.actif { background: rgba(0,212,255,0.24); border-color: #00d4ff; color: #fff; }
 #wt-vol .cv-aide { font-size: 8px; line-height: 1.6; color: rgba(232,234,237,0.55); }
 #wt-vol .cv-aide b { color: #b8ffc9; }
+#wt-vol .parcours { padding: 7px; border: 1px solid rgba(0,212,255,0.25); border-radius: 9px;
+  background: rgba(0,212,255,0.03); margin-bottom: 7px; }
+#wt-vol .pc-presets, #wt-vol .pc-actions { display: flex; flex-wrap: wrap; gap: 3px; margin-bottom: 5px; }
+#wt-vol .pc-presets button, #wt-vol .pc-actions button {
+  cursor: pointer; padding: 5px 7px; border-radius: 6px; font-family: inherit; font-size: 8.5px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); color: rgba(232,234,237,0.85); }
+#wt-vol .pc-presets button.actif, #wt-vol .pc-actions button.actif {
+  background: rgba(0,212,255,0.24); border-color: #00d4ff; color: #fff; }
+#wt-vol .pc-actions button.rouge { background: rgba(255,80,80,0.12); border-color: rgba(255,80,80,0.45); color: #ffb3b3; }
+#wt-vol .pc-params { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 5px; }
+#wt-vol .pc-params label { display: flex; flex-direction: column; gap: 2px; font-size: 8px; opacity: .75; }
+#wt-vol .pc-params input { padding: 4px 6px; font-size: 9px; }
+#wt-vol .pc-liste { display: flex; flex-direction: column; gap: 3px; max-height: 130px; overflow-y: auto; }
+#wt-vol .pc-item { display: flex; gap: 4px; align-items: center; padding: 4px 6px; border-radius: 6px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-size: 8.5px; }
+#wt-vol .pc-item span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#wt-vol .pc-item button { cursor: pointer; background: none; border: none; color: rgba(232,234,237,0.7); font-size: 10px; padding: 0 2px; }
+#wt-vol .pc-item button:hover { color: #00d4ff; }
+#wt-vol .pc-info { font-size: 8px; line-height: 1.6; color: rgba(232,234,237,0.55); margin-bottom: 4px; }
 #wt-vol input { padding: 7px 9px; background: rgba(0,0,0,0.45); color: inherit; border-radius: 7px; border: 1px solid rgba(255,255,255,0.12); font-family: inherit; font-size: 10px; outline: none; }
 `;
 
@@ -119,8 +142,10 @@ export function initFlightMode(viewer, options = {}) {
   style.textContent = CSS;
   document.head.appendChild(style);
 
-  let vol = null;    // état du vol en cours
-  let avatar = null; // entité Cesium de l'appareil (vue 3ᵉ personne)
+  let vol = null;      // état du vol en cours ({ atterrir })
+  let avatar = null;   // entité Cesium de l'appareil (vue 3ᵉ personne)
+  let etatVol = null;  // télémétrie du vol en cours (pour les parcours)
+  let departVol = null;// point de décollage (navette « retour à la base »)
 
   const el = document.createElement('div');
   el.id = 'wt-vol';
@@ -143,6 +168,25 @@ export function initFlightMode(viewer, options = {}) {
       <div class="h-t">👁 VUE DE LA CAMÉRA</div>
       <div class="cv-bouts"></div>
       <div class="cv-aide"></div>
+    </div>
+    <div class="parcours">
+      <div class="h-t">🛩 PARCOURS DE VOL</div>
+      <div class="pc-presets"></div>
+      <div class="pc-params">
+        <label>Rayon / largeur (m)<input class="pc-rayon" type="number" step="50" /></label>
+        <label>Altitude (m)<input class="pc-alt" type="number" step="20" /></label>
+        <label>Tours / lignes<input class="pc-tours" type="number" step="1" /></label>
+        <label>Vitesse de rejeu (m/s)<input class="pc-vitesse" type="number" step="5" /></label>
+      </div>
+      <div class="pc-actions">
+        <button class="pc-tracer" type="button">📐 TRACER</button>
+        <button class="pc-jouer" type="button">▶ JOUER</button>
+        <button class="pc-stop" type="button">⏹ STOP</button>
+        <button class="pc-sauver" type="button">💾 SAUVER</button>
+        <button class="pc-rec rouge" type="button">🔴 ENREGISTRER LE VOL</button>
+      </div>
+      <div class="pc-info">Aucun parcours.</div>
+      <div class="pc-liste"></div>
     </div>
     <button class="v-btn decoller" type="button">🛫 DÉCOLLER — MODE PILOTAGE</button>
     <div style="display:flex;gap:6px;align-items:center"><span>⚖ Masse (kg)</span>
@@ -241,6 +285,21 @@ export function initFlightMode(viewer, options = {}) {
     window.__wtToast?.(`${v?.ic || '👁'} Vue ${v?.nom || ''} — ${v?.aide || ''}`);
   };
 
+  /**
+   * Applique une vue (POV / VTOL / 3ᵉ personne) — UNE SEULE fonction, pour que
+   * l'avatar de l'appareil suive TOUJOURS (boutons comme touche V). Avant, les
+   * boutons changeaient `modeVue` sans toucher à `avatar.show` : la 3ᵉ personne
+   * semblait « ne pas marcher » (caméra reculée mais appareil invisible, ou
+   * appareil collé à l'écran en POV).
+   */
+  function appliquerVue(cle) {
+    if (!VUES.some((v) => v.cle === cle)) return;
+    modeVue = cle;
+    ecrireVue(cle);
+    if (avatar) avatar.show = (cle === 'tps');
+    rendreVues();
+  }
+
   function rendreVues() {
     elVues.innerHTML = '';
     for (const v of VUES) {
@@ -248,7 +307,7 @@ export function initFlightMode(viewer, options = {}) {
       b.type = 'button';
       b.textContent = `${v.ic} ${v.nom}`;
       b.className = modeVue === v.cle ? 'actif' : '';
-      b.addEventListener('click', () => { modeVue = v.cle; ecrireVue(v.cle); rendreVues(); });
+      b.addEventListener('click', () => appliquerVue(v.cle));
       elVues.appendChild(b);
     }
     elAideVues.innerHTML = modeVue === 'vtol'
@@ -264,6 +323,231 @@ export function initFlightMode(viewer, options = {}) {
            <b>↑/↓</b> gaz · <b>V</b> passer en VTOL (observation) ou 3ᵉ personne.`;
   }
   rendreVues();
+
+  // ── 🛩 PARCOURS DE VOL : préréglages, tracé sur la carte, rejeu caméra,
+  // enregistrement du vol réellement effectué, sauvegarde locale. ──
+  const CLE_PARCOURS = 'watchtower.parcours.v1';
+  const dsParcours = new Cesium.CustomDataSource('wt-parcours');
+  viewer.dataSources.add(dsParcours);
+
+  const elPresets = el.querySelector('.pc-presets');
+  const elInfo = el.querySelector('.pc-info');
+  const elListeParcours = el.querySelector('.pc-liste');
+  const chRayon = el.querySelector('.pc-rayon');
+  const chAlt = el.querySelector('.pc-alt');
+  const chTours = el.querySelector('.pc-tours');
+  const chVit = el.querySelector('.pc-vitesse');
+  chRayon.value = String(DEFAUTS_PARCOURS.rayon);
+  chAlt.value = String(DEFAUTS_PARCOURS.altitude);
+  chTours.value = String(DEFAUTS_PARCOURS.tours);
+  chVit.value = '60';
+
+  let preset = 'orbite';
+  let chemin = [];            // parcours tracé à l'écran
+  let lecture = null;         // intervalle du rejeu
+  let cumul = null;
+  let avancement = 0;
+  let enregistrement = null;  // vol réellement effectué
+
+  function sauvParcours() {
+    try { return JSON.parse(window.localStorage.getItem(CLE_PARCOURS) || '[]'); } catch { return []; }
+  }
+  function ecrireParcours(liste) {
+    try { window.localStorage.setItem(CLE_PARCOURS, JSON.stringify(liste)); } catch { /* plein */ }
+  }
+
+  /** distance au sol (m) entre deux points lon/lat. */
+  function distanceVol(a = {}, b = {}) {
+    const latMoy = ((Number(a.lat) + Number(b.lat)) / 2) * Math.PI / 180;
+    const dx = (Number(b.lon) - Number(a.lon)) * 111_320 * Math.cos(latMoy);
+    const dy = (Number(b.lat) - Number(a.lat)) * 111_320;
+    return Math.hypot(dx, dy);
+  }
+
+  /** Le centre du parcours : le centre de la vue (ou la position de l'appareil en vol). */
+  function centreParcours() {
+    if (etatVol && Number.isFinite(etatVol.lon)) return { lon: etatVol.lon, lat: etatVol.lat };
+    const c = viewer.camera.positionCartographic;
+    return { lon: deg(c.longitude), lat: deg(c.latitude) };
+  }
+
+  function paramsActuels() {
+    return {
+      rayon: Math.max(20, Number(chRayon.value) || DEFAUTS_PARCOURS.rayon),
+      largeur: Math.max(50, Number(chRayon.value) || DEFAUTS_PARCOURS.largeur),
+      hauteur: Math.max(50, Number(chRayon.value) || DEFAUTS_PARCOURS.hauteur),
+      altitude: Math.max(5, Number(chAlt.value) || DEFAUTS_PARCOURS.altitude),
+      tours: Math.max(1, Number(chTours.value) || DEFAUTS_PARCOURS.tours),
+      lignes: Math.max(2, Number(chTours.value) || DEFAUTS_PARCOURS.lignes),
+      points: DEFAUTS_PARCOURS.points,
+    };
+  }
+
+  /** Dessine le parcours sur la carte (ligne + bornes de début/fin). */
+  function tracer(liste) {
+    dsParcours.entities.removeAll();
+    chemin = echantillonner(liste, 25);
+    cumul = cumulees(chemin);
+    if (chemin.length < 2) { elInfo.textContent = 'Parcours trop court.'; return; }
+    dsParcours.entities.add({
+      polyline: {
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights(
+          chemin.flatMap((p) => [p.lon, p.lat, p.alt]),
+        ),
+        width: 4,
+        material: new Cesium.PolylineGlowMaterialProperty({
+          glowPower: 0.3, color: Cesium.Color.fromCssColorString('#00d4ff'),
+        }),
+      },
+    });
+    const borne = (p, couleur, texte) => dsParcours.entities.add({
+      position: Cesium.Cartesian3.fromDegrees(p.lon, p.lat, p.alt),
+      point: { pixelSize: 12, color: Cesium.Color.fromCssColorString(couleur), outlineWidth: 2, outlineColor: Cesium.Color.BLACK },
+      label: {
+        text: texte, font: '600 11px "JetBrains Mono", monospace',
+        fillColor: Cesium.Color.WHITE, outlineColor: Cesium.Color.BLACK, outlineWidth: 3,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset: new Cesium.Cartesian2(0, -16),
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      },
+    });
+    borne(chemin[0], '#7ef0c0', 'DÉPART');
+    borne(chemin[chemin.length - 1], '#ff8a3d', 'FIN');
+    const r = resumerParcours(chemin, Number(chVit.value) || 60);
+    elInfo.textContent = `${r.points} points · ${r.longueur} m · ${r.duree} s de rejeu · altitude ${r.altMin} → ${r.altMax} m`;
+  }
+
+  /** Rejoue le parcours : la caméra suit la ligne (façon drone qui scanne). */
+  function jouer() {
+    arreter();
+    if (chemin.length < 2) { elInfo.textContent = 'Trace d’abord un parcours.'; return; }
+    const vitesse = Math.max(5, Number(chVit.value) || 60);
+    const total = resumerParcours(chemin, vitesse).duree;
+    avancement = 0;
+    let dernier = Date.now();
+    lecture = window.setInterval(() => {
+      const maintenant = Date.now();
+      const dt = (maintenant - dernier) / 1000;
+      dernier = maintenant;
+      avancement = Math.min(1, avancement + dt / Math.max(1, total));
+      const p = positionA(chemin, avancement, cumul);
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(p.lon, p.lat, p.alt),
+        orientation: { heading: p.cap, pitch: rad(-24), roll: 0 },
+      });
+      viewer.scene.requestRender?.();
+      if (avancement >= 1) arreter();
+    }, 60);
+    elInfo.textContent = `▶ Rejeu en cours (${Math.round(total)} s) — STOP pour interrompre.`;
+  }
+
+  function arreter() {
+    if (lecture) window.clearInterval(lecture);
+    lecture = null;
+  }
+
+  function rendreListe() {
+    const liste = sauvParcours();
+    elListeParcours.innerHTML = '';
+    if (!liste.length) {
+      elListeParcours.innerHTML = '<div style="opacity:.5;font-size:8px">Aucun parcours enregistré.</div>';
+      return;
+    }
+    for (const [i, item] of liste.entries()) {
+      const d = document.createElement('div');
+      d.className = 'pc-item';
+      d.innerHTML = `<span>🛩 ${item.nom} · ${item.resume?.longueur ?? '?'} m</span>`;
+      const jouerBtn = document.createElement('button');
+      jouerBtn.type = 'button'; jouerBtn.textContent = '▶'; jouerBtn.title = 'Rejouer';
+      jouerBtn.addEventListener('click', () => { tracer(item.points); jouer(); });
+      const nomBtn = document.createElement('button');
+      nomBtn.type = 'button'; nomBtn.textContent = '✏'; nomBtn.title = 'Renommer';
+      nomBtn.addEventListener('click', () => {
+        const n = window.prompt('Nom du parcours', item.nom || 'parcours');
+        if (!n) return;
+        const l = sauvParcours(); l[i].nom = n; ecrireParcours(l); rendreListe();
+      });
+      const delBtn = document.createElement('button');
+      delBtn.type = 'button'; delBtn.textContent = '🗑'; delBtn.title = 'Supprimer';
+      delBtn.addEventListener('click', () => {
+        const l = sauvParcours(); l.splice(i, 1); ecrireParcours(l); rendreListe();
+      });
+      d.append(jouerBtn, nomBtn, delBtn);
+      elListeParcours.appendChild(d);
+    }
+  }
+
+  for (const p of PRESETS_PARCOURS) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = `${p.ic} ${p.nom}`;
+    b.title = p.aide;
+    b.className = p.cle === preset ? 'actif' : '';
+    b.addEventListener('click', () => {
+      preset = p.cle;
+      for (const o of elPresets.children) o.classList.remove('actif');
+      b.classList.add('actif');
+      elInfo.textContent = p.aide;
+    });
+    elPresets.appendChild(b);
+  }
+  rendreListe();
+
+  el.querySelector('.pc-tracer').addEventListener('click', () => {
+    const c = centreParcours();
+    const opts = paramsActuels();
+    let brut = [];
+    if (preset === 'navette') {
+      // aller-retour : en vol, on relie l'appareil à son point de décollage ;
+      // au sol, on fait une navette nord-sud de la longueur demandée.
+      const arrivee = departVol && (!etatVol || distanceVol(departVol, c) > 50)
+        ? departVol
+        : { lon: c.lon, lat: c.lat + (opts.rayon / 111_320) };
+      opts.destination = arrivee;
+      brut = genererParcours('navette', c, opts);
+    } else {
+      brut = genererParcours(preset, c, opts);
+    }
+    if (!brut.length) { elInfo.textContent = 'Centre inconnu — approche-toi de la zone.'; return; }
+    tracer(brut);
+  });
+  el.querySelector('.pc-jouer').addEventListener('click', jouer);
+  el.querySelector('.pc-stop').addEventListener('click', () => { arreter(); elInfo.textContent = '⏹ Rejeu arrêté.'; });
+  el.querySelector('.pc-sauver').addEventListener('click', () => {
+    if (chemin.length < 2) { elInfo.textContent = 'Rien à sauver.'; return; }
+    const nom = window.prompt('Nom du parcours', `${preset} ${new Date().toLocaleTimeString('fr-FR')}`);
+    if (!nom) return;
+    const liste = sauvParcours();
+    liste.push({ nom, preset, points: simplifier(chemin, 5), resume: resumerParcours(chemin, Number(chVit.value) || 60), t: Date.now() });
+    ecrireParcours(liste.slice(-20));
+    rendreListe();
+    elInfo.textContent = `💾 « ${nom} » enregistré (${liste.length} parcours).`;
+  });
+  const btnRec = el.querySelector('.pc-rec');
+  btnRec.addEventListener('click', () => {
+    if (!vol) { elInfo.textContent = 'Décolle d’abord : on enregistre le vol réel.'; return; }
+    if (enregistrement) {
+      const brut = simplifier(enregistrement, 3);
+      enregistrement = null;
+      btnRec.classList.remove('actif');
+      btnRec.textContent = '🔴 ENREGISTRER LE VOL';
+      if (brut.length > 1) {
+        tracer(brut);
+        elInfo.textContent = `🔴 Vol enregistré (${brut.length} points) — 💾 SAUVER pour le garder.`;
+      } else elInfo.textContent = 'Vol trop court.';
+    } else {
+      enregistrement = [];
+      btnRec.classList.add('actif');
+      btnRec.textContent = '⏹ ARRÊTER L’ENREGISTREMENT';
+      elInfo.textContent = '🔴 Enregistrement du vol…';
+    }
+  });
+
+  /** Alimente l'enregistrement pendant le vol (appelé par la boucle). */
+  function noterPosition(lon, lat, alt) {
+    if (!enregistrement || !Number.isFinite(lon) || !Number.isFinite(lat)) return;
+    enregistrement.push({ lon, lat, alt: alt || 0 });
+  }
 
   // ── 🎛 FILTRES DE CAMÉRA (appliqués au rendu 3D pendant le vol) ──
   for (const f of FILTRES_VOL) {
@@ -412,10 +696,7 @@ export function initFlightMode(viewer, options = {}) {
       // V : on change de vue à la volée (POV → VTOL → 3ᵉ personne)
       if (e.code === 'KeyV' && vol) {
         const i = VUES.findIndex((v) => v.cle === modeVue);
-        modeVue = VUES[(i + 1) % VUES.length].cle;
-        ecrireVue(modeVue);
-        rendreVues();
-        if (avatar) avatar.show = modeVue === 'tps';
+        appliquerVue(VUES[(i + 1) % VUES.length].cle);
         surMessageVue?.();
       }
       if (e.code === 'Escape') atterrir();
@@ -538,6 +819,7 @@ export function initFlightMode(viewer, options = {}) {
       // collision sol
       if (etat.alt < sol + 4) { etat.alt = sol + 4; etat.tangage = Math.max(0, etat.tangage); }
       etat.vario = (etat.alt - altAvant) / dt;
+      noterPosition(etat.lon, etat.lat, etat.alt);
       etat.distance += dSol;
       etat.g = 1 + Math.abs(etat.roulis) * 0.9 + Math.abs(etat.tangage) * 0.4;
 
@@ -601,6 +883,13 @@ export function initFlightMode(viewer, options = {}) {
 
     function atterrir() {
       if (!vol) return;
+      if (enregistrement && btnRec) {
+        const brut = simplifier(enregistrement, 3);
+        enregistrement = null;
+        btnRec.classList.remove('actif');
+        btnRec.textContent = '🔴 ENREGISTRER LE VOL';
+        if (brut.length > 1) tracer(brut);
+      }
       cockpit?.desactiver();
       mobiglas?.desactiver?.();
       if (avatar) { try { viewer.entities.remove(avatar); } catch { /* ok */ } avatar = null; }
@@ -616,9 +905,13 @@ export function initFlightMode(viewer, options = {}) {
         orientation: { heading: etat.cap, pitch: etat.tangage, roll: 0 },
       });
       vol = null;
+      etatVol = null;
+      departVol = null;
     }
     barre.querySelector('button').addEventListener('click', atterrir);
     vol = { atterrir };
+    etatVol = etat;
+    departVol = { lon: etat.lon, lat: etat.lat };
   }
 
   el.querySelector('.hud')?.addEventListener('click', () => cockpit?.basculerHud());

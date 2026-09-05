@@ -38,6 +38,8 @@ const CSS = `
 export const ALTITUDE_MAX = 2_500;
 /** Demi-côté max de l'emprise demandée (m) — protège la source. */
 export const EMPRISE_MAX = 320;
+/** Altitude max quand l'utilisateur FORCE l'affichage (vue satellite). */
+export const ALTITUDE_FORCEE = 22_000;
 /** Nombre max de tuiles d'emprise gardées en mémoire. */
 const TAILLE_CACHE = 24;
 
@@ -77,6 +79,88 @@ export function aireAnneau(anneau) {
   return Math.abs((s * r * r) / 2);
 }
 
+/** Classes de routes OpenStreetMap retenues (les plus utiles à l'écran). */
+export const CLASSES_ROUTE = Object.freeze({
+  motorway: { couleur: '#ff7a59', largeur: 4.2, nom: 'autoroute' },
+  trunk: { couleur: '#ff9d5c', largeur: 3.6, nom: 'route nationale' },
+  primary: { couleur: '#ffd166', largeur: 3.2, nom: 'départementale majeure' },
+  secondary: { couleur: '#ffe9a8', largeur: 2.6, nom: 'départementale' },
+  tertiary: { couleur: '#f6f3e7', largeur: 2.2, nom: 'voie secondaire' },
+  residential: { couleur: '#dfe9f0', largeur: 1.8, nom: 'rue' },
+  unclassified: { couleur: '#c8d3dc', largeur: 1.6, nom: 'voie' },
+  living_street: { couleur: '#b8e0c2', largeur: 1.6, nom: 'zone de rencontre' },
+  pedestrian: { couleur: '#9ee7d0', largeur: 1.8, nom: 'piétonne' },
+  service: { couleur: '#b9c4cc', largeur: 1.2, nom: 'service' },
+  track: { couleur: '#a58a6a', largeur: 1.4, nom: 'piste' },
+  path: { couleur: '#8fb98f', largeur: 1.2, nom: 'chemin' },
+  cycleway: { couleur: '#7ef0c0', largeur: 1.4, nom: 'piste cyclable' },
+});
+
+/** Couleur d'une classe de route (repli : gris clair). */
+export function couleurRoute(classe = '') {
+  return CLASSES_ROUTE[String(classe)]?.couleur || '#c9d4dd';
+}
+
+/** Épaisseur (px) d'une classe de route. */
+export function largeurRoute(classe = '') {
+  return CLASSES_ROUTE[String(classe)]?.largeur || 1.4;
+}
+
+/** Libellé français d'une classe de route. */
+export function nomRoute(classe = '') {
+  return CLASSES_ROUTE[String(classe)]?.nom || String(classe || 'voie');
+}
+
+/** Requête Overpass des routes d'une emprise (toutes classes utiles). */
+export function urlRoutes(ouest, sud, est, nord, limite = 400) {
+  const b = `${Number(sud).toFixed(6)},${Number(ouest).toFixed(6)},${Number(nord).toFixed(6)},${Number(est).toFixed(6)}`;
+  const classes = Object.keys(CLASSES_ROUTE).join('|');
+  return `[out:json][timeout:25];way(${b})[highway~"^(${classes})$"];out geom ${Math.max(20, Math.round(limite))};`;
+}
+
+/** Extrait les tracés de routes d'une réponse Overpass (`out geom`). */
+export function routesDepuisReponse(json) {
+  const els = Array.isArray(json?.elements) ? json.elements : [];
+  const out = [];
+  for (const e of els) {
+    const pts = Array.isArray(e.geometry) ? e.geometry : null;
+    if (!pts || pts.length < 2) continue;
+    const coords = pts
+      .map((g) => [Number(g?.lon), Number(g?.lat)])
+      .filter(([lo, la]) => Number.isFinite(lo) && Number.isFinite(la));
+    if (coords.length < 2) continue;
+    const t = e.tags || {};
+    out.push({
+      id: `way/${e.id}`,
+      classe: String(t.highway || ''),
+      nom: String(t.name || '').trim(),
+      sens: String(t.oneway || '') === 'yes' ? 1 : 0,
+      vitesse: Number.isFinite(Number(t.maxspeed)) ? Number(t.maxspeed) : null,
+      coords,
+    });
+  }
+  return out;
+}
+
+/** Résumé affichable d'un jeu de routes. */
+export function resumerRoutes(liste = []) {
+  const parClasse = new Map();
+  let longueurM = 0;
+  const R = 111_320;
+  for (const r of liste) {
+    parClasse.set(r.classe, (parClasse.get(r.classe) || 0) + 1);
+    for (let i = 1; i < r.coords.length; i += 1) {
+      const [x1, y1] = r.coords[i - 1]; const [x2, y2] = r.coords[i];
+      longueurM += Math.hypot((x2 - x1) * R * 0.7, (y2 - y1) * R);
+    }
+  }
+  return {
+    routes: liste.length,
+    longueur: Math.round(longueurM),
+    classes: [...parClasse.entries()].sort((a, b) => b[1] - a[1]),
+  };
+}
+
 /**
  * @param {object} viewer
  * @param {{surMessage?:Function}} [options]
@@ -97,12 +181,18 @@ export function initCadastre(viewer, options = {}) {
     <button class="c-btn" data-a="activer">🗺 AFFICHER LE CADASTRE</button>
     <div class="c-ligne"><span>opacité</span><input type="range" min="0" max="60" step="2" value="22"><span class="c-op">22 %</span></div>
     <label class="c-ligne"><input type="checkbox" class="c-remplir" checked> remplissage des parcelles</label>
+    <label class="c-ligne"><input type="checkbox" class="c-forcer"> 👁 visible en vue satellite (au-delà de ${ALTITUDE_MAX.toLocaleString('fr-FR')} m)</label>
+    <label class="c-ligne"><input type="checkbox" class="c-routes"> 🛣 voir les ROUTES (OpenStreetMap)</label>
+    <label class="c-ligne"><input type="checkbox" class="c-noms-routes"> 🔤 noms des routes</label>
     <div class="c-info">—</div>
     <div class="c-info" style="opacity:.7">Source : API apicarto (IGN · Etalab), données ouvertes, sans clé.
     Le contour ne se charge qu'en dessous de ${ALTITUDE_MAX.toLocaleString('fr-FR')} m d'altitude.</div>`;
   const btn = el.querySelector('[data-a="activer"]');
   const opacite = el.querySelector('input[type=range]');
   const remplir = el.querySelector('.c-remplir');
+  const forcer = el.querySelector('.c-forcer');
+  const voirRoutes = el.querySelector('.c-routes');
+  const nomsRoutes = el.querySelector('.c-noms-routes');
   const info = el.querySelector('.c-info');
 
   let actif = false;
@@ -153,12 +243,17 @@ export function initCadastre(viewer, options = {}) {
     governorRequestRender('wt-cadastre');
   }
 
+  /** Altitude maximale d'affichage : relevée si « vue satellite » est coché. */
+  function plafond() {
+    return forcer?.checked ? ALTITUDE_FORCEE : ALTITUDE_MAX;
+  }
+
   async function maj(force = false) {
     if (!actif) return;
     const c = viewer.camera.positionCartographic;
-    if (c.height > ALTITUDE_MAX) {
+    if (c.height > plafond()) {
       if (ds.entities.values.length) ds.entities.removeAll();
-      info.textContent = `Au-dessus de ${ALTITUDE_MAX.toLocaleString('fr-FR')} m — cadastre masqué (descends pour le voir).`;
+      info.textContent = `Au-dessus de ${plafond().toLocaleString('fr-FR')} m — cadastre masqué (coche « vue satellite » pour forcer).`;
       return;
     }
     if (enCours) return;
@@ -190,10 +285,85 @@ export function initCadastre(viewer, options = {}) {
     }
   }
 
+  // ── 🛣 ROUTES : tracé OpenStreetMap, visible en vue satellite ───────────
+  const cacheRoutes = new Map();
+
+  function dessinerRoutes(liste) {
+    for (const r of liste) {
+      const positions = Cesium.Cartesian3.fromDegreesArray(r.coords.flat());
+      ds.entities.add({
+        polyline: {
+          positions,
+          width: largeurRoute(r.classe),
+          material: Cesium.Color.fromCssColorString(couleurRoute(r.classe)).withAlpha(Math.min(1, alpha * 2.6)),
+          clampToGround: true,
+        },
+        properties: { wtRoute: r.classe, wtNomRoute: r.nom },
+      });
+      if (nomsRoutes?.checked && r.nom) {
+        const milieu = r.coords[Math.floor(r.coords.length / 2)];
+        ds.entities.add({
+          position: Cesium.Cartesian3.fromDegrees(milieu[0], milieu[1], 6),
+          label: {
+            text: r.nom,
+            font: '600 10px "JetBrains Mono", monospace',
+            fillColor: Cesium.Color.fromCssColorString(couleurRoute(r.classe)),
+            outlineColor: Cesium.Color.BLACK, outlineWidth: 3,
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 4200),
+          },
+        });
+      }
+    }
+    governorRequestRender('wt-cadastre');
+  }
+
+  async function majRoutes(force = false) {
+    if (!actif || !voirRoutes?.checked) return;
+    const boite = bboxVue(EMPRISE_MAX);
+    const cle = cleTuile(boite.lat, boite.lon, 0.004);
+    if (!force && cacheRoutes.has(cle)) return;
+    if (enCoursRoutes) return;
+    enCoursRoutes = true;
+    try {
+      const r = await fetch('https://overpass-api.de/api/interpreter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `data=${encodeURIComponent(urlRoutes(boite.ouest, boite.sud, boite.est, boite.nord))}`,
+      });
+      const liste = routesDepuisReponse(await r.json());
+      cacheRoutes.set(cle, liste);
+      if (cacheRoutes.size > TAILLE_CACHE) cacheRoutes.delete(cacheRoutes.keys().next().value);
+      const resume = resumerRoutes(liste);
+      stats = { ...stats, routes: resume.routes, routesKm: resume.longueur / 1000 };
+      info.textContent = `${stats.parcelles} parcelles · ${resume.routes} routes (${(resume.longueur / 1000).toFixed(1)} km)`;
+    } catch {
+      info.textContent = '⚠ Routes indisponibles (Overpass) — réessaie plus tard.';
+    } finally {
+      enCoursRoutes = false;
+    }
+  }
+
+  /** Redessine tout (parcelles + routes) depuis les caches. */
+  function redessiner() {
+    ds.entities.removeAll();
+    const b = bboxVue(EMPRISE_MAX);
+    for (const [k, v] of cache) if (k === cleTuile(b.lat, b.lon)) dessiner(v, k);
+    if (voirRoutes?.checked) {
+      const cle = cleTuile(b.lat, b.lon, 0.004);
+      const liste = cacheRoutes.get(cle);
+      if (liste) dessinerRoutes(liste);
+    }
+    governorRequestRender('wt-cadastre');
+  }
+
+  let enCoursRoutes = false;
+
   const planifier = () => {
     if (!actif) return;
     if (timer) window.clearTimeout(timer);
-    timer = window.setTimeout(() => maj(), 1200);
+    timer = window.setTimeout(() => { maj(); majRoutes(); }, 1200);
   };
   viewer.camera.changed.addEventListener(planifier);
 
@@ -212,6 +382,9 @@ export function initCadastre(viewer, options = {}) {
     if (actif) maj(true);
   });
   remplir.addEventListener('change', () => { if (actif) maj(true); });
+  forcer?.addEventListener('change', () => { if (actif) maj(true); });
+  voirRoutes?.addEventListener('change', () => { if (actif) { redessiner(); majRoutes(true); } });
+  nomsRoutes?.addEventListener('change', () => { if (actif) redessiner(); });
 
   return {
     element: el,

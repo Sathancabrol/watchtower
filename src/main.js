@@ -487,7 +487,13 @@ async function init() {
       const chantier = initChantier(viewer);
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
       const recentrerHQ = () => {
-        // 🎬 approche cinématique (travelling descendant, bandes, grain)
+        // 🎬 « ME LOCALISER » : on part de l'espace et on descend en cinématique
+        // jusqu'à TA position (GPS → domicile → Méditerranée). On explique à
+        // chaque fois : le bouton seul ne disait pas ce qu'il faisait.
+        window.__wtToast?.('🎬 <b>ME LOCALISER</b> — la caméra redescend de l\u2019espace '
+          + 'jusqu\u2019à <b>ta position</b> (GPS), ou ton domicile, ou la Méditerranée '
+          + 'si la position est inconnue : c\u2019est la cinématique d\u2019arrivée de '
+          + 'WATCHTOWER, pas un simple zoom.');
         const jouer = (lo, la, nom) => window.__godsEyeView.cinematique?.rechercheHQ(la, lo, nom);
         const replis = () => {
           try {
@@ -574,7 +580,10 @@ async function init() {
           { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: cctv.element, cote: 'droite' },
         ],
         panneauxExistants: [
-          { iconeHtml: '<span class="wt-oeil">👁</span>', icone: '👁', libelle: 'HQ', cibleId: 'wt-panel', surClic: recentrerHQ },
+          {
+            iconeHtml: '<span class="wt-oeil">👁</span>', icone: '👁', libelle: 'ME LOCALISER',
+            cibleId: 'wt-panel', surClic: recentrerHQ,
+          },
           { icone: '🧠', libelle: 'INTEL', cibleId: 'wt-intel' },
           { icone: '🎚', libelle: 'VISUEL+', cibleId: 'pp-toggles' },
           { icone: '🎛', libelle: 'PARAMS', cibleId: 'param-slider-panel' },

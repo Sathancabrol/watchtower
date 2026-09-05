@@ -8,6 +8,8 @@ import {
   anneauxDeReponse,
   cleTuile,
   urlParcelles,
+  ALTITUDE_FORCEE, CLASSES_ROUTE, couleurRoute, largeurRoute, nomRoute,
+  resumerRoutes, routesDepuisReponse, urlRoutes,
 } from './cadastre.js';
 
 test('clé de tuile : deux points proches partagent la même clé', () => {
@@ -72,4 +74,68 @@ test('aire d’une parcelle de 20 m × 30 m ≈ 600 m²', () => {
 test('la couche reste « légère » : altitude et emprise bornées', () => {
   assert.ok(ALTITUDE_MAX <= 5_000, 'pas de cadastre depuis l’espace');
   assert.ok(EMPRISE_MAX > 50 && EMPRISE_MAX <= 600, 'emprise raisonnable pour la source');
+});
+
+// ── ROUTES (itération 10) ────────────────────────────────────────────────
+test('les classes de routes couvrent l’essentiel du réseau', () => {
+  for (const c of ['motorway', 'primary', 'residential', 'pedestrian', 'track', 'cycleway']) {
+    assert.ok(CLASSES_ROUTE[c], `${c} connue`);
+    assert.match(CLASSES_ROUTE[c].couleur, /^#[0-9a-f]{6}$/i);
+    assert.ok(CLASSES_ROUTE[c].largeur > 0 && CLASSES_ROUTE[c].largeur < 8);
+  }
+  assert.equal(couleurRoute('motorway'), '#ff7a59');
+  assert.equal(couleurRoute('inconnue'), '#c9d4dd', 'repli gris');
+  assert.ok(largeurRoute('motorway') > largeurRoute('path'), 'une autoroute est plus épaisse qu’un chemin');
+  assert.equal(largeurRoute('inconnue'), 1.4);
+  assert.equal(nomRoute('motorway'), 'autoroute');
+  assert.equal(nomRoute('inconnue'), 'inconnue');
+});
+
+test('requête Overpass des routes d’une emprise', () => {
+  const u = urlRoutes(3.70, 43.42, 3.78, 43.48);
+  assert.match(u, /^\[out:json\]/);
+  assert.match(u, /way\(43\.420000,3\.700000,43\.480000,3\.780000\)/);
+  assert.match(u, /highway~"\^\(motorway\|trunk/);
+  assert.match(u, /out geom 400/);
+  assert.match(urlRoutes(0, 0, 1, 1, 10), /out geom 20/, 'borne basse');
+});
+
+test('réponse Overpass → tracés exploitables', () => {
+  const r = routesDepuisReponse({
+    elements: [
+      { type: 'way', id: 1, geometry: [{ lon: 3.7, lat: 43.4 }, { lon: 3.71, lat: 43.41 }], tags: { highway: 'residential', name: 'Rue des Écoles', oneway: 'yes', maxspeed: '30' } },
+      { type: 'way', id: 2, geometry: [{ lon: 3.8, lat: 43.5 }], tags: { highway: 'track' } }, // 1 point
+      { type: 'way', id: 3, tags: { highway: 'primary' } }, // sans géométrie
+      { type: 'way', id: 4, geometry: [{ lon: 'x', lat: 43.4 }, { lon: 3.72, lat: 43.42 }], tags: { highway: 'path' } }, // point invalide
+    ],
+  });
+  // ne reste que la rue des Écoles : sans géométrie, à un seul point, ou
+  // réduite à un point valide, une route ne se trace pas.
+  assert.equal(r.length, 1, 'les tracés inexploitables sont écartés');
+  assert.equal(r[0].nom, 'Rue des Écoles');
+  assert.equal(r[0].classe, 'residential');
+  assert.equal(r[0].sens, 1, 'sens unique détecté');
+  assert.equal(r[0].vitesse, 30);
+  assert.equal(r[0].coords.length, 2);
+  assert.deepEqual(routesDepuisReponse(null), []);
+  assert.deepEqual(routesDepuisReponse({ elements: [] }), []);
+});
+
+test('résumé des routes : nombre, longueur, répartition', () => {
+  const r = resumerRoutes([
+    { classe: 'residential', coords: [[3.7, 43.4], [3.71, 43.4]] },
+    { classe: 'residential', coords: [[3.7, 43.4], [3.7, 43.41]] },
+    { classe: 'primary', coords: [[3.7, 43.4], [3.72, 43.4]] },
+  ]);
+  assert.equal(r.routes, 3);
+  assert.ok(r.longueur > 0);
+  const classes = Object.fromEntries(r.classes);
+  assert.equal(classes.residential, 2);
+  assert.equal(classes.primary, 1);
+  assert.equal(resumerRoutes([]).routes, 0);
+  assert.equal(resumerRoutes([]).longueur, 0);
+});
+
+test('vue satellite : le plafond d’affichage peut être relevé', () => {
+  assert.ok(ALTITUDE_FORCEE > 10_000, 'on peut garder le cadastre très haut');
 });
