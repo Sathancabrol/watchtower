@@ -1,6 +1,6 @@
 # CONTEXTE D'IDENTITÉ — NÄTHAN CABROL
-<!-- gobonet.identity/3.0 — v3.0.0 — 2026-09-05
-     Construit à partir de deux CV fournis (2025 généraliste, 2021 spécialisé recherche). -->
+<!-- gobonet.identity/3.0 — v3.1.0 — 2026-09-05
+     Deux CV (2025, 2021) + clarifications en conversation. -->
 
 Fiche d'identité de référence. Source de vérité. N'invente aucune donnée absente.
 
@@ -21,7 +21,7 @@ Chaque fait porte `[source · trust%]`.
 `≥80` affirmable · `60-79` modaliser · `40-59` hypothèse · `<40` ne pas exposer.
 **Précédence : CV > declared > referential > inferred.**
 
-**État** : 85 champs — 73 % connu, 25 % inféré, 2 % manquant. **Trust moyen 92 %** (75 % en v2).
+**État** : 99 champs — 76 % connu, 22 % inféré, 2 % manquant. **Trust moyen 92 %** (75 % en v2).
 
 ---
 
@@ -35,6 +35,34 @@ et une règle explicite « ne jamais écrire Nathan » — exactement à l'inver
 
 Formes fautives : Säthan, Sathan, Nathän. L'email personnel utilise `nathancabrol@hotmail.fr`,
 sans tréma : le tréma est typographique et saute dans certains systèmes.
+
+---
+
+## 1bis. SITUATION ACTUELLE — à lire avant toute recommandation
+
+**Statut** `[D·95]` : demandeur d'emploi, depuis la fin du poste d'auxiliaire de vie (2025) `[I·80]`.
+
+**Activité réelle** `[D·95]` : veille scientifique et recherche d'informations tous azimuts,
+construction de Cognitorium. La période n'est pas vide — c'est un temps de **recherche
+auto-dirigée**, mais sans cadre, sans livrable externe et sans revenu associé.
+
+**Objectif court terme** `[D·90]` : **aucun n'est formulé.** 2026 est considérée comme presque
+finie. Toute l'énergie est projetée sur le très long terme. **Point de vigilance majeur.**
+
+**Ressource disponible** `[D·95]` : un ordinateur et du temps. Pas de capital, pas d'équipe,
+pas de structure. → **Toute recommandation doit tenir dans cette contrainte.**
+
+### Horizon long terme `[D·90]`
+> Rendre le monde meilleur grâce à l'IA, la robotique et les outils disponibles.
+> Forme cible : une mégacorp. Point de départ assumé : « ordi and a dream ».
+
+**Règle de discours** `[I·85]` : cette ambition est le **moteur**, pas un argument de vente.
+Elle se dit à un partenaire de long terme ou dans un cadre personnel. **Jamais à un recruteur,
+un client de mission ou un acheteur public** — elle y produirait l'effet inverse de celui recherché.
+
+**Écart à combler** `[I·85]` : entre « demandeur d'emploi avec un ordinateur » et « mégacorp », il
+manque toute la chaîne intermédiaire — un revenu, un premier livrable, un premier utilisateur, une
+première vente. **Aucune de ces étapes n'est engagée.** La vision est cohérente ; le premier pas manque.
 
 ## 2. Identité
 - **Näthan Cabrol** `[CV·100]` — post-nominal « MS » utilisé sur le CV 2025 `[CV·85]`
@@ -158,11 +186,16 @@ former et vulgariser.
 **Avec appui** : conduite de travaux en pleine autonomie sur opération complexe (le référentiel
 AFPA lui-même exige de l'expérience) · chiffrage et réponse à appel d'offres · publication scientifique.
 
-**⚠ Revendiqué mais NON attesté** `[X·90]` : développement logiciel · SIG et cartographie
-numérique · conception 3D et fabrication · outils et agents IA · visualisation au-delà des
-graphiques statistiques.
-→ Présents dans le discours Cognitorium, **absents des deux CV**. Ne plus les présenter comme
-acquis tant qu'ils ne sont pas étayés par des réalisations.
+**⚠ Pratique personnelle, non objectivable** `[D·75]` — mise à jour v3.1 : développement,
+conception 3D et outils IA font l'objet de **trois ans de recherche personnelle** (depuis ≈2023),
+en autodidacte, **sans formation, sans diplôme, sans réalisation publique ni livrable montrable**.
+- *Formulation autorisée* : « pratique personnelle depuis trois ans ».
+- *Formulation interdite* : toute mention de niveau, de maîtrise ou de compétence professionnelle.
+
+**Autodidaxie** `[D·85]` — ces trois ans valent moins comme compétence technique que comme
+**preuve de persistance** : apprentissage non encadré et non rémunéré, mené en parallèle d'une
+reconversion BTP puis d'une période sans emploi. Signal fort de motivation intrinsèque, cohérent
+avec la « curiosité intellectuelle » du CV 2021.
 
 ## 10. Outils réels `[CV·100]`
 - **Statistiques** : R, JASP
@@ -171,10 +204,12 @@ acquis tant qu'ils ne sont pas étayés par des réalisations.
   directement monnayable** en UX research et en ergonomie. Absente de la fiche v2.
 - **Gestion de projet** : diagramme de Gantt · **Bureautique** : Pack Office
 
-**Absences notables** `[I·95]`, sur deux CV à 4 ans d'écart : aucun langage de programmation ·
-aucun SIG (QGIS, ArcGIS) · aucun CAO/DAO (AutoCAD, Covadis) · aucun BIM · aucun BI · aucun outil IA.
-→ **Lacune la plus structurante du dossier.** L'absence d'AutoCAD ou Covadis est un handicap en
-conduite de travaux ; l'absence de tout langage bloque le positionnement Cognitorium.
+**CAO/DAO** `[D·90]` — **lecture et compréhension de plans, sans production.** Suffisant pour
+suivre un chantier et dialoguer avec le bureau d'études ; insuffisant pour produire ou modifier
+un plan. **Ne jamais revendiquer la maîtrise d'AutoCAD ou de Covadis.**
+
+**Absences confirmées** : aucun SIG (QGIS, ArcGIS) · aucun BIM · aucun outil BI · aucun outil de
+production CAO.
 
 ## 11. Comparaison des deux CV `[I·85]`
 
@@ -212,7 +247,9 @@ recherchent les cabinets d'UX research. *Retrait : auxiliaire de vie, second œu
 > de chantiers VRD et réseaux secs jusqu'à 4 équipes et sous-traitants chez SOBECA (groupe FIRALP),
 > après COLAS et LHERM TP.
 
-*Blocage* `[I·85]` : absence d'AutoCAD, Covadis, MS Project ou BIM — premier filtre du secteur.
+*Blocage* `[D·90]` : lecture de plans acquise, production CAO non. Se positionner sur le suivi,
+la coordination et le terrain — jamais sur l'étude ou le métré produit. Un « je lis les plans et
+je dialogue avec le BE » est honnête et suffisant pour un poste d'aide conducteur ou de chef de chantier.
 
 **3. Transport, mobilité, gares, aménageurs, signalétique** `[I·85]` — **fort potentiel, invisible en v2**
 > J'ai travaillé à la direction Innovation & Recherche de la SNCF sur la catégorisation des points
@@ -225,10 +262,12 @@ un avantage décisif plutôt qu'une curiosité.
 **4. Collectivité, aménagement, territoire** — double lecture cognition des usagers × réalité des
 travaux, ancrage Frontignan. *Blocage : statut juridique et références en marché public `[?]`.*
 
-**5. Tech, data, produit** — se positionner en research/insight, **pas en développement** `[I·90]`.
+**5. Tech, data, produit** `[D·85]` — trois ans de pratique personnelle en dev/3D/IA, **sans
+livrable public** : inexploitable en entretien tant que rien n'est montrable. Se positionner en
+research/insight, où le Master et l'eye-tracking suffisent seuls.
 
-**6. Incubateur, financeur** — **audience prématurée** `[I·90]` : aucun livrable, aucune compétence
-de développement attestée, aucun modèle économique.
+**6. Incubateur, financeur** — **audience prématurée** `[I·90]` : aucun livrable, aucun revenu,
+aucun utilisateur, aucun modèle économique. À rouvrir uniquement après un premier livrable montrable.
 
 ## 13. Cognitorium — généalogie et risque
 **Filiation** `[I·75]` : Cognitorium est la transposition à grande échelle du sujet de recherche de
@@ -260,17 +299,25 @@ question à Näthan.
 le fil directeur avant la chronologie · distinguer l'attesté du revendiqué · privilégier les faits
 des CV aux formulations de vision.
 
-**Jamais** : écrire Säthan · présenter développement, SIG, 3D ou IA comme acquis · présenter
-Cognitorium comme un produit existant · spéculer sur 2020 ou sur l'auxiliariat de vie.
+**Jamais** : écrire Säthan · présenter développement, SIG, 3D ou IA comme acquis · revendiquer
+AutoCAD ou Covadis (lecture de plans uniquement) · **mentionner la « mégacorp » ou la vision long
+terme devant un recruteur, un client ou un acheteur public** · présenter Cognitorium comme un
+produit existant · spéculer sur 2020 ou sur l'auxiliariat de vie.
+
+**Toujours** (ajout v3.1) : tenir compte de la contrainte matérielle réelle — pas de capital,
+pas d'équipe, un ordinateur.
 
 ## 16. Lacunes
 
 **Critiques**
-1. **AutoCAD, Covadis, MS Project, BIM** — les maîtrises-tu ? Premier filtre en conduite de travaux.
-2. **Sur quoi reposent « développement », « cartographie », « 3D », « IA » ?** Projets, formations, réalisations ?
-3. **Que fais-tu depuis 2025 ?** En poste, en recherche, en création d'activité ?
-4. **Objectif 2026** — emploi (lequel, où), mission freelance, ou financement de Cognitorium ?
+1. **Premier livrable** — quelle est la plus petite chose que tu pourrais finir et montrer en deux
+   semaines ? Une visualisation, une maquette, une page. Sans cela, ni Cognitorium ni la mégacorp
+   n'ont de première marche.
+2. **Revenu** — de quoi vis-tu, et jusqu'à quand ? Cela détermine s'il faut viser un emploi rapide
+   ou s'il y a du temps devant. Aucune recommandation sérieuse sans cette information.
+3. **Contenu des trois ans** — quels langages, quels logiciels 3D, quels outils IA, quels essais
+   menés jusqu'au bout ? Sans détail, ces trois ans restent inexploitables dans un discours.
 
-**Importantes** — titre de psychologue ouvert ou non · année 2020 · publications, posters ou
-communications · mobilité géographique (retour Toulouse ? Montpellier ? strictement Thau ?) ·
-montants et linéaires des chantiers SOBECA.
+**Importantes** — mobilité géographique (Toulouse ? Montpellier ? strictement Thau ?) · titre de
+psychologue ouvert ou non · année 2020 · publications ou communications · montants et linéaires
+des chantiers SOBECA.

@@ -1,5 +1,41 @@
 # Changelog — fiche d'identité
 
+## v3.1.0 — 2026-09-05
+
+Clarifications en conversation. **99 champs, 76 % connu, trust moyen 92 %.**
+Les 4 lacunes critiques de la v3.0 sont résolues — et remplacées par 3 autres, plus profondes.
+
+### Lacunes critiques résolues
+
+| Question v3.0 | Réponse | Effet |
+|---|---|---|
+| CAO / Covadis / BIM ? | **Lecture et compréhension de plans, sans production** | Blocage BTP levé : suffisant pour aide conducteur et chef de chantier |
+| Sur quoi reposent dev / 3D / IA ? | **3 ans de recherche personnelle**, autodidacte, sans livrable | Passe de `contradicted` à `declared·75` — pratique réelle, non objectivable |
+| Situation depuis 2025 ? | **Demandeur d'emploi**, veille scientifique, recherche tous azimuts | Nouveau bloc `situation_actuelle` |
+| Objectif 2026 ? | **Aucun objectif court terme.** Horizon : mégacorp, IA et robotique, « ordi and a dream » | Nouveau bloc `horizon_long_terme` |
+
+### Nouvelles règles de discours
+
+- **La vision long terme ne se dit jamais** à un recruteur, un client ou un acheteur public.
+  C'est le moteur, pas un argument de vente.
+- **Ne jamais revendiquer AutoCAD ou Covadis.** Lecture de plans uniquement.
+- **Contrainte matérielle** à intégrer dans toute recommandation : pas de capital, pas d'équipe,
+  un ordinateur.
+
+### Requalification
+
+Les 3 ans d'autodidaxie valent moins comme compétence technique que comme **preuve de
+persistance** : apprentissage non encadré et non rémunéré, mené pendant une reconversion BTP puis
+une période sans emploi. Cohérent avec la « curiosité intellectuelle » du CV 2021.
+
+### Nouvelles lacunes critiques
+
+1. **Premier livrable** — la plus petite chose finissable et montrable en deux semaines.
+2. **Revenu** — de quoi vit-il, jusqu'à quand ? Détermine toute la stratégie.
+3. **Contenu réel des 3 ans** — langages, logiciels, essais menés jusqu'au bout.
+
+---
+
 ## v3.0.0 — 2026-09-05
 
 Apport de deux CV (2025 généraliste, 2021 spécialisé recherche).

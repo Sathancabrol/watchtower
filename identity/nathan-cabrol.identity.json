@@ -1,15 +1,30 @@
 {
   "spec": "gobonet.identity/3.0",
   "entity_id": "person:nathan-cabrol",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "updated": "2026-09-05",
   "locale": "fr-FR",
   "purpose": "Contexte d'identité destiné aux agents IA de Gobonet. Charger avant tout raisonnement, génération ou recommandation concernant cette personne.",
   "sources_documentaires": [
-    { "id": "cv2025", "titre": "CV 2025 (généraliste, orienté conduite de travaux)", "recu": "2026-09-05", "trust": 95 },
-    { "id": "cv2021", "titre": "CV 2021 spécialisé « Ingénieur Facteur Humain — expérience de recherche »", "recu": "2026-09-05", "trust": 95 }
+    {
+      "id": "cv2025",
+      "titre": "CV 2025 (généraliste, orienté conduite de travaux)",
+      "recu": "2026-09-05",
+      "trust": 95
+    },
+    {
+      "id": "cv2021",
+      "titre": "CV 2021 spécialisé « Ingénieur Facteur Humain — expérience de recherche »",
+      "recu": "2026-09-05",
+      "trust": 95
+    },
+    {
+      "id": "clarif2026",
+      "titre": "Clarifications en conversation (2026-09-05) : niveau CAO, pratique perso 3D/dev/IA, situation actuelle, horizon long terme",
+      "recu": "2026-09-05",
+      "trust": 95
+    }
   ],
-
   "provenance_model": {
     "description": "Chaque fait porte `_meta : {src, trust, why}`. Ne jamais présenter un fait `inferred` sans marqueur d'hypothèse.",
     "sources": {
@@ -31,7 +46,6 @@
     "regle_dor": "Préférer une lacune signalée à une inférence exposée.",
     "precedence": "cv > declared > referential > inferred. Un CV daté prévaut sur une reformulation de positionnement."
   },
-
   "corrections_v3": {
     "resume": "L'apport des CV corrige 4 erreurs de la v2, dont une critique sur le prénom, et fait passer 12 champs de `unknown` à `cv`.",
     "critiques": [
@@ -39,145 +53,483 @@
         "champ": "core.prenom",
         "avant": "Säthan",
         "apres": "Näthan",
-        "_meta": { "src": "contradicted", "trust": 100, "why": "ERREUR CRITIQUE v1-v2. Les deux CV et l'email nathancabrol@hotmail.fr donnent Näthan (tréma sur le a, initiale N). J'avais construit une règle anti-« Nathan » exactement à l'inverse de la réalité. Toute production antérieure au 2026-09-05 est à corriger." }
+        "_meta": {
+          "src": "contradicted",
+          "trust": 100,
+          "why": "ERREUR CRITIQUE v1-v2. Les deux CV et l'email nathancabrol@hotmail.fr donnent Näthan (tréma sur le a, initiale N). J'avais construit une règle anti-« Nathan » exactement à l'inverse de la réalité. Toute production antérieure au 2026-09-05 est à corriger."
+        }
       },
       {
         "champ": "core.commune",
         "avant": "Bassin de Thau, commune inconnue (inféré 60 %)",
         "apres": "Frontignan 34110",
-        "_meta": { "src": "cv", "trust": 100, "why": "Inférence v2 confirmée dans sa zone, précisée par les CV." }
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "Inférence v2 confirmée dans sa zone, précisée par les CV."
+        }
       },
       {
         "champ": "formation.master.intitule",
         "avant": "Master Psychologie cognitive",
         "apres": "Master Psychologie — Évaluation du fonctionnement cognitif et des comportements",
-        "_meta": { "src": "cv", "trust": 100, "why": "Intitulé exact. La mention « évaluation » est plus professionnalisante que « psychologie cognitive » : elle porte sur la mesure et le diagnostic de la cognition, pas seulement sa théorie." }
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "Intitulé exact. La mention « évaluation » est plus professionnalisante que « psychologie cognitive » : elle porte sur la mesure et le diagnostic de la cognition, pas seulement sa théorie."
+        }
       },
       {
         "champ": "identite_synthetique.perimetre",
         "avant": "Cognition générique",
         "apres": "Spécialité attestée : attention spatiale et temporelle, cognition spatiale, orientation et wayfinding",
-        "_meta": { "src": "cv", "trust": 100, "why": "DÉCOUVERTE MAJEURE. 4 mémoires + 2 stages de recherche portent tous sur l'attention et la cognition spatiale. Ce n'est pas un généraliste de la cognition : c'est un spécialiste de l'orientation dans l'espace." }
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "DÉCOUVERTE MAJEURE. 4 mémoires + 2 stages de recherche portent tous sur l'attention et la cognition spatiale. Ce n'est pas un généraliste de la cognition : c'est un spécialiste de l'orientation dans l'espace."
+        }
       }
     ],
     "confirmations": [
-      { "champ": "lecture_du_parcours.sequence_probable", "trust_avant": 65, "trust_apres": 100, "note": "Séquence Bac 2013 → Master 2019 → AFPA 2023 exactement confirmée." },
-      { "champ": "lecture_du_parcours.signal_2_capacite_de_reconversion", "trust_avant": 80, "trust_apres": 95, "note": "Reconversion recherche → BTP objectivée par les dates." },
-      { "champ": "formation.master.outils_probables", "trust_avant": 55, "trust_apres": 100, "note": "R, E-Prime, OpenSesame étaient inférés à 55 % : tous confirmés, plus JASP et Tobii." },
-      { "champ": "core.zone", "trust_avant": 100, "trust_apres": 100, "note": "Frontignan appartient bien au Bassin de Thau." }
+      {
+        "champ": "lecture_du_parcours.sequence_probable",
+        "trust_avant": 65,
+        "trust_apres": 100,
+        "note": "Séquence Bac 2013 → Master 2019 → AFPA 2023 exactement confirmée."
+      },
+      {
+        "champ": "lecture_du_parcours.signal_2_capacite_de_reconversion",
+        "trust_avant": 80,
+        "trust_apres": 95,
+        "note": "Reconversion recherche → BTP objectivée par les dates."
+      },
+      {
+        "champ": "formation.master.outils_probables",
+        "trust_avant": 55,
+        "trust_apres": 100,
+        "note": "R, E-Prime, OpenSesame étaient inférés à 55 % : tous confirmés, plus JASP et Tobii."
+      },
+      {
+        "champ": "core.zone",
+        "trust_avant": 100,
+        "trust_apres": 100,
+        "note": "Frontignan appartient bien au Bassin de Thau."
+      }
     ],
     "invalidations": [
       {
         "champ": "competences.techniques",
-        "_meta": { "src": "contradicted", "trust": 90, "why": "La v2 listait « développement / prototypage », « cartographie », « 3D et fabrication », « outils et agents IA ». AUCUN des deux CV n'atteste d'un langage de programmation, d'un SIG, d'un logiciel de CAO/3D ou d'un outil IA. L'outillage réel est statistique et expérimental. Ces compétences relèvent d'une pratique personnelle non documentée — à ne plus présenter comme acquises tant qu'elles ne sont pas étayées." }
+        "_meta": {
+          "src": "contradicted",
+          "trust": 90,
+          "why": "La v2 listait « développement / prototypage », « cartographie », « 3D et fabrication », « outils et agents IA ». AUCUN des deux CV n'atteste d'un langage de programmation, d'un SIG, d'un logiciel de CAO/3D ou d'un outil IA. L'outillage réel est statistique et expérimental. Ces compétences relèvent d'une pratique personnelle non documentée — à ne plus présenter comme acquises tant qu'elles ne sont pas étayées."
+        }
       }
     ]
   },
-
   "core": {
-    "nom": { "v": "Cabrol", "_meta": { "src": "cv", "trust": 100 } },
-    "prenom": { "v": "Näthan", "_meta": { "src": "cv", "trust": 100 } },
-    "nom_affichage": { "v": "Näthan Cabrol", "_meta": { "src": "cv", "trust": 100 } },
+    "nom": {
+      "v": "Cabrol",
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "prenom": {
+      "v": "Näthan",
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "nom_affichage": {
+      "v": "Näthan Cabrol",
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
     "orthographe_stricte": {
       "v": "Näthan — initiale N, tréma sur le a. Formes fautives : Nathan (sans tréma), Säthan, Sathan, Nathän.",
-      "_meta": { "src": "cv", "trust": 100, "why": "L'email personnel utilise la forme sans tréma (nathancabrol@). Le tréma est donc typographique et peut sauter dans les systèmes ; l'orthographe de référence le conserve." }
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "L'email personnel utilise la forme sans tréma (nathancabrol@). Le tréma est donc typographique et peut sauter dans les systèmes ; l'orthographe de référence le conserve."
+      }
     },
-    "post_nominal": { "v": "MS", "_meta": { "src": "cv", "trust": 85, "why": "Utilisé en en-tête du CV 2025 pour Master of Science. Usage peu courant en France, peut dérouter un recruteur français ; utile à l'international." } },
-    "genre_grammatical": { "v": "masculin", "_meta": { "src": "cv", "trust": 100, "why": "Inféré à 75 % en v2, confirmé (« Enseignant », « Chercheur », « Plaquiste »)." } },
-    "adresse": { "v": "Frontignan 34110, Hérault, Occitanie", "_meta": { "src": "cv", "trust": 100 } },
-    "zone": { "v": "Bassin de Thau", "_meta": { "src": "referential", "trust": 100, "why": "Frontignan est une commune du Bassin de Thau, entre Sète et Montpellier." } },
-    "email": { "v": "nathancabrol@hotmail.fr", "_meta": { "src": "cv", "trust": 100, "why": "Adresse hotmail : signal daté pour une candidature tech ou startup. Recommandation à formuler, pas à appliquer d'office." } },
-    "telephone": { "v": "06 26 49 47 83", "_meta": { "src": "cv", "trust": 100 } },
-    "fuseau": { "v": "Europe/Paris", "_meta": { "src": "referential", "trust": 100 } },
-    "annee_naissance_estimee": { "v": "≈ 1995", "_meta": { "src": "inferred", "trust": 75, "why": "Bac en 2013, soit ≈ 18 ans → naissance vers 1995, ≈ 31 ans en 2026. Estimation, non déclarée." } },
+    "post_nominal": {
+      "v": "MS",
+      "_meta": {
+        "src": "cv",
+        "trust": 85,
+        "why": "Utilisé en en-tête du CV 2025 pour Master of Science. Usage peu courant en France, peut dérouter un recruteur français ; utile à l'international."
+      }
+    },
+    "genre_grammatical": {
+      "v": "masculin",
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Inféré à 75 % en v2, confirmé (« Enseignant », « Chercheur », « Plaquiste »)."
+      }
+    },
+    "adresse": {
+      "v": "Frontignan 34110, Hérault, Occitanie",
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "zone": {
+      "v": "Bassin de Thau",
+      "_meta": {
+        "src": "referential",
+        "trust": 100,
+        "why": "Frontignan est une commune du Bassin de Thau, entre Sète et Montpellier."
+      }
+    },
+    "email": {
+      "v": "nathancabrol@hotmail.fr",
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Adresse hotmail : signal daté pour une candidature tech ou startup. Recommandation à formuler, pas à appliquer d'office."
+      }
+    },
+    "telephone": {
+      "v": "06 26 49 47 83",
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "fuseau": {
+      "v": "Europe/Paris",
+      "_meta": {
+        "src": "referential",
+        "trust": 100
+      }
+    },
+    "annee_naissance_estimee": {
+      "v": "≈ 1995",
+      "_meta": {
+        "src": "inferred",
+        "trust": 75,
+        "why": "Bac en 2013, soit ≈ 18 ans → naissance vers 1995, ≈ 31 ans en 2026. Estimation, non déclarée."
+      }
+    },
     "langues": [
-      { "code": "fr", "niveau": "natif", "_meta": { "src": "cv", "trust": 100 } },
-      { "code": "en", "niveau": "courant", "_meta": { "src": "cv", "trust": 90, "why": "Auto-déclaré sur les deux CV. Aucune certification (TOEIC, IELTS) mentionnée." } },
-      { "code": "ru", "niveau": "notions", "_meta": { "src": "cv", "trust": 85, "why": "Présent sur le CV 2021 uniquement, retiré en 2025. Choix éditorial : peu utile en BTP." } }
+      {
+        "code": "fr",
+        "niveau": "natif",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      {
+        "code": "en",
+        "niveau": "courant",
+        "_meta": {
+          "src": "cv",
+          "trust": 90,
+          "why": "Auto-déclaré sur les deux CV. Aucune certification (TOEIC, IELTS) mentionnée."
+        }
+      },
+      {
+        "code": "ru",
+        "niveau": "notions",
+        "_meta": {
+          "src": "cv",
+          "trust": 85,
+          "why": "Présent sur le CV 2021 uniquement, retiré en 2025. Choix éditorial : peu utile en BTP."
+        }
+      }
     ],
-    "mobilite": { "v": "Permis B et véhicule personnel", "_meta": { "src": "cv", "trust": 100, "why": "Sur les deux CV. Prérequis réel en conduite de travaux ; à conserver systématiquement pour l'audience BTP." } }
+    "mobilite": {
+      "v": "Permis B et véhicule personnel",
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Sur les deux CV. Prérequis réel en conduite de travaux ; à conserver systématiquement pour l'audience BTP."
+      }
+    }
   },
-
   "identite_synthetique": {
-    "titre_canonique": { "v": "Concepteur de systèmes cognitifs assistés par IA", "_meta": { "src": "declared", "trust": 90, "why": "Positionnement cible, non encore attesté par une expérience professionnelle." } },
-    "titre_atteste_recherche": { "v": "Ingénieur facteur humain — cognition spatiale et attention", "_meta": { "src": "cv", "trust": 95, "why": "Titre revendiqué sur le CV 2021, adossé à 4 mémoires et 2 stages longs. C'est le titre le plus solidement étayé du dossier." } },
-    "titre_atteste_btp": { "v": "Aide conducteur de travaux / chef de chantier — VRD, réseaux secs, génie civil", "_meta": { "src": "cv", "trust": 95, "why": "Titre effectivement exercé de 2022 à 2024." } },
+    "titre_canonique": {
+      "v": "Concepteur de systèmes cognitifs assistés par IA",
+      "_meta": {
+        "src": "declared",
+        "trust": 90,
+        "why": "Positionnement cible, non encore attesté par une expérience professionnelle."
+      }
+    },
+    "titre_atteste_recherche": {
+      "v": "Ingénieur facteur humain — cognition spatiale et attention",
+      "_meta": {
+        "src": "cv",
+        "trust": 95,
+        "why": "Titre revendiqué sur le CV 2021, adossé à 4 mémoires et 2 stages longs. C'est le titre le plus solidement étayé du dossier."
+      }
+    },
+    "titre_atteste_btp": {
+      "v": "Aide conducteur de travaux / chef de chantier — VRD, réseaux secs, génie civil",
+      "_meta": {
+        "src": "cv",
+        "trust": 95,
+        "why": "Titre effectivement exercé de 2022 à 2024."
+      }
+    },
     "specialite_scientifique": {
       "v": "Attention spatiale et temporelle · cognition spatiale · orientation, repères et wayfinding",
-      "_meta": { "src": "cv", "trust": 100, "why": "Constante absolue de 2015 à 2019 : les 4 mémoires et les 2 stages portent tous sur ce noyau. C'est l'expertise la plus profonde et la plus vérifiable." }
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Constante absolue de 2015 à 2019 : les 4 mémoires et les 2 stages portent tous sur ce noyau. C'est l'expertise la plus profonde et la plus vérifiable."
+      }
     },
     "phrase_25_mots": {
       "v": "Psychologue cognitiviste de formation devenu conducteur de travaux : j'étudie comment les humains s'orientent et décident, et je pilote la réalisation concrète sur le terrain.",
-      "_meta": { "src": "inferred", "trust": 85, "why": "Reformulation appuyée sur les faits des CV plutôt que sur le discours de vision. Plus crédible car vérifiable." }
+      "_meta": {
+        "src": "inferred",
+        "trust": 85,
+        "why": "Reformulation appuyée sur les faits des CV plutôt que sur le discours de vision. Plus crédible car vérifiable."
+      }
     },
     "fil_directeur_reel": {
       "v": "L'orientation dans l'espace. En laboratoire : comment l'humain se repère, choisit un itinéraire, catégorise des repères. Sur le terrain : comment on trace, terrasse et réseaute cet espace physique. Cognitorium prolonge la même question à l'échelle des territoires et des connaissances.",
-      "_meta": { "src": "inferred", "trust": 80, "why": "LECTURE CLÉ. Les CV révèlent une cohérence que la fiche v2 n'avait pas su nommer : ce n'est pas « cognition + BTP », c'est l'espace, étudié puis construit. Argument anti-dispersion le plus fort du dossier." }
+      "_meta": {
+        "src": "inferred",
+        "trust": 80,
+        "why": "LECTURE CLÉ. Les CV révèlent une cohérence que la fiche v2 n'avait pas su nommer : ce n'est pas « cognition + BTP », c'est l'espace, étudié puis construit. Argument anti-dispersion le plus fort du dossier."
+      }
     },
     "trois_piliers": [
-      { "id": "cognition", "libelle": "Cognition spatiale et attention", "atteste": true, "periode": "2015-2019" },
-      { "id": "reel", "libelle": "BTP, VRD, réseaux secs, génie civil", "atteste": true, "periode": "2016-2024" },
-      { "id": "numerique", "libelle": "Numérique, données, IA", "atteste": "partiellement", "note": "Statistiques et expérimentation attestées ; développement, SIG, 3D et IA non documentés." }
+      {
+        "id": "cognition",
+        "libelle": "Cognition spatiale et attention",
+        "atteste": true,
+        "periode": "2015-2019"
+      },
+      {
+        "id": "reel",
+        "libelle": "BTP, VRD, réseaux secs, génie civil",
+        "atteste": true,
+        "periode": "2016-2024"
+      },
+      {
+        "id": "numerique",
+        "libelle": "Numérique, données, IA",
+        "atteste": "partiellement",
+        "note": "Statistiques et expérimentation attestées ; développement, SIG, 3D et IA non documentés."
+      }
     ]
   },
-
   "formation": [
     {
       "id": "edu:afpa-conducteur-travaux-tp",
-      "intitule": { "v": "Formation Conducteur de travaux Travaux Publics", "_meta": { "src": "cv", "trust": 100 } },
-      "etablissement": { "v": "AFPA Palays, Toulouse", "_meta": { "src": "cv", "trust": 100, "why": "Centre inconnu en v2, désormais identifié." } },
-      "annee": { "v": 2023, "_meta": { "src": "cv", "trust": 100 } },
-      "niveau_cec": { "v": 5, "_meta": { "src": "referential", "trust": 90 } },
-      "habilitations": {
-        "v": ["SST — Sauveteur Secouriste du Travail", "AIPR encadrant — Autorisation d'Intervention à Proximité des Réseaux"],
-        "_meta": { "src": "cv", "trust": 100, "why": "NON REPÉRÉ EN v2. L'AIPR encadrant est une obligation réglementaire pour intervenir près des réseaux enterrés : c'est un différenciateur concret et immédiatement monnayable en VRD et réseaux secs." }
+      "intitule": {
+        "v": "Formation Conducteur de travaux Travaux Publics",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
       },
-      "travaux_realises": { "v": "4 projets de chantier — organisation contractuelle et financière de chantier VRD", "_meta": { "src": "cv", "trust": 100 } }
+      "etablissement": {
+        "v": "AFPA Palays, Toulouse",
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "Centre inconnu en v2, désormais identifié."
+        }
+      },
+      "annee": {
+        "v": 2023,
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "niveau_cec": {
+        "v": 5,
+        "_meta": {
+          "src": "referential",
+          "trust": 90
+        }
+      },
+      "habilitations": {
+        "v": [
+          "SST — Sauveteur Secouriste du Travail",
+          "AIPR encadrant — Autorisation d'Intervention à Proximité des Réseaux"
+        ],
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "NON REPÉRÉ EN v2. L'AIPR encadrant est une obligation réglementaire pour intervenir près des réseaux enterrés : c'est un différenciateur concret et immédiatement monnayable en VRD et réseaux secs."
+        }
+      },
+      "travaux_realises": {
+        "v": "4 projets de chantier — organisation contractuelle et financière de chantier VRD",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      }
     },
     {
       "id": "edu:master-psycho",
-      "intitule": { "v": "Master Psychologie — Évaluation du fonctionnement cognitif et des comportements", "_meta": { "src": "cv", "trust": 100 } },
-      "etablissement": { "v": "Université Paul-Valéry Montpellier 3, UFR 5", "_meta": { "src": "cv", "trust": 100 } },
-      "annee": { "v": 2019, "_meta": { "src": "cv", "trust": 100 } },
-      "niveau_cec": { "v": 7, "_meta": { "src": "referential", "trust": 100 } },
+      "intitule": {
+        "v": "Master Psychologie — Évaluation du fonctionnement cognitif et des comportements",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "etablissement": {
+        "v": "Université Paul-Valéry Montpellier 3, UFR 5",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "annee": {
+        "v": 2019,
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "niveau_cec": {
+        "v": 7,
+        "_meta": {
+          "src": "referential",
+          "trust": 100
+        }
+      },
       "cursus_detaille": {
         "v": [
-          { "periode": "2013-2016", "diplome": "Licence de psychologie, spécialité dynamiques cognitives et sociocognitives" },
-          { "periode": "2016-2017", "diplome": "Master 1, spécialité dynamiques cognitives et sociocognitives" },
-          { "periode": "2017-2019", "diplome": "Master 2, spécialité évaluation du fonctionnement cognitif et des comportements" }
+          {
+            "periode": "2013-2016",
+            "diplome": "Licence de psychologie, spécialité dynamiques cognitives et sociocognitives"
+          },
+          {
+            "periode": "2016-2017",
+            "diplome": "Master 1, spécialité dynamiques cognitives et sociocognitives"
+          },
+          {
+            "periode": "2017-2019",
+            "diplome": "Master 2, spécialité évaluation du fonctionnement cognitif et des comportements"
+          }
         ],
-        "_meta": { "src": "cv", "trust": 90, "why": "Le CV 2021 note « Master 1 : 2013-2017 », probablement une coquille englobant la licence. Cursus reconstitué en 6 ans, sans redoublement apparent." }
+        "_meta": {
+          "src": "cv",
+          "trust": 90,
+          "why": "Le CV 2021 note « Master 1 : 2013-2017 », probablement une coquille englobant la licence. Cursus reconstitué en 6 ans, sans redoublement apparent."
+        }
       },
-      "directeur_recherche": { "v": "Pom Charras", "_meta": { "src": "cv", "trust": 100, "why": "Enseignant-chercheur à Paul-Valéry, spécialiste de l'attention. Référence académique mobilisable." } },
+      "directeur_recherche": {
+        "v": "Pom Charras",
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "Enseignant-chercheur à Paul-Valéry, spécialiste de l'attention. Référence académique mobilisable."
+        }
+      },
       "memoires": {
         "v": [
-          { "annee": "2015-2016", "titre": "L'orientation endogène de l'attention visuelle temporelle et spatiale", "objet": "mécanismes des processus d'orientation attentionnelle spatiale et temporelle" },
-          { "annee": "2016-2017", "titre": "L'influence de la pratique des jeux vidéo sur l'orientation de l'attention", "objet": "dissociation des mécanismes attentionnels ; profils d'individus selon l'expertise vidéoludique" },
-          { "annee": "2017-2018", "titre": "Création d'un outil d'évaluation de la préparation temporelle", "objet": "unifier en un seul protocole les modalités d'étude de la préparation temporelle, pour réduire la charge participant et expérimentateur" },
-          { "annee": "2018-2019", "titre": "Attention spatiale & temporelle : une préférence ?", "objet": "relation entre attention spatiale et temporelle sous influence de l'inhibition attentionnelle" }
+          {
+            "annee": "2015-2016",
+            "titre": "L'orientation endogène de l'attention visuelle temporelle et spatiale",
+            "objet": "mécanismes des processus d'orientation attentionnelle spatiale et temporelle"
+          },
+          {
+            "annee": "2016-2017",
+            "titre": "L'influence de la pratique des jeux vidéo sur l'orientation de l'attention",
+            "objet": "dissociation des mécanismes attentionnels ; profils d'individus selon l'expertise vidéoludique"
+          },
+          {
+            "annee": "2017-2018",
+            "titre": "Création d'un outil d'évaluation de la préparation temporelle",
+            "objet": "unifier en un seul protocole les modalités d'étude de la préparation temporelle, pour réduire la charge participant et expérimentateur"
+          },
+          {
+            "annee": "2018-2019",
+            "titre": "Attention spatiale & temporelle : une préférence ?",
+            "objet": "relation entre attention spatiale et temporelle sous influence de l'inhibition attentionnelle"
+          }
         ],
-        "_meta": { "src": "cv", "trust": 100, "why": "4 travaux de recherche successifs sur un même axe. Le mémoire 2017-2018 est le plus significatif : conception d'un OUTIL de mesure, pas seulement d'une étude — première trace documentée d'une démarche de conception d'instrument." }
+        "_meta": {
+          "src": "cv",
+          "trust": 100,
+          "why": "4 travaux de recherche successifs sur un même axe. Le mémoire 2017-2018 est le plus significatif : conception d'un OUTIL de mesure, pas seulement d'une étude — première trace documentée d'une démarche de conception d'instrument."
+        }
       },
-      "titre_psychologue": { "v": "à vérifier", "_meta": { "src": "inferred", "trust": 50, "why": "La v2 concluait « non » à 70 %. Le M2 « évaluation du fonctionnement cognitif et des comportements » est une mention qui ouvre parfois au titre. Mais les deux stages (900 h chacun) sont des stages de RECHERCHE, non des stages professionnels de psychologue. Statut réellement incertain : à confirmer par l'intéressé, ne rien affirmer." } }
+      "titre_psychologue": {
+        "v": "à vérifier",
+        "_meta": {
+          "src": "inferred",
+          "trust": 50,
+          "why": "La v2 concluait « non » à 70 %. Le M2 « évaluation du fonctionnement cognitif et des comportements » est une mention qui ouvre parfois au titre. Mais les deux stages (900 h chacun) sont des stages de RECHERCHE, non des stages professionnels de psychologue. Statut réellement incertain : à confirmer par l'intéressé, ne rien affirmer."
+        }
+      }
     },
     {
       "id": "edu:sti2d-sin",
-      "intitule": { "v": "Bac STI2D option SIN", "_meta": { "src": "cv", "trust": 100 } },
-      "etablissement": { "v": "Lycée Joliot-Curie, Sète", "_meta": { "src": "cv", "trust": 100 } },
-      "annee": { "v": 2013, "_meta": { "src": "cv", "trust": 100 } },
-      "niveau_cec": { "v": 4, "_meta": { "src": "referential", "trust": 100 } },
-      "portee_reelle": { "v": "Diplôme de 2013, sans usage professionnel documenté depuis. Culture technique ancienne.", "_meta": { "src": "inferred", "trust": 85, "why": "13 ans sans pratique attestée du code ou de l'électronique. Ne pas le présenter comme une compétence numérique actuelle." } }
+      "intitule": {
+        "v": "Bac STI2D option SIN",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "etablissement": {
+        "v": "Lycée Joliot-Curie, Sète",
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "annee": {
+        "v": 2013,
+        "_meta": {
+          "src": "cv",
+          "trust": 100
+        }
+      },
+      "niveau_cec": {
+        "v": 4,
+        "_meta": {
+          "src": "referential",
+          "trust": 100
+        }
+      },
+      "portee_reelle": {
+        "v": "Diplôme de 2013, sans usage professionnel documenté depuis. Culture technique ancienne.",
+        "_meta": {
+          "src": "inferred",
+          "trust": 85,
+          "why": "13 ans sans pratique attestée du code ou de l'électronique. Ne pas le présenter comme une compétence numérique actuelle."
+        }
+      }
     }
   ],
-
   "experiences": [
     {
       "id": "exp:objectif-emergence",
       "periode": "2024-2025",
       "poste": "Auxiliaire de vie",
       "structure": "Association Objectif Émergence, Sète",
-      "missions": ["aide à la personne à domicile et à l'extérieur", "transport", "entretien du logement", "aide aux démarches administratives"],
-      "_meta": { "src": "cv", "trust": 100, "why": "Expérience la plus récente. À manier avec discernement : elle peut être lue comme un emploi alimentaire, ou valorisée comme relation d'aide, fiabilité et sens des responsabilités. Voir `regles_editoriales.experience_auxiliaire_de_vie`." }
+      "missions": [
+        "aide à la personne à domicile et à l'extérieur",
+        "transport",
+        "entretien du logement",
+        "aide aux démarches administratives"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Expérience la plus récente. À manier avec discernement : elle peut être lue comme un emploi alimentaire, ou valorisée comme relation d'aide, fiabilité et sens des responsabilités. Voir `regles_editoriales.experience_auxiliaire_de_vie`."
+      }
     },
     {
       "id": "exp:sobeca",
@@ -185,8 +537,19 @@
       "poste": "Aide conducteur de travaux / Chef de chantier — réseaux secs, génie civil",
       "structure": "SOBECA, Groupe FIRALP, Toulouse",
       "envergure": "4 équipes et sous-traitants",
-      "missions": ["préparation, suivi et clôture de chantier", "suivi des sous-traitants", "accueil chantier", "respect de la sécurité", "contact clients et fournisseurs", "gestion d'un dépôt annexe"],
-      "_meta": { "src": "cv", "trust": 100, "why": "EXPÉRIENCE BTP LA PLUS LOURDE. 4 équipes + sous-traitants + gestion de dépôt : périmètre de chef de chantier confirmé, au-delà du simple appui. Groupe FIRALP est un acteur national reconnu — référence solide." }
+      "missions": [
+        "préparation, suivi et clôture de chantier",
+        "suivi des sous-traitants",
+        "accueil chantier",
+        "respect de la sécurité",
+        "contact clients et fournisseurs",
+        "gestion d'un dépôt annexe"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "EXPÉRIENCE BTP LA PLUS LOURDE. 4 équipes + sous-traitants + gestion de dépôt : périmètre de chef de chantier confirmé, au-delà du simple appui. Groupe FIRALP est un acteur national reconnu — référence solide."
+      }
     },
     {
       "id": "exp:lherm",
@@ -194,8 +557,18 @@
       "poste": "Aide conducteur de travaux — VRD (stage)",
       "structure": "LHERM TP Midi-Pyrénées, Toulouse",
       "envergure": "1 équipe en roulement",
-      "missions": ["vérification et ajustement des métrés et des côtes", "vérification sécurité", "accueil et clôture de chantier", "contact clients et fournisseurs", "suivi du budget et du planning"],
-      "_meta": { "src": "cv", "trust": 100, "why": "Stage de la formation AFPA. Premier contact avec le suivi budget/planning." }
+      "missions": [
+        "vérification et ajustement des métrés et des côtes",
+        "vérification sécurité",
+        "accueil et clôture de chantier",
+        "contact clients et fournisseurs",
+        "suivi du budget et du planning"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Stage de la formation AFPA. Premier contact avec le suivi budget/planning."
+      }
     },
     {
       "id": "exp:colas",
@@ -203,8 +576,18 @@
       "poste": "Aide chef de chantier — terrassements et enrobés (stage)",
       "structure": "COLAS, Sète",
       "envergure": "1 équipe",
-      "missions": ["vérification et ajustement des métrés et des côtes", "pose et vérification de la sécurité du chantier", "accueil chantier", "contact clients et fournisseurs", "premiers secours"],
-      "_meta": { "src": "cv", "trust": 100, "why": "COLAS : leader mondial de la route. Référence de poids. Entrée dans le BTP encadré." }
+      "missions": [
+        "vérification et ajustement des métrés et des côtes",
+        "pose et vérification de la sécurité du chantier",
+        "accueil chantier",
+        "contact clients et fournisseurs",
+        "premiers secours"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "COLAS : leader mondial de la route. Référence de poids. Entrée dans le BTP encadré."
+      }
     },
     {
       "id": "exp:videba",
@@ -212,8 +595,14 @@
       "poste": "Équipier polyvalent",
       "structure": "VIDEBA",
       "envergure": "240 heures",
-      "missions": ["préparation des produits et des commandes"],
-      "_meta": { "src": "cv", "trust": 100, "why": "Présent sur le CV 2021 uniquement, retiré du CV 2025. Emploi de transition. Le retrait est un choix éditorial cohérent." }
+      "missions": [
+        "préparation des produits et des commandes"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Présent sur le CV 2021 uniquement, retiré du CV 2025. Emploi de transition. Le retrait est un choix éditorial cohérent."
+      }
     },
     {
       "id": "exp:tradi-design",
@@ -221,8 +610,16 @@
       "poste": "Manœuvre (2016) → Aide maçon (2017) → Plaquiste (2021)",
       "structure": "Tradi-design, Angoulême",
       "envergure": "80 m² de murs (2021)",
-      "missions": ["maçonnerie et terrassement", "béton désactivé", "montage de murs et application de plâtre"],
-      "_meta": { "src": "cv", "trust": 100, "why": "IMPORTANT : le BTP n'est pas une reconversion tardive. Näthan y travaille dès 2016, PENDANT ses études de psychologie, avec une progression manœuvre → aide maçon → plaquiste. Le socle terrain est ancien et continu." }
+      "missions": [
+        "maçonnerie et terrassement",
+        "béton désactivé",
+        "montage de murs et application de plâtre"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "IMPORTANT : le BTP n'est pas une reconversion tardive. Näthan y travaille dès 2016, PENDANT ses études de psychologie, avec une progression manœuvre → aide maçon → plaquiste. Le socle terrain est ancien et continu."
+      }
     },
     {
       "id": "exp:sncf",
@@ -232,8 +629,17 @@
       "sujet": "« Orientation enrichie » — utilisation des points de repère sur plusieurs parcours, en vue d'une catégorisation des repères",
       "encadrement": "Céline Durupt et Simone Morgagni",
       "envergure": "3 expériences, 160 participants",
-      "missions": ["création du protocole", "suivi des passations", "analyse statistique", "rédaction du rapport"],
-      "_meta": { "src": "cv", "trust": 100, "why": "EXPÉRIENCE LA PLUS VALORISABLE DU DOSSIER. Grand compte, direction innovation, 160 participants, sujet directement transposable au design de mobilier urbain, à la signalétique et au wayfinding en gare. Sous-exploitée dans la fiche v2." }
+      "missions": [
+        "création du protocole",
+        "suivi des passations",
+        "analyse statistique",
+        "rédaction du rapport"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "EXPÉRIENCE LA PLUS VALORISABLE DU DOSSIER. Grand compte, direction innovation, 160 participants, sujet directement transposable au design de mobilier urbain, à la signalétique et au wayfinding en gare. Sous-exploitée dans la fiche v2."
+      }
     },
     {
       "id": "exp:catie",
@@ -243,8 +649,18 @@
       "sujet": "« Cognition spatiale et optimisation de la recherche d'itinéraire » — revue de littérature, évaluation des stratégies de marche en milieu clos, propositions d'optimisation pour le client",
       "encadrement": "Lisa Creno et Florian Larrue",
       "envergure": "3 expériences, 60 participants",
-      "missions": ["réponse à un appel à projet", "revue de littérature", "conception et suivi d'expériences", "analyse", "gestion de la relation client"],
-      "_meta": { "src": "cv", "trust": 100, "why": "Centre de transfert technologique. Contexte de PRESTATION : appel à projet, client, livrable d'optimisation. C'est la preuve que Näthan a déjà vendu et livré de la recherche appliquée — argument central pour l'audience freelance." }
+      "missions": [
+        "réponse à un appel à projet",
+        "revue de littérature",
+        "conception et suivi d'expériences",
+        "analyse",
+        "gestion de la relation client"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "Centre de transfert technologique. Contexte de PRESTATION : appel à projet, client, livrable d'optimisation. C'est la preuve que Näthan a déjà vendu et livré de la recherche appliquée — argument central pour l'audience freelance."
+      }
     },
     {
       "id": "exp:um3-enseignement",
@@ -252,67 +668,286 @@
       "poste": "Enseignant tuteur",
       "structure": "Université Paul-Valéry Montpellier 3",
       "envergure": "6 classes d'une trentaine d'étudiants, de 18 à 60 ans",
-      "missions": ["vulgarisation scientifique", "tutorat"],
-      "_meta": { "src": "cv", "trust": 100, "why": "≈ 180 étudiants. Public très hétérogène en âge : compétence d'adaptation pédagogique réelle, utile pour la formation professionnelle." }
+      "missions": [
+        "vulgarisation scientifique",
+        "tutorat"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "≈ 180 étudiants. Public très hétérogène en âge : compétence d'adaptation pédagogique réelle, utile pour la formation professionnelle."
+      }
     },
     {
       "id": "exp:um3-representant",
       "periode": "2017-2019",
       "poste": "Représentant des étudiants, UFR 5",
       "structure": "Université Paul-Valéry Montpellier 3",
-      "missions": ["réunions projet et budget", "retour d'expérience sur les parcours étudiants", "propositions d'axes d'amélioration"],
-      "_meta": { "src": "cv", "trust": 100, "why": "NON REPÉRÉ EN v2. Mandat électif de 2 ans : gouvernance, budget, représentation collective. Étaye la dimension « collectivité » et la capacité à travailler en instance." }
+      "missions": [
+        "réunions projet et budget",
+        "retour d'expérience sur les parcours étudiants",
+        "propositions d'axes d'amélioration"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "NON REPÉRÉ EN v2. Mandat électif de 2 ans : gouvernance, budget, représentation collective. Étaye la dimension « collectivité » et la capacité à travailler en instance."
+      }
     }
   ],
-
   "missions_types": {
-    "_meta": { "src": "inferred", "trust": 85, "why": "Synthèse transversale des missions attestées. Formulation orientée offre de service." },
+    "_meta": {
+      "src": "inferred",
+      "trust": 85,
+      "why": "Synthèse transversale des missions attestées. Formulation orientée offre de service."
+    },
     "v": [
-      { "id": "m:etude-comportementale", "libelle": "Concevoir et conduire une étude comportementale de bout en bout", "detail": "protocole, recrutement, passation, analyse statistique, rapport", "preuves": ["exp:sncf", "exp:catie", "edu:master-psycho"], "volume_atteste": "6 expériences, 220 participants cumulés" },
-      { "id": "m:outil-mesure", "libelle": "Concevoir un instrument de mesure", "detail": "unifier plusieurs protocoles en un outil unique, réduire la charge d'usage", "preuves": ["memoire 2017-2018"] },
-      { "id": "m:optimisation-parcours", "libelle": "Analyser et optimiser un parcours ou une signalétique", "detail": "stratégies de déplacement, points de repère, catégorisation, recommandations", "preuves": ["exp:sncf", "exp:catie"] },
-      { "id": "m:preparation-chantier", "libelle": "Préparer un chantier VRD ou réseaux secs", "detail": "métrés, côtes, dossier, planning, budget, contractualisation", "preuves": ["exp:lherm", "exp:sobeca", "edu:afpa-conducteur-travaux-tp"] },
-      { "id": "m:conduite-chantier", "libelle": "Conduire et clôturer un chantier multi-équipes", "detail": "jusqu'à 4 équipes et sous-traitants, accueil, sécurité, suivi, clôture, dépôt", "preuves": ["exp:sobeca"] },
-      { "id": "m:interface-client", "libelle": "Tenir l'interface client et fournisseurs", "detail": "relation client en prestation de recherche comme en chantier", "preuves": ["exp:catie", "exp:colas", "exp:lherm", "exp:sobeca"] },
-      { "id": "m:transmission", "libelle": "Former et vulgariser auprès de publics hétérogènes", "detail": "6 classes, 18 à 60 ans, vulgarisation scientifique", "preuves": ["exp:um3-enseignement"] },
-      { "id": "m:securite", "libelle": "Faire appliquer la sécurité sur site", "detail": "SST, AIPR encadrant, vérification et pose des dispositifs, premiers secours", "preuves": ["edu:afpa-conducteur-travaux-tp", "exp:colas", "exp:sobeca"] }
+      {
+        "id": "m:etude-comportementale",
+        "libelle": "Concevoir et conduire une étude comportementale de bout en bout",
+        "detail": "protocole, recrutement, passation, analyse statistique, rapport",
+        "preuves": [
+          "exp:sncf",
+          "exp:catie",
+          "edu:master-psycho"
+        ],
+        "volume_atteste": "6 expériences, 220 participants cumulés"
+      },
+      {
+        "id": "m:outil-mesure",
+        "libelle": "Concevoir un instrument de mesure",
+        "detail": "unifier plusieurs protocoles en un outil unique, réduire la charge d'usage",
+        "preuves": [
+          "memoire 2017-2018"
+        ]
+      },
+      {
+        "id": "m:optimisation-parcours",
+        "libelle": "Analyser et optimiser un parcours ou une signalétique",
+        "detail": "stratégies de déplacement, points de repère, catégorisation, recommandations",
+        "preuves": [
+          "exp:sncf",
+          "exp:catie"
+        ]
+      },
+      {
+        "id": "m:preparation-chantier",
+        "libelle": "Préparer un chantier VRD ou réseaux secs",
+        "detail": "métrés, côtes, dossier, planning, budget, contractualisation",
+        "preuves": [
+          "exp:lherm",
+          "exp:sobeca",
+          "edu:afpa-conducteur-travaux-tp"
+        ]
+      },
+      {
+        "id": "m:conduite-chantier",
+        "libelle": "Conduire et clôturer un chantier multi-équipes",
+        "detail": "jusqu'à 4 équipes et sous-traitants, accueil, sécurité, suivi, clôture, dépôt",
+        "preuves": [
+          "exp:sobeca"
+        ]
+      },
+      {
+        "id": "m:interface-client",
+        "libelle": "Tenir l'interface client et fournisseurs",
+        "detail": "relation client en prestation de recherche comme en chantier",
+        "preuves": [
+          "exp:catie",
+          "exp:colas",
+          "exp:lherm",
+          "exp:sobeca"
+        ]
+      },
+      {
+        "id": "m:transmission",
+        "libelle": "Former et vulgariser auprès de publics hétérogènes",
+        "detail": "6 classes, 18 à 60 ans, vulgarisation scientifique",
+        "preuves": [
+          "exp:um3-enseignement"
+        ]
+      },
+      {
+        "id": "m:securite",
+        "libelle": "Faire appliquer la sécurité sur site",
+        "detail": "SST, AIPR encadrant, vérification et pose des dispositifs, premiers secours",
+        "preuves": [
+          "edu:afpa-conducteur-travaux-tp",
+          "exp:colas",
+          "exp:sobeca"
+        ]
+      }
     ]
   },
-
   "savoirs": {
-    "_meta": { "src": "inferred", "trust": 80, "why": "Connaissances mobilisées, distinctes des compétences (savoir vs savoir-faire). Déduites des sujets d'étude et des postes." },
+    "_meta": {
+      "src": "inferred",
+      "trust": 80,
+      "why": "Connaissances mobilisées, distinctes des compétences (savoir vs savoir-faire). Déduites des sujets d'étude et des postes."
+    },
     "theoriques": [
-      { "domaine": "Attention spatiale et temporelle", "profondeur": "expert", "preuves": ["4 mémoires", "direction Pom Charras"] },
-      { "domaine": "Cognition spatiale, orientation, wayfinding, points de repère", "profondeur": "expert", "preuves": ["exp:sncf", "exp:catie"] },
-      { "domaine": "Préparation temporelle et inhibition attentionnelle", "profondeur": "avancé", "preuves": ["mémoires 2017-2019"] },
-      { "domaine": "Méthodologie expérimentale et psychométrie", "profondeur": "avancé", "preuves": ["6 expériences conduites"] },
-      { "domaine": "Statistiques appliquées", "profondeur": "avancé", "preuves": ["R", "JASP"] },
-      { "domaine": "Expertise vidéoludique et transfert cognitif", "profondeur": "notions", "preuves": ["mémoire 2016-2017"] }
+      {
+        "domaine": "Attention spatiale et temporelle",
+        "profondeur": "expert",
+        "preuves": [
+          "4 mémoires",
+          "direction Pom Charras"
+        ]
+      },
+      {
+        "domaine": "Cognition spatiale, orientation, wayfinding, points de repère",
+        "profondeur": "expert",
+        "preuves": [
+          "exp:sncf",
+          "exp:catie"
+        ]
+      },
+      {
+        "domaine": "Préparation temporelle et inhibition attentionnelle",
+        "profondeur": "avancé",
+        "preuves": [
+          "mémoires 2017-2019"
+        ]
+      },
+      {
+        "domaine": "Méthodologie expérimentale et psychométrie",
+        "profondeur": "avancé",
+        "preuves": [
+          "6 expériences conduites"
+        ]
+      },
+      {
+        "domaine": "Statistiques appliquées",
+        "profondeur": "avancé",
+        "preuves": [
+          "R",
+          "JASP"
+        ]
+      },
+      {
+        "domaine": "Expertise vidéoludique et transfert cognitif",
+        "profondeur": "notions",
+        "preuves": [
+          "mémoire 2016-2017"
+        ]
+      }
     ],
     "techniques_metier": [
-      { "domaine": "VRD, terrassement, enrobés", "profondeur": "opérationnel", "preuves": ["exp:colas", "exp:lherm"] },
-      { "domaine": "Réseaux secs et génie civil", "profondeur": "opérationnel", "preuves": ["exp:sobeca"] },
-      { "domaine": "Métrés, côtes, lecture de plans", "profondeur": "opérationnel", "preuves": ["exp:colas", "exp:lherm"] },
-      { "domaine": "Gestion contractuelle et financière de chantier", "profondeur": "formé et pratiqué", "preuves": ["edu:afpa-conducteur-travaux-tp", "exp:lherm", "exp:sobeca"] },
-      { "domaine": "Réglementation réseaux (AIPR) et sécurité (SST)", "profondeur": "certifié", "preuves": ["edu:afpa-conducteur-travaux-tp"] },
-      { "domaine": "Maçonnerie, plâtrerie, second œuvre", "profondeur": "exécution", "preuves": ["exp:tradi-design"] }
+      {
+        "domaine": "VRD, terrassement, enrobés",
+        "profondeur": "opérationnel",
+        "preuves": [
+          "exp:colas",
+          "exp:lherm"
+        ]
+      },
+      {
+        "domaine": "Réseaux secs et génie civil",
+        "profondeur": "opérationnel",
+        "preuves": [
+          "exp:sobeca"
+        ]
+      },
+      {
+        "domaine": "Métrés, côtes, lecture de plans",
+        "profondeur": "opérationnel",
+        "preuves": [
+          "exp:colas",
+          "exp:lherm"
+        ]
+      },
+      {
+        "domaine": "Gestion contractuelle et financière de chantier",
+        "profondeur": "formé et pratiqué",
+        "preuves": [
+          "edu:afpa-conducteur-travaux-tp",
+          "exp:lherm",
+          "exp:sobeca"
+        ]
+      },
+      {
+        "domaine": "Réglementation réseaux (AIPR) et sécurité (SST)",
+        "profondeur": "certifié",
+        "preuves": [
+          "edu:afpa-conducteur-travaux-tp"
+        ]
+      },
+      {
+        "domaine": "Maçonnerie, plâtrerie, second œuvre",
+        "profondeur": "exécution",
+        "preuves": [
+          "exp:tradi-design"
+        ]
+      }
     ]
   },
-
   "problemes_types": {
-    "_meta": { "src": "inferred", "trust": 75, "why": "Classes de problèmes que le parcours rend légitime à traiter. C'est la formulation la plus utile commercialement : un client achète la résolution d'un problème, pas un CV." },
+    "_meta": {
+      "src": "inferred",
+      "trust": 75,
+      "why": "Classes de problèmes que le parcours rend légitime à traiter. C'est la formulation la plus utile commercialement : un client achète la résolution d'un problème, pas un CV."
+    },
     "v": [
-      { "probleme": "« Les gens se perdent dans notre bâtiment, notre gare, notre site. »", "reponse": "Évaluation des stratégies de déplacement, analyse des points de repère, recommandations de signalétique et d'aménagement.", "preuves": ["exp:sncf", "exp:catie"], "force": "très forte" },
-      { "probleme": "« Nous devons mesurer un comportement ou une performance humaine, sans savoir comment. »", "reponse": "Conception de protocole, choix des mesures, passation, analyse statistique, rapport exploitable.", "preuves": ["exp:sncf", "exp:catie", "edu:master-psycho"], "force": "très forte" },
-      { "probleme": "« Nos outils d'évaluation sont trop longs et trop lourds. »", "reponse": "Unification de protocoles en un instrument unique, réduction de la charge pour l'utilisateur et l'opérateur.", "preuves": ["mémoire 2017-2018"], "force": "forte" },
-      { "probleme": "« Notre chantier VRD dérive en délai, budget ou sécurité. »", "reponse": "Reprise de la préparation, métrés, planning, coordination des équipes et sous-traitants, remise en conformité sécurité.", "preuves": ["exp:sobeca", "exp:lherm"], "force": "forte" },
-      { "probleme": "« Il faut expliquer une matière technique à un public non spécialiste et hétérogène. »", "reponse": "Vulgarisation et tutorat, éprouvés sur 6 classes de 18 à 60 ans.", "preuves": ["exp:um3-enseignement"], "force": "moyenne" },
-      { "probleme": "« Nous voulons croiser une donnée d'usage humain avec une réalité d'aménagement physique. »", "reponse": "Position rare : lit à la fois le protocole comportemental et le plan de chantier.", "preuves": ["ensemble du parcours"], "force": "différenciante, mais non encore démontrée sur un cas réel" }
+      {
+        "probleme": "« Les gens se perdent dans notre bâtiment, notre gare, notre site. »",
+        "reponse": "Évaluation des stratégies de déplacement, analyse des points de repère, recommandations de signalétique et d'aménagement.",
+        "preuves": [
+          "exp:sncf",
+          "exp:catie"
+        ],
+        "force": "très forte"
+      },
+      {
+        "probleme": "« Nous devons mesurer un comportement ou une performance humaine, sans savoir comment. »",
+        "reponse": "Conception de protocole, choix des mesures, passation, analyse statistique, rapport exploitable.",
+        "preuves": [
+          "exp:sncf",
+          "exp:catie",
+          "edu:master-psycho"
+        ],
+        "force": "très forte"
+      },
+      {
+        "probleme": "« Nos outils d'évaluation sont trop longs et trop lourds. »",
+        "reponse": "Unification de protocoles en un instrument unique, réduction de la charge pour l'utilisateur et l'opérateur.",
+        "preuves": [
+          "mémoire 2017-2018"
+        ],
+        "force": "forte"
+      },
+      {
+        "probleme": "« Notre chantier VRD dérive en délai, budget ou sécurité. »",
+        "reponse": "Reprise de la préparation, métrés, planning, coordination des équipes et sous-traitants, remise en conformité sécurité.",
+        "preuves": [
+          "exp:sobeca",
+          "exp:lherm"
+        ],
+        "force": "forte"
+      },
+      {
+        "probleme": "« Il faut expliquer une matière technique à un public non spécialiste et hétérogène. »",
+        "reponse": "Vulgarisation et tutorat, éprouvés sur 6 classes de 18 à 60 ans.",
+        "preuves": [
+          "exp:um3-enseignement"
+        ],
+        "force": "moyenne"
+      },
+      {
+        "probleme": "« Nous voulons croiser une donnée d'usage humain avec une réalité d'aménagement physique. »",
+        "reponse": "Position rare : lit à la fois le protocole comportemental et le plan de chantier.",
+        "preuves": [
+          "ensemble du parcours"
+        ],
+        "force": "différenciante, mais non encore démontrée sur un cas réel"
+      }
     ]
   },
-
   "capacites": {
-    "_meta": { "src": "inferred", "trust": 80, "why": "Ce qui peut être pris en charge AUJOURD'HUI, avec niveau d'autonomie. Distingue l'attesté du revendiqué." },
+    "_meta": {
+      "src": "inferred",
+      "trust": 80,
+      "why": "Ce qui peut être pris en charge AUJOURD'HUI, avec niveau d'autonomie. Distingue l'attesté du revendiqué."
+    },
     "autonome": [
       "Conduire une étude comportementale complète (protocole → rapport)",
       "Analyser des données quantitatives sous R ou JASP",
@@ -328,158 +963,484 @@
       "Publication scientifique (aucune publication attestée)"
     ],
     "revendique_non_atteste": {
-      "v": ["développement logiciel", "SIG et cartographie numérique", "conception 3D et fabrication", "outils et agents IA", "visualisation de données au-delà des graphiques statistiques"],
-      "_meta": { "src": "contradicted", "trust": 90, "why": "Revendiqué dans le positionnement Cognitorium, absent des deux CV. À étayer par des réalisations avant toute mise en avant devant un tiers." }
+      "v": [
+        "développement",
+        "conception 3D",
+        "outils et agents IA"
+      ],
+      "_meta": {
+        "src": "declared",
+        "trust": 75,
+        "why": "MISE À JOUR v3.1 : 3 ans de recherche personnelle déclarés (depuis ≈2023), en autodidacte, sans formation, sans diplôme, sans réalisation publique ni livrable montrable. Statut : pratique réelle mais non objectivable. Formulation autorisée : « pratique personnelle depuis trois ans ». Formulation interdite : toute mention de niveau, de maîtrise ou de compétence professionnelle."
+      }
+    },
+    "autodidaxie": {
+      "v": "Trois ans de recherche personnelle continue en développement, 3D et IA, en parallèle d'une reconversion BTP puis d'une période sans emploi.",
+      "_meta": {
+        "src": "declared",
+        "trust": 85,
+        "why": "Ce fait vaut moins comme compétence technique que comme PREUVE DE PERSISTANCE : trois ans d'apprentissage non encadré et non rémunéré. C'est un signal fort de motivation intrinsèque, cohérent avec la « curiosité intellectuelle » du CV 2021."
+      }
     }
   },
-
   "outils": {
-    "statistiques": { "v": ["R", "JASP"], "_meta": { "src": "cv", "trust": 100 } },
-    "experimentation": { "v": ["OpenSesame", "E-Prime"], "_meta": { "src": "cv", "trust": 100 } },
-    "oculometrie": { "v": ["Tobii"], "_meta": { "src": "cv", "trust": 100, "why": "DÉCOUVERTE. L'eye-tracking est une compétence rare et directement monnayable en UX research, en ergonomie et en études d'attention visuelle. Totalement absente de la fiche v2." } },
-    "gestion_projet": { "v": ["Diagramme de Gantt"], "_meta": { "src": "cv", "trust": 100 } },
-    "bureautique": { "v": ["Pack Office"], "_meta": { "src": "cv", "trust": 100 } },
-    "absents_notables": { "v": ["aucun langage de programmation", "aucun SIG (QGIS, ArcGIS)", "aucun CAO/DAO (AutoCAD, Covadis)", "aucun outil BIM", "aucun outil BI", "aucun outil IA"], "_meta": { "src": "inferred", "trust": 95, "why": "Absence sur DEUX CV à 4 ans d'écart. LACUNE LA PLUS STRUCTURANTE : l'absence d'AutoCAD ou Covadis est un handicap en conduite de travaux ; l'absence de tout langage bloque le positionnement Cognitorium." } }
+    "statistiques": {
+      "v": [
+        "R",
+        "JASP"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "experimentation": {
+      "v": [
+        "OpenSesame",
+        "E-Prime"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "oculometrie": {
+      "v": [
+        "Tobii"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100,
+        "why": "DÉCOUVERTE. L'eye-tracking est une compétence rare et directement monnayable en UX research, en ergonomie et en études d'attention visuelle. Totalement absente de la fiche v2."
+      }
+    },
+    "gestion_projet": {
+      "v": [
+        "Diagramme de Gantt"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "bureautique": {
+      "v": [
+        "Pack Office"
+      ],
+      "_meta": {
+        "src": "cv",
+        "trust": 100
+      }
+    },
+    "absents_notables": {
+      "v": [
+        "aucun langage de programmation",
+        "aucun SIG (QGIS, ArcGIS)",
+        "aucun CAO/DAO (AutoCAD, Covadis)",
+        "aucun outil BIM",
+        "aucun outil BI",
+        "aucun outil IA"
+      ],
+      "_meta": {
+        "src": "inferred",
+        "trust": 95,
+        "why": "Absence sur DEUX CV à 4 ans d'écart. LACUNE LA PLUS STRUCTURANTE : l'absence d'AutoCAD ou Covadis est un handicap en conduite de travaux ; l'absence de tout langage bloque le positionnement Cognitorium."
+      }
+    },
+    "cao_dao": {
+      "v": "Lecture et compréhension de plans, sans production",
+      "_meta": {
+        "src": "declared",
+        "trust": 90,
+        "why": "Déclaré : « assez pour lire et comprendre ». Suffisant pour suivre un chantier et dialoguer avec le bureau d'études ; insuffisant pour produire ou modifier un plan. NE JAMAIS revendiquer la maîtrise d'AutoCAD ou Covadis."
+      }
+    }
   },
-
   "comparaison_cv": {
-    "_meta": { "src": "inferred", "trust": 85, "why": "L'écart entre deux CV à 4 ans d'intervalle est un signal, pas un détail." },
+    "_meta": {
+      "src": "inferred",
+      "trust": 85,
+      "why": "L'écart entre deux CV à 4 ans d'intervalle est un signal, pas un détail."
+    },
     "2021_specialise": {
       "cible": "Ingénieur facteur humain / recherche",
       "structure": "compétences d'abord, puis formation, puis expériences, puis détail des travaux de recherche",
-      "met_en_avant": ["4 mémoires détaillés avec résumés", "encadrants nommés", "outils scientifiques (R, E-Prime, OpenSesame, JASP, Tobii)", "notions de russe", "curiosité intellectuelle", "rigueur méthodologique", "prise de recul"],
+      "met_en_avant": [
+        "4 mémoires détaillés avec résumés",
+        "encadrants nommés",
+        "outils scientifiques (R, E-Prime, OpenSesame, JASP, Tobii)",
+        "notions de russe",
+        "curiosité intellectuelle",
+        "rigueur méthodologique",
+        "prise de recul"
+      ],
       "traite_le_btp": "en second plan, comme jobs (maçon, plaquiste)"
     },
     "2025_generaliste": {
       "cible": "Conduite de travaux TP",
       "structure": "CV américain classique — formation, expériences antéchronologiques, compétences",
-      "met_en_avant": ["AFPA et habilitations SST/AIPR", "expériences BTP avec envergure chiffrée (4 équipes)", "gestion contractuelle et financière", "relationnel client"],
+      "met_en_avant": [
+        "AFPA et habilitations SST/AIPR",
+        "expériences BTP avec envergure chiffrée (4 équipes)",
+        "gestion contractuelle et financière",
+        "relationnel client"
+      ],
       "traite_la_recherche": "réduit à deux lignes « Chercheur cognitif », sans les sujets ni les encadrants"
     },
     "evolutions_notables": [
-      { "type": "bascule de positionnement", "constat": "Passage complet de la recherche au BTP. Les deux CV visent des métiers sans recouvrement.", "lecture": "Reconversion assumée et menée à terme, pas une hésitation." },
-      { "type": "perte d'information", "constat": "Le CV 2025 fait disparaître les outils scientifiques, les sujets de recherche, les encadrants, les 160 et 60 participants, le russe.", "lecture": "PROBLÈME. Ces éléments sont précisément ce qui rend le profil unique. Le CV 2025 vend un aide conducteur de travaux parmi d'autres, en effaçant ce qui n'a pas d'équivalent." },
-      { "type": "gain", "constat": "Le CV 2025 ajoute l'envergure chiffrée (nombre d'équipes, sous-traitants) et les habilitations réglementaires.", "lecture": "Bonne pratique, à conserver et à étendre à la partie recherche." },
-      { "type": "trou de parcours", "constat": "2019 (fin du Master) → 2021 (plaquiste, VIDEBA) : deux ans peu documentés. 2020 est absent des deux CV.", "lecture": "Point à préparer : un recruteur le verra. Une explication factuelle suffit." },
-      { "type": "signal récent", "constat": "2024-2025 auxiliaire de vie, après une progression BTP jusqu'à 4 équipes chez SOBECA.", "lecture": "Rupture de trajectoire à expliquer. Peut correspondre au « parcours personnel exigeant » évoqué — ne rien inférer au-delà." }
+      {
+        "type": "bascule de positionnement",
+        "constat": "Passage complet de la recherche au BTP. Les deux CV visent des métiers sans recouvrement.",
+        "lecture": "Reconversion assumée et menée à terme, pas une hésitation."
+      },
+      {
+        "type": "perte d'information",
+        "constat": "Le CV 2025 fait disparaître les outils scientifiques, les sujets de recherche, les encadrants, les 160 et 60 participants, le russe.",
+        "lecture": "PROBLÈME. Ces éléments sont précisément ce qui rend le profil unique. Le CV 2025 vend un aide conducteur de travaux parmi d'autres, en effaçant ce qui n'a pas d'équivalent."
+      },
+      {
+        "type": "gain",
+        "constat": "Le CV 2025 ajoute l'envergure chiffrée (nombre d'équipes, sous-traitants) et les habilitations réglementaires.",
+        "lecture": "Bonne pratique, à conserver et à étendre à la partie recherche."
+      },
+      {
+        "type": "trou de parcours",
+        "constat": "2019 (fin du Master) → 2021 (plaquiste, VIDEBA) : deux ans peu documentés. 2020 est absent des deux CV.",
+        "lecture": "Point à préparer : un recruteur le verra. Une explication factuelle suffit."
+      },
+      {
+        "type": "signal récent",
+        "constat": "2024-2025 auxiliaire de vie, après une progression BTP jusqu'à 4 équipes chez SOBECA.",
+        "lecture": "Rupture de trajectoire à expliquer. Peut correspondre au « parcours personnel exigeant » évoqué — ne rien inférer au-delà."
+      }
     ],
     "recommandation_centrale": {
       "v": "Ni le CV 2021 ni le CV 2025 ne portent le profil réel. Le premier cache le terrain, le second cache la science. Il manque un troisième document qui assume les deux — c'est exactement ce que la fiche d'identité doit produire.",
-      "_meta": { "src": "inferred", "trust": 85 }
+      "_meta": {
+        "src": "inferred",
+        "trust": 85
+      }
     }
   },
-
   "chronologie": {
-    "_meta": { "src": "cv", "trust": 95, "why": "Reconstituée par croisement des deux CV." },
+    "_meta": {
+      "src": "cv",
+      "trust": 95,
+      "why": "Reconstituée par croisement des deux CV."
+    },
     "v": [
-      { "annee": "2013", "evenement": "Bac STI2D SIN, Lycée Joliot-Curie, Sète", "axe": "formation" },
-      { "annee": "2013-2016", "evenement": "Licence de psychologie, UPV3", "axe": "cognition" },
-      { "annee": "2015-2016", "evenement": "Mémoire — orientation endogène de l'attention", "axe": "cognition" },
-      { "annee": "2016", "evenement": "Manœuvre, Tradi-design, Angoulême", "axe": "btp" },
-      { "annee": "2016-2017", "evenement": "Master 1 + mémoire jeux vidéo et attention", "axe": "cognition" },
-      { "annee": "2017", "evenement": "Aide maçon, Tradi-design", "axe": "btp" },
-      { "annee": "2017-2019", "evenement": "Master 2 + représentant étudiant UFR5", "axe": "cognition" },
-      { "annee": "2018", "evenement": "Stage CATIE Bordeaux (900 h) — cognition spatiale et itinéraires", "axe": "cognition" },
-      { "annee": "2018", "evenement": "Enseignant tuteur UPV3 — 6 classes", "axe": "transmission" },
-      { "annee": "2019", "evenement": "Stage SNCF Innovation & Recherche Paris (900 h) — orientation enrichie", "axe": "cognition" },
-      { "annee": "2019", "evenement": "Obtention du Master", "axe": "formation" },
-      { "annee": "2020", "evenement": "Non documenté", "axe": "lacune" },
-      { "annee": "2021", "evenement": "Plaquiste Tradi-design (80 m²) ; équipier polyvalent VIDEBA (240 h)", "axe": "btp" },
-      { "annee": "2022", "evenement": "Stage aide chef de chantier, COLAS, Sète", "axe": "btp" },
-      { "annee": "2023", "evenement": "Formation conducteur de travaux TP, AFPA Toulouse — SST, AIPR encadrant", "axe": "formation" },
-      { "annee": "2023", "evenement": "Stage aide conducteur de travaux VRD, LHERM TP, Toulouse", "axe": "btp" },
-      { "annee": "2023-2024", "evenement": "Aide conducteur de travaux / chef de chantier, SOBECA (FIRALP), Toulouse — 4 équipes", "axe": "btp" },
-      { "annee": "2024-2025", "evenement": "Auxiliaire de vie, Objectif Émergence, Sète", "axe": "social" },
-      { "annee": "2026", "evenement": "Conception de Cognitorium / Gobonet", "axe": "numerique" }
+      {
+        "annee": "2013",
+        "evenement": "Bac STI2D SIN, Lycée Joliot-Curie, Sète",
+        "axe": "formation"
+      },
+      {
+        "annee": "2013-2016",
+        "evenement": "Licence de psychologie, UPV3",
+        "axe": "cognition"
+      },
+      {
+        "annee": "2015-2016",
+        "evenement": "Mémoire — orientation endogène de l'attention",
+        "axe": "cognition"
+      },
+      {
+        "annee": "2016",
+        "evenement": "Manœuvre, Tradi-design, Angoulême",
+        "axe": "btp"
+      },
+      {
+        "annee": "2016-2017",
+        "evenement": "Master 1 + mémoire jeux vidéo et attention",
+        "axe": "cognition"
+      },
+      {
+        "annee": "2017",
+        "evenement": "Aide maçon, Tradi-design",
+        "axe": "btp"
+      },
+      {
+        "annee": "2017-2019",
+        "evenement": "Master 2 + représentant étudiant UFR5",
+        "axe": "cognition"
+      },
+      {
+        "annee": "2018",
+        "evenement": "Stage CATIE Bordeaux (900 h) — cognition spatiale et itinéraires",
+        "axe": "cognition"
+      },
+      {
+        "annee": "2018",
+        "evenement": "Enseignant tuteur UPV3 — 6 classes",
+        "axe": "transmission"
+      },
+      {
+        "annee": "2019",
+        "evenement": "Stage SNCF Innovation & Recherche Paris (900 h) — orientation enrichie",
+        "axe": "cognition"
+      },
+      {
+        "annee": "2019",
+        "evenement": "Obtention du Master",
+        "axe": "formation"
+      },
+      {
+        "annee": "2020",
+        "evenement": "Non documenté",
+        "axe": "lacune"
+      },
+      {
+        "annee": "2021",
+        "evenement": "Plaquiste Tradi-design (80 m²) ; équipier polyvalent VIDEBA (240 h)",
+        "axe": "btp"
+      },
+      {
+        "annee": "2022",
+        "evenement": "Stage aide chef de chantier, COLAS, Sète",
+        "axe": "btp"
+      },
+      {
+        "annee": "2023",
+        "evenement": "Formation conducteur de travaux TP, AFPA Toulouse — SST, AIPR encadrant",
+        "axe": "formation"
+      },
+      {
+        "annee": "2023",
+        "evenement": "Stage aide conducteur de travaux VRD, LHERM TP, Toulouse",
+        "axe": "btp"
+      },
+      {
+        "annee": "2023-2024",
+        "evenement": "Aide conducteur de travaux / chef de chantier, SOBECA (FIRALP), Toulouse — 4 équipes",
+        "axe": "btp"
+      },
+      {
+        "annee": "2024-2025",
+        "evenement": "Auxiliaire de vie, Objectif Émergence, Sète",
+        "axe": "social"
+      },
+      {
+        "annee": "2026",
+        "evenement": "Conception de Cognitorium / Gobonet",
+        "axe": "numerique"
+      }
     ]
   },
-
   "projets": [
     {
       "id": "proj:cognitorium",
       "nom": "Cognitorium",
-      "statut": { "v": "conception, aucun livrable attesté", "_meta": { "src": "inferred", "trust": 70 } },
-      "description": { "v": "Environnement destiné à représenter et connecter connaissances, compétences, apprentissages, métiers, projets, territoires et intelligences humaines et artificielles.", "_meta": { "src": "declared", "trust": 100 } },
+      "statut": {
+        "v": "conception, aucun livrable attesté",
+        "_meta": {
+          "src": "inferred",
+          "trust": 70
+        }
+      },
+      "description": {
+        "v": "Environnement destiné à représenter et connecter connaissances, compétences, apprentissages, métiers, projets, territoires et intelligences humaines et artificielles.",
+        "_meta": {
+          "src": "declared",
+          "trust": 100
+        }
+      },
       "filiation_cognitive": {
         "v": "Cognitorium est la transposition à grande échelle du sujet de recherche de Näthan : représenter un espace, y placer des repères, permettre à quelqu'un de s'y orienter et de choisir un itinéraire. Ce qu'il étudiait sur des participants en milieu clos, il cherche à le construire pour des connaissances et des territoires.",
-        "_meta": { "src": "inferred", "trust": 75, "why": "Lecture nouvelle, permise par les CV. Elle donne au projet une généalogie intellectuelle crédible au lieu d'une vision hors-sol." }
+        "_meta": {
+          "src": "inferred",
+          "trust": 75,
+          "why": "Lecture nouvelle, permise par les CV. Elle donne au projet une généalogie intellectuelle crédible au lieu d'une vision hors-sol."
+        }
       },
-      "risque": { "v": "Aucune compétence de développement attestée. Le projet suppose des savoir-faire (modélisation de graphes, code, visualisation interactive) qui n'apparaissent sur aucun CV.", "_meta": { "src": "inferred", "trust": 85 } }
+      "risque": {
+        "v": "Aucune compétence de développement attestée. Le projet suppose des savoir-faire (modélisation de graphes, code, visualisation interactive) qui n'apparaissent sur aucun CV.",
+        "_meta": {
+          "src": "inferred",
+          "trust": 85
+        }
+      }
     },
-    { "id": "proj:gobonet", "nom": "Gobonet", "role": "plateforme hôte de cette fiche", "_meta": { "src": "declared", "trust": 95 } },
-    { "id": "proj:watchtower", "nom": "watchtower", "statut": "dépôt GitHub public, README seul", "_meta": { "src": "verified", "trust": 100 } }
+    {
+      "id": "proj:gobonet",
+      "nom": "Gobonet",
+      "role": "plateforme hôte de cette fiche",
+      "_meta": {
+        "src": "declared",
+        "trust": 95
+      }
+    },
+    {
+      "id": "proj:watchtower",
+      "nom": "watchtower",
+      "statut": "dépôt GitHub public, README seul",
+      "_meta": {
+        "src": "verified",
+        "trust": 100
+      }
+    }
   ],
-
   "audiences": [
     {
       "id": "aud:ux-research",
       "cible": "UX research, ergonomie, facteur humain",
       "priorite": 1,
       "accroche": "Psychologue cognitiviste spécialisé en attention et cognition spatiale. J'ai conçu et conduit 6 études (220 participants) pour la SNCF et le CATIE sur l'orientation, les points de repère et les stratégies de déplacement. Eye-tracking, R, protocoles expérimentaux.",
-      "mettre_en_avant": ["exp:sncf", "exp:catie", "outils.oculometrie", "les 4 mémoires", "m:outil-mesure"],
-      "mettre_en_retrait": ["auxiliaire de vie", "second œuvre"],
-      "_meta": { "src": "inferred", "trust": 90, "why": "AUDIENCE LA PLUS SOLIDE, révélée par les CV et absente de la v2. Profil directement employable : l'eye-tracking et la conduite d'études sont exactement ce que recherchent les cabinets d'UX research et les services ergonomie." }
+      "mettre_en_avant": [
+        "exp:sncf",
+        "exp:catie",
+        "outils.oculometrie",
+        "les 4 mémoires",
+        "m:outil-mesure"
+      ],
+      "mettre_en_retrait": [
+        "auxiliaire de vie",
+        "second œuvre"
+      ],
+      "_meta": {
+        "src": "inferred",
+        "trust": 90,
+        "why": "AUDIENCE LA PLUS SOLIDE, révélée par les CV et absente de la v2. Profil directement employable : l'eye-tracking et la conduite d'études sont exactement ce que recherchent les cabinets d'UX research et les services ergonomie."
+      }
     },
     {
       "id": "aud:btp",
       "cible": "Entreprise BTP, TP, VRD, réseaux",
       "priorite": 2,
       "accroche": "Conducteur de travaux TP formé à l'AFPA, SST et AIPR encadrant. Expérience de préparation, suivi et clôture de chantiers VRD et réseaux secs jusqu'à 4 équipes et sous-traitants chez SOBECA (groupe FIRALP), après COLAS et LHERM TP.",
-      "mettre_en_avant": ["exp:sobeca", "habilitations SST et AIPR", "envergure chiffrée", "COLAS et FIRALP comme références", "permis B et véhicule"],
-      "mettre_en_retrait": ["Cognitorium", "détail des mémoires"],
-      "point_de_blocage": { "v": "Absence d'AutoCAD, Covadis, MS Project ou outil BIM. C'est le premier filtre technique du secteur.", "_meta": { "src": "inferred", "trust": 85 } }
+      "mettre_en_avant": [
+        "exp:sobeca",
+        "habilitations SST et AIPR",
+        "envergure chiffrée",
+        "COLAS et FIRALP comme références",
+        "permis B et véhicule"
+      ],
+      "mettre_en_retrait": [
+        "Cognitorium",
+        "détail des mémoires"
+      ],
+      "point_de_blocage": {
+        "v": "Lecture de plans acquise, production CAO non. Se positionner sur le suivi, la coordination et le terrain — jamais sur l'étude ou le métré produit. Un « je lis les plans et je dialogue avec le BE » est honnête et suffisant pour un poste d'aide conducteur ou de chef de chantier.",
+        "_meta": {
+          "src": "declared",
+          "trust": 90
+        }
+      }
     },
     {
       "id": "aud:transport-mobilite",
       "cible": "Opérateurs de transport, gares, aéroports, aménageurs, signalétique",
       "priorite": 3,
       "accroche": "J'ai travaillé à la direction Innovation & Recherche de la SNCF sur la catégorisation des points de repère en situation d'orientation, et au CATIE sur l'optimisation des itinéraires en milieu clos. Je comprends aussi le chantier qui réalise ces aménagements.",
-      "mettre_en_avant": ["exp:sncf", "exp:catie", "croisement wayfinding × VRD"],
-      "_meta": { "src": "inferred", "trust": 85, "why": "AUDIENCE À FORT POTENTIEL, invisible en v2. C'est le seul secteur où les deux moitiés du parcours servent simultanément et où le croisement devient un avantage décisif plutôt qu'une curiosité." }
+      "mettre_en_avant": [
+        "exp:sncf",
+        "exp:catie",
+        "croisement wayfinding × VRD"
+      ],
+      "_meta": {
+        "src": "inferred",
+        "trust": 85,
+        "why": "AUDIENCE À FORT POTENTIEL, invisible en v2. C'est le seul secteur où les deux moitiés du parcours servent simultanément et où le croisement devient un avantage décisif plutôt qu'une curiosité."
+      }
     },
     {
       "id": "aud:collectivite",
       "cible": "Collectivité, aménagement, territoire",
       "priorite": 4,
       "accroche": "Double lecture d'un territoire : la cognition des usagers (orientation, repères, accessibilité) et la réalité des travaux (VRD, réseaux, sécurité). Ancré à Frontignan, Bassin de Thau.",
-      "mettre_en_avant": ["exp:sncf", "exp:sobeca", "mandat de représentant étudiant", "ancrage local"],
-      "point_de_blocage": { "v": "Statut juridique et références en marché public inconnus.", "_meta": { "src": "unknown", "trust": 0 } }
+      "mettre_en_avant": [
+        "exp:sncf",
+        "exp:sobeca",
+        "mandat de représentant étudiant",
+        "ancrage local"
+      ],
+      "point_de_blocage": {
+        "v": "Statut juridique et références en marché public inconnus.",
+        "_meta": {
+          "src": "unknown",
+          "trust": 0
+        }
+      }
     },
     {
       "id": "aud:tech-data",
       "cible": "Entreprise tech, data, produit",
       "priorite": 5,
       "accroche": "Formation à la mesure du comportement humain : protocoles, statistiques sous R, eye-tracking. Je sais transformer une question produit floue en dispositif de mesure exploitable.",
-      "point_de_blocage": { "v": "Aucun langage de programmation ni outil de data engineering attesté. Se positionner en research/insight, pas en développement.", "_meta": { "src": "inferred", "trust": 90 } }
+      "point_de_blocage": {
+        "v": "Trois ans de pratique personnelle en dev/3D/IA, sans livrable public. Inexploitable en entretien tant que rien n'est montrable. Se positionner en research/insight, où le Master et l'eye-tracking suffisent seuls.",
+        "_meta": {
+          "src": "declared",
+          "trust": 85
+        }
+      }
     },
     {
       "id": "aud:financeur",
       "cible": "Incubateur, financeur de Cognitorium",
       "priorite": 6,
-      "point_de_blocage": { "v": "Aucun livrable, aucune compétence de développement attestée, aucun modèle économique. Audience prématurée en l'état.", "_meta": { "src": "inferred", "trust": 90 } }
+      "point_de_blocage": {
+        "v": "Aucun livrable, aucun revenu, aucun utilisateur, aucun modèle économique. Audience prématurée — la rouvrir uniquement après un premier livrable montrable.",
+        "_meta": {
+          "src": "inferred",
+          "trust": 90
+        }
+      }
     }
   ],
-
   "regles_editoriales": {
     "parcours_personnel": {
       "regle": "Citer uniquement par la compétence produite : responsabilité, adaptation, tenue sous contrainte.",
-      "interdit": ["raconter les situations", "attribuer un impact psychologique", "interprétation médicale ou diagnostique", "registre compassionnel", "inférer la nature des événements"],
+      "interdit": [
+        "raconter les situations",
+        "attribuer un impact psychologique",
+        "interprétation médicale ou diagnostique",
+        "registre compassionnel",
+        "inférer la nature des événements"
+      ],
       "formulation_type": "Un parcours personnel ayant demandé une forte capacité de responsabilité et d'adaptation.",
-      "_meta": { "src": "declared", "trust": 100, "why": "Contrainte forte. Prévaut sur toute logique de complétion." }
+      "_meta": {
+        "src": "declared",
+        "trust": 100,
+        "why": "Contrainte forte. Prévaut sur toute logique de complétion."
+      }
     },
     "experience_auxiliaire_de_vie": {
       "regle": "Expérience figurant au CV, donc mentionnable. Ne jamais spéculer sur ses motivations ni la relier au parcours personnel.",
-      "valorisation_possible": ["relation d'aide", "fiabilité", "autonomie", "sens des responsabilités", "gestion administrative"],
-      "_meta": { "src": "inferred", "trust": 85, "why": "Point de vigilance : la tentation de l'expliquer est forte, l'information n'existe pas." }
+      "valorisation_possible": [
+        "relation d'aide",
+        "fiabilité",
+        "autonomie",
+        "sens des responsabilités",
+        "gestion administrative"
+      ],
+      "_meta": {
+        "src": "inferred",
+        "trust": 85,
+        "why": "Point de vigilance : la tentation de l'expliquer est forte, l'information n'existe pas."
+      }
     },
     "annee_2020": {
       "regle": "Absente des deux CV. Ne pas la commenter ni l'inventer. Si un tiers interroge, renvoyer la question à Näthan.",
-      "_meta": { "src": "unknown", "trust": 0 }
+      "_meta": {
+        "src": "unknown",
+        "trust": 0
+      }
     },
-    "ton": { "attendu": ["sobre", "précis", "chiffré", "concret"], "a_eviter": ["superlatifs", "jargon creux", "surpromesse"] },
+    "ton": {
+      "attendu": [
+        "sobre",
+        "précis",
+        "chiffré",
+        "concret"
+      ],
+      "a_eviter": [
+        "superlatifs",
+        "jargon creux",
+        "surpromesse"
+      ]
+    },
     "exposition_des_inferences": "Tout fait `inferred` se verbalise au conditionnel. Tout fait `trust < 60` ne s'expose pas à un tiers."
   },
-
   "instructions_agent": {
     "au_chargement": "Source de vérité sur l'identité, le parcours et les règles de discours de Näthan Cabrol.",
     "avant_de_rediger": "1) Identifier l'audience et sa priorité. 2) Appliquer accroche et mises en avant. 3) Lire le point de blocage. 4) Filtrer tout fait trust < 70 pour un tiers. 5) Privilégier systématiquement les faits chiffrés des CV aux formulations de vision.",
@@ -488,30 +1449,147 @@
       "citer les chiffres attestés : 220 participants, 6 expériences, 4 équipes, 900 h de stage",
       "nommer les références : SNCF, CATIE, COLAS, FIRALP, Paul-Valéry",
       "présenter le fil directeur (l'orientation dans l'espace) avant la chronologie",
-      "distinguer l'attesté du revendiqué"
+      "distinguer l'attesté du revendiqué",
+      "tenir compte de la contrainte matérielle réelle : pas de capital, pas d'équipe, un ordinateur"
     ],
     "jamais": [
       "écrire Säthan ni Nathan sans tréma dans un document soigné",
       "présenter développement, SIG, 3D ou IA comme des compétences acquises",
       "présenter Cognitorium comme un produit existant",
       "spéculer sur 2020 ou sur les motivations du poste d'auxiliaire de vie",
-      "franchir les interdits de regles_editoriales.parcours_personnel"
+      "franchir les interdits de regles_editoriales.parcours_personnel",
+      "mentionner la « mégacorp » ou la vision long terme devant un recruteur, un client ou un acheteur public",
+      "revendiquer une maîtrise d'AutoCAD, Covadis ou d'un logiciel 3D : lecture de plans uniquement"
     ]
   },
-
   "lacunes": {
     "critiques": [
-      { "champ": "outils.cao_dao", "question": "Maîtrises-tu AutoCAD, Covadis, MS Project ou un outil BIM ? C'est le premier filtre en conduite de travaux.", "impact": "Bloque l'audience BTP au-delà de l'aide conducteur." },
-      { "champ": "capacites.revendique_non_atteste", "question": "Sur quoi reposent concrètement « développement », « cartographie », « 3D » et « IA » ? Projets, formations, réalisations ?", "impact": "Bloque Cognitorium et l'audience tech." },
-      { "champ": "situation_actuelle", "question": "Que fais-tu depuis 2025 ? En poste, en recherche d'emploi, en création d'activité ?", "impact": "Aucune orientation possible sans cela." },
-      { "champ": "objectif_2026", "question": "Cherches-tu un emploi (lequel, où), une mission freelance, ou à financer Cognitorium ?", "impact": "Détermine quelle audience activer." }
+      {
+        "champ": "premier_livrable",
+        "question": "Quelle est la plus petite chose que tu pourrais finir et montrer en deux semaines ? Une visualisation, une maquette, une page. Sans cela, ni Cognitorium ni la mégacorp n'ont de première marche.",
+        "impact": "Bloque absolument tout : emploi tech, freelance, financeur, crédibilité du projet."
+      },
+      {
+        "champ": "revenu",
+        "question": "De quoi vis-tu actuellement, et jusqu'à quand ? Cela détermine s'il faut viser un emploi rapide ou si tu as du temps devant toi.",
+        "impact": "Détermine la stratégie entière. Aucune recommandation sérieuse sans cette information."
+      },
+      {
+        "champ": "contenu_des_3_ans",
+        "question": "Concrètement, ces trois ans de recherche perso : quels langages, quels logiciels 3D, quels outils IA, quels essais menés jusqu'au bout ?",
+        "impact": "Sans détail, ces trois ans restent inexploitables dans un discours."
+      }
     ],
     "importantes": [
-      { "champ": "titre_psychologue", "question": "Ton M2 ouvre-t-il au titre de psychologue ? Statut actuellement incertain." },
-      { "champ": "annee_2020", "question": "Que s'est-il passé en 2020 ? Un recruteur le remarquera." },
-      { "champ": "publications", "question": "Un de tes travaux a-t-il donné lieu à publication, poster ou communication ?" },
-      { "champ": "mobilite_geographique", "question": "Prêt à retourner sur Toulouse, Montpellier, ailleurs ? Ou strictement Bassin de Thau ?" },
-      { "champ": "envergure_chantiers", "question": "Montants, linéaires ou surfaces des chantiers SOBECA ? Chiffrer renforcerait beaucoup le CV BTP." }
+      {
+        "champ": "mobilite_geographique",
+        "question": "Prêt à repartir sur Toulouse ou Montpellier, ou strictement Bassin de Thau ?"
+      },
+      {
+        "champ": "titre_psychologue",
+        "question": "Ton M2 ouvre-t-il au titre de psychologue ?"
+      },
+      {
+        "champ": "annee_2020",
+        "question": "Que s'est-il passé en 2020 ? Un recruteur le remarquera."
+      },
+      {
+        "champ": "publications",
+        "question": "Un de tes travaux a-t-il donné lieu à publication, poster ou communication ?"
+      },
+      {
+        "champ": "envergure_chantiers",
+        "question": "Montants ou linéaires des chantiers SOBECA ? Chiffrer renforcerait le CV BTP."
+      }
     ]
+  },
+  "situation_actuelle": {
+    "_meta": {
+      "src": "declared",
+      "trust": 95,
+      "why": "Déclaré en conversation le 2026-09-05. Remplace la lacune critique n°3 de la v3.0."
+    },
+    "statut": {
+      "v": "Demandeur d'emploi",
+      "_meta": {
+        "src": "declared",
+        "trust": 95
+      }
+    },
+    "activite_reelle": {
+      "v": "Veille scientifique et recherche d'informations tous azimuts ; construction de Cognitorium",
+      "_meta": {
+        "src": "declared",
+        "trust": 95,
+        "why": "Période non vide : activité intellectuelle soutenue, mais sans cadre ni livrable externe. C'est un temps de recherche auto-dirigée."
+      }
+    },
+    "depuis": {
+      "v": "2025 (fin du poste d'auxiliaire de vie)",
+      "_meta": {
+        "src": "inferred",
+        "trust": 80
+      }
+    },
+    "objectif_2026": {
+      "v": "Aucun objectif court terme formulé. 2026 est considérée comme presque finie.",
+      "_meta": {
+        "src": "declared",
+        "trust": 90,
+        "why": "POINT DE VIGILANCE : absence d'objectif à horizon court. Toute l'énergie est projetée sur le très long terme."
+      }
+    },
+    "ressource_disponible": {
+      "v": "Un ordinateur et du temps",
+      "_meta": {
+        "src": "declared",
+        "trust": 95,
+        "why": "Formulé par l'intéressé : « ordi and a dream ». Contrainte matérielle à prendre au sérieux dans toute recommandation : pas de capital, pas d'équipe, pas de structure."
+      }
+    }
+  },
+  "horizon_long_terme": {
+    "_meta": {
+      "src": "declared",
+      "trust": 90,
+      "why": "Déclaré en conversation. Ambition assumée, formulée sans détour."
+    },
+    "vision": {
+      "v": "Rendre le monde meilleur grâce à l'IA, la robotique et les outils disponibles.",
+      "_meta": {
+        "src": "declared",
+        "trust": 95
+      }
+    },
+    "forme_cible": {
+      "v": "Une mégacorp — organisation de très grande échelle",
+      "_meta": {
+        "src": "declared",
+        "trust": 90
+      }
+    },
+    "point_de_depart_assume": {
+      "v": "« Ordi and a dream » — début seulement, aucun moyen au-delà d'un ordinateur.",
+      "_meta": {
+        "src": "declared",
+        "trust": 95
+      }
+    },
+    "lecture_agent": {
+      "v": "Cette ambition est le moteur, pas un argument de vente. Elle se dit à un partenaire de long terme ou dans un contexte personnel ; jamais à un recruteur, un client de mission ou un acheteur public, où elle produirait l'effet inverse de celui recherché.",
+      "_meta": {
+        "src": "inferred",
+        "trust": 85,
+        "why": "Règle de discours. L'écart entre l'ambition affichée et les moyens actuels est massif et immédiatement visible pour un tiers."
+      }
+    },
+    "ecart_a_combler": {
+      "v": "Entre « demandeur d'emploi avec un ordinateur » et « mégacorp », il manque toute la chaîne intermédiaire : un revenu, un premier livrable, un premier utilisateur, une première vente. Aucune de ces étapes n'est actuellement engagée.",
+      "_meta": {
+        "src": "inferred",
+        "trust": 85,
+        "why": "Observation critique à transmettre, pas à masquer. La vision est cohérente ; le premier pas manque."
+      }
+    }
   }
 }
