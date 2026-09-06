@@ -135,6 +135,27 @@ function describeError(error) {
  * Initializes CesiumJS with Google Photorealistic 3D Tiles,
  * style system, intelligence HUD, location presets, and share links.
  */
+/* ⚠ Garde-fous posés après le bug de l'itération 10 : deux fonctions
+   `rendreListe` dans le même scope — la seconde écrasait la première et
+   touchait une `const` encore en zone morte temporelle. Une seule exception
+   privait alors l'application du lanceur, du poste, d'INTEL et de dix autres
+   modules d'un coup. `proteger` isole désormais chaque module ; `elDe`
+   récupère un élément sans jamais jeter si le module parent est absent. */
+function proteger(nom, fn) {
+  try { return fn(); } catch (e) {
+    console.error(`[watchtower] ${nom}:`, e);
+    try { window.__wtToast?.(`⚠ ${nom} indisponible — ouvre F3 → diagnostic`); } catch { /* trop tôt au démarrage */ }
+    return null;
+  }
+}
+function elDe(obj, ...chemin) {
+  try {
+    let v = obj;
+    for (const k of chemin) v = v?.[k];
+    return v && v.element ? v.element : null;
+  } catch { return null; }
+}
+
 async function init() {
   // 🐞 Capture d'erreurs AVANT tout : si un module jette au démarrage, tout
   // ce qui suit dans cette fonction n'existe pas — le diagnostic (touche F3)
@@ -446,20 +467,20 @@ async function init() {
     } catch (e) { console.error('[watchtower] boussole:', e); }
     // Dock MobiGlas : TOUTES les options en bas, par catégories de fonctions.
     try {
-      const chat = initChatConsole(viewer, {
-        affichage: window.__godsEyeView.watchtower?.displayOptions,
-      });
+      const chat = proteger('chat / console', () => initChatConsole(viewer, {
+        affichage: window.__godsEy
+      }))
       // 🚨 MODE URGENCE : « /urgence » — temps gelé, mascotte qui veille, chat
       // en grand au centre, procédure officielle + secours proches + itinéraire
       // le plus rapide + guidage pas à pas. Le panneau du chat est résolu à la
       // volée (#wt-dock-chat) : le dock n'existe pas encore ici.
       const urgence = initUrgenceMode(viewer, {
-        dire: (t) => chat.dire(t),
+        dire: (t) => chat?.dire?.(t),
         surMessage: (m) => window.__wtToast?.(m),
-        geocoder: chat.geocoder,
+        geocoder: chat?.geocoder,
       });
       window.__godsEyeView.urgence = urgence;
-      chat.setUrgence(urgence);
+      chat?.setUrgence?.(urgence);
       // 🔑 COMPTES & NIVEAUX : fenêtre de connexion (Ollama local, services à
       // clé, offres payantes optionnelles). Les clés restent dans le navigateur.
       const testerService = async (c) => {
@@ -487,11 +508,11 @@ async function init() {
         commandes: COMMANDES,
         surMessage: (m) => window.__wtToast?.(m),
       });
-      chat.setAssistant(assistant);
+      chat?.setAssistant?.(assistant);
       window.__godsEyeView.assistant = assistant;
       // bouton « se connecter » directement dans la barre de saisie du chat
       try {
-        const saisie = chat.element.querySelector('.saisie');
+        const saisie = chat?.element?.querySelector?.('.saisie');
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'envoyer';
@@ -501,22 +522,22 @@ async function init() {
         b.addEventListener('click', () => comptes.ouvrir());
         saisie.appendChild(b);
       } catch { /* barre absente */ }
-      const autour = initNearbyPlaces(viewer);
-      const filtres = initVisualFilters();
+      const autour = proteger('autour de moi', () => initNearbyPlaces(viewer));
+      const filtres = proteger('filtres de vue', () => initVisualFilters());
       // ⚡ Bâti 3D : pipeline rapide (cache mémoire, géométrie par lots sur un
       // worker, hauteurs estimées) partagé par le panneau BÂTI 3D et les vues.
       const batiRapide = creerBatiRapide(viewer, { surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.bati = batiRapide;
-      const bati = initOsmBuildings3D(viewer, { bati: batiRapide });
+      const bati = proteger('bâti 3D', () => initOsmBuildings3D(viewer, { bati: batiRapide }));
       // 🕰 MODE HISTORIQUE : les mêmes bâtiments 3D, mais datés — le curseur
       // d'année ne laisse debout que ceux qui existaient déjà. Gratuit :
       // les dates viennent d'OpenStreetMap (start_date), déjà dans les tags.
-      const historique = initHistorique(viewer, {
+      const historique = proteger('mode historique', () => initHistorique(viewer, {
         bati: batiRapide,
-        surMessage: (m) => window.__wtToast?.(m),
-      });
+        surMess
+      }))
       window.__godsEyeView.historique = historique;
-      const chantier = initChantier(viewer);
+      const chantier = proteger('hub chantier', () => initChantier(viewer));
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
       const recentrerHQ = () => {
         // 🎬 « ME LOCALISER » : on part de l'espace et on descend en cinématique
@@ -590,28 +611,28 @@ async function init() {
       // bureau estompées (M pour basculer).
       const mobiglas = initMobiglas({ surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.mobiglas = mobiglas;
-      const vol = initFlightMode(viewer, { cockpit, mobiglas });
+      const vol = proteger('mode pilotage', () => initFlightMode(viewer, { cockpit, mobiglas }));
 
       // INTEL nouvelle génération : tableau de bord « jumeau numérique »
       // (remplace le HUD intel d'origine — créé AVANT le dock qui le bascule).
-      window.__godsEyeView.intel = initIntelTwin(viewer);
+      window.__godsEyeView.intel = proteger('INTEL', () => initIntelTwin(viewer));
       // POSTE DE COMMANDEMENT : LIEUX · HISTO · FAVORIS + caméras gratuites
-      const cctv = initCctvCam(viewer);
-      const poste = initPosteCommandement(viewer);
+      const cctv = proteger('caméras', () => initCctvCam(viewer));
+      const poste = proteger('poste de commandement', () => initPosteCommandement(viewer));
       window.__godsEyeView.poste = poste;
       window.__godsEyeView.dock = initMobiDock({
         panneauxAncres: [
-          { id: 'chat', icone: '💬', libelle: 'CHAT', titre: 'CHAT — CONSOLE DE COMMANDES', element: chat.element, cote: 'gauche', groupe: 'outils', surOuverture: chat.focus },
-          { id: 'moi', icone: '📍', libelle: 'MOI', titre: '📍 MA LOCALISATION — ME LOCALISER', element: autour.element, cote: 'droite', groupe: 'nav', surOuverture: autour.focus },
-          { id: 'filtres', icone: '🎨', libelle: 'FILTRES', titre: 'FILTRES DE VUE', element: filtres.element, cote: 'droite', groupe: 'vues' },
-          { id: 'bati', icone: '🏙', libelle: 'BÂTI 3D', titre: 'BÂTIMENTS 3D (OSM, GRATUIT, RAPIDE)', element: bati.element, cote: 'gauche', groupe: 'vues' },
-          { id: 'chantier', icone: '🏗', libelle: 'CHANTIER', titre: 'HUB CHANTIER — CONDUITE DE TRAVAUX', element: chantier.element, cote: 'gauche', groupe: 'donnees' },
-          { id: 'vol', icone: '✈', libelle: 'VOL', titre: 'MODE PILOTAGE — DRONE / AVION (ZQSD + JOYSTICK)', element: vol.element, cote: 'droite', groupe: 'modes' },
-          { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: poste.panneaux.lieux.element, cote: 'gauche', groupe: 'nav' },
-          { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: poste.panneaux.histo.element, cote: 'droite', groupe: 'donnees' },
-          { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: poste.panneaux.favoris.element, cote: 'gauche', groupe: 'nav' },
-          { id: 'temps', icone: '🕰', libelle: 'ÉPOQUES', titre: '🕰 MODE HISTORIQUE — LA VILLE À TRAVERS LE TEMPS (OSM)', element: historique.element, cote: 'gauche', groupe: 'vues' },
-          { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: cctv.element, cote: 'droite', groupe: 'donnees' },
+          { id: 'chat', icone: '💬', libelle: 'CHAT', titre: 'CHAT — CONSOLE DE COMMANDES', element: elDe(chat), cote: 'gauche', groupe: 'outils', surOuverture: chat?.focus },
+          { id: 'moi', icone: '📍', libelle: 'MOI', titre: '📍 MA LOCALISATION — ME LOCALISER', element: elDe(autour), cote: 'droite', groupe: 'nav', surOuverture: autour?.focus },
+          { id: 'filtres', icone: '🎨', libelle: 'FILTRES', titre: 'FILTRES DE VUE', element: elDe(filtres), cote: 'droite', groupe: 'vues' },
+          { id: 'bati', icone: '🏙', libelle: 'BÂTI 3D', titre: 'BÂTIMENTS 3D (OSM, GRATUIT, RAPIDE)', element: elDe(bati), cote: 'gauche', groupe: 'vues' },
+          { id: 'chantier', icone: '🏗', libelle: 'CHANTIER', titre: 'HUB CHANTIER — CONDUITE DE TRAVAUX', element: elDe(chantier), cote: 'gauche', groupe: 'donnees' },
+          { id: 'vol', icone: '✈', libelle: 'VOL', titre: 'MODE PILOTAGE — DRONE / AVION (ZQSD + JOYSTICK)', element: elDe(vol), cote: 'droite', groupe: 'modes' },
+          { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: elDe(poste, 'panneaux', 'lieux'), cote: 'gauche', groupe: 'nav' },
+          { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: elDe(poste, 'panneaux', 'histo'), cote: 'droite', groupe: 'donnees' },
+          { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: elDe(poste, 'panneaux', 'favoris'), cote: 'gauche', groupe: 'nav' },
+          { id: 'temps', icone: '🕰', libelle: 'ÉPOQUES', titre: '🕰 MODE HISTORIQUE — LA VILLE À TRAVERS LE TEMPS (OSM)', element: elDe(historique), cote: 'gauche', groupe: 'vues' },
+          { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: elDe(cctv), cote: 'droite', groupe: 'donnees' },
         ],
         panneauxExistants: [
           {
@@ -631,7 +652,7 @@ async function init() {
       });
       poste.setDock(window.__godsEyeView.dock);
       // 🏙 BÂTI 3D : clic sur un nom de repère → FICHE LIEU du bâtiment
-      bati.setSurFiche((lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat));
+      bati?.setSurFiche?.((lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat));
       // 🗼 VUES DU TERRITOIRE : boutons nommés dans la fenêtre CONTEXTE de
       // l'INTEL (vue communale = plan 2D + contour animé + couche AR).
       const vues = initVuesTerritoire(viewer, {
@@ -653,7 +674,7 @@ async function init() {
       window.__godsEyeView.dock?.ajouter?.({
         id: 'cadrans', icone: '🔲', libelle: 'CADRANS', groupe: 'vues',
         titre: '🔲 CADRANS — LA COMMUNE DÉCOUPÉE EN QUARTIERS NOMMÉS',
-        element: cadrans.element, cote: 'gauche',
+        element: elDe(cadrans), cote: 'gauche',
       });
       // 🧠 INTEL ÉLARGI : 6 nouvelles vues (jumeau AR, communal, individuel,
       // politique, économique, production) + bandeau « fil » façon Bloomberg.
@@ -710,7 +731,7 @@ async function init() {
       window.__godsEyeView.trajets = trajets;
       window.__godsEyeView.dock?.ajouter?.({
         id: 'trajets', icone: '🛣', libelle: 'TRAJETS', groupe: 'nav',
-        titre: '🛣 TRAJETS — VOL D’OISEAU OU SUIVRE LA ROUTE', element: trajets.element, cote: 'gauche',
+        titre: '🛣 TRAJETS — VOL D’OISEAU OU SUIVRE LA ROUTE', element: elDe(trajets), cote: 'gauche',
       });
 
       // 🪐 SYSTÈME SOLAIRE : entités réelles autour de la Terre (JPL/ELP2000).
@@ -718,7 +739,7 @@ async function init() {
       window.__godsEyeView.systeme = systeme;
       window.__godsEyeView.dock?.ajouter?.({
         id: 'systeme', icone: '🪐', libelle: 'SYSTÈME', groupe: 'vues',
-        titre: '🪐 SYSTÈME SOLAIRE — POSITIONS RÉELLES AUTOUR DE LA TERRE', element: systeme.element, cote: 'droite',
+        titre: '🪐 SYSTÈME SOLAIRE — POSITIONS RÉELLES AUTOUR DE LA TERRE', element: elDe(systeme), cote: 'droite',
       });
 
       // 📻 RADIO : annuaire Radio-Browser (équivalent libre de Radio Garden).
@@ -726,7 +747,7 @@ async function init() {
       window.__godsEyeView.radio = radio;
       window.__godsEyeView.dock?.ajouter?.({
         id: 'radio', icone: '📻', libelle: 'RADIO', groupe: 'donnees',
-        titre: '📻 RADIO — FLUX EN DIRECT (RADIO-BROWSER, LIBRE)', element: radio.element, cote: 'droite',
+        titre: '📻 RADIO — FLUX EN DIRECT (RADIO-BROWSER, LIBRE)', element: elDe(radio), cote: 'droite',
       });
 
       // 🗺 CADASTRE LÉGER : contours de parcelles (apicarto/IGN) sous 2 500 m,
@@ -735,7 +756,7 @@ async function init() {
       window.__godsEyeView.cadastre = cadastre;
       window.__godsEyeView.dock?.ajouter?.({
         id: 'cadastre', icone: '🗺', libelle: 'CADASTRE', groupe: 'nav',
-        titre: '🗺 CADASTRE — CONTOURS DE PARCELLES (IGN, SANS CLÉ)', element: cadastre.element, cote: 'gauche',
+        titre: '🗺 CADASTRE — CONTOURS DE PARCELLES (IGN, SANS CLÉ)', element: elDe(cadastre), cote: 'gauche',
       });
 
       // 🏷 ENTITÉS DE LA CARTE : chaque bâtiment/équipement porte la pastille
@@ -748,7 +769,7 @@ async function init() {
       window.__godsEyeView.dock?.ajouter?.({
         id: 'entites', icone: '🏷', libelle: 'ENTITÉS', groupe: 'vues',
         titre: '🏷 ENTITÉS DE LA CARTE — FONCTION RÉELLE DE CHAQUE LIEU (OSM)',
-        element: entites.element, cote: 'gauche',
+        element: elDe(entites), cote: 'gauche',
       });
 
       // 🗺 NOMS DE LIEUX : étiquettes toujours lisibles (pays → villes →
@@ -781,7 +802,7 @@ async function init() {
       window.__godsEyeView.dock?.ajouter?.({
         id: 'dispositifs', icone: '🎥', libelle: 'DISPOSITIFS', groupe: 'donnees',
         titre: '🎥 DISPOSITIFS — CAMÉRAS, MICROS ET CAPTEURS (DIRECT)',
-        element: dispositifs.element, cote: 'droite',
+        element: elDe(dispositifs), cote: 'droite',
       });
 
       // 🧠 PALAIS MENTAL : à la place de la carte, une chambre de motel des
@@ -794,11 +815,11 @@ async function init() {
           const toast = (t) => window.__wtToast?.(t);
           if (id === 'carte') { palais.fermer(); toast('🗺 Retour à la vue principale.'); return; }
           if (id === 'drone') { palais.ouvrirObjet('drone', vol.element, { titre: '🚁 PILOTAGE', largeur: 360 }); return; }
-          if (id === 'telephone') { palais.ouvrirObjet('telephone', chat.element, { titre: '📞 CHAT (+ IA)', largeur: 360 }); return; }
-          if (id === 'calendrier') { palais.ouvrirObjet('calendrier', chantier.element, { titre: '🗓 PLANNING · PHASAGE · BUDGET', largeur: 420 }); return; }
+          if (id === 'telephone') { palais.ouvrirObjet('telephone', elDe(chat), { titre: '📞 CHAT (+ IA)', largeur: 360 }); return; }
+          if (id === 'calendrier') { palais.ouvrirObjet('calendrier', elDe(chantier), { titre: '🗓 PLANNING · PHASAGE · BUDGET', largeur: 420 }); return; }
           if (id === 'radio') { palais.ouvrirObjet('radio', radio.element, { titre: '📻 RADIO', largeur: 360 }); return; }
           if (id === 'moniteur') { dispositifs.basculer(true); palais.ouvrirObjet('moniteur', dispositifs.live, { titre: '🎥 DIRECT — CAMÉRAS', largeur: 380 }); return; }
-          if (id === 'chemise') { palais.ouvrirObjet('chemise', chantier.element, { titre: '🗄 DOSSIERS SOURCES', largeur: 420 }); return; }
+          if (id === 'chemise') { palais.ouvrirObjet('chemise', elDe(chantier), { titre: '🗄 DOSSIERS SOURCES', largeur: 420 }); return; }
           toast('Objet du bureau à brancher.');
         },
         surCarte: (n) => {

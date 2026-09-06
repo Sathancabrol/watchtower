@@ -104,6 +104,7 @@ instruction de `init()`** : sans ça, une erreur de démarrage reste invisible.
 
 | Symptôme | Cause | Correctif |
 |---|---|---|
+| 🔥 **Plus aucun panneau : lanceur, INTEL, CHANTIER, VOL, poste… tous absents d'un coup** (rapport F3 : `#wt-dock` ✗, 19 modules ✗, une seule erreur `[console.error] [watchtower] dock: …`) | **Deux `function rendreListe()` dans le même scope** de `flightMode.js` (itération 10). Les déclarations de fonction sont remontées : la seconde **écrasait** la première pour tous les appels, et elle touchait `elListeParcours` — une `const` déclarée 58 lignes plus bas, donc **en zone morte temporelle (TDZ)** → `Cannot access 'elListeParcours' before initialization`. L'exception était absorbée par l'immense `try` qui enveloppe lanceur + poste + mission : **tout le bloc sautait**. | fonctions renommées `rendreListeEngins` / `rendreListeParcours` ; chaque `init…` isolé par `proteger()` ; éléments récupérés par `elDe()` ; le lanceur ignore un panneau sans élément ; test `src/gardeFous.test.mjs` |
 | **✈ VOL inaccessible** | la barre du bas débordait sur deux rangs et le rang du haut passait **sous la barre micro** (`#command-dock`, calée en dur à 72 px) | le lanceur publie `--wt-hauteur-dock` ; la barre micro se cale au-dessus |
 | **Des modules sans aucun bouton** (cadastre, radio, entités, cadrans…) | ils n'étaient pas dans le lanceur | 26 boutons rangés en 5 catégories |
 | **« les outils / INTEL ont disparu »** | un préréglage masquait leur catégorie, sans moyen de la remettre | une **pastille par catégorie** dans la barre du haut |
@@ -113,7 +114,25 @@ instruction de `init()`** : sans ça, une erreur de démarrage reste invisible.
 
 ---
 
-## 5. Marche à suivre en cinq minutes
+## 5. Lire un rapport F3
+
+Le rapport sépare **ce qui est présent** de **ce qui manque** — et c'est la
+liste des manquants qui dit où le fil s'est rompu :
+
+- **un seul module manquant** → le module lui-même (regarder les erreurs) ;
+- **une longue liste de modules manquants d'un coup, tous créés après un
+  certain point de `main.js`** → une exception a été absorbée par le grand
+  `try` du bloc « lanceur + poste + mission ». La toute première erreur de la
+  liste **ERREURS CAPTURÉES** est la coupable : les modules suivants
+  n'ont simplement jamais été créés.
+- **`#wt-dock` ✗ mais `#command-dock` ✓** → le lanceur WATCHTOWER n'existe
+  pas ; ce qui reste à l'écran, c'est la barre d'origine de l'application.
+
+Exemple réel (2026-09-06) : 19 modules ✗ et une seule erreur
+`Cannot access 'elListeParcours' before initialization` → le coupable était
+dans `flightMode.js`, pas dans le lanceur.
+
+## 6. Marche à suivre en cinq minutes
 
 1. **F3** (ou 🐞 DIAG).
 2. Regarder **MÉCANISMES DE MASQUAGE** : si l'un est actif → **TOUT
@@ -127,7 +146,7 @@ instruction de `init()`** : sans ça, une erreur de démarrage reste invisible.
 
 ---
 
-## 6. Règles pour ne pas recommencer
+## 7. Règles pour ne pas recommencer
 
 1. **Tout nouvel `init…` est enveloppé dans un `try/catch`** et s'enregistre
    dans `window.__godsEyeView` (sinon le diagnostic ne peut pas le voir).
@@ -144,10 +163,20 @@ instruction de `init()`** : sans ça, une erreur de démarrage reste invisible.
 6. **Un test par fonction pure** (`node --test`) et, quand c'est possible, un
    passage au banc DOM (jsdom) pour vérifier que le module s'initialise sans
    erreur et que ses boutons ne jettent pas au clic.
+7. **`src/gardeFous.test.mjs` fait respecter les règles ci-dessus** :
+   aucune fonction déclarée deux fois au même niveau dans un fichier, aucun
+   `display: none !important` en ligne hors du pilotage des CALQUES,
+   `capturerErreurs()` avant tout `init…` dans `main.js`, raccourci F3 et
+   fonction « tout réafficher » présents. Un test vérifie même que le
+   détecteur de doublons n'est pas aveugle.
+8. **Jamais deux fonctions du même nom dans un même scope.** C'est invisible à
+   la relecture (les deux blocs sont éloignés dans le fichier) et pourtant
+   fatal : le hoisting fait gagner la DERNIÈRE déclaration pour TOUS les
+   appels, y compris ceux qui précèdent.
 
 ---
 
-## 7. Vérifications automatiques
+## 8. Vérifications automatiques
 
 - `npm test` → suite complète (plus de 3 100 tests).
 - Banc DOM (jsdom, `npm i --no-save jsdom`) : on peut initialiser
@@ -157,7 +186,7 @@ instruction de `init()`** : sans ça, une erreur de démarrage reste invisible.
 
 ---
 
-## 8. Relancer l'aperçu (serveur de développement)
+## 9. Relancer l'aperçu (serveur de développement)
 
 Le dossier `node_modules` est effacé entre les sessions : il faut réinstaller
 avant de relancer.

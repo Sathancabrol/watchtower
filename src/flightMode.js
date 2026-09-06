@@ -237,26 +237,26 @@ export function initFlightMode(viewer, options = {}) {
     tout.type = 'button';
     tout.textContent = 'TOUS';
     tout.className = filtreCat ? '' : 'actif';
-    tout.addEventListener('click', () => { filtreCat = ''; rendreFiltres(); rendreListe(); });
+    tout.addEventListener('click', () => { filtreCat = ''; rendreFiltres(); rendreListeEngins(); });
     elFiltres.appendChild(tout);
     for (const c of CATEGORIES) {
       const b = document.createElement('button');
       b.type = 'button';
       b.textContent = `${c.ic} ${c.nom}`;
       b.className = filtreCat === c.cle ? 'actif' : '';
-      b.addEventListener('click', () => { filtreCat = c.cle; rendreFiltres(); rendreListe(); });
+      b.addEventListener('click', () => { filtreCat = c.cle; rendreFiltres(); rendreListeEngins(); });
       elFiltres.appendChild(b);
     }
   }
 
-  function rendreListe() {
+  function rendreListeEngins() {
     elListe.innerHTML = '';
     for (const e of filtrerEngins(filtreCat, filtreTexte)) {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = `h-engin${e.id === enginId ? ' actif' : ''}`;
       b.innerHTML = `<span>${e.ic}</span><span>${e.nom}</span><span class="v">${e.croisiere} km/h</span>`;
-      b.addEventListener('click', () => { enginId = e.id; rendreListe(); rendreApercu(); });
+      b.addEventListener('click', () => { enginId = e.id; rendreListeEngins(); rendreApercu(); });
       elListe.appendChild(b);
     }
     if (!elListe.children.length) elListe.innerHTML = '<div style="font-size:8px;opacity:.5">Aucun engin ne correspond.</div>';
@@ -273,8 +273,8 @@ export function initFlightMode(viewer, options = {}) {
       <span style="opacity:.7">${e.note}</span>`;
   }
 
-  elCherche.addEventListener('input', () => { filtreTexte = elCherche.value; rendreListe(); });
-  rendreFiltres(); rendreListe(); rendreApercu();
+  elCherche.addEventListener('input', () => { filtreTexte = elCherche.value; rendreListeEngins(); });
+  rendreFiltres(); rendreListeEngins(); rendreApercu();
 
   // ── 👁 VUES DE CAMÉRA (POV · VTOL · 3ᵉ personne) ──
   const elVues = el.querySelector('.cv-bouts');
@@ -446,7 +446,7 @@ export function initFlightMode(viewer, options = {}) {
     lecture = null;
   }
 
-  function rendreListe() {
+  function rendreListeParcours() {
     const liste = sauvParcours();
     elListeParcours.innerHTML = '';
     if (!liste.length) {
@@ -465,12 +465,12 @@ export function initFlightMode(viewer, options = {}) {
       nomBtn.addEventListener('click', () => {
         const n = window.prompt('Nom du parcours', item.nom || 'parcours');
         if (!n) return;
-        const l = sauvParcours(); l[i].nom = n; ecrireParcours(l); rendreListe();
+        const l = sauvParcours(); l[i].nom = n; ecrireParcours(l); rendreListeParcours();
       });
       const delBtn = document.createElement('button');
       delBtn.type = 'button'; delBtn.textContent = '🗑'; delBtn.title = 'Supprimer';
       delBtn.addEventListener('click', () => {
-        const l = sauvParcours(); l.splice(i, 1); ecrireParcours(l); rendreListe();
+        const l = sauvParcours(); l.splice(i, 1); ecrireParcours(l); rendreListeParcours();
       });
       d.append(jouerBtn, nomBtn, delBtn);
       elListeParcours.appendChild(d);
@@ -491,7 +491,7 @@ export function initFlightMode(viewer, options = {}) {
     });
     elPresets.appendChild(b);
   }
-  rendreListe();
+  rendreListeParcours();
 
   el.querySelector('.pc-tracer').addEventListener('click', () => {
     const c = centreParcours();
@@ -520,7 +520,7 @@ export function initFlightMode(viewer, options = {}) {
     const liste = sauvParcours();
     liste.push({ nom, preset, points: simplifier(chemin, 5), resume: resumerParcours(chemin, Number(chVit.value) || 60), t: Date.now() });
     ecrireParcours(liste.slice(-20));
-    rendreListe();
+    rendreListeParcours();
     elInfo.textContent = `💾 « ${nom} » enregistré (${liste.length} parcours).`;
   });
   const btnRec = el.querySelector('.pc-rec');

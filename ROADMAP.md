@@ -4,7 +4,9 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 16** (🐞 diagnostic de démarrage F3 +
+Dernière mise à jour : **itération 17** (🔥 le bug qui coupait 19 modules
+d'un coup est trouvé et réparé · 🛡 garde-fous structurels automatisés).
+Itération **16** = (🐞 diagnostic de démarrage F3 +
 « tout réafficher » · 📶 bandeau live rendu · 🧭 médaillons repli sans
 réseau · 📐 lanceur plafonné). Voir **`docs/DIAGNOSTIC.md`** : comment
 l'app est montée, les cinq mécanismes qui vident l'écran, les pannes déjà
@@ -48,7 +50,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 quater. Itération 13 — terminée
+## 0 quinquies. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -60,7 +62,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 quinquies. Itération 12 — terminée
+## 0 sexies. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -71,7 +73,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 sexies. Itération 11 — terminée
+## 0 septies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -82,7 +84,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 septies. Itération 10 — terminée
+## 0 octies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -99,7 +101,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 octies. Itération 9 — terminée
+## 0 nonies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -152,6 +154,24 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **17** :
+
+* **Le rapport F3 a tout dit.** Une seule erreur : `Cannot access
+  'elListeParcours' before initialization`. Deux `function rendreListe()`
+  coexistaient dans `flightMode.js` **depuis l'itération 10** : les
+  déclarations de fonction sont remontées, la seconde écrasait la première
+  pour tous les appels et touchait une `const` encore en zone morte
+  temporelle. L'exception était absorbée par l'immense `try` du bloc « lanceur
+  + poste + mission » → **19 modules n'étaient jamais créés**. C'était donc
+  la vraie cause de « je n'ai pas accès à VOL », d'INTEL et de CHANTIER
+  « qui ne s'activent pas » — pas un problème de bouton.
+* Fonctions renommées `rendreListeEngins` / `rendreListeParcours`.
+* Leçons transformées en code : `proteger()` isole chaque initialisation,
+  `elDe()` récupère les éléments sans risque, le lanceur ignore un panneau
+  sans élément, et `src/gardeFous.test.mjs` empêche cette classe de panne de
+  revenir (doublons de fonctions, `!important` en ligne, ordre de la capture
+  d'erreurs).
 
 Itération **16** :
 

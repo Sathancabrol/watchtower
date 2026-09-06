@@ -221,6 +221,12 @@ export function initMobiDock({
 
   // ── panneaux à ancre ───────────────────────────────────────────────────
   function creerAncre(p) {
+    // ⚠ Un module qui n'a pas démarré n'a pas d'élément : on l'ignore au lieu
+    // de faire tomber tout le lanceur (le diagnostic F3 le signalera).
+    if (!p?.element) {
+      console.warn(`[watchtower] lanceur : panneau « ${p?.id || '?'} » sans élément — ignoré`);
+      return null;
+    }
     const wrap = document.createElement('div');
     wrap.className = `wt-dock-panel ${p.cote === 'droite' ? 'droite' : 'gauche'} wt-dock-cache`;
     wrap.id = `wt-dock-${p.id}`;
