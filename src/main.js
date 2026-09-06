@@ -40,6 +40,7 @@ import { initHistorique } from './historique.js';
 import { initHudCentral } from './hudCentral.js';
 import { capturerErreurs, initDiagnostic, toutReafficher } from './diagnostic.js';
 import { initMedaillons } from './medaillons.js';
+import { initDossier } from './dossier.js';
 import { initTheme } from './theme.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
@@ -816,12 +817,48 @@ async function init() {
         surObjet: (id) => {
           const toast = (t) => window.__wtToast?.(t);
           if (id === 'carte') { palais.fermer(); toast('🗺 Retour à la vue principale.'); return; }
-          if (id === 'drone') { palais.ouvrirObjet('drone', vol.element, { titre: '🚁 PILOTAGE', largeur: 360 }); return; }
+          // 🗂 DOSSIER D'INVESTIGATION : le tableau du palais guide l'enquête
+          // (étapes déduites + fonctions WATCHTOWER qui les servent) et tient
+          // les notes (créer / modifier / épingler / ranger).
+          let dossier = window.__godsEyeView.dossier;
+          if (!dossier) {
+            dossier = proteger('dossier', () => initDossier({
+              surMessage: (m) => window.__wtToast?.(m),
+            }));
+            window.__godsEyeView.dossier = dossier;
+          }
+          if (id === 'tableau') { palais.ouvrirObjet('tableau', dossier.element, { titre: '🗂 DOSSIER D’INVESTIGATION', largeur: 420 }); return; }
+          if (id === 'tele') { palais.ouvrirObjet('tele', dossier.elementTele(), { titre: '📺 DOSSIER EN COURS', largeur: 380 }); return; }
+          if (id === 'drone') {
+            // 🚁 On ne décolle pas sans le dire : le vol démarre AU-DESSUS de
+            // ta position, il faut donc la renseigner (ou confirmer).
+            const pos = window.__godsEyeView.moi?.position?.() || null;
+            const ok = window.confirm(
+              '🚁 Le drone va décoller AU-DESSUS DE TA POSITION'
+              + (pos ? ` (${pos.lat?.toFixed?.(4) ?? '?'}, ${pos.lon?.toFixed?.(4) ?? '?'})` : ' (position encore inconnue)')
+              + '.\n\nContinuer le lancement du vol ?',
+            );
+            if (!ok) { window.__wtToast?.('🚁 Lancement annulé.'); return; }
+            palais.ouvrirObjet('drone', elDe(vol), { titre: '🚁 PILOTAGE', largeur: 360 });
+            window.__godsEyeView.vol?.demarrer?.();
+            return;
+          }
           if (id === 'telephone') { palais.ouvrirObjet('telephone', elDe(chat), { titre: '📞 CHAT (+ IA)', largeur: 360 }); return; }
           if (id === 'calendrier') { palais.ouvrirObjet('calendrier', elDe(chantier), { titre: '🗓 PLANNING · PHASAGE · BUDGET', largeur: 420 }); return; }
           if (id === 'radio') { palais.ouvrirObjet('radio', radio.element, { titre: '📻 RADIO', largeur: 360 }); return; }
           if (id === 'moniteur') { dispositifs.basculer(true); palais.ouvrirObjet('moniteur', dispositifs.live, { titre: '🎥 DIRECT — CAMÉRAS', largeur: 380 }); return; }
           if (id === 'chemise') { palais.ouvrirObjet('chemise', elDe(chantier), { titre: '🗄 DOSSIERS SOURCES', largeur: 420 }); return; }
+          if (id === 'fenetre') {
+            // 🪟 Les rideaux s'ouvrent ET la caméra part vers les étoiles.
+            document.body.classList.add('wt-rideaux-ouverts');
+            try { window.localStorage.setItem('watchtower.rideaux.v1', '1'); } catch { /* plein */ }
+            const systeme = window.__godsEyeView.systeme;
+            systeme?.activer?.(true);
+            window.__godsEyeView.dock?.ouvrir?.('systeme');
+            window.__godsEyeView.cinematique?.espace?.();
+            window.__wtToast?.('🪟 Rideaux ouverts — cap sur la vue stellaire (positions réelles, lois de Kepler).');
+            return;
+          }
           toast('Objet du bureau à brancher.');
         },
         surCarte: (n) => {

@@ -4,7 +4,10 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 19** (🧭 boussole relisible · 😴 veille
+Dernière mise à jour : **itération 20** (🗂 dossier d'investigation du
+tableau + 📺 télé cathodique + 🪟 fenêtre → vue stellaire + 🚁 décollage
+confirmé + 🗺 minicarte sans cadre + 🧭 médaillons emboîtés).
+Itération **19** = (🧭 boussole relisible · 😴 veille
 patientée · 🧹 panneaux d'origine rangés · 📍 pastilles dispersées · 📐
 échelle VRAIE du système solaire).
 Itération **18** = (🎯 lanceur compact : une catégorie
@@ -57,7 +60,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 septies. Itération 13 — terminée
+## 0 octies. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -69,7 +72,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 octies. Itération 12 — terminée
+## 0 nonies. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -80,7 +83,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 nonies. Itération 11 — terminée
+## 0 decies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -91,7 +94,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 decies. Itération 10 — terminée
+## 0 undecies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -108,7 +111,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 undecies. Itération 9 — terminée
+## 0 duodecies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -161,6 +164,30 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **20** :
+
+* **« le tableau doit guider l'utilisateur à créer un dossier d'investigation
+  complet, infère les étapes »** — 6 étapes déduites, chacune branchée sur les
+  fonctions réelles de l'app (MOI · LIEUX · CADASTRE · ENTITÉS · INTEL ·
+  FICHE · BÂTI 3D · VOL…). Le tableau propose la **prochaine étape**.
+* **« créer des notes, les modifier, les épingler ou les mettre dans un
+  dossier »** — fait (créer / modifier / épingler / ranger / supprimer,
+  dossiers illimités, mémorisé localement).
+* **« rajouter une télé cathodique qui affiche le dossier en cours »** —
+  nouvel objet du palais, branché sur `dossier.elementTele()`.
+* **« si on clique sur la fenêtre, envoi sur la vue stellaire, les rideaux
+  s'ouvrent »** — les rideaux s'écartent (animation, état mémorisé) et la vue
+  bascule sur le système solaire + la cinématique espace.
+* **« si j'active la vue vol dans le palais, le drone démarre son vol au-dessus
+  de l'utilisateur, doit le renseigner pour lancer »** — une confirmation
+  affiche la position avant le décollage.
+* **« enlève le cadre fenêtre de la minimap »** — plus de bordure ni de fond :
+  le globe flotte, avec la boussole et les pastilles.
+* **« j'ai 4 pastilles en cercle, ça ne sert à rien, il faut que les vues
+  s'emboîtent de façon organique »** — au-delà de trois niveaux on n'affiche
+  plus que le niveau courant + monter/descendre (+ le pays comme repère) :
+  la hiérarchie se **parcourt**, elle ne s'empile plus.
 
 Itération **19** :
 

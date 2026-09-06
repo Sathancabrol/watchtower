@@ -92,14 +92,18 @@ const CSS = `
   position: static !important; transform: none !important;
   filter: drop-shadow(0 0 6px rgba(0,212,255,0.35));
 }
-/* 🗺 LA FENÊTRE ÉPOUSE LE GLOBE : plus de cadre carré, une bulle ronde */
+/* 🗺 PLUS DE CADRE : le globe flotte. Ni bordure, ni fond de fenêtre —
+   seuls le globe, la boussole et les pastilles restent visibles. */
 #wt-minimap {
-  border-radius: 50% 50% 46% 46% / 46% 46% 54% 54%;
-  background: radial-gradient(circle at 50% 42%, rgba(8,14,22,0.86) 0%, rgba(6,10,18,0.94) 62%, rgba(4,8,14,0.98) 100%);
-  border: 1px solid rgba(0,212,255,0.28);
-  box-shadow: 0 0 24px rgba(0,212,255,0.14), inset 0 0 30px rgba(0,0,0,0.55);
-  padding: 6px 8px 10px; overflow: visible;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 0; overflow: visible;
 }
+#wt-minimap::before, #wt-minimap::after { content: none !important; }
+#wt-minimap .wt-mm-tete { opacity: .55; }
+#wt-minimap .wt-mm-tete:hover { opacity: 1; }
 #wt-minimap .wt-mm-tete { justify-content: center; border: 0; padding: 2px 0 0; }
 #wt-minimap .wt-mm-titre { font-size: 7px; letter-spacing: 2px; }
 #wt-minimap .wt-mm-boutons { justify-content: center; flex-wrap: wrap; row-gap: 2px; padding-top: 2px; }

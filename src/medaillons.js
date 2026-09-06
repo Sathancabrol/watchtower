@@ -289,8 +289,19 @@ export function initMedaillons(viewer, options = {}) {
     ds.entities.removeAll();
     entites = new Map();
     if (!actif || !hier) return;
-    const connus = NIVEAUX.filter((n) => hier[n]);
+    // ⚠ EMBOÎTEMENT ORGANIQUE : quand on zoome sur une ville, empiler
+    // « France · Occitanie · Hérault · Frontignan » en cercle ne sert à rien.
+    // On ne garde que le niveau COURANT et ses deux voisins (monter /
+    // descendre) : la hiérarchie se parcourt, elle ne s'affiche pas en bloc.
+    let connus = NIVEAUX.filter((n) => hier[n]);
     if (!connus.length) return;
+    if (connus.length > 3) {
+      const v = voisins(niveau);
+      const gardes = new Set([v.courant, v.monter, v.descendre].filter(Boolean));
+      // le plus vaste reste toujours affiché pour garder le repère
+      if (hier.pays) gardes.add('pays');
+      connus = connus.filter((n) => gardes.has(n));
+    }
     // Empilement À L'ÉCRAN (décalage en pixels) autour du point survolé :
     // c'est ce qui rend les médaillons visibles quelle que soit l'altitude
     // (à 300 m comme à 300 km), là où des altitudes absolues les faisaient

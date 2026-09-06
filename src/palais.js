@@ -293,6 +293,11 @@ const CSS = `
 
 /* ── bandeau (toujours visible, il dit comment sortir) ──────────────────── */
 /* fenêtre ouverte depuis un OBJET du bureau (le téléphone = le chat…) */
+/* 🪟 Rideaux : fermés par défaut, ils s'ouvrent quand on clique la fenêtre */
+#wt-palais .rideau { transition: transform 900ms cubic-bezier(.4,0,.2,1), opacity 900ms ease; }
+body.wt-rideaux-ouverts #wt-palais .rideau-g { transform: translateX(-17px); opacity: .55; }
+body.wt-rideaux-ouverts #wt-palais .rideau-d { transform: translateX(17px); opacity: .55; }
+body.wt-rideaux-ouverts #wt-palais { box-shadow: inset 0 -40px 90px rgba(120,160,255,0.10); }
 #wt-palais .objet-fenetre {
   position: absolute; z-index: 8; width: 340px; max-height: 62vh; display: flex; flex-direction: column;
   background: rgba(8,12,18,.96); border: 1px solid rgba(0,212,255,.5); border-radius: 12px;
@@ -329,6 +334,9 @@ export const OBJETS = Object.freeze([
   { id: 'radio', nom: 'Radio de chantier', aide: 'radios du monde entier', gauche: '63%', taille: 74 },
   { id: 'moniteur', nom: 'Moniteur de surveillance', aide: 'caméras et flux en direct', gauche: '76%', taille: 90 },
   { id: 'chemise', nom: 'Chemise cartonnée', aide: 'les dossiers sources du chantier', gauche: '89%', taille: 76 },
+  { id: 'tableau', nom: 'Tableau de liège', aide: 'le dossier d’investigation : étapes et notes', gauche: '13%', taille: 92 },
+  { id: 'tele', nom: 'Télé cathodique', aide: 'visualiser le dossier en cours', gauche: '58%', taille: 86 },
+  { id: 'fenetre', nom: 'Fenêtre (rideaux)', aide: 'ouvrir les rideaux → vue stellaire', gauche: '31%', taille: 88 },
 ]);
 
 /** Silhouettes SVG des objets (dessinées à la main, aucun asset). */
@@ -371,6 +379,25 @@ function svgObjet(id, taille = 84) {
       <path d="M24 62 L38 50 L48 58 L58 44 L74 62" stroke="#7ef0c0" stroke-width="2" fill="none" opacity=".8"/>
       <circle cx="66" cy="42" r="3" fill="#ff6b6b"/><rect x="38" y="82" width="24" height="6" fill="#3a4048"/>
       <rect x="30" y="88" width="40" height="5" rx="2" fill="#2a2f35"/></g>`,
+    tableau: `<g><rect x="8" y="14" width="84" height="58" rx="3" fill="#6b5638" stroke="#3f3220" stroke-width="2"/>
+      <rect x="13" y="19" width="74" height="48" rx="2" fill="#cbb489"/>
+      <rect x="24" y="26" width="34" height="18" fill="#f2ecd8" stroke="#9a8a6a" stroke-width="1"/>
+      <rect x="62" y="30" width="22" height="14" fill="#e8dfc4" stroke="#9a8a6a" stroke-width="1"/>
+      <rect x="20" y="50" width="26" height="12" fill="#f6f1e0" stroke="#9a8a6a" stroke-width="1"/>
+      <circle cx="40" cy="35" r="2" fill="#d23b3b"/><circle cx="73" cy="37" r="2" fill="#2f6fd0"/>
+      <path d="M28 26 L28 20" stroke="#8a7c58" stroke-width="1.5"/><path d="M70 30 L70 24" stroke="#8a7c58" stroke-width="1.5"/></g>`,
+    tele: `<g><rect x="14" y="24" width="72" height="52" rx="10" fill="#4a4038" stroke="#2c2620" stroke-width="2"/>
+      <rect x="21" y="31" width="58" height="38" rx="12" fill="#12202a"/>
+      <path d="M26 58 Q40 40 52 54 T74 46" stroke="#7ef0c0" stroke-width="1.8" fill="none" opacity=".7"/>
+      <circle cx="66" cy="38" r="2.5" fill="#ffd166"/><rect x="30" y="78" width="40" height="5" rx="2" fill="#3a332c"/>
+      <line x1="30" y1="24" x2="52" y2="10" stroke="#6d6d63" stroke-width="2"/><circle cx="52" cy="8" r="2.5" fill="#6d6d63"/></g>`,
+    fenetre: `<g><rect x="12" y="14" width="76" height="60" rx="3" fill="#0b1420" stroke="#5a4a3a" stroke-width="3"/>
+      <rect x="16" y="18" width="68" height="52" fill="#101c2c"/>
+      <circle cx="30" cy="30" r="1.8" fill="#cfe6ff"/><circle cx="52" cy="26" r="1.4" fill="#cfe6ff"/>
+      <circle cx="70" cy="38" r="1.6" fill="#cfe6ff"/><circle cx="42" cy="46" r="1.2" fill="#cfe6ff"/>
+      <path d="M50 14 v60 M12 44 h76" stroke="#5a4a3a" stroke-width="2.5"/>
+      <rect class="rideau rideau-g" x="6" y="10" width="20" height="66" rx="3" fill="#7a3f52" opacity=".92"/>
+      <rect class="rideau rideau-d" x="74" y="10" width="20" height="66" rx="3" fill="#7a3f52" opacity=".92"/></g>`,
     chemise: `<g><path d="M16 30 h26 l6 8 h36 v46 H16 Z" fill="#c8a24a" stroke="#8a6f2e" stroke-width="2"/>
       <path d="M16 46 h68" stroke="#8a6f2e" stroke-width="1.5" opacity=".6"/>
       <rect x="30" y="54" width="40" height="4" fill="#8a6f2e" opacity=".5"/>
@@ -454,6 +481,7 @@ export function initPalais(options = {}) {
   let recherche = '';
 
   // ── les objets du bureau ────────────────────────────────────────────────
+  try { if (window.localStorage.getItem('watchtower.rideaux.v1') === '1') document.body.classList.add('wt-rideaux-ouverts'); } catch { /* plein */ }
   for (const o of OBJETS) {
     const d = document.createElement('div');
     d.className = 'obj';
