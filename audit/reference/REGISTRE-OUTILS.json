@@ -70,17 +70,17 @@
       "note": "SearXNG (activer `format=json`) + Vane par-dessus ; Crawl4AI lit les pages en markdown."
     },
     {
-      "besoin": "transformer **PDF et scans** en texte interrogeable",
+      "besoin": "transformer **PDF, scans, factures, dossiers administratifs** en texte interrogeable",
       "outils": [
         "marker",
         "docling",
         "ocrmypdf",
         "chonkie"
       ],
-      "note": "Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend un scan cherchable."
+      "note": "Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend cherchable un scan (reçu, facture, arrêté, devis, plan cadastral, facture d'énergie)."
     },
     {
-      "besoin": "lire une **capture d'écran, une photo, un plan**",
+      "besoin": "lire une **capture d'écran, une photo, un plan, une plaque, un document** (OCR)",
       "outils": [
         "tesseract",
         "paddleocr",

@@ -1147,9 +1147,12 @@ BESOINS: list[tuple[str, list[str], str]] = [
      "Instructor = Pydantic, Outlines = grammaire garantie, DSPy = optimisation des prompts."),
     ("répondre à une question **avec sources**, sans Perplexity", ["searxng", "vane-perplexica", "crawl4ai", "litellm"],
      "SearXNG (activer `format=json`) + Vane par-dessus ; Crawl4AI lit les pages en markdown."),
-    ("transformer **PDF et scans** en texte interrogeable", ["marker", "docling", "ocrmypdf", "chonkie"],
-     "Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend un scan cherchable."),
-    ("lire une **capture d'écran, une photo, un plan**", ["tesseract", "paddleocr", "exiftool"],
+    ("transformer **PDF, scans, factures, dossiers administratifs** en texte interrogeable",
+     ["marker", "docling", "ocrmypdf", "chonkie"],
+     "Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend cherchable un scan "
+     "(reçu, facture, arrêté, devis, plan cadastral, facture d'énergie)."),
+    ("lire une **capture d'écran, une photo, un plan, une plaque, un document** (OCR)",
+     ["tesseract", "paddleocr", "exiftool"],
      "Tesseract = léger sur CPU ; PaddleOCR = bien meilleur sur le FR et les mises en page ; ExifTool = métadonnées."),
     ("**transcrire** un mémo vocal ou une écoute radio", ["whisper-cpp", "faster-whisper", "scriberr"],
      "whisper.cpp sur CPU, faster-whisper si GPU, Scriberr si tu veux une API Docker déjà emballée."),
@@ -1254,7 +1257,7 @@ def block_aide() -> str:
     L.append("| la fiche complète d'un outil | `python3 audit/reference/cherche.py --fiche marker` |")
     L.append("| partir d'un besoin, pas d'un nom | `python3 audit/reference/cherche.py --besoin vps` |")
     L.append("| ce qui tourne **déjà** ici | `python3 audit/reference/doctor.py --json` |")
-    L.append("| grepper sans Python | `grep -i ais audit/reference/REGISTRE.tsv` |")
+    L.append("| grepper sans Python | `grep -i ais audit/reference/REGISTRE.tsv` (colonnes : `cut -f1,5,6`) |")
     L.append("| une décision d'architecture | §0 (règles) puis §1 (ordre d'implémentation) |")
     L.append("")
     L.append("L'`id` (entre backticks) **est l'ancre** de la fiche : `audit/REFERENCE.md#hloc`. "
@@ -1285,7 +1288,7 @@ def block_index() -> str:
                  f"| {etat} | {ORIGINES.get(t['id'], {}).get('ref', '—')} |")
     L.append("")
     L.append("*Filtrer plutôt que défiler : `cherche.py` (ci-dessus) ou "
-             "`column -t -s$'\\t' audit/reference/REGISTRE.tsv | sort -k5`.*")
+             "`cut -f1,3,5,6 audit/reference/REGISTRE.tsv | sort -k2` (1 ligne = 1 outil).*")
     L.append("")
     return "\n".join(L)
 

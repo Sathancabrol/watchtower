@@ -11,7 +11,10 @@ Ce script ne lit que ce fichier : il ne peut donc pas contredire la documentatio
     python3 audit/reference/cherche.py --liste                # tout le registre, 1 ligne par outil
 
 Sortie : `id`, catégorie, prix, palier, licence, état, extrait, ancre de fiche.
-Code de retour : 0 si au moins un résultat, 1 sinon (les scripts peuvent s'y fier), 2 si erreur.
+Si moins de 3 résultats, deux filets de sécurité : la recherche passe en « un mot suffit » (signalé ≈)
+puis, si le mot n'existe nulle part dans les fiches, le **routage par besoin** répond à la place
+(« facture », « blackout », « dark vessel »… ne sont écrits dans aucune fiche, mais dans un besoin).
+Code de retour : 0 = résultat ou piste, 1 = rien du tout, 2 = erreur (id inconnu, registre absent).
 """
 from __future__ import annotations
 
@@ -256,7 +259,13 @@ def main() -> int:
         vus = hits[:a.limit] if a.limit else hits
         print(json.dumps(vus, ensure_ascii=False, indent=2))
         return 0 if hits else 1
-    if not hits:
+    pistes = []
+    if mots and len(hits) < 3 and reg.get("besoins"):
+        for bb in reg["besoins"]:
+            plat = plier(bb["besoin"] + " " + bb["note"] + " " + " ".join(bb["outils"]))
+            if any(m in plat for m in mots):
+                pistes.append(bb)
+    if not hits and not pistes:
         print("Aucun résultat. Élargis : `--ou`, retire un filtre, ou `--liste` pour voir tout le registre.")
         return 1
     total = len(hits)
@@ -278,6 +287,12 @@ def main() -> int:
             print(ligne(o))
         else:
             affiche(o)
+    for bb in pistes[:2]:
+        titre = bb["besoin"].replace("**", "")
+        print(f"\n≈ ce besoin est routé ailleurs dans le registre : {titre[0].upper() + titre[1:]}")
+        print("   " + " ".join(bb["outils"]) + "   → `--besoin` pour la note, `--fiche <id>` pour la fiche")
+    if not hits:
+        print("\n(aucun résultat direct : la piste ci-dessus est la réponse du registre)")
     return 0
 
 

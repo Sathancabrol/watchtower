@@ -12,7 +12,7 @@ python3 audit/reference/cherche.py --besoin 4d         # partir du besoin, pas d
 python3 audit/reference/cherche.py --sans-cle --palier A   # gratuit, local, sans GPU
 python3 audit/reference/cherche.py --fiche marker      # une fiche complète
 python3 audit/reference/doctor.py --json               # ce qui tourne vraiment sur la machine
-grep -i ais audit/reference/REGISTRE.tsv               # la version plate, pour grep/awk/sort
+grep -i ais audit/reference/REGISTRE.tsv          # version plate ; `cut -f1,5,6` pour ne garder que des colonnes
 ```
 
 Les 4 fichiers `REFERENCE.md`, `REGISTRE-OUTILS.json`, `REGISTRE.tsv`, `AGENTS.md` sont **générés** :
@@ -29,7 +29,7 @@ Le détail des règles de consommation est dans [`AGENTS.md`](AGENTS.md) (racine
 | [`audit/CAPACITES-AGENT.md`](audit/CAPACITES-AGENT.md) | 25 tâches classées : 100 % agent / cliques restants / hors de portée (matériel, compte, CB) |
 | [`AGENTS.md`](AGENTS.md) (racine) | **routeur pour les agents** (généré) : où vit chaque réponse, les 6 commandes, les 9 interdits/obligations, ce qui est déjà en place |
 | [`audit/reference/cherche.py`](audit/reference/cherche.py) | recherche dans le registre : mots-clés pondérés, `--besoin`, `--sans-cle`, `--palier`, `--licence`, `--fiche`, `--ids`, `--json` (0 = trouvé, 1 = rien) |
-| [`audit/reference/REGISTRE.tsv`](audit/reference/REGISTRE.tsv) | 1 ligne = 1 outil (12 colonnes tabulées) : `grep`, `awk`, `sort`, `column -t` — la forme la moins chère en tokens |
+| [`audit/reference/REGISTRE.tsv`](audit/reference/REGISTRE.tsv) | 1 ligne = 1 outil (12 colonnes tabulées) : `grep`, `awk`, `sort`, `cut -f` — la forme la moins chère en tokens pour un agent |
 | [`audit/stack/`](audit/stack/) | stack gratuite prête à poser : `install-stack.ps1` · `install-stack.sh` · `docker-compose.yml` (SearXNG, Vane, SpiderFoot, Activepieces) · `gen-secrets.sh` · `README.md` |
 
 ### Démarrage rapide (0 €, 0 compte)

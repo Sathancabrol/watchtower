@@ -49,7 +49,7 @@
 | la fiche complète d'un outil | `python3 audit/reference/cherche.py --fiche marker` |
 | partir d'un besoin, pas d'un nom | `python3 audit/reference/cherche.py --besoin vps` |
 | ce qui tourne **déjà** ici | `python3 audit/reference/doctor.py --json` |
-| grepper sans Python | `grep -i ais audit/reference/REGISTRE.tsv` |
+| grepper sans Python | `grep -i ais audit/reference/REGISTRE.tsv` (colonnes : `cut -f1,5,6`) |
 | une décision d'architecture | §0 (règles) puis §1 (ordre d'implémentation) |
 
 L'`id` (entre backticks) **est l'ancre** de la fiche : `audit/REFERENCE.md#hloc`. Source de vérité : `audit/reference/generate-reference.py` — `REFERENCE.md`, `REGISTRE-OUTILS.json`, `REGISTRE.tsv` et `AGENTS.md` sont générés, jamais édités à la main.
@@ -61,8 +61,8 @@ L'`id` (entre backticks) **est l'ancre** de la fiche : `audit/REFERENCE.md#hloc`
 | faire tourner un LLM **sans aucune clé** | [`ollama`](#ollama) · [`litellm`](#litellm) · [`lm-studio`](#lm-studio) · [`open-webui`](#open-webui) | Ollama sert le modèle, LiteLLM unifie l'API, Open WebUI donne un chat dans le navigateur. |
 | sortir un **JSON conforme à mes schémas** d'un LLM | [`instructor`](#instructor) · [`outlines`](#outlines) · [`dspy`](#dspy) | Instructor = Pydantic, Outlines = grammaire garantie, DSPy = optimisation des prompts. |
 | répondre à une question **avec sources**, sans Perplexity | [`searxng`](#searxng) · [`vane-perplexica`](#vane-perplexica) · [`crawl4ai`](#crawl4ai) · [`litellm`](#litellm) | SearXNG (activer `format=json`) + Vane par-dessus ; Crawl4AI lit les pages en markdown. |
-| transformer **PDF et scans** en texte interrogeable | [`marker`](#marker) · [`docling`](#docling) · [`ocrmypdf`](#ocrmypdf) · [`chonkie`](#chonkie) | Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend un scan cherchable. |
-| lire une **capture d'écran, une photo, un plan** | [`tesseract`](#tesseract) · [`paddleocr`](#paddleocr) · [`exiftool`](#exiftool) | Tesseract = léger sur CPU ; PaddleOCR = bien meilleur sur le FR et les mises en page ; ExifTool = métadonnées. |
+| transformer **PDF, scans, factures, dossiers administratifs** en texte interrogeable | [`marker`](#marker) · [`docling`](#docling) · [`ocrmypdf`](#ocrmypdf) · [`chonkie`](#chonkie) | Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend cherchable un scan (reçu, facture, arrêté, devis, plan cadastral, facture d'énergie). |
+| lire une **capture d'écran, une photo, un plan, une plaque, un document** (OCR) | [`tesseract`](#tesseract) · [`paddleocr`](#paddleocr) · [`exiftool`](#exiftool) | Tesseract = léger sur CPU ; PaddleOCR = bien meilleur sur le FR et les mises en page ; ExifTool = métadonnées. |
 | **transcrire** un mémo vocal ou une écoute radio | [`whisper-cpp`](#whisper-cpp) · [`faster-whisper`](#faster-whisper) · [`scriberr`](#scriberr) | whisper.cpp sur CPU, faster-whisper si GPU, Scriberr si tu veux une API Docker déjà emballée. |
 | faire **parler** la tour en français | [`piper`](#piper) · [`kokoro`](#kokoro) · [`qwen3-tts`](#qwen3-tts) · [`openwakeword`](#openwakeword) | Piper = CPU et quasi instantané ; Qwen3-TTS = clonage de voix (GPU ~4 Go) ; openWakeWord = réveil local. |
 | découper et **indexer** un corpus (RAG) sans serveur | [`chonkie`](#chonkie) · [`lancedb`](#lancedb) · [`sqlite-vec`](#sqlite-vec) · [`qdrant`](#qdrant) | LanceDB / sqlite-vec = aucun daemon ; Qdrant seulement quand le corpus grossit. |
@@ -1797,5 +1797,5 @@ bash audit/stack/install-stack.sh --dry-run  # ce qui serait fait, sans rien tou
 | [`vane-perplexica`](#vane-perplexica) | Vane (ex-Perplexica) | 1 | 🟢 gratuit | 🅰 | — | MIT (36,6 k★) | 🟥 à installer | 2 |
 | [`whisper-cpp`](#whisper-cpp) | whisper.cpp | 0 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | — |
 
-*Filtrer plutôt que défiler : `cherche.py` (ci-dessus) ou `column -t -s$'\t' audit/reference/REGISTRE.tsv | sort -k5`.*
+*Filtrer plutôt que défiler : `cherche.py` (ci-dessus) ou `cut -f1,3,5,6 audit/reference/REGISTRE.tsv | sort -k2` (1 ligne = 1 outil).*
 
