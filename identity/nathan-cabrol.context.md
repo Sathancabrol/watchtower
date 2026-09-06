@@ -1,6 +1,6 @@
 # CONTEXTE D'IDENTITÉ — NÄTHAN CABROL
-<!-- gobonet.identity/3.0 — v3.1.0 — 2026-09-05
-     Deux CV (2025, 2021) + clarifications en conversation. -->
+<!-- gobonet.identity/3.0 — v4.0.0 — 2026-09-05
+     Deux CV (2025, 2021) + clarifications + bloc de profil inféré. -->
 
 Fiche d'identité de référence. Source de vérité. N'invente aucune donnée absente.
 
@@ -21,7 +21,7 @@ Chaque fait porte `[source · trust%]`.
 `≥80` affirmable · `60-79` modaliser · `40-59` hypothèse · `<40` ne pas exposer.
 **Précédence : CV > declared > referential > inferred.**
 
-**État** : 99 champs — 76 % connu, 22 % inféré, 2 % manquant. **Trust moyen 92 %** (75 % en v2).
+**État** : 109 champs — 70 % connu, 28 % inféré, 2 % manquant. **Trust moyen 90 %**.
 
 ---
 
@@ -321,3 +321,123 @@ pas d'équipe, un ordinateur.
 **Importantes** — mobilité géographique (Toulouse ? Montpellier ? strictement Thau ?) · titre de
 psychologue ouvert ou non · année 2020 · publications ou communications · montants et linéaires
 des chantiers SOBECA.
+
+---
+
+# PARTIE II — PROFIL INFÉRÉ `[I·80]`
+
+> ⚠ **Bloc entièrement inféré**, demandé explicitement par l'intéressé le 2026-09-05.
+> Construit sur des traces factuelles (choix répétés, durées, récurrences dans deux CV et la
+> conversation) et sur la psychologie du travail.
+>
+> **Ce bloc décrit un PROFIL DE TRAVAIL, pas une personne.** Chaque item est une hypothèse
+> réfutable. Ce n'est pas un diagnostic, pas une évaluation clinique, pas une lecture de la vie
+> privée. La règle du §14 prévaut : **rien ici ne doit être relié aux événements de vie privée,
+> à l'année 2020 ni au poste d'auxiliaire de vie.**
+
+## A. Style cognitif
+- **Orientation dominante** `[I·85]` — pensée systémique et structurale : modéliser un domaine
+  avant d'y agir, chercher la carte plutôt que le chemin.
+  *Traces* : Cognitorium est une méta-structure avant d'être un produit · demande d'une fiche
+  structurée plutôt que d'un CV · mémoire 2017-18 unifiant plusieurs protocoles en un instrument.
+- **Rapport à l'abstraction** `[I·80]` — confort croissant avec le niveau d'abstraction.
+  **Dissociation notable** : exécutant fiable dans le réel (chantiers menés et clôturés),
+  exploratoire dans l'abstrait (3 ans sans livrable numérique).
+- **Mode d'apprentissage** `[I·90]` — autodidacte par immersion large, pas par curriculum.
+  « Recherche d'informations toutes directions » est une description littérale.
+- **Rapport à l'information** `[I·70]` — accumulation étendue avant sélection ; tendance à élargir
+  le périmètre plutôt qu'à le clore (Cognitorium couvre sept objets hétérogènes).
+- **Signature** `[I·85]` — **cartographe**. Du laboratoire au chantier à Cognitorium, la constante
+  est la production d'une représentation exploitable d'un espace complexe.
+
+## B. Moteurs
+**Primaires** — comprendre avant d'agir `[I·90]` · utilité à grande échelle `[I·85]` ·
+autonomie `[I·85]` · concret et tangible `[I·75]` (retour volontaire au BTP après un Master).
+
+**Secondaires** — transmission `[I·70]` · reconnaissance de la singularité `[I·60]`.
+
+**Absents notables** `[I·70]` — aucun signal de motivation par le statut, le salaire, la
+compétition ou le pouvoir hiérarchique, ni dans les CV ni dans la conversation.
+→ *Un discours centré rémunération ou évolution hiérarchique aura peu de prise. Privilégier
+autonomie, sens et intérêt du problème.*
+
+## C. Style de travail
+- **Rythme** `[I·80]` — cycles longs (4 ans sur un axe de recherche, 3 ans d'autoformation).
+  Peu compatible avec des sprints courts imposés.
+- **⚠ Autonomie vs cadre** `[I·85]` — **OBSERVATION CLÉ.** Performant en autonomie *encadrée par
+  un objectif externe* (stages de 900 h, chantiers avec date de livraison) ; nettement moins
+  productif en autonomie *totale sans échéance* (3 ans sans livrable).
+  → **Le cadre externe n'est pas une contrainte à subir, c'est un facteur de performance.**
+  Un emploi, un client ou un partenaire produirait probablement plus d'avancement sur Cognitorium
+  que la poursuite en solitaire.
+- **Collectif** `[I·75]` — à l'aise en coordination sans lien hiérarchique fort (4 équipes,
+  sous-traitants, relation client, instance de représentation). Pas de management hiérarchique
+  direct assumé sur la durée.
+- **Finition** `[I·85]` — excellente sous contrainte externe (6 études menées à terme, chantiers
+  clôturés) ; faible en projet auto-dirigé (0 livrable personnel en 3 ans).
+- **Tolérance à l'incertitude** `[I·85]` — élevée : deux reconversions, mobilité
+  Angoulême–Bordeaux–Paris–Toulouse–Sète.
+
+## D. Forces distinctives
+| Force | Détail | Trust |
+|---|---|---|
+| **Traduction entre registres** | Parle protocole à un chercheur et métré à un chef d'équipe. Compétence de passeur, difficile à recruter. | 90 % |
+| **Mesure du comportement humain** | Transforme une question vague en dispositif de mesure. 6 études, 220 participants. | 95 % |
+| **Persistance longue durée** | 3 ans d'autoformation non rémunérée · 6 ans d'études sans redoublement · reconversion jusqu'à certification. | 85 % |
+| **Fiabilité opérationnelle** | Sécurité, clôture, délais : aucun signal d'échec opérationnel au dossier. | 80 % |
+| **Apprentissage de domaines nouveaux** | Psychologie, VRD, réseaux secs, IA — quatre domaines sans recouvrement, tous à niveau opérationnel. | 85 % |
+
+## E. Fragilités — formulées comme risques actionnables
+| Risque | Détail | Gravité | Contre-mesure | Trust |
+|---|---|---|---|---|
+| **Périmètre non clos** | Cognitorium couvre 7 objets hétérogènes. Un projet qui s'élargit ne se termine pas. | élevée | Choisir UN objet et le livrer seul. | 85 % |
+| **Préparation sans mise en marché** | 3 ans de veille, 0 livrable. Le travail existe mais reste invérifiable pour un tiers. | élevée | Publier un artefact imparfait plutôt qu'attendre le complet. | 90 % |
+| **Sous-vente systématique** | Le CV 2025 efface SNCF, CATIE, eye-tracking, 220 participants. **Les atouts les plus rares sont ceux qui disparaissent.** | élevée | Un CV unique assumant les deux moitiés. | 85 % |
+| **Écart ambition / premier pas** | Horizon mégacorp, ressource : un ordinateur. Décourage l'action et paraît peu crédible. | moyenne | Ne jamais énoncer l'horizon sans une étape à 3 mois. | 85 % |
+| **Isolement professionnel** | Aucun réseau actif, aucune présence en ligne. Or Charras, Durupt, Morgagni, Creno, Larrue existent. | moyenne | Réactiver 2 contacts existants avant d'en chercher de nouveaux. | 75 % |
+| **Illisibilité du profil** | Sans fil directeur énoncé d'emblée, le parcours se lit comme une suite de bifurcations. | moyenne | Toujours ouvrir par « l'orientation dans l'espace ». | 85 % |
+
+## F. Conditions de réussite `[I·80]`
+**Favorables** — objectif externe et échéance datée · problème mal défini à cadrer · autonomie de
+méthode · terrain observable · interlocuteur unique et direct · tolérance à un parcours atypique ·
+utilité concrète perceptible.
+
+**Défavorables** — autonomie totale sans échéance · tâche entièrement spécifiée et répétitive ·
+forte hiérarchie et validation lente · travail exclusivement conceptuel · exigence de
+spécialisation étroite unique · évaluation sur la conformité au profil type.
+
+## G. Hypothèses à valider `[I·55]` — usage interne, ne pas exposer à un tiers
+1. Le retour au BTP relevait autant d'un besoin de concret et de revenu que d'un choix durable `[55]`
+   → *Le BTP est-il un métier de long terme ou une base opérationnelle ?*
+2. Cognitorium fonctionne en partie comme espace de synthèse personnelle : réunir une psychologie,
+   un terrain et une technique qui n'ont jamais coexisté dans un emploi `[55]`
+   → *Le projet vise-t-il d'abord un usage externe, ou la cohérence de ton parcours ?*
+3. L'absence d'objectif court terme tient moins au manque de volonté qu'à un horizon si vaste
+   qu'aucune étape ne semble à sa mesure `[55]`
+   → *Une étape à 3 mois te paraît-elle dérisoire au regard de l'objectif final ?*
+
+*Une quatrième hypothèse, plus spéculative, est marquée `ne_pas_exposer` dans le JSON : elle n'est
+consignée que pour éviter qu'un agent la reformule maladroitement.*
+
+## H. Recommandations `[I·80]` — tenant dans la contrainte réelle (un ordinateur, du temps)
+
+**0-3 mois**
+1. **Produire UN livrable fini et public en deux semaines** — par exemple une visualisation
+   interactive des données d'un de tes mémoires. *Casse le cycle « préparation sans mise en
+   marché ». Sert simultanément l'audience UX research et la crédibilité de Cognitorium.*
+2. **Écrire le CV UX research qui n'existe pas** : Master + eye-tracking + SNCF + CATIE +
+   220 participants. *Audience n°1, ne nécessite aucune compétence manquante.*
+3. **Recontacter Pom Charras et un encadrant de stage.** *Réseau existant, non activé, coût nul.*
+
+**3-12 mois** — viser un poste ou une mission en UX research / ergonomie / facteur humain, ou en
+aide conducteur de travaux selon l'urgence financière (*le cadre externe est un facteur de
+performance documenté*) · réduire Cognitorium à un seul objet livrable.
+
+**Long terme** — traiter la vision mégacorp comme direction, jamais comme argument.
+
+## I. Synthèse
+> **En une phrase** `[I·85]` : un cartographe de l'espace — cognitif puis physique — qui produit
+> remarquablement sous contrainte externe et peu en autonomie totale, dont les atouts les plus
+> rares sont précisément ceux qu'il retire de ses propres documents.
+
+> **Ce qui manque, en un mot** `[I·90]` : **finir.**

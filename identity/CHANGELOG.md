@@ -1,5 +1,43 @@
 # Changelog — fiche d'identité
 
+## v4.0.0 — 2026-09-05
+
+Ajout de la **Partie II — Profil inféré**, sur demande explicite. 109 champs, trust moyen 90 %.
+Part d'inférence portée de 22 % à 28 % : c'est volontaire et assumé.
+
+### Cadrage méthodologique
+
+Le bloc infère un **profil de travail**, jamais une personne. Construit sur des traces
+factuelles — choix répétés, durées, récurrences entre deux CV et la conversation — et sur la
+psychologie du travail. Trois garde-fous inscrits dans la fiche :
+
+- aucun item n'est relié aux événements de vie privée, à 2020 ni à l'auxiliariat de vie ;
+- aucun registre clinique ou diagnostique ;
+- chaque item est une hypothèse réfutable, avec ses traces et son trust.
+
+### Contenu
+
+9 sections : style cognitif · moteurs · style de travail · forces distinctives · fragilités ·
+conditions de réussite · hypothèses à valider · recommandations · synthèse.
+
+### Observations structurantes
+
+- **Autonomie vs cadre** `[85 %]` — performant sous objectif externe daté, peu productif en
+  autonomie totale. Le cadre n'est pas une contrainte mais un facteur de performance.
+- **Signature : cartographe** `[85 %]` — la constante du laboratoire au chantier à Cognitorium.
+- **Sous-vente systématique** `[85 %]` — les atouts les plus rares sont ceux qui disparaissent
+  des documents.
+- **Moteurs absents** `[70 %]` — aucun signal de motivation par statut, salaire, compétition ou
+  pouvoir. Un discours de recrutement classique aura peu de prise.
+
+### Protections
+
+`hypotheses_a_valider` (trust 55 %) est marqué usage interne. Une quatrième hypothèse porte
+`ne_pas_exposer: true` — consignée uniquement pour éviter qu'un agent la reformule maladroitement.
+Trois directives ajoutées à `instructions_agent`.
+
+---
+
 ## v3.1.0 — 2026-09-05
 
 Clarifications en conversation. **99 champs, 76 % connu, trust moyen 92 %.**

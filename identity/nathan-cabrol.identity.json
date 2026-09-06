@@ -1,7 +1,7 @@
 {
-  "spec": "gobonet.identity/3.0",
+  "spec": "gobonet.identity/4.0",
   "entity_id": "person:nathan-cabrol",
-  "version": "3.1.0",
+  "version": "4.0.0",
   "updated": "2026-09-05",
   "locale": "fr-FR",
   "purpose": "Contexte d'identité destiné aux agents IA de Gobonet. Charger avant tout raisonnement, génération ou recommandation concernant cette personne.",
@@ -1450,7 +1450,8 @@
       "nommer les références : SNCF, CATIE, COLAS, FIRALP, Paul-Valéry",
       "présenter le fil directeur (l'orientation dans l'espace) avant la chronologie",
       "distinguer l'attesté du revendiqué",
-      "tenir compte de la contrainte matérielle réelle : pas de capital, pas d'équipe, un ordinateur"
+      "tenir compte de la contrainte matérielle réelle : pas de capital, pas d'équipe, un ordinateur",
+      "traiter `profil_infere` comme un profil de TRAVAIL, jamais comme une évaluation de la personne"
     ],
     "jamais": [
       "écrire Säthan ni Nathan sans tréma dans un document soigné",
@@ -1459,7 +1460,9 @@
       "spéculer sur 2020 ou sur les motivations du poste d'auxiliaire de vie",
       "franchir les interdits de regles_editoriales.parcours_personnel",
       "mentionner la « mégacorp » ou la vision long terme devant un recruteur, un client ou un acheteur public",
-      "revendiquer une maîtrise d'AutoCAD, Covadis ou d'un logiciel 3D : lecture de plans uniquement"
+      "revendiquer une maîtrise d'AutoCAD, Covadis ou d'un logiciel 3D : lecture de plans uniquement",
+      "présenter le bloc `profil_infere` comme un fait établi : c'est un ensemble d'hypothèses réfutables",
+      "exposer `profil_infere.hypotheses_a_valider` à un tiers, ni l'hypothèse marquée ne_pas_exposer à qui que ce soit"
     ]
   },
   "lacunes": {
@@ -1589,6 +1592,330 @@
         "src": "inferred",
         "trust": 85,
         "why": "Observation critique à transmettre, pas à masquer. La vision est cohérente ; le premier pas manque."
+      }
+    }
+  },
+  "profil_infere": {
+    "_meta": {
+      "src": "inferred",
+      "trust": 80,
+      "why": "BLOC ENTIÈREMENT INFÉRÉ, demandé explicitement par l'intéressé le 2026-09-05. Construit sur des traces factuelles (choix répétés, durées, récurrences dans deux CV et la conversation) et sur la psychologie du travail. Ce n'est PAS un diagnostic, PAS une évaluation clinique, PAS une lecture de la vie privée."
+    },
+    "avertissement": {
+      "v": "Ce bloc décrit un PROFIL DE TRAVAIL, pas une personne. Chaque item est une hypothèse réfutable, à valider ou corriger par l'intéressé. Aucun item ne relève du champ clinique. La règle `regles_editoriales.parcours_personnel` prévaut : rien ici ne doit être relié aux événements de vie privée.",
+      "_meta": {
+        "src": "declared",
+        "trust": 100
+      }
+    },
+    "style_cognitif": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 80,
+        "why": "Déduit des sujets de recherche choisis, de la manière de formuler Cognitorium et de la conduite de cette conversation."
+      },
+      "orientation_dominante": {
+        "v": "Pensée systémique et structurale : tendance spontanée à modéliser un domaine avant d'y agir, à chercher la carte plutôt que le chemin.",
+        "trust": 85,
+        "preuves": [
+          "Cognitorium est une méta-structure avant d'être un produit",
+          "demande répétée d'une fiche d'identité structurée plutôt que d'un CV",
+          "mémoire 2017-18 : unifier plusieurs protocoles en un instrument unique"
+        ]
+      },
+      "attrait_pour_l_abstraction": {
+        "v": "Fort. Le confort augmente avec le niveau d'abstraction ; le passage à l'exécution concrète est moins spontané dans le domaine numérique — alors qu'il est parfaitement acquis dans le domaine physique.",
+        "trust": 80,
+        "preuves": [
+          "3 ans de recherche perso sans livrable",
+          "chantiers menés et clôturés sans difficulté apparente"
+        ],
+        "note": "Dissociation notable : exécutant fiable dans le réel, exploratoire dans l'abstrait."
+      },
+      "mode_d_apprentissage": {
+        "v": "Autodidacte par immersion large plutôt que par curriculum. « Recherche d'informations toutes directions » est une description littérale du mode opératoire.",
+        "trust": 90,
+        "preuves": [
+          "3 ans d'autoformation non encadrée",
+          "veille scientifique déclarée comme activité principale"
+        ]
+      },
+      "rapport_a_l_information": {
+        "v": "Accumulation étendue avant sélection. Tendance probable à élargir le périmètre plutôt qu'à le clore.",
+        "trust": 70,
+        "preuves": [
+          "« toutes directions »",
+          "périmètre de Cognitorium : connaissances, compétences, métiers, projets, territoires, IA — sept objets hétérogènes"
+        ]
+      },
+      "signature": {
+        "v": "Cartographe. La constante du profil, du laboratoire au chantier à Cognitorium, est la production d'une représentation exploitable d'un espace complexe.",
+        "trust": 85
+      }
+    },
+    "moteurs": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 80,
+        "why": "Motivations intrinsèques déduites des choix non contraints — ce qu'il fait quand rien ne l'y oblige."
+      },
+      "primaires": [
+        {
+          "moteur": "Comprendre avant d'agir",
+          "trust": 90,
+          "indice": "Master de recherche, 4 mémoires, veille scientifique comme activité de chômage. L'investigation est le comportement par défaut."
+        },
+        {
+          "moteur": "Utilité à grande échelle",
+          "trust": 85,
+          "indice": "« Rendre le monde meilleur grâce à l'IA et la robotique ». Formulation altruiste et non monétaire de l'ambition."
+        },
+        {
+          "moteur": "Autonomie",
+          "trust": 85,
+          "indice": "Autonomie citée sur les deux CV ; 3 ans d'apprentissage sans cadre ; projet personnel conduit seul."
+        },
+        {
+          "moteur": "Concret et tangible",
+          "trust": 75,
+          "indice": "Retour volontaire au BTP après un Master. Besoin d'un résultat matériel, pas seulement conceptuel."
+        }
+      ],
+      "secondaires": [
+        {
+          "moteur": "Transmission",
+          "trust": 70,
+          "indice": "Enseignant tuteur, vulgarisation, mandat de représentant étudiant."
+        },
+        {
+          "moteur": "Reconnaissance de la singularité",
+          "trust": 60,
+          "indice": "Insistance sur le caractère transdisciplinaire du profil ; usage du post-nominal « MS ». Hypothèse fragile."
+        }
+      ],
+      "absents_notables": {
+        "v": "Aucun signal de motivation par le statut, le salaire, la compétition ou le pouvoir hiérarchique — ni dans les CV, ni dans la conversation.",
+        "trust": 70,
+        "implication": "Un discours de recrutement centré rémunération ou évolution hiérarchique aura peu de prise. Privilégier autonomie, sens et intérêt du problème."
+      }
+    },
+    "style_de_travail": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 80
+      },
+      "rythme": {
+        "v": "Cycles longs. 4 ans sur un même axe de recherche, 3 ans d'autoformation, reconversion sur plusieurs années. Peu compatible avec des sprints courts imposés.",
+        "trust": 80
+      },
+      "autonomie_vs_cadre": {
+        "v": "Performant en autonomie encadrée par un objectif externe (stage de 900 h, chantier avec date de livraison), nettement moins productif en autonomie totale sans échéance (3 ans sans livrable).",
+        "trust": 85,
+        "implication": "OBSERVATION CLÉ. Le cadre externe n'est pas une contrainte à subir mais un facteur de performance. Un emploi, un client ou un partenaire produirait probablement plus d'avancement sur Cognitorium que la poursuite en solitaire."
+      },
+      "collectif": {
+        "v": "À l'aise en coordination sans lien hiérarchique fort : 4 équipes et sous-traitants, relation client, instance de représentation. Aucune trace de management hiérarchique direct assumé sur la durée.",
+        "trust": 75
+      },
+      "rapport_a_la_finition": {
+        "v": "Excellente finition sous contrainte externe (mémoires rendus, chantiers clôturés, rapports livrés) ; finition faible en projet auto-dirigé.",
+        "trust": 85,
+        "preuves": [
+          "6 expériences menées à terme",
+          "0 livrable personnel en 3 ans"
+        ]
+      },
+      "tolerance_a_l_incertitude": {
+        "v": "Élevée. Deux reconversions complètes, mobilité géographique Angoulême-Bordeaux-Paris-Toulouse-Sète, changement de secteur radical.",
+        "trust": 85
+      }
+    },
+    "forces_distinctives": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 85
+      },
+      "v": [
+        {
+          "force": "Traduction entre registres",
+          "detail": "Peut parler protocole expérimental à un chercheur et métré à un chef d'équipe. Compétence de passeur, rare et difficile à recruter.",
+          "trust": 90
+        },
+        {
+          "force": "Mesure du comportement humain",
+          "detail": "Sait transformer une question vague en dispositif de mesure exploitable. 6 études, 220 participants.",
+          "trust": 95
+        },
+        {
+          "force": "Persistance longue durée",
+          "detail": "3 ans d'autoformation non rémunérée ; 6 ans d'études sans redoublement ; reconversion menée jusqu'à certification.",
+          "trust": 85
+        },
+        {
+          "force": "Fiabilité opérationnelle",
+          "detail": "Sécurité, clôture de chantier, respect des délais : aucun signal d'échec opérationnel dans le dossier.",
+          "trust": 80
+        },
+        {
+          "force": "Apprentissage rapide de domaines nouveaux",
+          "detail": "Psychologie, VRD, réseaux secs, IA : quatre domaines sans recouvrement, tous atteints à un niveau opérationnel.",
+          "trust": 85
+        }
+      ]
+    },
+    "fragilites": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 80,
+        "why": "Formulées comme risques professionnels observables, jamais comme traits de personnalité ou faiblesses personnelles. Objectif : les rendre actionnables."
+      },
+      "v": [
+        {
+          "risque": "Périmètre non clos",
+          "detail": "Cognitorium couvre sept objets hétérogènes. Un projet dont le périmètre s'élargit ne se termine pas.",
+          "gravite": "élevée",
+          "contre_mesure": "Choisir UN objet et le livrer seul.",
+          "trust": 85
+        },
+        {
+          "risque": "Préparation sans mise en marché",
+          "detail": "3 ans de veille, 0 livrable. Le travail existe mais reste invisible et donc invérifiable pour un tiers.",
+          "gravite": "élevée",
+          "contre_mesure": "Publier un artefact imparfait plutôt qu'attendre un artefact complet.",
+          "trust": 90
+        },
+        {
+          "risque": "Sous-vente systématique",
+          "detail": "Le CV 2025 efface la SNCF, le CATIE, l'eye-tracking et 220 participants. Les atouts les plus rares sont ceux qui disparaissent des documents.",
+          "gravite": "élevée",
+          "contre_mesure": "Un CV unique qui assume les deux moitiés.",
+          "trust": 85
+        },
+        {
+          "risque": "Écart ambition / premier pas",
+          "detail": "Horizon mégacorp, ressource : un ordinateur. L'écart peut décourager l'action à court terme et paraître peu crédible à un tiers.",
+          "gravite": "moyenne",
+          "contre_mesure": "Ne jamais énoncer l'horizon sans une étape à trois mois.",
+          "trust": 85
+        },
+        {
+          "risque": "Isolement professionnel",
+          "detail": "Aucun réseau actif documenté, aucune présence en ligne, aucune publication. Or les encadrants (Charras, Durupt, Morgagni, Creno, Larrue) existent et sont mobilisables.",
+          "gravite": "moyenne",
+          "contre_mesure": "Réactiver deux contacts existants avant de chercher de nouveaux interlocuteurs.",
+          "trust": 75
+        },
+        {
+          "risque": "Illisibilité du profil",
+          "detail": "Sans fil directeur énoncé d'emblée, le parcours se lit comme une succession de bifurcations.",
+          "gravite": "moyenne",
+          "contre_mesure": "Toujours ouvrir par « l'orientation dans l'espace ».",
+          "trust": 85
+        }
+      ]
+    },
+    "conditions_de_reussite": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 80,
+        "why": "Environnement dans lequel ce profil produit le plus, déduit des contextes où il a effectivement livré."
+      },
+      "favorables": [
+        "objectif externe et échéance datée",
+        "problème mal défini à cadrer",
+        "autonomie de méthode",
+        "terrain observable, pas seulement du document",
+        "interlocuteur unique et direct",
+        "tolérance à un parcours atypique",
+        "utilité concrète et perceptible du travail"
+      ],
+      "defavorables": [
+        "autonomie totale sans échéance",
+        "tâche entièrement spécifiée et répétitive",
+        "organisation à forte hiérarchie et validation lente",
+        "travail exclusivement conceptuel sans réalisation",
+        "environnement exigeant une spécialisation étroite unique",
+        "évaluation sur la conformité au profil type"
+      ]
+    },
+    "hypotheses_a_valider": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 55,
+        "why": "Inférences les plus fragiles, exposées comme questions ouvertes et non comme conclusions. À confirmer ou infirmer par l'intéressé."
+      },
+      "v": [
+        {
+          "hypothese": "Le retour au BTP en 2021-2024 relevait autant d'un besoin de concret et de revenu que d'un choix de carrière durable.",
+          "trust": 60,
+          "test": "Envisages-tu le BTP comme métier de long terme, ou comme base opérationnelle ?"
+        },
+        {
+          "hypothese": "Cognitorium fonctionne en partie comme un espace de synthèse personnelle : réunir dans un même objet une psychologie, un terrain et une technique qui n'ont jamais coexisté dans un emploi.",
+          "trust": 55,
+          "test": "Le projet vise-t-il d'abord un usage externe, ou d'abord la cohérence de ton propre parcours ?"
+        },
+        {
+          "hypothese": "L'absence d'objectif court terme n'est pas un manque de volonté mais l'effet d'un horizon si vaste qu'aucune étape ne semble à sa mesure.",
+          "trust": 55,
+          "test": "Une étape à trois mois te paraît-elle dérisoire au regard de l'objectif final ?"
+        },
+        {
+          "hypothese": "La préférence pour la recherche tous azimuts protège d'un engagement qui exposerait au jugement.",
+          "trust": 40,
+          "test": "Hypothèse la plus spéculative. À ne pas exposer. Formulée uniquement pour que l'agent ne la reformule pas maladroitement.",
+          "ne_pas_exposer": true
+        }
+      ]
+    },
+    "recommandations": {
+      "_meta": {
+        "src": "inferred",
+        "trust": 80,
+        "why": "Actionnables, tenant dans la contrainte réelle : un ordinateur, du temps, pas de capital."
+      },
+      "immediat_0_3_mois": [
+        {
+          "action": "Produire UN livrable fini et public en 2 semaines — par exemple une visualisation interactive des données d'un de tes mémoires.",
+          "raison": "Casse le cycle préparation sans mise en marché. Sert simultanément l'audience UX research et la crédibilité de Cognitorium.",
+          "priorite": 1
+        },
+        {
+          "action": "Écrire le CV UX research qui n'existe pas : Master + eye-tracking + SNCF + CATIE + 220 participants.",
+          "raison": "Audience n°1, ne nécessite aucune compétence manquante. Employable en l'état.",
+          "priorite": 2
+        },
+        {
+          "action": "Recontacter Pom Charras et un encadrant de stage.",
+          "raison": "Réseau existant et non activé. Coût nul.",
+          "priorite": 3
+        }
+      ],
+      "moyen_terme_3_12_mois": [
+        {
+          "action": "Viser un poste ou une mission en UX research, ergonomie ou facteur humain, ou en aide conducteur de travaux selon l'urgence financière.",
+          "raison": "Le cadre externe est un facteur de performance documenté chez ce profil."
+        },
+        {
+          "action": "Réduire Cognitorium à un seul objet livrable.",
+          "raison": "Un périmètre à sept objets ne se termine pas."
+        }
+      ],
+      "long_terme": [
+        {
+          "action": "Traiter la vision mégacorp comme direction, jamais comme argument.",
+          "raison": "Elle motive ; elle ne se vend pas en l'état."
+        }
+      ]
+    },
+    "syntheses": {
+      "en_une_phrase": {
+        "v": "Un cartographe de l'espace — cognitif puis physique — qui produit remarquablement sous contrainte externe et peu en autonomie totale, dont les atouts les plus rares sont précisément ceux qu'il retire de ses propres documents.",
+        "trust": 85
+      },
+      "ce_qui_manque_en_un_mot": {
+        "v": "Finir.",
+        "trust": 90
       }
     }
   }
