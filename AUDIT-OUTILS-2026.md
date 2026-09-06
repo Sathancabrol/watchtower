@@ -261,6 +261,9 @@ Deux mises en garde écrites noir sur blanc, parce que ces liens les survolent :
 | `AUDIT-OUTILS-2026.md` | ce document |
 | `audit/REFERENCE.md` ⭐ | **référence canonique des agents** : 86 outils × (rôle · faisabilité par palier · prix · licence · URLs · étapes A→B→C · intégration tour · vérif · `origine` = le lien d'audit dont elle est issue, auto-croisé depuis le §1) |
 | `audit/reference/REGISTRE-OUTILS.json` | le même contenu en machine-readable (source unique : `audit/reference/generate-reference.py`) |
+| `audit/reference/cherche.py` | **le point d'entrée recherche** : `cherche.py "pdf" --sans-cle`, `--besoin vps`, `--fiche <id>`, `--json` ; exit 0/1 exploitable par un script |
+| `audit/reference/REGISTRE.tsv` | la même chose en 1 ligne par outil (12 colonnes) pour `grep`/`awk`/`sort` et pour les agents à petit contexte |
+| `AGENTS.md` (racine) | routeur généré : où vit chaque réponse, les commandes, les 9 règles — la porte d'entrée de tout agent qui touche le repo |
 | `audit/reference/doctor.py` | état réel de la tour : ce qui répond / manque / bloque (checks pilotés par le registre, `--json`) |
 | `audit/CATALOGUE-OUTILS.md` | catalogue court « vu de l’audit » (par vidéo d’origine) |
 | `audit/COUTS-LICENCES-LEGAL.md` | argent réel + pièges de licence (fair-code n8n, « Other » GobboNet/Mark-LII, AGPL, clause Open WebUI, RGPD/cadre FR) |

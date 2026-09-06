@@ -39,6 +39,245 @@
     "9 · Mémoire, stockage, sauvegarde",
     "10 · Références, modèles et pièges à éviter"
   ],
+  "besoins": [
+    {
+      "besoin": "faire tourner un LLM **sans aucune clé**",
+      "outils": [
+        "ollama",
+        "litellm",
+        "lm-studio",
+        "open-webui"
+      ],
+      "note": "Ollama sert le modèle, LiteLLM unifie l'API, Open WebUI donne un chat dans le navigateur."
+    },
+    {
+      "besoin": "sortir un **JSON conforme à mes schémas** d'un LLM",
+      "outils": [
+        "instructor",
+        "outlines",
+        "dspy"
+      ],
+      "note": "Instructor = Pydantic, Outlines = grammaire garantie, DSPy = optimisation des prompts."
+    },
+    {
+      "besoin": "répondre à une question **avec sources**, sans Perplexity",
+      "outils": [
+        "searxng",
+        "vane-perplexica",
+        "crawl4ai",
+        "litellm"
+      ],
+      "note": "SearXNG (activer `format=json`) + Vane par-dessus ; Crawl4AI lit les pages en markdown."
+    },
+    {
+      "besoin": "transformer **PDF et scans** en texte interrogeable",
+      "outils": [
+        "marker",
+        "docling",
+        "ocrmypdf",
+        "chonkie"
+      ],
+      "note": "Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend un scan cherchable."
+    },
+    {
+      "besoin": "lire une **capture d'écran, une photo, un plan**",
+      "outils": [
+        "tesseract",
+        "paddleocr",
+        "exiftool"
+      ],
+      "note": "Tesseract = léger sur CPU ; PaddleOCR = bien meilleur sur le FR et les mises en page ; ExifTool = métadonnées."
+    },
+    {
+      "besoin": "**transcrire** un mémo vocal ou une écoute radio",
+      "outils": [
+        "whisper-cpp",
+        "faster-whisper",
+        "scriberr"
+      ],
+      "note": "whisper.cpp sur CPU, faster-whisper si GPU, Scriberr si tu veux une API Docker déjà emballée."
+    },
+    {
+      "besoin": "faire **parler** la tour en français",
+      "outils": [
+        "piper",
+        "kokoro",
+        "qwen3-tts",
+        "openwakeword"
+      ],
+      "note": "Piper = CPU et quasi instantané ; Qwen3-TTS = clonage de voix (GPU ~4 Go) ; openWakeWord = réveil local."
+    },
+    {
+      "besoin": "découper et **indexer** un corpus (RAG) sans serveur",
+      "outils": [
+        "chonkie",
+        "lancedb",
+        "sqlite-vec",
+        "qdrant"
+      ],
+      "note": "LanceDB / sqlite-vec = aucun daemon ; Qdrant seulement quand le corpus grossit."
+    },
+    {
+      "besoin": "traduire **hors ligne**",
+      "outils": [
+        "libretranslate"
+      ],
+      "note": "0 cloud, lent sur CPU mais parfait en tâche de fond ; ne pas l'utiliser pour un texte juridiquement sensible hors de chez toi."
+    },
+    {
+      "besoin": "trouver une **adresse, un lieu** sans Google",
+      "outils": [
+        "photon-nominatim"
+      ],
+      "note": "Déjà branché dans `locations.js` ; le serveur public suffit, Photon auto-hébergé en zone blanche."
+    },
+    {
+      "besoin": "afficher des **images satellite** gratuites",
+      "outils": [
+        "esri-carto-tuiles",
+        "gibis",
+        "cesium-ion",
+        "sar-opera"
+      ],
+      "note": "GIBS sert des tuiles **datées** (compatibles avec le curseur temporel) ; Cesium ion = terrain et 3D Tiles avec compte gratuit."
+    },
+    {
+      "besoin": "scanner un site réel et l'**afficher en 3D** dans le globe",
+      "outils": [
+        "aholo-viewer",
+        "aholo-splat-transform",
+        "brush",
+        "postshot",
+        "opensplat"
+      ],
+      "note": "Capture téléphone/drone → Brush (3DGS) → splat-transform (LOD + collisions) → calque Cesium."
+    },
+    {
+      "besoin": "**ancrer** une caméra, un drone, un téléphone dans ce modèle 3D (VPS)",
+      "outils": [
+        "hloc",
+        "colmap",
+        "niantic-vps",
+        "arcore-geospatial",
+        "multiset-vps",
+        "rayban-capture"
+      ],
+      "note": "hloc + COLMAP = la voie libre, hors-ligne et sans compte ; les VPS du commerce restent du benchmark ou de la capture."
+    },
+    {
+      "besoin": "**rejouer** une crise minute par minute (4D)",
+      "outils": [
+        "recorder-4d",
+        "aisstream",
+        "gdelt",
+        "notams",
+        "outages",
+        "satellite-passes",
+        "gibis"
+      ],
+      "note": "Le journal continu d'abord : sans lui les caches expirent et il n'y a plus rien à rejouer."
+    },
+    {
+      "besoin": "suivre des **navires**, et voir ceux qui **éteignent leur AIS**",
+      "outils": [
+        "aisstream",
+        "pipe-gaps",
+        "recorder-4d"
+      ],
+      "note": "pipe-gaps (Apache-2.0) détecte les trous temporels de position : c'est exactement la détection de « dark vessel »."
+    },
+    {
+      "besoin": "suivre des **avions** et repérer un **brouillage GPS**",
+      "outils": [
+        "opensky",
+        "shadowbroker",
+        "recorder-4d"
+      ],
+      "note": "OpenSky = flux gratuit ; le brouillage se déduit des écarts de trajectoire et de la qualité ADS-B (pattern ShadowBroker)."
+    },
+    {
+      "besoin": "prédire le **passage d'un satellite** au-dessus d'un site",
+      "outils": [
+        "satellite-passes"
+      ],
+      "note": "Skyfield + TLE CelesTrak : 0 clé, et ça donne la fenêtre où l'image sera effectivement utile."
+    },
+    {
+      "besoin": "cartographier l'**infrastructure vitale** d'un territoire",
+      "outils": [
+        "desal-power",
+        "esri-carto-tuiles",
+        "sar-opera"
+      ],
+      "note": "Centrales via Overpass (ODbL) ; la désalination se constitue à la main, une source datée par entrée."
+    },
+    {
+      "besoin": "suivre les **prix du carburant et du brut** sur la timeline",
+      "outils": [
+        "eia-oil"
+      ],
+      "note": "Seules les données publiques (EIA) sont redistribuables — jamais Bloomberg/Refinitiv."
+    },
+    {
+      "besoin": "état de l'**internet** d'un pays (blackout, censure)",
+      "outils": [
+        "outages"
+      ],
+      "note": "Cloudflare Radar + IODA (comptes gratuits), ou RIPE Restless en auto-hébergé si tu veux zéro tiers."
+    },
+    {
+      "besoin": "empreinte web d'une **organisation** (et d'elle seule)",
+      "outils": [
+        "spiderfoot",
+        "theharvester",
+        "amass",
+        "maigret",
+        "osint-framework",
+        "opencti",
+        "gephi"
+      ],
+      "note": "⚠️ Règle n°7 : aucune personne physique. Gephi ou OpenCTI pour lire le graphe, SpiderFoot pour le construire."
+    },
+    {
+      "besoin": "**communiquer sans internet**",
+      "outils": [
+        "reticulum",
+        "meshtastic",
+        "rtl-sdr"
+      ],
+      "note": "Reticulum en logiciel d'abord (0 €) ; les radios LoRa sont l'option, pas le prérequis."
+    },
+    {
+      "besoin": "garder la **mémoire** de l'agent et la sauvegarder",
+      "outils": [
+        "ai-memory-vault",
+        "obsidian",
+        "syncthing",
+        "sqlite-vec"
+      ],
+      "note": "Des markdown dans le repo, synchronisés ; aucune base vectorielle n'est obligatoire."
+    },
+    {
+      "besoin": "automatiser les tâches répétitives (veille, triage, briefing)",
+      "outils": [
+        "activepieces",
+        "hermes-agent",
+        "openclaw",
+        "openhands"
+      ],
+      "note": "Activepieces (MIT) remplace n8n (fair-code) ; Hermes et OpenHands pour le travail de code."
+    },
+    {
+      "besoin": "alternative **GUI** à tout ça, sans terminal",
+      "outils": [
+        "jan",
+        "pinokio",
+        "lm-studio",
+        "gobbonet"
+      ],
+      "note": "Jan et LM Studio = chat local ; Pinokio = lanceur de projets ; GobboNet = patron de l'installeur à un fichier."
+    }
+  ],
   "outils": [
     {
       "id": "ollama",
@@ -2307,7 +2546,7 @@
     },
     {
       "id": "rayban-capture",
-      "nom": "Capture Meta Ray-Ban / téléphone (option硬件)",
+      "nom": "Capture Meta Ray-Ban / téléphone (option matériel)",
       "cat": "10 · Références, modèles et pièges à éviter",
       "statut": "reference",
       "prix": "option-publique",

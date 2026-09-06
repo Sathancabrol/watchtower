@@ -980,7 +980,7 @@ T(id="multiset-vps", nom="MultiSet AI (VPS commercial)", cat=C_VPS, statut="refe
   verifier="—",
   notes="Tarifs relus le 2026-09-05 sur https://multiset.ai/pricing — **à re-vérifier le jour où tu décides** (règle n°9 : les tiers gratuits bougent tout seuls). « L'entreprise a un an et déjà notée plus robuste que Niantic » dixit la vidéo — c'est le seul acteur qui touche les lunettes grand public ; le modèle économique reste fragile, ne pas s'y marier. Point qui compte pour la tour : l'**on-device** n'existe qu'en Enterprise → aucun VPS du commerce ne te donne l'autonomie hors-ligne que `hloc` te donne à 0 €. ")
 
-T(id="rayban-capture", nom="Capture Meta Ray-Ban / téléphone (option硬件)", cat=C_REF, statut="reference",
+T(id="rayban-capture", nom="Capture Meta Ray-Ban / téléphone (option matériel)", cat=C_REF, statut="reference",
   prix="option-publique", licence="matériel (300 $) — SDK lunette gratuit", tier=None,
   role="La leçon matérielle : avec une simple caméra (+ un scan 3D préalable), on remplace un casque militaire à 30 000 $ (Anduril EagleEye). Un téléphone suffit ; les lunettes ne sont que l'ergonomie.",
   urls=["https://www.anduril.com/eagleeye", "https://developers.meta.com/horizon/"],
@@ -1140,6 +1140,65 @@ def charger_origines() -> dict:
 
 ORIGINES = charger_origines()
 
+BESOINS: list[tuple[str, list[str], str]] = [
+    ("faire tourner un LLM **sans aucune clé**", ["ollama", "litellm", "lm-studio", "open-webui"],
+     "Ollama sert le modèle, LiteLLM unifie l'API, Open WebUI donne un chat dans le navigateur."),
+    ("sortir un **JSON conforme à mes schémas** d'un LLM", ["instructor", "outlines", "dspy"],
+     "Instructor = Pydantic, Outlines = grammaire garantie, DSPy = optimisation des prompts."),
+    ("répondre à une question **avec sources**, sans Perplexity", ["searxng", "vane-perplexica", "crawl4ai", "litellm"],
+     "SearXNG (activer `format=json`) + Vane par-dessus ; Crawl4AI lit les pages en markdown."),
+    ("transformer **PDF et scans** en texte interrogeable", ["marker", "docling", "ocrmypdf", "chonkie"],
+     "Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend un scan cherchable."),
+    ("lire une **capture d'écran, une photo, un plan**", ["tesseract", "paddleocr", "exiftool"],
+     "Tesseract = léger sur CPU ; PaddleOCR = bien meilleur sur le FR et les mises en page ; ExifTool = métadonnées."),
+    ("**transcrire** un mémo vocal ou une écoute radio", ["whisper-cpp", "faster-whisper", "scriberr"],
+     "whisper.cpp sur CPU, faster-whisper si GPU, Scriberr si tu veux une API Docker déjà emballée."),
+    ("faire **parler** la tour en français", ["piper", "kokoro", "qwen3-tts", "openwakeword"],
+     "Piper = CPU et quasi instantané ; Qwen3-TTS = clonage de voix (GPU ~4 Go) ; openWakeWord = réveil local."),
+    ("découper et **indexer** un corpus (RAG) sans serveur", ["chonkie", "lancedb", "sqlite-vec", "qdrant"],
+     "LanceDB / sqlite-vec = aucun daemon ; Qdrant seulement quand le corpus grossit."),
+    ("traduire **hors ligne**", ["libretranslate"],
+     "0 cloud, lent sur CPU mais parfait en tâche de fond ; ne pas l'utiliser pour un texte juridiquement sensible hors de chez toi."),
+    ("trouver une **adresse, un lieu** sans Google", ["photon-nominatim"],
+     "Déjà branché dans `locations.js` ; le serveur public suffit, Photon auto-hébergé en zone blanche."),
+    ("afficher des **images satellite** gratuites", ["esri-carto-tuiles", "gibis", "cesium-ion", "sar-opera"],
+     "GIBS sert des tuiles **datées** (compatibles avec le curseur temporel) ; Cesium ion = terrain et 3D Tiles avec compte gratuit."),
+    ("scanner un site réel et l'**afficher en 3D** dans le globe", ["aholo-viewer", "aholo-splat-transform", "brush", "postshot", "opensplat"],
+     "Capture téléphone/drone → Brush (3DGS) → splat-transform (LOD + collisions) → calque Cesium."),
+    ("**ancrer** une caméra, un drone, un téléphone dans ce modèle 3D (VPS)",
+     ["hloc", "colmap", "niantic-vps", "arcore-geospatial", "multiset-vps", "rayban-capture"],
+     "hloc + COLMAP = la voie libre, hors-ligne et sans compte ; les VPS du commerce restent du benchmark ou de la capture."),
+    ("**rejouer** une crise minute par minute (4D)",
+     ["recorder-4d", "aisstream", "gdelt", "notams", "outages", "satellite-passes", "gibis"],
+     "Le journal continu d'abord : sans lui les caches expirent et il n'y a plus rien à rejouer."),
+    ("suivre des **navires**, et voir ceux qui **éteignent leur AIS**", ["aisstream", "pipe-gaps", "recorder-4d"],
+     "pipe-gaps (Apache-2.0) détecte les trous temporels de position : c'est exactement la détection de « dark vessel »."),
+    ("suivre des **avions** et repérer un **brouillage GPS**", ["opensky", "shadowbroker", "recorder-4d"],
+     "OpenSky = flux gratuit ; le brouillage se déduit des écarts de trajectoire et de la qualité ADS-B (pattern ShadowBroker)."),
+    ("prédire le **passage d'un satellite** au-dessus d'un site", ["satellite-passes"],
+     "Skyfield + TLE CelesTrak : 0 clé, et ça donne la fenêtre où l'image sera effectivement utile."),
+    ("cartographier l'**infrastructure vitale** d'un territoire", ["desal-power", "esri-carto-tuiles", "sar-opera"],
+     "Centrales via Overpass (ODbL) ; la désalination se constitue à la main, une source datée par entrée."),
+    ("suivre les **prix du carburant et du brut** sur la timeline", ["eia-oil"],
+     "Seules les données publiques (EIA) sont redistribuables — jamais Bloomberg/Refinitiv."),
+    ("état de l'**internet** d'un pays (blackout, censure)", ["outages"],
+     "Cloudflare Radar + IODA (comptes gratuits), ou RIPE Restless en auto-hébergé si tu veux zéro tiers."),
+    ("empreinte web d'une **organisation** (et d'elle seule)",
+     ["spiderfoot", "theharvester", "amass", "maigret", "osint-framework", "opencti", "gephi"],
+     "⚠️ Règle n°7 : aucune personne physique. Gephi ou OpenCTI pour lire le graphe, SpiderFoot pour le construire."),
+    ("**communiquer sans internet**", ["reticulum", "meshtastic", "rtl-sdr"],
+     "Reticulum en logiciel d'abord (0 €) ; les radios LoRa sont l'option, pas le prérequis."),
+    ("garder la **mémoire** de l'agent et la sauvegarder", ["ai-memory-vault", "obsidian", "syncthing", "sqlite-vec"],
+     "Des markdown dans le repo, synchronisés ; aucune base vectorielle n'est obligatoire."),
+    ("automatiser les tâches répétitives (veille, triage, briefing)", ["activepieces", "hermes-agent", "openclaw", "openhands"],
+     "Activepieces (MIT) remplace n8n (fair-code) ; Hermes et OpenHands pour le travail de code."),
+    ("alternative **GUI** à tout ça, sans terminal", ["jan", "pinokio", "lm-studio", "gobbonet"],
+     "Jan et LM Studio = chat local ; Pinokio = lanceur de projets ; GobboNet = patron de l'installeur à un fichier."),
+]
+CJK = re.compile(r"[\u3000-\u9fff\uac00-\ud7af\u0600-\u06ff\u0400-\u04ff]")
+BESOINS_IDS = {i for _, ids, _ in BESOINS for i in ids}
+
+
 def build_json() -> dict:
     tools = []
     for t in OUTILS:
@@ -1162,8 +1221,73 @@ def build_json() -> dict:
             "materiel": LEGEND_TIER,
         },
         "categories": CATEGORIES,
+        "besoins": [{"besoin": b, "outils": ids, "note": note} for b, ids, note in BESOINS],
         "outils": tools,
     }
+
+
+def tsv_rows() -> str:
+    """1 ligne = 1 outil, colonnes tabulées : de quoi trier et filtrer sans Python."""
+    cols = ["id", "nom", "cat", "prix", "palier", "cle", "statut", "licence", "origine", "mots_cles", "resume", "urls"]
+    out = ["\t".join(cols)]
+    for t in OUTILS:
+        palier = {0: "A", 1: "B", 2: "C"}.get(t["tier"], "ABC")
+        cle = "non" if t["prix"] == "materiel" else "compte" if t["prix"] == "avec-compte" else "payant"
+        o = ORIGINES.get(t["id"], {})
+        mots = " ".join(x for x in (_plat(t["nom"]), _plat(t["id"]), _plat(t["cat"].split(" · ")[-1]),
+                                    _plat(t.get("integree", "")), "gpu" if t["tier"] in (1, 2) else "cpu") if x)
+        vals = {"id": t["id"], "nom": t["nom"], "cat": t["cat"], "prix": t["prix"], "palier": palier,
+                "cle": cle, "statut": t["statut"], "licence": t["licence"], "origine": o.get("ref", ""),
+                "mots_cles": mots, "resume": re.sub(r"\s+", " ", t["role"])[:220], "urls": " ".join(t["urls"])}
+        out.append("\t".join(vals[c].replace("\t", " ").replace("\n", " ") for c in cols))
+    return "\n".join(out) + "\n"
+
+
+def block_aide() -> str:
+    """« Trouver en 10 secondes » : commandes + routage besoin → fiches, posé avant les 86 fiches."""
+    L = ["\n---\n", "## 0 bis · Trouver en 10 secondes", ""]
+    L.append("| Tu veux… | Faire |")
+    L.append("|---|---|")
+    L.append('| chercher un outil par mot | `python3 audit/reference/cherche.py "pdf scanné"` |')
+    L.append("| tout ce qui est gratuit **et sans clé** | `python3 audit/reference/cherche.py --sans-cle` |")
+    L.append("| ce qui tient **sans GPU** | `python3 audit/reference/cherche.py --palier A` |")
+    L.append("| la fiche complète d'un outil | `python3 audit/reference/cherche.py --fiche marker` |")
+    L.append("| partir d'un besoin, pas d'un nom | `python3 audit/reference/cherche.py --besoin vps` |")
+    L.append("| ce qui tourne **déjà** ici | `python3 audit/reference/doctor.py --json` |")
+    L.append("| grepper sans Python | `grep -i ais audit/reference/REGISTRE.tsv` |")
+    L.append("| une décision d'architecture | §0 (règles) puis §1 (ordre d'implémentation) |")
+    L.append("")
+    L.append("L'`id` (entre backticks) **est l'ancre** de la fiche : `audit/REFERENCE.md#hloc`. "
+             "Source de vérité : `audit/reference/generate-reference.py` — `REFERENCE.md`, `REGISTRE-OUTILS.json`, "
+             "`REGISTRE.tsv` et `AGENTS.md` sont générés, jamais édités à la main.\n")
+    L.append("### Par besoin\n")
+    L.append("| Besoin | Outils (→ fiche) | Note |")
+    L.append("|---|---|---|")
+    for besoin, ids, note in BESOINS:
+        liens = " · ".join(f"[`{i}`](#{i})" for i in ids)
+        L.append(f"| {besoin} | {liens} | {note} |")
+    L.append("")
+    return "\n".join(L)
+
+
+def block_index() -> str:
+    """Index alphabétique : une ligne par outil, triée par id."""
+    L = ["\n---\n", f"## 5 · Index alphabétique ({len(OUTILS)} outils)", "",
+         "| `id` | Nom | Cat. | Prix | Palier | Compte/clé | Licence | État | Origine |",
+         "|---|---|---|---|---|---|---|---|---|"]
+    for t in sorted(OUTILS, key=lambda x: x["id"]):
+        palier = {0: "🅰", 1: "🅱", 2: "🅲"}.get(t["tier"], "🅰🅱🅲")
+        cle = "—" if t["prix"] == "materiel" else "🟡" if t["prix"] == "avec-compte" else "🔴"
+        etat = {"present": "✅ en place", "partiel": "◑ partiel", "absent": "🟥 à installer",
+                "reference": "⬜ réf. seule"}.get(t["statut"], t["statut"])
+        L.append(f"| [`{t['id']}`](#{t['id']}) | {t['nom'][:44]} | {t['cat'].split(' · ')[0]} "
+                 f"| {PRICE_ICON.get(t['prix'], '⚪')} | {palier} | {cle} | {t['licence'][:38]} "
+                 f"| {etat} | {ORIGINES.get(t['id'], {}).get('ref', '—')} |")
+    L.append("")
+    L.append("*Filtrer plutôt que défiler : `cherche.py` (ci-dessus) ou "
+             "`column -t -s$'\\t' audit/reference/REGISTRE.tsv | sort -k5`.*")
+    L.append("")
+    return "\n".join(L)
 
 
 def build_md() -> str:
@@ -1197,7 +1321,8 @@ def build_md() -> str:
 9. **Toujours vérifier les prix/quotas** au moment de l'écriture : les tiers gratuits sont le premier poste de régression (le tier Gemini l'a été en avril 2026).
 10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`, et le champ `origine` (auto-dérivé des tableaux du §1 de `AUDIT-OUTILS-2026.md`, cf. `charger_origines()`) rattache chaque fiche au lien qui l'a fait naître : **une affirmation non rattachée = une affirmation à re-vérifier avant de coder**.
 11. **Journal d'abord, calque ensuite.** Tout flux public consommé par la tour est **aussi écrit** dans le `recorder-4d` (`data/4d/` → Parquet) : un flux interrogé à la demande est un flux perdu (caches TTL, latence imposée sur l'imagerie). Un nouveau calque sans collecteur est refusé en revue.
-12. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
+12. **Chercher avant de proposer.** `python3 audit/reference/cherche.py "pdf"` (ou `--besoin vps`, `--sans-cle`) : le registre répond en une seconde ; proposer un outil déjà catalogué — ou un tiers payant qui a un équivalent 🟢 — est une régression.
+13. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
 
 ### Grilles de lecture
 
@@ -1212,6 +1337,8 @@ def build_md() -> str:
 | **C** | GPU 12-24 Go | + `qwen3:30b-a3b`, Qwen3-TTS 1,7 B, **entraînement 3DGS (Brush)**, OpenHands en autonomie, Qdrant sur gros corpus, Langfuse |
 | Hors-tour | Colab T4 **gratuit** | dépannage B/C à la demande : Marker, Brush, Qwen3-TTS, fine-tune du routeur |
 """)
+
+    L.append(block_aide())
 
     for cat in CATEGORIES:
         rows = [t for t in OUTILS if t["cat"] == cat]
@@ -1230,6 +1357,8 @@ def build_md() -> str:
             L.append(f"| **{t['nom']}** `{t['id']}` | {role} | {icon} | {PRICE_ICON.get(t['prix'],'⚪')} | {t['licence']} | {urls} |")
         L.append("")
         for t in rows:
+            L.append(f'<a id="{t["id"]}"></a>')
+            L.append("")
             L.append(f"### {t['nom']} — `{t['id']}`")
             L.append(f"- **Statut** : {LEGEND_STATUS.get(t['statut'], t['statut'])} · **Prix** : {LEGEND_COST.get(t['prix'], t['prix'])} · **Licence** : {t['licence']} · **Tour** : {LEGEND_TIER.get(t['tier'], '')}")
             if t.get("gpu"):
@@ -1291,16 +1420,89 @@ bash audit/stack/install-stack.sh --dry-run  # ce qui serait fait, sans rien tou
 - [ ] aucun secret dans le dépôt, aucun port ouvert sur `0.0.0.0`, `.env` en 600
 - [ ] plan de sortie documenté : comment on retire ce composant sans casser la tour
 """)
+    L.append("\n" + block_index())
     return "\n".join(L) + "\n"
 
 
+def build_agents_md() -> str:
+    """Routeur pour les agents : où est la vérité, quelles commandes, ce qui est interdit."""
+    n = len(OUTILS)
+    g = sum(1 for t in OUTILS if t["prix"] == "materiel")
+    c = sum(1 for t in OUTILS if t["prix"] == "avec-compte")
+    p = sum(1 for t in OUTILS if t["prix"] in ("payant", "freemium"))
+    deja = [t for t in OUTILS if t["statut"] in ("present", "partiel")]
+    deja_l = "\n".join(f"- `{t['id']}` — {t['nom']}" for t in deja) or "- rien : `doctor.py` renvoie tout `absent`"
+    return f"""# AGENTS.md — mode d'emploi du repo
+
+> ⚙️ **Généré** par `audit/reference/generate-reference.py` (le {datetime.date.today().isoformat()}).
+> Ne pas éditer : modifier le générateur puis `python3 audit/reference/generate-reference.py`.
+
+Ce repo = une tour de veille **CesiumJS** (`watchtower-mods`, 57 modules) + un plan de contrôle de
+recherche (`reaserch-engine`) + l'**audit d'outillage** qui dit quoi installer, à quel prix, sous quelle licence.
+
+## Où chercher
+
+| Question | Où la réponse vit |
+|---|---|
+| Quel outil pour tel besoin ? | `audit/REFERENCE.md` §0 **bis** (tableau « par besoin ») |
+| Fiche d'un outil (rôle, prix, licence, étapes A→B→C, vérif) | `audit/REFERENCE.md`, ancre = l'`id` (ex. `#hloc`) |
+| Est-ce déjà installé / fonctionnel ici ? | `python3 audit/reference/doctor.py` |
+| Faisable à 0 € ? | `AUDIT-OUTILS-2026.md` §3 (verdict par outil) et §6 (remplacements des tiers payants) |
+| Droit, licences, CGU | `audit/COUTS-LICENCES-LEGAL.md` |
+| Ce que l'agent fait à ta place | `audit/CAPACITES-AGENT.md` (25 tâches cotées) |
+| Par quoi commencer | `audit/REFERENCE.md` §1 puis `AUDIT-OUTILS-2026.md` §8 (P0 → P10) |
+| Installer le socle | `audit/stack/install-stack.sh` / `.ps1` (courts, relisibles, `-DryRun`) |
+
+## Les commandes
+
+```bash
+python3 audit/reference/cherche.py "pdf" --sans-cle   # recherche plein texte + filtres
+python3 audit/reference/cherche.py --besoin vps       # partir du besoin, pas du nom
+python3 audit/reference/cherche.py --fiche marker     # une fiche en texte court
+python3 audit/reference/doctor.py --json               # état réel de la machine (exit 1 si socle incomplet)
+python3 audit/reference/generate-reference.py          # régénère REFERENCE.md, REGISTRE-*.json/tsv, AGENTS.md
+```
+
+Registre : **{n} outils** ({g} 🟢 sans clé, {c} 🟡 avec compte gratuit, {p} 🔴/🟠 payants ou semi-payants) en
+12 catégories. Machine : `audit/reference/REGISTRE-OUTILS.json` ; plat : `audit/reference/REGISTRE.tsv`.
+
+## Interdits et obligations (le détail est dans `REFERENCE.md` §0)
+
+1. Ne **jamais** éditer `REFERENCE.md`, `REGISTRE-OUTILS.json`, `REGISTRE.tsv`, `AGENTS.md` : la source de vérité est la liste `OUTILS` de `audit/reference/generate-reference.py`.
+2. **Aucune fonctionnalité visant une personne physique** : pas de pistage, pas de visage, pas d'ancrage de personnes dans le VPS, pas de calque « yachts / jets d'oligarques ».
+3. Licence **refusée** si `NOASSERTION`, absente, « Other » ou fair-code → réécrire le motif. Vérifier le **fichier** LICENSE, pas l'auto-détection GitHub.
+4. **Zéro clé par défaut** ; `.env` en 600 et jamais commité ; aucun binding `0.0.0.0` ; un repli cloud s'affiche à l'écran.
+5. Ajouter un outil = **une entrée du générateur** avec `role`, `tier`, `prix`, `licence`, `urls`, `install` (A→B→C), `verifier` (exécuté par `doctor.py`), puis régénérer, puis committer.
+6. **Journal d'abord, calque ensuite** : tout flux public consommé est aussi écrit dans `recorder-4d`.
+7. **Un événement = un alignement temporel, jamais une assertion** : la tour cite, elle n'accuse pas.
+8. `doctor.py` avant **et** après chaque installation ; une commande de vérification se termine par un **exit code** (jamais un `| head` qui masque l'absence).
+9. Prix et quotas **re-vérifiés à la date d'écriture** (les tiers gratuits sont le premier poste de régression).
+
+## Déjà en place
+
+{deja_l}
+"""
+
+
 def main() -> int:
-    (HERE / "REGISTRE-OUTILS.json").write_text(
-        json.dumps(build_json(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    md_path = ROOT / "audit" / "REFERENCE.md"
-    md_path.write_text(build_md(), encoding="utf-8")
     ids = [t["id"] for t in OUTILS]
     assert len(ids) == len(set(ids)), "ids dupliqués"
+    inconnus = BESOINS_IDS - set(ids)
+    assert not inconnus, f"§Besoins : ids inconnus {sorted(inconnus)}"
+    for t in OUTILS:
+        assert t.get("install"), f"{t['id']} : étapes d'installation vides"
+        assert t.get("urls"), f"{t['id']} : aucune URL source"
+    md = build_md()
+    assert not CJK.search(md), "caractères non latins dans REFERENCE.md (corriger le générateur)"
+    ancres = set(re.findall(r'<a id="([^"]+)"></a>', md))
+    orphelines = {c for c in re.findall(r"\]\(#([^)]+)\)", md)} - ancres
+    assert not orphelines, f"liens internes sans ancre : {sorted(orphelines)}"
+    (HERE / "REGISTRE-OUTILS.json").write_text(
+        json.dumps(build_json(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    (HERE / "REGISTRE.tsv").write_text(tsv_rows(), encoding="utf-8")
+    md_path = ROOT / "audit" / "REFERENCE.md"
+    md_path.write_text(md, encoding="utf-8")
+    (ROOT / "AGENTS.md").write_text(build_agents_md(), encoding="utf-8")
     print(f"✔ {len(OUTILS)} outils → {md_path.relative_to(ROOT)} + audit/reference/REGISTRE-OUTILS.json")
     print("  gratuit/local :", sum(1 for t in OUTILS if t['prix'] == 'materiel'),
           "| avec compte :", sum(1 for t in OUTILS if t['prix'] == 'avec-compte'),

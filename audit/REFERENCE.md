@@ -20,7 +20,8 @@
 9. **Toujours vérifier les prix/quotas** au moment de l'écriture : les tiers gratuits sont le premier poste de régression (le tier Gemini l'a été en avril 2026).
 10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`, et le champ `origine` (auto-dérivé des tableaux du §1 de `AUDIT-OUTILS-2026.md`, cf. `charger_origines()`) rattache chaque fiche au lien qui l'a fait naître : **une affirmation non rattachée = une affirmation à re-vérifier avant de coder**.
 11. **Journal d'abord, calque ensuite.** Tout flux public consommé par la tour est **aussi écrit** dans le `recorder-4d` (`data/4d/` → Parquet) : un flux interrogé à la demande est un flux perdu (caches TTL, latence imposée sur l'imagerie). Un nouveau calque sans collecteur est refusé en revue.
-12. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
+12. **Chercher avant de proposer.** `python3 audit/reference/cherche.py "pdf"` (ou `--besoin vps`, `--sans-cle`) : le registre répond en une seconde ; proposer un outil déjà catalogué — ou un tiers payant qui a un équivalent 🟢 — est une régression.
+13. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
 
 ### Grilles de lecture
 
@@ -38,6 +39,54 @@
 
 ---
 
+## 0 bis · Trouver en 10 secondes
+
+| Tu veux… | Faire |
+|---|---|
+| chercher un outil par mot | `python3 audit/reference/cherche.py "pdf scanné"` |
+| tout ce qui est gratuit **et sans clé** | `python3 audit/reference/cherche.py --sans-cle` |
+| ce qui tient **sans GPU** | `python3 audit/reference/cherche.py --palier A` |
+| la fiche complète d'un outil | `python3 audit/reference/cherche.py --fiche marker` |
+| partir d'un besoin, pas d'un nom | `python3 audit/reference/cherche.py --besoin vps` |
+| ce qui tourne **déjà** ici | `python3 audit/reference/doctor.py --json` |
+| grepper sans Python | `grep -i ais audit/reference/REGISTRE.tsv` |
+| une décision d'architecture | §0 (règles) puis §1 (ordre d'implémentation) |
+
+L'`id` (entre backticks) **est l'ancre** de la fiche : `audit/REFERENCE.md#hloc`. Source de vérité : `audit/reference/generate-reference.py` — `REFERENCE.md`, `REGISTRE-OUTILS.json`, `REGISTRE.tsv` et `AGENTS.md` sont générés, jamais édités à la main.
+
+### Par besoin
+
+| Besoin | Outils (→ fiche) | Note |
+|---|---|---|
+| faire tourner un LLM **sans aucune clé** | [`ollama`](#ollama) · [`litellm`](#litellm) · [`lm-studio`](#lm-studio) · [`open-webui`](#open-webui) | Ollama sert le modèle, LiteLLM unifie l'API, Open WebUI donne un chat dans le navigateur. |
+| sortir un **JSON conforme à mes schémas** d'un LLM | [`instructor`](#instructor) · [`outlines`](#outlines) · [`dspy`](#dspy) | Instructor = Pydantic, Outlines = grammaire garantie, DSPy = optimisation des prompts. |
+| répondre à une question **avec sources**, sans Perplexity | [`searxng`](#searxng) · [`vane-perplexica`](#vane-perplexica) · [`crawl4ai`](#crawl4ai) · [`litellm`](#litellm) | SearXNG (activer `format=json`) + Vane par-dessus ; Crawl4AI lit les pages en markdown. |
+| transformer **PDF et scans** en texte interrogeable | [`marker`](#marker) · [`docling`](#docling) · [`ocrmypdf`](#ocrmypdf) · [`chonkie`](#chonkie) | Marker sort un markdown propre (GPU conseillé), Docling garde la structure, OCRmyPDF rend un scan cherchable. |
+| lire une **capture d'écran, une photo, un plan** | [`tesseract`](#tesseract) · [`paddleocr`](#paddleocr) · [`exiftool`](#exiftool) | Tesseract = léger sur CPU ; PaddleOCR = bien meilleur sur le FR et les mises en page ; ExifTool = métadonnées. |
+| **transcrire** un mémo vocal ou une écoute radio | [`whisper-cpp`](#whisper-cpp) · [`faster-whisper`](#faster-whisper) · [`scriberr`](#scriberr) | whisper.cpp sur CPU, faster-whisper si GPU, Scriberr si tu veux une API Docker déjà emballée. |
+| faire **parler** la tour en français | [`piper`](#piper) · [`kokoro`](#kokoro) · [`qwen3-tts`](#qwen3-tts) · [`openwakeword`](#openwakeword) | Piper = CPU et quasi instantané ; Qwen3-TTS = clonage de voix (GPU ~4 Go) ; openWakeWord = réveil local. |
+| découper et **indexer** un corpus (RAG) sans serveur | [`chonkie`](#chonkie) · [`lancedb`](#lancedb) · [`sqlite-vec`](#sqlite-vec) · [`qdrant`](#qdrant) | LanceDB / sqlite-vec = aucun daemon ; Qdrant seulement quand le corpus grossit. |
+| traduire **hors ligne** | [`libretranslate`](#libretranslate) | 0 cloud, lent sur CPU mais parfait en tâche de fond ; ne pas l'utiliser pour un texte juridiquement sensible hors de chez toi. |
+| trouver une **adresse, un lieu** sans Google | [`photon-nominatim`](#photon-nominatim) | Déjà branché dans `locations.js` ; le serveur public suffit, Photon auto-hébergé en zone blanche. |
+| afficher des **images satellite** gratuites | [`esri-carto-tuiles`](#esri-carto-tuiles) · [`gibis`](#gibis) · [`cesium-ion`](#cesium-ion) · [`sar-opera`](#sar-opera) | GIBS sert des tuiles **datées** (compatibles avec le curseur temporel) ; Cesium ion = terrain et 3D Tiles avec compte gratuit. |
+| scanner un site réel et l'**afficher en 3D** dans le globe | [`aholo-viewer`](#aholo-viewer) · [`aholo-splat-transform`](#aholo-splat-transform) · [`brush`](#brush) · [`postshot`](#postshot) · [`opensplat`](#opensplat) | Capture téléphone/drone → Brush (3DGS) → splat-transform (LOD + collisions) → calque Cesium. |
+| **ancrer** une caméra, un drone, un téléphone dans ce modèle 3D (VPS) | [`hloc`](#hloc) · [`colmap`](#colmap) · [`niantic-vps`](#niantic-vps) · [`arcore-geospatial`](#arcore-geospatial) · [`multiset-vps`](#multiset-vps) · [`rayban-capture`](#rayban-capture) | hloc + COLMAP = la voie libre, hors-ligne et sans compte ; les VPS du commerce restent du benchmark ou de la capture. |
+| **rejouer** une crise minute par minute (4D) | [`recorder-4d`](#recorder-4d) · [`aisstream`](#aisstream) · [`gdelt`](#gdelt) · [`notams`](#notams) · [`outages`](#outages) · [`satellite-passes`](#satellite-passes) · [`gibis`](#gibis) | Le journal continu d'abord : sans lui les caches expirent et il n'y a plus rien à rejouer. |
+| suivre des **navires**, et voir ceux qui **éteignent leur AIS** | [`aisstream`](#aisstream) · [`pipe-gaps`](#pipe-gaps) · [`recorder-4d`](#recorder-4d) | pipe-gaps (Apache-2.0) détecte les trous temporels de position : c'est exactement la détection de « dark vessel ». |
+| suivre des **avions** et repérer un **brouillage GPS** | [`opensky`](#opensky) · [`shadowbroker`](#shadowbroker) · [`recorder-4d`](#recorder-4d) | OpenSky = flux gratuit ; le brouillage se déduit des écarts de trajectoire et de la qualité ADS-B (pattern ShadowBroker). |
+| prédire le **passage d'un satellite** au-dessus d'un site | [`satellite-passes`](#satellite-passes) | Skyfield + TLE CelesTrak : 0 clé, et ça donne la fenêtre où l'image sera effectivement utile. |
+| cartographier l'**infrastructure vitale** d'un territoire | [`desal-power`](#desal-power) · [`esri-carto-tuiles`](#esri-carto-tuiles) · [`sar-opera`](#sar-opera) | Centrales via Overpass (ODbL) ; la désalination se constitue à la main, une source datée par entrée. |
+| suivre les **prix du carburant et du brut** sur la timeline | [`eia-oil`](#eia-oil) | Seules les données publiques (EIA) sont redistribuables — jamais Bloomberg/Refinitiv. |
+| état de l'**internet** d'un pays (blackout, censure) | [`outages`](#outages) | Cloudflare Radar + IODA (comptes gratuits), ou RIPE Restless en auto-hébergé si tu veux zéro tiers. |
+| empreinte web d'une **organisation** (et d'elle seule) | [`spiderfoot`](#spiderfoot) · [`theharvester`](#theharvester) · [`amass`](#amass) · [`maigret`](#maigret) · [`osint-framework`](#osint-framework) · [`opencti`](#opencti) · [`gephi`](#gephi) | ⚠️ Règle n°7 : aucune personne physique. Gephi ou OpenCTI pour lire le graphe, SpiderFoot pour le construire. |
+| **communiquer sans internet** | [`reticulum`](#reticulum) · [`meshtastic`](#meshtastic) · [`rtl-sdr`](#rtl-sdr) | Reticulum en logiciel d'abord (0 €) ; les radios LoRa sont l'option, pas le prérequis. |
+| garder la **mémoire** de l'agent et la sauvegarder | [`ai-memory-vault`](#ai-memory-vault) · [`obsidian`](#obsidian) · [`syncthing`](#syncthing) · [`sqlite-vec`](#sqlite-vec) | Des markdown dans le repo, synchronisés ; aucune base vectorielle n'est obligatoire. |
+| automatiser les tâches répétitives (veille, triage, briefing) | [`activepieces`](#activepieces) · [`hermes-agent`](#hermes-agent) · [`openclaw`](#openclaw) · [`openhands`](#openhands) | Activepieces (MIT) remplace n8n (fair-code) ; Hermes et OpenHands pour le travail de code. |
+| alternative **GUI** à tout ça, sans terminal | [`jan`](#jan) · [`pinokio`](#pinokio) · [`lm-studio`](#lm-studio) · [`gobbonet`](#gobbonet) | Jan et LM Studio = chat local ; Pinokio = lanceur de projets ; GobboNet = patron de l'installeur à un fichier. |
+
+
+---
+
 ## 0 · Socle local (aucune donnée ne sort)
 
 | Outil | Rôle (une phrase) | Faisabilité tour | Prix | Licence | URLs |
@@ -48,6 +97,8 @@
 | **GobboNet (Elodine)** `gobbonet` | Référence du scénario « un seul fichier qui installe tout » : .exe 699 Ko qui pose llama.cpp + un… | 🅰 | 🟢 gratuit | « Other » (non-OSI) | [goblincorps.com](https://goblincorps.com/gobbonet) · [github.com](https://github.com/ElodineOfficial/GobboNet) |
 | **Pinokio** `pinokio` | Launcher « 1 clic » qui clone, installe et démarre des projets open source | 🅰 | 🟢 gratuit | MIT (launcher) | [pinokio.computer](https://pinokio.computer) · [github.com](https://github.com/cocktailpeanut/pinokio) |
 | **whisper.cpp** `whisper-cpp` | Transcription locale de mémos/radios/captures audio, sur CPU | 🅰 | 🟢 gratuit | MIT | [github.com](https://github.com/ggml-org/whisper.cpp) · [huggingface.co](https://huggingface.co/ggerganov/whisper.cpp) |
+
+<a id="ollama"></a>
 
 ### Ollama — `ollama`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -65,6 +116,8 @@
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "ollama"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="litellm"></a>
+
 ### LiteLLM — `litellm`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Proxy unique devant Ollama + fournisseurs gratuits (Groq/OpenRouter :free) + payants : changer de modèle = changer une ligne de config, jamais du code.
@@ -80,6 +133,8 @@
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "litellm"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="lm-studio"></a>
+
 ### LM Studio — `lm-studio`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : gratuit / source fermée · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Alternative GUI à Ollama pour charger/tester des GGUF sans ligne de commande (sert aussi une API locale).
@@ -92,6 +147,8 @@
 - **Notes / pièges** : Ferme = pas auditable par agent ; garder Ollama comme référence.
 - **Sources** : https://lmstudio.ai · https://lmstudio.ai/docs
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "lm-studio"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="gobbonet"></a>
 
 ### GobboNet (Elodine) — `gobbonet`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : « Other » (non-OSI) · **Tour** : A/B/C indifféremment
@@ -107,6 +164,8 @@
 - **Né du lien analysé** : [The 1-Click Chatbot Alternative You Actually Own: GobboNet](https://www.youtube.com/watch?v=wxMB1OvJX2I&t=141s) *(audit, réf. n°8)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gobbonet"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="pinokio"></a>
+
 ### Pinokio — `pinokio`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (launcher) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Launcher « 1 clic » qui clone, installe et démarre des projets open source. Utile pour tester une idée vite.
@@ -119,6 +178,8 @@
 - **Notes / pièges** : Communauté = certains scripts non revus ; ne jamais exécuter un lien reçu en DM comme un .exe.
 - **Sources** : https://pinokio.computer · https://github.com/cocktailpeanut/pinokio
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "pinokio"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="whisper-cpp"></a>
 
 ### whisper.cpp — `whisper-cpp`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -147,6 +208,8 @@
 | **Crawl4AI** `crawl4ai` | Page web → markdown propre / JSON structuré, avec rendu JS | 🅰 | 🟢 gratuit | Apache-2.0 (66-80 k★) | [github.com](https://github.com/unclecode/crawl4ai) · [docs.crawl4ai.com](https://docs.crawl4ai.com) |
 | **Firecrawl (self-host)** `firecrawl` | Alternative à Crawl4AI : crawl + scrape + map + extract en REST, avec SDK compatibles | 🅱 | 🟢 gratuit | AGPL-3.0 (core) | [github.com](https://github.com/firecrawl/firecrawl) · [docs.firecrawl.dev](https://docs.firecrawl.dev/contributing/self-host) |
 
+<a id="searxng"></a>
+
 ### SearXNG — `searxng`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : AGPL-3.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Méta-recherche privée auto-hébergée : tes requêtes ne sont plus attachées à ton identité auprès des moteurs. Devient le `SearxngRetriever` de `reaserch-engine` et le « cherche » de la tour.
@@ -161,6 +224,8 @@
 - **Sources** : https://github.com/searxng/searxng · https://docs.searxng.org
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "searxng"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="vane-perplexica"></a>
 
 ### Vane (ex-Perplexica) — `vane-perplexica`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (36,6 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -177,6 +242,8 @@
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "vane-perplexica"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="crawl4ai"></a>
+
 ### Crawl4AI — `crawl4ai`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (66-80 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Page web → markdown propre / JSON structuré, avec rendu JS. Le « yeux » qui manque à `reaserch-engine` pour lire les pages que SearXNG trouve.
@@ -191,6 +258,8 @@
 - **Sources** : https://github.com/unclecode/crawl4ai · https://docs.crawl4ai.com
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "crawl4ai"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="firecrawl"></a>
 
 ### Firecrawl (self-host) — `firecrawl`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : AGPL-3.0 (core) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
@@ -226,6 +295,8 @@
 | **DSPy** `dspy` | Optimise les prompts et les poids par programme (métrique → compilation) au lieu du tuning manuel. | 🅱 | 🟢 gratuit | MIT | [github.com](https://github.com/stanfordnlp/dspy) · [dspy.ai](https://dspy.ai) |
 | **Langfuse** `langfuse` | Observabilité des runs : traces par étape, coûts, evals, gestion de prompts | 🅱 | 🟢 gratuit | MIT (core) | [github.com](https://github.com/langfuse/langfuse) · [langfuse.com](https://langfuse.com/self-hosting) |
 
+<a id="marker"></a>
+
 ### Marker — `marker`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (39,5 k★, a migré depuis GPLv3) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
 - **Rôle** : PDF/EPUB/DOCX → markdown propre (layout-aware : colonnes, tableaux, équations). La porte d'entrée de `ETAT-DE-LART-PSYCHOLOGIE` et des arrêtés/DOC d'urbanisme vers le RAG.
@@ -241,6 +312,8 @@
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "marker"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="docling"></a>
+
 ### Docling (IBM) — `docling`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Convertit PDF/DOCX/PPTX/HTML en markdown + JSON typé, robuste sur les documents de bureau. Alternative plus légère que Marker quand le GPU manque.
@@ -254,6 +327,8 @@
 - **Sources** : https://github.com/docling-project/docling · https://docling-project.github.io/docling/
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "docling"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="ocrmypdf"></a>
+
 ### OCRmyPDF — `ocrmypdf`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MPL-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Rend cherchable un PDF scanné (ajoute une couche texte), corrige l'inclinaison, déskew. Indispensable pour les documents anciens/arrêtés numérisés.
@@ -266,6 +341,8 @@
 - **Notes / pièges** : Ghostscript est AGPL mais appelé en CLI : pas d'obligation de licence sur tes documents.
 - **Sources** : https://gitlab.cern.ch/ocrmypdf/ocrmypdf · https://ocrmypdf.readthedocs.io
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "ocrmypdf"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="tesseract"></a>
 
 ### Tesseract OCR — `tesseract`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -282,6 +359,8 @@
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "tesseract"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="paddleocr"></a>
+
 ### PaddleOCR — `paddleocr`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (88,9 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : OCR moderne robuste (manuscrits, tableaux, multilingue, PP-OCRv5). Le choix qualité.
@@ -294,6 +373,8 @@
 - **Notes / pièges** : RapidOCR (ONNX) évite la grosse dépendance Paddle. ~1 Go de poids initial.
 - **Sources** : https://github.com/PaddlePaddle/PaddleOCR · https://www.paddleocr.ai/latest/
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "paddleocr"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="libretranslate"></a>
 
 ### LibreTranslate — `libretranslate`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : AGPL-3.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -309,6 +390,8 @@
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "libretranslate"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="chonkie"></a>
+
 ### Chonkie — `chonkie`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Stratégies de découpe pour le RAG (token, sentence, recursive, semantic, late chunking) — la qualité de récupération se joue ici.
@@ -322,6 +405,8 @@
 - **Sources** : https://github.com/chonkie-ai/chonkie · https://docs.chonkie.ai
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "chonkie"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="qdrant"></a>
 
 ### Qdrant — `qdrant`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -337,6 +422,8 @@
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "qdrant"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="lancedb"></a>
+
 ### LanceDB — `lancedb`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Vecteurs + colonnes typées **en fichiers**, sans serveur : le choix par défaut d'une tour. Zéro conteneur, zéro port.
@@ -349,6 +436,8 @@
 - **Notes / pièges** : Recommandé avant Qdrant : moins de pièces, mêmes usages jusqu'à ~1 M de lignes.
 - **Sources** : https://github.com/lancedb/lancedb · https://lancedb.com/docs
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "lancedb"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="outlines"></a>
 
 ### Outlines — `outlines`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -366,6 +455,8 @@
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "outlines"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="instructor"></a>
+
 ### Instructor — `instructor`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Sorties typées Pydantic + retries + validation, sur n'importe quel endpoint OpenAI-compatible → marche avec Ollama et LiteLLM.
@@ -381,6 +472,8 @@
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "instructor"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="dspy"></a>
+
 ### DSPy — `dspy`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
 - **Rôle** : Optimise les prompts et les poids par programme (métrique → compilation) au lieu du tuning manuel.
@@ -395,6 +488,8 @@
 - **Sources** : https://github.com/stanfordnlp/dspy · https://dspy.ai
 - **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "dspy"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="langfuse"></a>
 
 ### Langfuse — `langfuse`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (core) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
@@ -429,6 +524,8 @@
 | **Gephi** `gephi` | Visualisation/analyse de graphes (layout, métriques) pour explorer les liens sortis de SpiderFoot. | 🅰 | 🟢 gratuit | GPL-3.0 | [gephi.org](https://gephi.org) · [github.com](https://github.com/gephi/gephi) |
 | **GDELT (événements mondiaux géolocalisés)** `gdelt` | Un point par événement géopolitique (manifestation, incident aérien, explosion…) avec date, lieu, tons… | 🅰 | 🟢 gratuit | données ouvertes (usage gratuit, non commercial pour les gros volumes) | [gdeltproject.org](https://www.gdeltproject.org) · [blog.gdeltproject.org](https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/) · [api.gdeltproject.org](https://api.gdeltproject.org/api/v2/doc/doc) |
 
+<a id="spiderfoot"></a>
+
 ### SpiderFoot — `spiderfoot`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (21,7 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Collecte OSINT automatisée sur 200+ sources (domaine, IP, e-mail, empreinte d'infra), UI web + API + scans programmables.
@@ -443,6 +540,8 @@
 - **Sources** : https://github.com/smicallef/spiderfoot · https://www.spiderfoot.net/documentation/
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "spiderfoot"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="theharvester"></a>
+
 ### theHarvester — `theharvester`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : GPL-3.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : E-mails + sous-domaines + hosts d'une organisation, en 5 minutes.
@@ -455,6 +554,8 @@
 - **Notes / pièges** : Certaines sources demandent une clé gratuite (Hunter, Shodan) : sinon le reste marche quand même.
 - **Sources** : https://github.com/laramies/theHarvester
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "theharvester"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="amass"></a>
 
 ### Amass (OWASP) — `amass`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -469,6 +570,8 @@
 - **Sources** : https://github.com/owasp-amass/amass · https://owasp-amass.com
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "amass"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="maigret"></a>
+
 ### Maigret — `maigret`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (37,3 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Dossier de présence par pseudo sur 3000+ sites (professionnel : empreinte d'une organisation/marque).
@@ -481,6 +584,8 @@
 - **Notes / pièges** : Puissant donc sensible. En FR : droit à la vie privée (art. 9 C. civ.) + RGPD dès que tu stockes/exposes.
 - **Sources** : https://github.com/soxoj/maigret · https://maigret.readthedocs.io
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "maigret"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="exiftool"></a>
 
 ### ExifTool — `exiftool`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Perl Artistic · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -495,6 +600,8 @@
 - **Sources** : https://exiftool.org
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "exiftool"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="osint-framework"></a>
+
 ### OSINT Framework — `osint-framework`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : web · **Tour** : A/B/C indifféremment
 - **Rôle** : Index arborescent de sources ouvertes (la carte mentale du métier). À absorber comme catalogue de connecteurs, pas comme outil.
@@ -508,6 +615,8 @@
 - **Sources** : https://osintframework.com · https://github.com/lockfale/OSINT-Framework
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "osint-framework"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="maltego-ce"></a>
+
 ### Maltego CE — `maltego-ce`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : propriétaire (CE gratuit) · **Tour** : A/B/C indifféremment
 - **Rôle** : Graphe + transforms historique du domaine. Payant pour l'usage sérieux.
@@ -519,6 +628,8 @@
 - **Notes / pièges** : Piège du « gratuit puis bloqué ». Notre stack maison fait le graphe dans le globe, c'est un avantage sur Maltego.
 - **Sources** : https://www.maltego.com/pricing/ · https://www.maltego.com/continue-to-hub/?hub=https://www.maltego.com/editions/
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "maltego-ce"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="opencti"></a>
 
 ### OpenCTI — `opencti`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : ⚠️ NOASSERTION (vérifier la LICENSE du commit visé) · **Tour** : A/B/C indifféremment
@@ -533,6 +644,8 @@
 - **Sources** : https://github.com/OpenCTI-Platform/opencti · https://docs.opencti.io/latest/deployment/installation/
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "opencti"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="gephi"></a>
+
 ### Gephi — `gephi`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : GPL-3.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Visualisation/analyse de graphes (layout, métriques) pour explorer les liens sortis de SpiderFoot.
@@ -545,6 +658,8 @@
 - **Notes / pièges** : Desktop Java : pas automatisable par un agent au-delà de l'export.
 - **Sources** : https://gephi.org · https://github.com/gephi/gephi
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gephi"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="gdelt"></a>
 
 ### GDELT (événements mondiaux géolocalisés) — `gdelt`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : données ouvertes (usage gratuit, non commercial pour les gros volumes) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -585,6 +700,8 @@
 | **EIA API (futures et prix du carburant)** `eia-oil` | Les courbes de brut du reportage (Brent, WTI, essai) synchronisées sur la timeline du globe. | 🅰 | 🟡 compte gratuit | données publiques US, clé gratuite immédiate | [eia.gov](https://www.eia.gov/api/) · [eia.gov](https://www.eia.gov/opendata/) |
 | **Infrastructures critiques : désalination + centrales** `desal-power` | Le chapitre « Desalination Plants & The Water Crisis » : la tour doit connaître l'infrastructure vitale… | 🅰 | 🟢 gratuit | OSM (ODbL) / datasets à vérifier | [ida-desalination.org](https://ida-desalination.org/publications/ida-desalination-performance-guide) · [powerplants.copernicus.fr](https://powerplants.copernicus.fr/) · [openstreetmap.fr](https://openstreetmap.fr) |
 
+<a id="esri-carto-tuiles"></a>
+
 ### Tuiles Esri World Imagery + CARTO (déjà en place) — `esri-carto-tuiles`
 - **Statut** : 🟩 **présent** (déjà dans la tour, à consolider) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Esri (usage perso) / CARTO-OSM · **Tour** : A/B/C indifféremment
 - **Rôle** : Le globe satellite et la carte routière de la tour, **sans clé** — l'avantage structurel de ton fork sur l'amont.
@@ -596,6 +713,8 @@
 - **Notes / pièges** : CGU : usage non commercial pour les tuiles « community » ; vérifier à chaque mise à jour de l'app.
 - **Sources** : https://github.com/Sathancabrol/watchtower-mods (mapStackController.js) · https://basemaps.cartocdn.com
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "esri-carto-tuiles"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="photon-nominatim"></a>
 
 ### Photon → Nominatim (géocodage sans clé, déjà en place) — `photon-nominatim`
 - **Statut** : 🟩 **présent** (déjà dans la tour, à consolider) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : OSM (ODbL) · **Tour** : A/B/C indifféremment
@@ -610,6 +729,8 @@
 - **Sources** : https://photon.komoot.io · https://github.com/komoot/photon · https://nominatim.org
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "photon-nominatim"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="cesium-ion"></a>
+
 ### Cesium ion (tuiles 3D photoréalistes) — `cesium-ion`
 - **Statut** : 🟨 **partiel** (existant à compléter/remplacer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : Cesium (token gratuit usage perso) · **Tour** : A/B/C indifféremment
 - **Rôle** : Upgrade visuel optionnel de la tour : 3D photoréaliste + terrain. Ton startGate « MODE PAYANT » est fait pour ça.
@@ -623,6 +744,8 @@
 - **Sources** : https://ion.cesium.com · https://cesium.com/platform/cesium-for-unreal/cesium-ion-pricing · https://github.com/Sathancabrol/watchtower-mods (keySetup.js)
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "cesium-ion"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="opensky"></a>
+
 ### OpenSky Network — `opensky`
 - **Statut** : 🟨 **partiel** (existant à compléter/remplacer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : données ouvertes (compte = quota supérieur) · **Tour** : A/B/C indifféremment
 - **Rôle** : Positions de vol (le calque avions de la tour / des amonts).
@@ -635,6 +758,8 @@
 - **Notes / pièges** : Avec un agent local, `adsb.lol` + un dongle RTL-SDR (~30 €) = zéro dépendance à un tiers et couverture locale. Voir P7.
 - **Sources** : https://opensky-network.org · https://opensky-network.org/monitor
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "opensky"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="gods-eye-view"></a>
 
 ### God's Eye View (amont de ta tour) — `gods-eye-view`
 - **Statut** : 🟨 **partiel** (existant à compléter/remplacer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : ⚠️ README dit MIT, l'API GitHub renvoie NOASSERTION · **Tour** : A/B/C indifféremment
@@ -650,6 +775,8 @@
 - **Sources** : https://github.com/bilawalsidhu/gods-eye-view · https://www.youtube.com/watch?v=GRJaKcXZS94
 - **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gods-eye-view"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="shadowbroker"></a>
 
 ### ShadowBroker (réf. amont) — `shadowbroker`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : AGPL-3.0 (11,1 k★, actif) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -667,6 +794,8 @@
 - **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "shadowbroker"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="recorder-4d"></a>
+
 ### Enregistreur temporel (le vrai manque) — `recorder-4d`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : à écrire (nous) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : La leçon des vidéos Hormuz : ce qui rend une tour « 4D », ce n'est pas un calque de plus, c'est **l'enregistrement continu** (il « enregistrait depuis le 25 février ») + une timeline réplayable. Sans ça, la tour est éternellement au présent et tout disparaît quand le cache du fournisseur se vide.
@@ -683,6 +812,8 @@
 - **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "recorder-4d"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="satellite-passes"></a>
+
 ### Prédictions de passage satellite (Skyfield + CelesTrak) — `satellite-passes`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (Skyfield, sgp4) · CelesTrak = données gratuites · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Le calque « un satellite passe au-dessus de ce site à 14 h 07 » : TLE/OMM gratuits, propagation locale, liens avec les couches imagerie et alertes.
@@ -697,6 +828,8 @@
 - **Sources** : https://github.com/skyfielders/python-skyfield · https://celestrak.org · https://github.com/brandon-rhodes/python-sgp4
 - **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "satellite-passes"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="aisstream"></a>
 
 ### aisstream.io (flux AIS temps réel) — `aisstream`
 - **Statut** : 🟨 **partiel** (existant à compléter/remplacer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : service gratuit, clé sur inscription · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -713,6 +846,8 @@
 - **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aisstream"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="pipe-gaps"></a>
+
 ### GlobalFishingWatch/pipe-gaps (navires sombres) — `pipe-gaps`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Détection de **trous temporels dans les messages de position AIS** : l'algo public derrière le phénomène « dark transit » décrit dans l'article (Jag Vasant : pointillés = passage sous escorte).
@@ -727,6 +862,8 @@
 - **Sources** : https://github.com/GlobalFishingWatch/pipe-gaps
 - **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "pipe-gaps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="notams"></a>
 
 ### NOTAM / fermetures d'espace aérien — `notams`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : données publiques (FAA/EASA) ; parseurs MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -743,6 +880,8 @@
 - **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "notams"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="outages"></a>
+
 ### Surveillance des pannes internet (Cloudflare Radar / IODA / Restless) — `outages`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : API gratuites (compte) ; Restless MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Le calque « Téhéran en blackout » : corréler coupures réseau et événements, sur une timeline.
@@ -757,6 +896,8 @@
 - **Sources** : https://developers.cloudflare.com/radar/ · https://ioda.caida.org · https://github.com/RIPE-NCC/restless · https://radar.cloudflare.com
 - **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "outages"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="sar-opera"></a>
 
 ### SAR : NASA OPERA + Copernicus EGMS + Sentinel-1 — `sar-opera`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : données ouvertes (comptes Earthdata / Copernicus gratuits) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -773,6 +914,8 @@
 - **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "sar-opera"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="gibis"></a>
+
 ### NASA GIBS + Copernicus Browser (imagerie quotidienne gratuite) — `gibis`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : domaine public / Copernicus (citer) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Les images « before/after » du reportage, à 0 $ : tuiles WMTS quotidiennes MODIS/VIIRS/Sentinel-2, sans clé.
@@ -788,6 +931,8 @@
 - **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gibis"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="eia-oil"></a>
+
 ### EIA API (futures et prix du carburant) — `eia-oil`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : données publiques US, clé gratuite immédiate · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Les courbes de brut du reportage (Brent, WTI, essai) synchronisées sur la timeline du globe.
@@ -802,6 +947,8 @@
 - **Sources** : https://www.eia.gov/api/ · https://www.eia.gov/opendata/
 - **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "eia-oil"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="desal-power"></a>
 
 ### Infrastructures critiques : désalination + centrales — `desal-power`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : OSM (ODbL) / datasets à vérifier · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -831,6 +978,8 @@
 | **Niantic Spatial VPS + Scaniverse** `niantic-vps` | Le VPS communautaire : 30 Md de photos issues de Pokémon GO/Ingress, et **Scaniverse** qui produit des… | 🅰 | 🟡 compte gratuit | gratuit < 50 k MAU (VPS/ARDK) ; Scaniverse = app gratuite + crédits | [nianticspatial.com](https://www.nianticspatial.com/products/visual-positioning-system) · [scaniverse.com](https://scaniverse.com) · [nianticspatial.com](https://www.nianticspatial.com/en/faq/scaniverse) |
 | **MultiSet AI (VPS commercial)** `multiset-vps` | Le VPS utilisé dans la vidéo Ray-Ban : scan-agnostique (E57, Matterport, PLY, **3DGS**, Polycam,… | 🅰 | 🟠 semi-payant | service propriétaire (SDK Unity/iOS/Android/WebXR/Quest/ROS 2) | [multiset.ai](https://www.multiset.ai/visual-positioning-system) · [multiset.ai](https://www.multiset.ai/pricing) · [multiset.ai](https://www.multiset.ai/developers) |
 
+<a id="hloc"></a>
+
 ### hloc (localisation visuelle 6-DoF) — `hloc`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (4,2 k★) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
 - **Matériel** : 6 Go+ recommandé (PyTorch)
@@ -847,6 +996,8 @@
 - **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "hloc"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="colmap"></a>
+
 ### COLMAP (SfM de référence) — `colmap`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : new BSD (le fichier LICENSE l'affirme ; GitHub renvoie NOASSERTION ⚠️) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Reconstruction 3D + poses caméra à partir de photos : c'est la « 3D map pré-scanée » dont parle la vidéo — l'intrant de hloc **et** des splats.
@@ -862,6 +1013,8 @@
 - **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "colmap"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="arcore-geospatial"></a>
+
 ### Google ARCore Geospatial API — `arcore-geospatial`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : gratuit (sans facturation à l'appel), quota + compte obligatoire · **Tour** : A/B/C indifféremment
 - **Rôle** : Le VPS « mondial » par défaut : Localisation VLM sur 15 ans d'images Street View dans 100+ pays. C'est ce que l'auteur a construit chez Google.
@@ -875,6 +1028,8 @@
 - **Sources** : https://developers.google.com/ar/develop/geospatial · https://developers.google.com/ar/develop/geospatial/android/placecolors
 - **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "arcore-geospatial"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="niantic-vps"></a>
 
 ### Niantic Spatial VPS + Scaniverse — `niantic-vps`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : gratuit < 50 k MAU (VPS/ARDK) ; Scaniverse = app gratuite + crédits · **Tour** : A/B/C indifféremment
@@ -890,6 +1045,8 @@
 - **Sources** : https://www.nianticspatial.com/products/visual-positioning-system · https://scaniverse.com · https://www.nianticspatial.com/en/faq/scaniverse
 - **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "niantic-vps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="multiset-vps"></a>
 
 ### MultiSet AI (VPS commercial) — `multiset-vps`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟠 semi-payant : tier gratuit puis facturation à l'usage · **Licence** : service propriétaire (SDK Unity/iOS/Android/WebXR/Quest/ROS 2) · **Tour** : A/B/C indifféremment
@@ -921,6 +1078,8 @@
 | **OpenSplat / gsplat.tech** `opensplat` | Viewer + éditeur de splats dans le navigateur (nettoyage, cadrage, export) ; gsplat.tech pour… | 🅰 | 🟢 gratuit | MIT | [github.com](https://github.com/ElleXav/OpenSplat) · [opensplattime.org](https://opensplattime.org) · [gsplat.tech](https://gsplat.tech) |
 | **Aholo Platform (cloud)** `aholo-platform` | Génération de splats depuis images/vidéo sur le cloud du constructeur (la vidéo n°11 en parle comme… | 🅰 | 🟠 semi-payant | service propriétaire | [aholo3d.com](https://www.aholo3d.com) |
 
+<a id="aholo-viewer"></a>
+
 ### aholo-viewer (Manycore) — `aholo-viewer`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (1 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Renderer 3DGS + mesh haute perf avec *Chunked Streaming LOD* (jusqu'à 1 Md splats en navigateur, WebGPU/WebGL2). Le saut visuel de la tour : friches/patrimoine/chantiers scannés dans le globe.
@@ -935,6 +1094,8 @@
 - **Sources** : https://github.com/manycoretech/aholo-viewer · https://aholojs.dev/en-US/manual/getting-started/ · https://www.npmjs.com/package/@manycore/aholo-viewer
 - **Né du lien analysé** : [manycoretech/aholo-viewer](https://github.com/manycoretech/aholo-viewer) *(audit, réf. n°11b)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aholo-viewer"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="aholo-splat-transform"></a>
 
 ### @manycore/aholo-splat-transform — `aholo-splat-transform`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -951,6 +1112,8 @@
 - **Né du lien analysé** : [manycoretech/aholo-viewer](https://github.com/manycoretech/aholo-viewer) *(audit, réf. n°11b)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aholo-splat-transform"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="brush"></a>
+
 ### Brush — `brush`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (5 k★) · **Tour** : **C** — GPU 12-24 Go VRAM (ou Colab gratuit)
 - **Matériel** : NVIDIA/AMD/Metal requis
@@ -966,6 +1129,8 @@
 - **Sources** : https://github.com/ArthurBrussee/brush · https://github.com/ArthurBrussee/brush#installation
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "brush"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="postshot"></a>
+
 ### Postshot — `postshot`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : gratuit (⚠️ licence à vérifier) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
 - **Rôle** : GUI Windows capture → splats (le plus doux pour un non-technicien). Utile pour produire tes scans sans CLI.
@@ -979,6 +1144,8 @@
 - **Sources** : https://github.com/PostshotApp/postshot-desktop · https://www.postshot.ai
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "postshot"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="opensplat"></a>
+
 ### OpenSplat / gsplat.tech — `opensplat`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : A/B/C indifféremment
 - **Rôle** : Viewer + éditeur de splats dans le navigateur (nettoyage, cadrage, export) ; gsplat.tech pour visualiser des scans CC.
@@ -990,6 +1157,8 @@
 - **Notes / pièges** : Les datasets de démo sont souvent CC-BY/CC-4 : citer la source si tu exposes.
 - **Sources** : https://github.com/ElleXav/OpenSplat · https://opensplattime.org · https://gsplat.tech
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "opensplat"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="aholo-platform"></a>
 
 ### Aholo Platform (cloud) — `aholo-platform`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟠 semi-payant : tier gratuit puis facturation à l'usage · **Licence** : service propriétaire · **Tour** : A/B/C indifféremment
@@ -1018,6 +1187,8 @@
 | **openWakeWord** `openwakeword` | Mot d'éveil hors-ligne (« tour », « veille »…) : ce qui manque pour que la voix de la tour soit… | 🅰 | 🟢 gratuit | Apache-2.0 | [github.com](https://github.com/dscripka/openWakeWord) · [github.com](https://github.com/dscripka/openWakeWord/releases) |
 | **Scriberr** `scriberr` | Transcription de réunions/audios en Docker (Whisper dedans) : si tu veux une UI de transcription sans… | 🅰 | 🟢 gratuit | MIT (3 k★) | [github.com](https://github.com/rishikanthc/Scriberr) · [scriberr.app](https://scriberr.app) |
 
+<a id="faster-whisper"></a>
+
 ### faster-whisper — `faster-whisper`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (25,2 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : STT Python rapide (CTranslate2) pour transcrire mémos, radios, réunions. Plus simple à brancher que whisper.cpp si tu es déjà en Python.
@@ -1031,6 +1202,8 @@
 - **Notes / pièges** : `base` FR ≈ correct, `small` nettement mieux ; GPU = x5-x20.
 - **Sources** : https://github.com/SYSTRAN/faster-whisper
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "faster-whisper"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="piper"></a>
 
 ### Piper TTS — `piper`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (moteur) / voix CC-BY · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -1047,6 +1220,8 @@
 - **Né du lien analysé** : [I Built a Local AI Assistant: 100% Free & No Subscriptions!](https://www.youtube.com/watch?v=7ffF3fumhcQ) *(audit, réf. n°4)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "piper"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="qwen3-tts"></a>
+
 ### Qwen3-TTS — `qwen3-tts`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
 - **Rôle** : TTS open source SOTA (janv. 2026) : clonage de voix sur 3 s, design de voix par description, contrôle d'émotion/rythme, 10 langues **dont le français**, ~97 ms de latence, 0,6 B ≈ 4 Go VRAM.
@@ -1062,6 +1237,8 @@
 - **Né du lien analysé** : [Elevenlabs just got wrecked. This free AI text to speech is WILD!](https://www.youtube.com/watch?v=eC8mZceIy5k) *(audit, réf. n°7)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "qwen3-tts"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="kokoro"></a>
+
 ### Kokoro-82M — `kokoro`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : TTS ultra-léger (82 M) avec voix FR, tourne sur CPU correctement. Bon compromis entre Piper (moche) et Qwen (GPU).
@@ -1075,6 +1252,8 @@
 - **Sources** : https://github.com/resemble-ai/kokoro · https://huggingface.co/hexgrad/Kokoro-82M
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "kokoro"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="openwakeword"></a>
+
 ### openWakeWord — `openwakeword`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Mot d'éveil hors-ligne (« tour », « veille »…) : ce qui manque pour que la voix de la tour soit utilisable sans bouton.
@@ -1087,6 +1266,8 @@
 - **Notes / pièges** : Faux positifs en ambiance bruitée : exiger 2 frames > 0,6 + fenêtre de vérouillage 1,5 s.
 - **Sources** : https://github.com/dscripka/openWakeWord · https://github.com/dscripka/openWakeWord/releases
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "openwakeword"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="scriberr"></a>
 
 ### Scriberr — `scriberr`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (3 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -1116,6 +1297,8 @@
 | **Activepieces** `activepieces` | Automatisation (le « boring » qui rapporte dans la vidéo n°3) : veille de flux, triage de boîte mail,… | 🅰 | 🟢 gratuit | MIT | [github.com](https://github.com/activepieces/activepieces) · [docs.activepieces.com](https://docs.activepieces.com/docs/activepieces/setup/installation) |
 | **n8n** `n8n` | Automatisation la plus populaire ; la vidéo n°3 la donne comme outil de métier. | 🅰 | 🟢 gratuit | ⚠️ fair-code (Sustainable Use, non-OSI) | [github.com](https://github.com/n8n-io/n8n) · [docs.n8n.io](https://docs.n8n.io/hosting/) |
 
+<a id="hermes-agent"></a>
+
 ### Hermes Agent (Nous Research) — `hermes-agent`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT (241 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Agent auto-améliorant : skills persistés, mémoire 3 couches, outils, MCP, 15+ fournisseurs de modèles dont Ollama. **C'est le runtime que `reaserch-engine/docs/ARCHITECTURE_HERMES_INTEGRATION.md` vise déjà.**
@@ -1130,6 +1313,8 @@
 - **Sources** : https://github.com/NousResearch/hermes-agent · https://hermes-agent.nousresearch.com/docs/
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "hermes-agent"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="openclaw"></a>
+
 ### OpenClaw — `openclaw`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : ⚠️ vérifier la LICENSE courante (GitHub: NOASSERTION) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Agent personnel « always-on » (gateway 18789, messageries, skills, cron). Très populaire en 2026.
@@ -1143,6 +1328,8 @@
 - **Notes / pièges** : 388 k★ mais licence affichée ambiguë par l'API GitHub : à clarifier avant d'en faire une dépendance de la tour.
 - **Sources** : https://github.com/openclaw/openclaw · https://docs.openclaw.ai
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "openclaw"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="openhands"></a>
 
 ### OpenHands — `openhands`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
@@ -1159,6 +1346,8 @@
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "openhands"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="open-webui"></a>
+
 ### Open WebUI — `open-webui`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : BSD-3 (+ clause de marque >50 users) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : ChatGPT local dans le navigateur : multi-modèles, RAG sur tes fichiers, outils/fonctions, pipelines. L'interface humaine au-dessus d'Ollama.
@@ -1174,6 +1363,8 @@
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "open-webui"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="jan"></a>
+
 ### Jan — `jan`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : Apache-2.0 (40 k★) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : App desktop 100 % offline, MCP, gestion de modèles GGUF. L'alternative « je veux un .exe propre et libre ».
@@ -1186,6 +1377,8 @@
 - **Notes / pièges** : Plus limité côté RAG/agents qu'Open WebUI.
 - **Sources** : https://github.com/menloresearch/jan · https://jan.ai/download
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "jan"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="activepieces"></a>
 
 ### Activepieces — `activepieces`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -1201,6 +1394,8 @@
 - **Sources** : https://github.com/activepieces/activepieces · https://docs.activepieces.com/docs/activepieces/setup/installation
 - **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "activepieces"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="n8n"></a>
 
 ### n8n — `n8n`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : ⚠️ fair-code (Sustainable Use, non-OSI) · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -1225,6 +1420,8 @@
 | **Meshtastic** `meshtastic` | Mesh LoRa texte longue portée : 1 repeater + 3 radios ≈ 100 acres ; mesh municipal autonome (Austin) | 🅰 | ⚫ matériel optionnel | GPL-3.0 (fw/apps) + matériel | [meshtastic.org](https://meshtastic.org) · [github.com](https://github.com/meshtastic/firmware) · [meshtastic.org](https://meshtastic.org/docs/getting-started/hardware-suggestions/) |
 | **RTL-SDR (option réception locale)** `rtl-sdr` | Recevoir ADS-B (avions), AIS (navires), météo, poches radio **chez toi** : transforme la tour en nœud… | 🅰 | 🟢 gratuit | matériel ~30 € + logiciels libres | [rtl-sdr.com](https://www.rtl-sdr.com/buyers-guide/) · [github.com](https://github.com/wiedehopf/tar1090) · [github.com](https://github.com/adsb-feeder) |
 
+<a id="reticulum"></a>
+
 ### Reticulum (RNS) — `reticulum`
 - **Statut** : 🟥 **absent** (à installer) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : AGPL-3.0 (logiciel) · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Stack réseau chiffrée multi-média (LoRa, Wi-Fi, TCP, HF) sans IP, par destinations cryptographiques. Canal de secours pair-à-pair, auto-hébergé par la tour.
@@ -1241,6 +1438,8 @@
 - **Né du lien analysé** : [How to Become Your Own ISP](https://www.youtube.com/watch?v=V3kZwsysuqQ) *(audit, réf. n°9)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "reticulum"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="meshtastic"></a>
+
 ### Meshtastic — `meshtastic`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : ⚫ option matérielle (achat one-shot), logiciel libre · **Licence** : GPL-3.0 (fw/apps) + matériel · **Tour** : A/B/C indifféremment
 - **Rôle** : Mesh LoRa texte longue portée : 1 repeater + 3 radios ≈ 100 acres ; mesh municipal autonome (Austin). Zéro abonnement.
@@ -1256,6 +1455,8 @@
 - **Sources** : https://meshtastic.org · https://github.com/meshtastic/firmware · https://meshtastic.org/docs/getting-started/hardware-suggestions/
 - **Né du lien analysé** : [Meshtastic Crash Course Part 1 — What is Meshtastic?](https://www.youtube.com/watch?v=n_Cie7uGu4c) *(audit, réf. n°10)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "meshtastic"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="rtl-sdr"></a>
 
 ### RTL-SDR (option réception locale) — `rtl-sdr`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : matériel ~30 € + logiciels libres · **Tour** : A/B/C indifféremment
@@ -1282,6 +1483,8 @@
 | **Syncthing** `syncthing` | Synchro/duplication P2P des dossiers de la tour (corpus, mémoire, scans 3D) vers NAS/portable, sans… | 🅰 | 🟢 gratuit | MPL-2.0 | [github.com](https://github.com/syncthing/syncthing) · [syncthing.net](https://syncthing.net) |
 | **SQLite + sqlite-vec** `sqlite-vec` | La base « un fichier » avec recherche vectorielle : l'option la plus légère si LanceDB/Qdrant sont trop. | 🅰 | 🟢 gratuit | MIT/Apache-2.0 | [github.com](https://github.com/asg017/sqlite-vec) · [sqlite.org](https://www.sqlite.org/intro.html) |
 
+<a id="ai-memory-vault"></a>
+
 ### ai-memory-vault (jaredrhod) — `ai-memory-vault`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : CC-BY-SA-4.0 · **Tour** : A/B/C indifféremment
 - **Rôle** : Mémoire d'agent **en markdown dans un vault Obsidian, sans base vectorielle** : patterns (profil, tâches, décisions, leçons). Le modèle à copier pour `HCSM`/`Cognitorium`.
@@ -1296,6 +1499,8 @@
 - **Sources** : https://github.com/jaredrhod/ai-memory-vault
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "ai-memory-vault"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="obsidian"></a>
+
 ### Obsidian — `obsidian`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : propriétaire gratuit (usage perso) · **Tour** : A/B/C indifféremment
 - **Rôle** : Éditeur/visualiseur du vault markdown : c'est l'UI humaine de la mémoire de la tour.
@@ -1309,6 +1514,8 @@
 - **Sources** : https://obsidian.md · https://help.obsidian.md
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "obsidian"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="syncthing"></a>
+
 ### Syncthing — `syncthing`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MPL-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
 - **Rôle** : Synchro/duplication P2P des dossiers de la tour (corpus, mémoire, scans 3D) vers NAS/portable, sans cloud.
@@ -1321,6 +1528,8 @@
 - **Notes / pièges** : La sauvegarde est le point mort de 90 % des tours : ce point-là est à 0 € et 100 % automatisable.
 - **Sources** : https://github.com/syncthing/syncthing · https://syncthing.net
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "syncthing"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="sqlite-vec"></a>
 
 ### SQLite + sqlite-vec — `sqlite-vec`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : MIT/Apache-2.0 · **Tour** : **A** — CPU seul, 8-16 Go RAM
@@ -1347,7 +1556,9 @@
 | **fullstack-agent (jaredrhod)** `jared-fullstack` | Installeur « tout-en-un » dont parle la vidéo n°5 : memory-vault + visualizer + backtalk + barehands. | 🅰 | 🔴 payant | AGPL-3.0 | [github.com](https://github.com/jaredrhod/fullstack-agent) |
 | **API LLM gratuites (secours, avec compte)** `tiers-gratuits-llm` | Filet quand le modèle local est trop court : raisonnement long, gros contexte, réécriture | 🅰 | 🟡 compte gratuit | CGU des fournisseurs | [console.groq.com](https://console.groq.com/keys) · [openrouter.ai](https://openrouter.ai/models?q=free) · [aistudio.google.com](https://aistudio.google.com/apikey) |
 | **À éviter (payant ou lock-in)** `pistes-evitees` | Liste négative : ce que les vidéos vendent comme « gratuit » et qui ne l'est pas (ou pas durable). | 🅰 | 🔴 payant | — | [elevenlabs.io](https://elevenlabs.io/pricing) · [maltego.com](https://www.maltego.com/pricing/) · [spiderfoot.net](https://www.spiderfoot.net/pricing/) |
-| **Capture Meta Ray-Ban / téléphone (option硬件)** `rayban-capture` | La leçon matérielle : avec une simple caméra (+ un scan 3D préalable), on remplace un casque militaire… | 🅰 | ⚫ matériel optionnel | matériel (300 $) — SDK lunette gratuit | [anduril.com](https://www.anduril.com/eagleeye) · [developers.meta.com](https://developers.meta.com/horizon/) |
+| **Capture Meta Ray-Ban / téléphone (option matériel)** `rayban-capture` | La leçon matérielle : avec une simple caméra (+ un scan 3D préalable), on remplace un casque militaire… | 🅰 | ⚫ matériel optionnel | matériel (300 $) — SDK lunette gratuit | [anduril.com](https://www.anduril.com/eagleeye) · [developers.meta.com](https://developers.meta.com/horizon/) |
+
+<a id="ada-local"></a>
 
 ### ada_local (Naz Louis) — `ada-local`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟢 gratuit, 100 % local — seul coût : ton matériel/électricité · **Licence** : ❌ aucune licence (tous droits réservés) · **Tour** : **B** — GPU NVIDIA 6-8 Go VRAM
@@ -1364,6 +1575,8 @@
 - **Né du lien analysé** : [I Built a Local AI Assistant: 100% Free & No Subscriptions!](https://www.youtube.com/watch?v=7ffF3fumhcQ) *(audit, réf. n°4)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "ada-local"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="mark-lii"></a>
+
 ### Mark-LII (FatihMakes) — `mark-lii`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : ❌ aucune licence dans le repo (GitHub: NOASSERTION) · **Tour** : A/B/C indifféremment
 - **Rôle** : Référence UX du « Jarvis PC » : système de plugins (1 fichier = 1 compétence), awareness audio (savoir qu'on ne lui parle pas), sessions longues, écran + webcam.
@@ -1378,6 +1591,8 @@
 - **Né du lien analysé** : [Jarvis Mark 51 Installation — Step by Step Guide](https://www.youtube.com/watch?v=u6c-6RF6J_g) *(audit, réf. n°6)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "mark-lii"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
+<a id="jared-fullstack"></a>
+
 ### fullstack-agent (jaredrhod) — `jared-fullstack`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🔴 payant — on documente le remplacement gratuit · **Licence** : AGPL-3.0 · **Tour** : A/B/C indifféremment
 - **Rôle** : Installeur « tout-en-un » dont parle la vidéo n°5 : memory-vault + visualizer + backtalk + barehands.
@@ -1390,6 +1605,8 @@
 - **Notes / pièges** : AGPL + dépendance à un SDK propriétaire : ne pas mettre dans la chaîne de build.
 - **Sources** : https://github.com/jaredrhod/fullstack-agent
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "jared-fullstack"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="tiers-gratuits-llm"></a>
 
 ### API LLM gratuites (secours, avec compte) — `tiers-gratuits-llm`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🟡 gratuit **avec compte** (clé/quota), sans CB dans le meilleur cas · **Licence** : CGU des fournisseurs · **Tour** : A/B/C indifféremment
@@ -1406,6 +1623,8 @@
 - **Notes / pièges** : Chiffres de quotas = début/mi 2026, à revérifier : les tiers gratuits sont le premier poste de régression d'une année.
 - **Sources** : https://console.groq.com/keys · https://openrouter.ai/models?q=free · https://aistudio.google.com/apikey · https://ai.azure.com/... (GitHub Models : https://github.com/features/models) · https://cerebras.ai
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "tiers-gratuits-llm"` (généré par `generate-reference.py`, ne pas éditer le markdown)
+
+<a id="pistes-evitees"></a>
 
 ### À éviter (payant ou lock-in) — `pistes-evitees`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : 🔴 payant — on documente le remplacement gratuit · **Licence** : — · **Tour** : A/B/C indifféremment
@@ -1426,7 +1645,9 @@
 - **Sources** : https://elevenlabs.io/pricing · https://www.maltego.com/pricing/ · https://www.spiderfoot.net/pricing/ · https://app.make.com/pricing · https://www.retellai.com/pricing · https://lampyre.io/pricing · https://si.social-links.io · https://intelligencex.io · https://www.whop.com/fatihmakes/ · https://www.patreon.com/cw/NazLouisYT
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "pistes-evitees"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
-### Capture Meta Ray-Ban / téléphone (option硬件) — `rayban-capture`
+<a id="rayban-capture"></a>
+
+### Capture Meta Ray-Ban / téléphone (option matériel) — `rayban-capture`
 - **Statut** : ⬜ **référence** (à lire/copier le motif, pas de dépendance) · **Prix** : ⚫ option matérielle (achat one-shot), logiciel libre · **Licence** : matériel (300 $) — SDK lunette gratuit · **Tour** : A/B/C indifféremment
 - **Rôle** : La leçon matérielle : avec une simple caméra (+ un scan 3D préalable), on remplace un casque militaire à 30 000 $ (Anduril EagleEye). Un téléphone suffit ; les lunettes ne sont que l'ergonomie.
 - **Étapes d'installation** :
@@ -1480,4 +1701,101 @@ bash audit/stack/install-stack.sh --dry-run  # ce qui serait fait, sans rien tou
 - [ ] quota/prix relevés à la date du jour dans `notes`, avec le lien de la page de pricing
 - [ ] aucun secret dans le dépôt, aucun port ouvert sur `0.0.0.0`, `.env` en 600
 - [ ] plan de sortie documenté : comment on retire ce composant sans casser la tour
+
+
+
+---
+
+## 5 · Index alphabétique (86 outils)
+
+| `id` | Nom | Cat. | Prix | Palier | Compte/clé | Licence | État | Origine |
+|---|---|---|---|---|---|---|---|---|
+| [`activepieces`](#activepieces) | Activepieces | 7 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | 2 |
+| [`ada-local`](#ada-local) | ada_local (Naz Louis) | 10 | 🟢 gratuit | 🅱 | — | ❌ aucune licence (tous droits réservés | ⬜ réf. seule | 4 |
+| [`aholo-platform`](#aholo-platform) | Aholo Platform (cloud) | 5 | 🟠 semi-payant | 🅰🅱🅲 | 🔴 | service propriétaire | ⬜ réf. seule | 11b |
+| [`aholo-splat-transform`](#aholo-splat-transform) | @manycore/aholo-splat-transform | 5 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | 11b |
+| [`aholo-viewer`](#aholo-viewer) | aholo-viewer (Manycore) | 5 | 🟢 gratuit | 🅰 | — | MIT (1 k★) | 🟥 à installer | 11b |
+| [`ai-memory-vault`](#ai-memory-vault) | ai-memory-vault (jaredrhod) | 9 | 🟢 gratuit | 🅰🅱🅲 | — | CC-BY-SA-4.0 | ⬜ réf. seule | — |
+| [`aisstream`](#aisstream) | aisstream.io (flux AIS temps réel) | 4 | 🟡 compte gratuit | 🅰 | 🟡 | service gratuit, clé sur inscription | ◑ partiel | 14 |
+| [`amass`](#amass) | Amass (OWASP) | 3 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | — |
+| [`arcore-geospatial`](#arcore-geospatial) | Google ARCore Geospatial API | 4b | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | gratuit (sans facturation à l'appel),  | ⬜ réf. seule | 12 |
+| [`brush`](#brush) | Brush | 5 | 🟢 gratuit | 🅲 | — | Apache-2.0 (5 k★) | 🟥 à installer | — |
+| [`cesium-ion`](#cesium-ion) | Cesium ion (tuiles 3D photoréalistes) | 4 | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | Cesium (token gratuit usage perso) | ◑ partiel | — |
+| [`chonkie`](#chonkie) | Chonkie | 2 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | 1 |
+| [`colmap`](#colmap) | COLMAP (SfM de référence) | 4b | 🟢 gratuit | 🅰 | — | new BSD (le fichier LICENSE l'affirme  | 🟥 à installer | 12 |
+| [`crawl4ai`](#crawl4ai) | Crawl4AI | 1 | 🟢 gratuit | 🅰 | — | Apache-2.0 (66-80 k★) | 🟥 à installer | 1 |
+| [`desal-power`](#desal-power) | Infrastructures critiques : désalination + c | 4 | 🟢 gratuit | 🅰 | — | OSM (ODbL) / datasets à vérifier | 🟥 à installer | 14 |
+| [`docling`](#docling) | Docling (IBM) | 2 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | — |
+| [`dspy`](#dspy) | DSPy | 2 | 🟢 gratuit | 🅱 | — | MIT | 🟥 à installer | 1 |
+| [`eia-oil`](#eia-oil) | EIA API (futures et prix du carburant) | 4 | 🟡 compte gratuit | 🅰 | 🟡 | données publiques US, clé gratuite imm | 🟥 à installer | 14 |
+| [`esri-carto-tuiles`](#esri-carto-tuiles) | Tuiles Esri World Imagery + CARTO (déjà en p | 4 | 🟢 gratuit | 🅰🅱🅲 | — | Esri (usage perso) / CARTO-OSM | ✅ en place | — |
+| [`exiftool`](#exiftool) | ExifTool | 3 | 🟢 gratuit | 🅰 | — | Perl Artistic | 🟥 à installer | — |
+| [`faster-whisper`](#faster-whisper) | faster-whisper | 6 | 🟢 gratuit | 🅰 | — | MIT (25,2 k★) | 🟥 à installer | — |
+| [`firecrawl`](#firecrawl) | Firecrawl (self-host) | 1 | 🟢 gratuit | 🅱 | — | AGPL-3.0 (core) | 🟥 à installer | — |
+| [`gdelt`](#gdelt) | GDELT (événements mondiaux géolocalisés) | 3 | 🟢 gratuit | 🅰 | — | données ouvertes (usage gratuit, non c | 🟥 à installer | 14 |
+| [`gephi`](#gephi) | Gephi | 3 | 🟢 gratuit | 🅰 | — | GPL-3.0 | ⬜ réf. seule | — |
+| [`gibis`](#gibis) | NASA GIBS + Copernicus Browser (imagerie quo | 4 | 🟢 gratuit | 🅰 | — | domaine public / Copernicus (citer) | 🟥 à installer | 14 |
+| [`gobbonet`](#gobbonet) | GobboNet (Elodine) | 0 | 🟢 gratuit | 🅰🅱🅲 | — | « Other » (non-OSI) | ⬜ réf. seule | 8 |
+| [`gods-eye-view`](#gods-eye-view) | God's Eye View (amont de ta tour) | 4 | 🟢 gratuit | 🅰🅱🅲 | — | ⚠️ README dit MIT, l'API GitHub renvoi | ◑ partiel | 12 |
+| [`hermes-agent`](#hermes-agent) | Hermes Agent (Nous Research) | 7 | 🟢 gratuit | 🅰 | — | MIT (241 k★) | 🟥 à installer | — |
+| [`hloc`](#hloc) | hloc (localisation visuelle 6-DoF) | 4b | 🟢 gratuit | 🅱 | — | Apache-2.0 (4,2 k★) | 🟥 à installer | 12 |
+| [`instructor`](#instructor) | Instructor | 2 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | 1 |
+| [`jan`](#jan) | Jan | 7 | 🟢 gratuit | 🅰 | — | Apache-2.0 (40 k★) | ⬜ réf. seule | — |
+| [`jared-fullstack`](#jared-fullstack) | fullstack-agent (jaredrhod) | 10 | 🔴 payant | 🅰🅱🅲 | 🔴 | AGPL-3.0 | ⬜ réf. seule | — |
+| [`kokoro`](#kokoro) | Kokoro-82M | 6 | 🟢 gratuit | 🅰 | — | Apache-2.0 | ⬜ réf. seule | — |
+| [`lancedb`](#lancedb) | LanceDB | 2 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | — |
+| [`langfuse`](#langfuse) | Langfuse | 2 | 🟢 gratuit | 🅱 | — | MIT (core) | 🟥 à installer | 1 |
+| [`libretranslate`](#libretranslate) | LibreTranslate | 2 | 🟢 gratuit | 🅰 | — | AGPL-3.0 | 🟥 à installer | 2 |
+| [`litellm`](#litellm) | LiteLLM | 0 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | 1 |
+| [`lm-studio`](#lm-studio) | LM Studio | 0 | 🟢 gratuit | 🅰 | — | gratuit / source fermée | 🟥 à installer | — |
+| [`maigret`](#maigret) | Maigret | 3 | 🟢 gratuit | 🅰 | — | MIT (37,3 k★) | 🟥 à installer | — |
+| [`maltego-ce`](#maltego-ce) | Maltego CE | 3 | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | propriétaire (CE gratuit) | ⬜ réf. seule | — |
+| [`mark-lii`](#mark-lii) | Mark-LII (FatihMakes) | 10 | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | ❌ aucune licence dans le repo (GitHub: | ⬜ réf. seule | 6 |
+| [`marker`](#marker) | Marker | 2 | 🟢 gratuit | 🅱 | — | Apache-2.0 (39,5 k★, a migré depuis GP | 🟥 à installer | 1 |
+| [`meshtastic`](#meshtastic) | Meshtastic | 8 | ⚫ matériel optionnel | 🅰🅱🅲 | 🔴 | GPL-3.0 (fw/apps) + matériel | ⬜ réf. seule | 10 |
+| [`multiset-vps`](#multiset-vps) | MultiSet AI (VPS commercial) | 4b | 🟠 semi-payant | 🅰🅱🅲 | 🔴 | service propriétaire (SDK Unity/iOS/An | ⬜ réf. seule | 12 |
+| [`n8n`](#n8n) | n8n | 7 | 🟢 gratuit | 🅰 | — | ⚠️ fair-code (Sustainable Use, non-OSI | ⬜ réf. seule | — |
+| [`niantic-vps`](#niantic-vps) | Niantic Spatial VPS + Scaniverse | 4b | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | gratuit < 50 k MAU (VPS/ARDK) ; Scaniv | 🟥 à installer | 12 |
+| [`notams`](#notams) | NOTAM / fermetures d'espace aérien | 4 | 🟢 gratuit | 🅰 | — | données publiques (FAA/EASA) ; parseur | 🟥 à installer | 13 |
+| [`obsidian`](#obsidian) | Obsidian | 9 | 🟢 gratuit | 🅰🅱🅲 | — | propriétaire gratuit (usage perso) | ⬜ réf. seule | — |
+| [`ocrmypdf`](#ocrmypdf) | OCRmyPDF | 2 | 🟢 gratuit | 🅰 | — | MPL-2.0 | 🟥 à installer | — |
+| [`ollama`](#ollama) | Ollama | 0 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | 1 |
+| [`open-webui`](#open-webui) | Open WebUI | 7 | 🟢 gratuit | 🅰 | — | BSD-3 (+ clause de marque >50 users) | 🟥 à installer | 2 |
+| [`openclaw`](#openclaw) | OpenClaw | 7 | 🟢 gratuit | 🅰 | — | ⚠️ vérifier la LICENSE courante (GitHu | ⬜ réf. seule | — |
+| [`opencti`](#opencti) | OpenCTI | 3 | 🟢 gratuit | 🅰🅱🅲 | — | ⚠️ NOASSERTION (vérifier la LICENSE du | ⬜ réf. seule | — |
+| [`openhands`](#openhands) | OpenHands | 7 | 🟢 gratuit | 🅱 | — | MIT | ⬜ réf. seule | 2 |
+| [`opensky`](#opensky) | OpenSky Network | 4 | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | données ouvertes (compte = quota supér | ◑ partiel | — |
+| [`opensplat`](#opensplat) | OpenSplat / gsplat.tech | 5 | 🟢 gratuit | 🅰🅱🅲 | — | MIT | ⬜ réf. seule | — |
+| [`openwakeword`](#openwakeword) | openWakeWord | 6 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | — |
+| [`osint-framework`](#osint-framework) | OSINT Framework | 3 | 🟢 gratuit | 🅰🅱🅲 | — | web | ⬜ réf. seule | — |
+| [`outages`](#outages) | Surveillance des pannes internet (Cloudflare | 4 | 🟡 compte gratuit | 🅰 | 🟡 | API gratuites (compte) ; Restless MIT | 🟥 à installer | 13 |
+| [`outlines`](#outlines) | Outlines | 2 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | 1 |
+| [`paddleocr`](#paddleocr) | PaddleOCR | 2 | 🟢 gratuit | 🅰 | — | Apache-2.0 (88,9 k★) | 🟥 à installer | — |
+| [`photon-nominatim`](#photon-nominatim) | Photon → Nominatim (géocodage sans clé, déjà | 4 | 🟢 gratuit | 🅰🅱🅲 | — | OSM (ODbL) | ✅ en place | — |
+| [`pinokio`](#pinokio) | Pinokio | 0 | 🟢 gratuit | 🅰 | — | MIT (launcher) | 🟥 à installer | — |
+| [`pipe-gaps`](#pipe-gaps) | GlobalFishingWatch/pipe-gaps (navires sombre | 4 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | 14 |
+| [`piper`](#piper) | Piper TTS | 6 | 🟢 gratuit | 🅰 | — | MIT (moteur) / voix CC-BY | 🟥 à installer | 4 |
+| [`pistes-evitees`](#pistes-evitees) | À éviter (payant ou lock-in) | 10 | 🔴 payant | 🅰🅱🅲 | 🔴 | — | ⬜ réf. seule | — |
+| [`postshot`](#postshot) | Postshot | 5 | 🟢 gratuit | 🅱 | — | gratuit (⚠️ licence à vérifier) | ⬜ réf. seule | — |
+| [`qdrant`](#qdrant) | Qdrant | 2 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | 1 |
+| [`qwen3-tts`](#qwen3-tts) | Qwen3-TTS | 6 | 🟢 gratuit | 🅱 | — | Apache-2.0 | 🟥 à installer | 7 |
+| [`rayban-capture`](#rayban-capture) | Capture Meta Ray-Ban / téléphone (option mat | 10 | ⚫ matériel optionnel | 🅰🅱🅲 | 🔴 | matériel (300 $) — SDK lunette gratuit | ⬜ réf. seule | 12 |
+| [`recorder-4d`](#recorder-4d) | Enregistreur temporel (le vrai manque) | 4 | 🟢 gratuit | 🅰 | — | à écrire (nous) | 🟥 à installer | 13 |
+| [`reticulum`](#reticulum) | Reticulum (RNS) | 8 | 🟢 gratuit | 🅰 | — | AGPL-3.0 (logiciel) | 🟥 à installer | 9 |
+| [`rtl-sdr`](#rtl-sdr) | RTL-SDR (option réception locale) | 8 | 🟢 gratuit | 🅰🅱🅲 | — | matériel ~30 € + logiciels libres | ⬜ réf. seule | — |
+| [`sar-opera`](#sar-opera) | SAR : NASA OPERA + Copernicus EGMS + Sentine | 4 | 🟡 compte gratuit | 🅰 | 🟡 | données ouvertes (comptes Earthdata /  | 🟥 à installer | 14 |
+| [`satellite-passes`](#satellite-passes) | Prédictions de passage satellite (Skyfield + | 4 | 🟢 gratuit | 🅰 | — | MIT (Skyfield, sgp4) · CelesTrak = don | 🟥 à installer | 13 |
+| [`scriberr`](#scriberr) | Scriberr | 6 | 🟢 gratuit | 🅰 | — | MIT (3 k★) | ⬜ réf. seule | 2 |
+| [`searxng`](#searxng) | SearXNG | 1 | 🟢 gratuit | 🅰 | — | AGPL-3.0 | 🟥 à installer | 2 |
+| [`shadowbroker`](#shadowbroker) | ShadowBroker (réf. amont) | 4 | 🟢 gratuit | 🅰 | — | AGPL-3.0 (11,1 k★, actif) | ⬜ réf. seule | 13 |
+| [`spiderfoot`](#spiderfoot) | SpiderFoot | 3 | 🟢 gratuit | 🅰 | — | MIT (21,7 k★) | 🟥 à installer | — |
+| [`sqlite-vec`](#sqlite-vec) | SQLite + sqlite-vec | 9 | 🟢 gratuit | 🅰 | — | MIT/Apache-2.0 | ⬜ réf. seule | — |
+| [`syncthing`](#syncthing) | Syncthing | 9 | 🟢 gratuit | 🅰 | — | MPL-2.0 | ⬜ réf. seule | — |
+| [`tesseract`](#tesseract) | Tesseract OCR | 2 | 🟢 gratuit | 🅰 | — | Apache-2.0 | 🟥 à installer | 2 |
+| [`theharvester`](#theharvester) | theHarvester | 3 | 🟡 compte gratuit | 🅰 | 🟡 | GPL-3.0 | 🟥 à installer | — |
+| [`tiers-gratuits-llm`](#tiers-gratuits-llm) | API LLM gratuites (secours, avec compte) | 10 | 🟡 compte gratuit | 🅰🅱🅲 | 🟡 | CGU des fournisseurs | ⬜ réf. seule | — |
+| [`vane-perplexica`](#vane-perplexica) | Vane (ex-Perplexica) | 1 | 🟢 gratuit | 🅰 | — | MIT (36,6 k★) | 🟥 à installer | 2 |
+| [`whisper-cpp`](#whisper-cpp) | whisper.cpp | 0 | 🟢 gratuit | 🅰 | — | MIT | 🟥 à installer | — |
+
+*Filtrer plutôt que défiler : `cherche.py` (ci-dessus) ou `column -t -s$'\t' audit/reference/REGISTRE.tsv | sort -k5`.*
 
