@@ -259,7 +259,7 @@ Deux mises en garde écrites noir sur blanc, parce que ces liens les survolent :
 | Fichier | Rôle |
 |---|---|
 | `AUDIT-OUTILS-2026.md` | ce document |
-| `audit/REFERENCE.md` ⭐ | **référence canonique des agents** : 86 outils × (rôle · faisabilité par palier · prix · licence · URLs · étapes A→B→C · intégration tour · vérif) |
+| `audit/REFERENCE.md` ⭐ | **référence canonique des agents** : 86 outils × (rôle · faisabilité par palier · prix · licence · URLs · étapes A→B→C · intégration tour · vérif · `origine` = le lien d'audit dont elle est issue, auto-croisé depuis le §1) |
 | `audit/reference/REGISTRE-OUTILS.json` | le même contenu en machine-readable (source unique : `audit/reference/generate-reference.py`) |
 | `audit/reference/doctor.py` | état réel de la tour : ce qui répond / manque / bloque (checks pilotés par le registre, `--json`) |
 | `audit/CATALOGUE-OUTILS.md` | catalogue court « vu de l’audit » (par vidéo d’origine) |

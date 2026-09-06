@@ -1,8 +1,10 @@
 # 📖 RÉFÉRENCE OUTILS — Watchtower (source de vérité pour les agents)
 
-> **Statut** : référence canonique. Générée le `2026-09-05` depuis `audit/reference/generate-reference.py`
+> **Statut** : référence canonique. Générée le `2026-09-06` depuis `audit/reference/generate-reference.py`
 > — **ne pas éditer ce fichier à la main** : modifier le générateur, puis
 > `python3 audit/reference/generate-reference.py` (qui réécrit aussi `reference/REGISTRE-OUTILS.json`).
+> **Traçabilité** : **47/86 fiches** sont rattachées au lien analysé qui les a fait naître (champ `origine`, croisé automatiquement depuis l'audit §1) — les autres sont des outils ajoutés **hors lien**, par nous, à partir de la vérification des licences et des remplacements de tiers payants.
+
 > **86 outils catalogués** en **12 catégories**, dont **68 🟢 100 % gratuits et locaux**, **12 🟡 avec compte gratuit**, **4 🔴/🟠 payants ou semi-payants (remplacements écrits dans le §6 d’`AUDIT-OUTILS-2026.md`)**. Toute décision d'outillage se prend ici, pas dans une vidéo.
 
 ## 0. Règles d'ingénierie (à lire avant de toucher au code)
@@ -16,7 +18,7 @@
 7. **Pas de personnes.** Aucune fonctionnalité de recherche nominative, de visage ou de pistage individuel : la tour porte sur **infrastructures, flux, documents, données ouvertes**. (Ligne héritée de l'amont, et obligation juridique.)
 8. **Avant d'installer** : `python3 audit/reference/doctor.py` → ce qui tourne déjà, ce qui manque, ce qui bloque. Après : relancer `doctor` et consigner dans `audit/stack/INSTALL-REPORT.txt`.
 9. **Toujours vérifier les prix/quotas** au moment de l'écriture : les tiers gratuits sont le premier poste de régression (le tier Gemini l'a été en avril 2026).
-10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`.
+10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`, et le champ `origine` (auto-dérivé des tableaux du §1 de `AUDIT-OUTILS-2026.md`, cf. `charger_origines()`) rattache chaque fiche au lien qui l'a fait naître : **une affirmation non rattachée = une affirmation à re-vérifier avant de coder**.
 11. **Journal d'abord, calque ensuite.** Tout flux public consommé par la tour est **aussi écrit** dans le `recorder-4d` (`data/4d/` → Parquet) : un flux interrogé à la demande est un flux perdu (caches TTL, latence imposée sur l'imagerie). Un nouveau calque sans collecteur est refusé en revue.
 12. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
 
@@ -60,6 +62,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s http://127.0.0.1:11434/api/tags | head -c 200`
 - **Notes / pièges** : Le seul composant obligatoire de la V2. Rien ne part sur internet avec un modèle local.
 - **Sources** : https://github.com/ollama/ollama · https://ollama.com/download
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "ollama"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### LiteLLM — `litellm`
@@ -74,6 +77,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s http://127.0.0.1:4000/v1/models | head -c 300`
 - **Notes / pièges** : Gratuit et local. Ne colle une clé payante que si tu choisis explicitement un secours cloud.
 - **Sources** : https://github.com/BerriAI/litellm · https://docs.litellm.ai
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "litellm"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### LM Studio — `lm-studio`
@@ -100,6 +104,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : Gratuit et honnête mais « open source » au sens large seulement. Windows only, Linux « probablement buggé » dixit l'auteur.
 - **Sources** : https://goblincorps.com/gobbonet · https://github.com/ElodineOfficial/GobboNet
+- **Né du lien analysé** : [The 1-Click Chatbot Alternative You Actually Own: GobboNet](https://www.youtube.com/watch?v=wxMB1OvJX2I&t=141s) *(audit, réf. n°8)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gobbonet"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Pinokio — `pinokio`
@@ -154,6 +159,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s 'http://127.0.0.1:8080/search?q=frontignan&format=json' | python3 -c 'import json,sys;print(len(json.load(sys.stdin)["results"]))'`
 - **Notes / pièges** : Sans le `format=json`, un agent ne peut pas consommer le résultat : ne pas oublier le [B].
 - **Sources** : https://github.com/searxng/searxng · https://docs.searxng.org
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "searxng"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Vane (ex-Perplexica) — `vane-perplexica`
@@ -168,6 +174,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000`
 - **Notes / pièges** : ⚠️ Le nom a changé en mars 2026 (repo `Perplexica` → `Vane`) : les vieux tutos donnent une image Docker obsolète. Vérifier le nom d'image au build.
 - **Sources** : https://github.com/ItzCrazyKns/Vane · https://hub.docker.com/r/itzcrazykns1337/vane
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "vane-perplexica"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Crawl4AI — `crawl4ai`
@@ -182,6 +189,7 @@
 - **Vérification (à mettre dans `doctor`)** : `crwl https://en.wikipedia.org/wiki/Frontignan -o markdown | head -20`
 - **Notes / pièges** : Pas de clé, pas de facture ; le mode extraction LLM est optionnel et marchera sur Ollama. ~300 Mo de RAM idle + Chromium.
 - **Sources** : https://github.com/unclecode/crawl4ai · https://docs.crawl4ai.com
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "crawl4ai"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Firecrawl (self-host) — `firecrawl`
@@ -230,6 +238,7 @@
 - **Vérification (à mettre dans `doctor`)** : `marker_single --help >/dev/null && echo ok`
 - **Notes / pièges** : La licence est revenue en Apache-2.0 : usage commercial redevenu propre (à re-vérifier au moment de l'install).
 - **Sources** : https://github.com/datalab-to/marker · https://pypi.org/project/marker-pdf/
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "marker"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Docling (IBM) — `docling`
@@ -270,6 +279,7 @@
 - **Vérification (à mettre dans `doctor`)** : `tesseract --version && tesseract --list-langs | grep -i fra`
 - **Notes / pièges** : Sur captures basse qualité, PaddleOCR gagne ; Tesseract gagne en zéro-dépendance et vitesse CPU.
 - **Sources** : https://github.com/tesseract-ocr/tesseract · https://github.com/UB-Mannheim/tesseract/wiki
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "tesseract"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### PaddleOCR — `paddleocr`
@@ -296,6 +306,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s http://127.0.0.1:5000/languages | head -c 200`
 - **Notes / pièges** : Qualité correcte FR↔EN/ES/DE ; loin de DeepL sur les langues hors européen. Version hébergée publique = dépannage, pas confidentiel.
 - **Sources** : https://github.com/LibreTranslate/LibreTranslate · https://libretranslate.com/docs
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "libretranslate"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Chonkie — `chonkie`
@@ -309,6 +320,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import chonkie;print(chonkie.__version__)'`
 - **Notes / pièges** : Léger, mono-mainteneur : épingler la version dans requirements.
 - **Sources** : https://github.com/chonkie-ai/chonkie · https://docs.chonkie.ai
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "chonkie"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Qdrant — `qdrant`
@@ -322,6 +334,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s http://127.0.0.1:6333/readyz`
 - **Notes / pièges** : Qdrant Cloud a un tier gratuit (avec compte) : inutile ici.
 - **Sources** : https://github.com/qdrant/qdrant · https://qdrant.tech/documentation/
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "qdrant"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### LanceDB — `lancedb`
@@ -350,6 +363,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import outlines;print("ok")'`
 - **Notes / pièges** : Marche avec modèles locaux (transformers/vLLM/llamacpp). Avec Ollama, préfère Instructor+jsonschema si Outlines refuse le backend.
 - **Sources** : https://github.com/dottxt-ai/outlines · https://dottxt-ai.github.io/outlines/
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "outlines"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Instructor — `instructor`
@@ -364,6 +378,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import instructor;print(instructor.__version__)'`
 - **Notes / pièges** : La voie la plus simple pour une tour sans GPU. Recommandé en premier choix.
 - **Sources** : https://github.com/567-labs/instructor · https://python.useinstructor.com
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "instructor"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### DSPy — `dspy`
@@ -378,6 +393,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import dspy;print(dspy.__version__)'`
 - **Notes / pièges** : Avant d'optimiser : il te faut des exemples annotés. Ne pas commencer par là.
 - **Sources** : https://github.com/stanfordnlp/dspy · https://dspy.ai
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "dspy"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Langfuse — `langfuse`
@@ -392,6 +408,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://localhost:3001`
 - **Notes / pièges** : Lourd (~4 Go RAM) : sur une tour 8 Go, préfère des traces JSONL dans `data/traces/` — ton moteur écrit déjà des checkpoints JSON, c'est à 80 % ça.
 - **Sources** : https://github.com/langfuse/langfuse · https://langfuse.com/self-hosting
+- **Né du lien analysé** : [Open-Source AI Tools That Feel ILLEGAL To Use](https://www.youtube.com/watch?v=-9Iw86Y991E) *(audit, réf. n°1)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "langfuse"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
@@ -541,6 +558,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=FRANCE&mode=artlist&format=json&maxrecords=1' | head -c 200`
 - **Notes / pièges** : ⚠️ **Ne jamais transformer cette couche en surveillance de personnes** : agrégats thématiques/géographiques uniquement. GDELT est bruyant : toujours afficher la source, jamais une interprétation seule.
 - **Sources** : https://www.gdeltproject.org · https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/ · https://api.gdeltproject.org/api/v2/doc/doc
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gdelt"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
@@ -630,6 +648,7 @@
 - **Vérification (à mettre dans `doctor`)** : `test -d app/node_modules && echo 'déjà en place'`
 - **Notes / pièges** : La ligne amont est claire : pas de recherche de personne, pas de visage, pas de pistage — à conserver.
 - **Sources** : https://github.com/bilawalsidhu/gods-eye-view · https://www.youtube.com/watch?v=GRJaKcXZS94
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gods-eye-view"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### ShadowBroker (réf. amont) — `shadowbroker`
@@ -645,6 +664,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://localhost:3000`
 - **Notes / pièges** : AGPL : si tu **publies un service** dérivé, tu rediffuses les modifs (usage perso = aucun souci). Projet jeune (1 fork de migration de repo en mars 2026, README le dit) → ne jamais le mettre en dépendance de build, seulement en source d'idées et de connecteurs. **C'est la découverte la plus rentable de cet audit.**
 - **Sources** : https://github.com/BigBodyCobain/Shadowbroker
+- **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "shadowbroker"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Enregistreur temporel (le vrai manque) — `recorder-4d`
@@ -660,6 +680,7 @@
 - **Vérification (à mettre dans `doctor`)** : `ls data/4d/ && sqlite3 data/4d.duckdb 'select count(*) from ais' 2>/dev/null || python3 -c "import duckdb;print(duckdb.sql('select count(*) from \u0027data/4d.parquet\u0027').fetchone())"`
 - **Notes / pièges** : Coût : 0 €. Disque : ~1-3 Go/mois pour 4-5 flux à 60 s. C'est le P8 prioritaire, avant tout nouveau calque.
 - **Sources** : https://duckdb.org/docs/stable/guides/ingestion/ingesting_parquet.html · https://cesium.com/learn/cesiumjs/ref-doc/Clock.html
+- **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "recorder-4d"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Prédictions de passage satellite (Skyfield + CelesTrak) — `satellite-passes`
@@ -674,6 +695,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import skyfield,sgp4;print(skyfield.__version__)'`
 - **Notes / pièges** : Space-Track (compte gratuit) = catalogue plus complet/à jour ; utile seulement si tu veux les objets classifiés légaux (USA-234 Topaz est public, lui).
 - **Sources** : https://github.com/skyfielders/python-skyfield · https://celestrak.org · https://github.com/brandon-rhodes/python-sgp4
+- **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "satellite-passes"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### aisstream.io (flux AIS temps réel) — `aisstream`
@@ -688,6 +710,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c "import websockets;print(1)"`
 - **Notes / pièges** : La clé ne doit jamais transiter par le navigateur : côté serveur uniquement (modèle déjà appliqué par `shadowbroker`).
 - **Sources** : https://aisstream.io · https://app.aisstream.io
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aisstream"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### GlobalFishingWatch/pipe-gaps (navires sombres) — `pipe-gaps`
@@ -702,6 +725,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import pandas,shapely;print("deps gaps ok")'`
 - **Notes / pièges** : La GFW API (clé gratuite) fournit déjà des événements `ais_gaps` prêts à l'emploi : commencer par l'API, puis passer au calcul local pour les zones qui intéressent la tour.
 - **Sources** : https://github.com/GlobalFishingWatch/pipe-gaps
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "pipe-gaps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### NOTAM / fermetures d'espace aérien — `notams`
@@ -716,6 +740,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' https://notamweb.faa.gov/ 2>/dev/null || echo 'réseau à valider depuis la tour'`
 - **Notes / pièges** : Le parsing NOTAM est ingrat (format texte de 1970) : accepter un taux de faux positifs, et toujours afficher le texte brut à côté de l'interprétation.
 - **Sources** : https://notamweb.faa.gov · https://github.com/svoop/notam · https://www.easa.europa.eu/en/domains/airspaces
+- **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "notams"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Surveillance des pannes internet (Cloudflare Radar / IODA / Restless) — `outages`
@@ -730,6 +755,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' https://api.cloudflare.com/client/v4/radar/datasets 2>/dev/null || echo 'nécessite jeton'`
 - **Notes / pièges** : API tier gratuit → prévoir cache 15 min et repli silencieux si le quota tombe.
 - **Sources** : https://developers.cloudflare.com/radar/ · https://ioda.caida.org · https://github.com/RIPE-NCC/restless · https://radar.cloudflare.com
+- **Né du lien analysé** : [Ex-Google PM Builds God's Eye to Monitor Iran in 4D](https://www.youtube.com/watch?v=0p8o7AeHDzg) *(audit, réf. n°13)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "outages"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### SAR : NASA OPERA + Copernicus EGMS + Sentinel-1 — `sar-opera`
@@ -744,6 +770,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import asf_search;print(asf_search.__version__)'`
 - **Notes / pièges** : Traitement lourd : 20-60 s par interférométrie sur CPU, quelques minutes sur GPU → lancer en tâche de fond (Activepieces), jamais dans le cycle de rendu de la tour.
 - **Sources** : https://search.earthdata.nasa.gov/search?q=OPERA · https://asf.alaska.edu/datasets/operational-products/opera/ · https://egms.land.copernicus.eu · https://dataspace.copernicus.eu
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "sar-opera"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### NASA GIBS + Copernicus Browser (imagerie quotidienne gratuite) — `gibis`
@@ -758,6 +785,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -sI 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-09-04/GoogleMapsCompatible_Level9/5/16/11.jpg' | head -1`
 - **Notes / pièges** : La force de GIBS : c'est **temporel par conception**. Avec le recorder, la tour devient rétrospective sans aucun abonnement.
 - **Sources** : https://nasa-gibs.github.io/gibs-api-docs/ · https://worldview.earthdata.nasa.gov · https://browser.dataspace.copernicus.eu
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "gibis"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### EIA API (futures et prix du carburant) — `eia-oil`
@@ -772,6 +800,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import requests;print(requests.get("https://api.eia.gov/v2",timeout=8).status_code)'`
 - **Notes / pièges** : ⚠️ Les cotations (Bloomberg/Refinitiv) ne sont **pas** redistribuables : n'afficher que des données publiques (EIA) ou un lien sortant.
 - **Sources** : https://www.eia.gov/api/ · https://www.eia.gov/opendata/
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "eia-oil"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Infrastructures critiques : désalination + centrales — `desal-power`
@@ -786,6 +815,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s 'https://overpass-api.de/api/interpreter?data=[out:json];node[power=plant](43.4,3.0,43.8,4.0);out%205;' | head -c 200`
 - **Notes / pièges** : La valeur ajoutée ici, c'est **la rigueur des sources**, pas la quantité de points. Chaque entité : lien + date + licence.
 - **Sources** : https://ida-desalination.org/publications/ida-desalination-performance-guide · https://powerplants.copernicus.fr/ · https://openstreetmap.fr
+- **Né du lien analysé** : [One Chokepoint Controls Everything](https://spatialintelligence.ai/p/one-chokepoint-controls-everything) *(audit, réf. n°14)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "desal-power"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
@@ -814,6 +844,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import hloc;print("hloc ok")'`
 - **Notes / pièges** : GPU fortement conseillé. C'est le chemin 100 % gratuit quand Google/Niantic/MultiSet coûtent ou exigent un compte — et le seul qui marche sans réseau sur un site isolé.
 - **Sources** : https://github.com/cvg/Hierarchical-Localization · https://github.com/cvg/SuperGluePretrainedNetwork
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "hloc"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### COLMAP (SfM de référence) — `colmap`
@@ -828,6 +859,7 @@
 - **Vérification (à mettre dans `doctor`)** : `colmap help >/dev/null && echo 'colmap ok'`
 - **Notes / pièges** : ⚠️ Cas d'école de la règle n°4 du §0 : la licence est bonne (BSD) mais **l'API GitHub ne la voit pas** → vérifier le fichier LICENSE, pas l'auto-détection.
 - **Sources** : https://github.com/colmap/colmap · https://colmap.github.io
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "colmap"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Google ARCore Geospatial API — `arcore-geospatial`
@@ -841,6 +873,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : Gratuit mais : indoor = mort, zones sans Street View = mort, et tes images partent chez Google. Les deux cas où l'on paie ou où l'on est bloqué sont précisément ceux où hloc gagne.
 - **Sources** : https://developers.google.com/ar/develop/geospatial · https://developers.google.com/ar/develop/geospatial/android/placecolors
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "arcore-geospatial"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Niantic Spatial VPS + Scaniverse — `niantic-vps`
@@ -855,6 +888,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : Le meilleur compromis capture/gratuit pour un **site précis** (ton domicile, une friche, un poste de garde). Attention : tes scans partent dans leur cloud → lire la politique, et ne scanner aucun site sensible.
 - **Sources** : https://www.nianticspatial.com/products/visual-positioning-system · https://scaniverse.com · https://www.nianticspatial.com/en/faq/scaniverse
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "niantic-vps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### MultiSet AI (VPS commercial) — `multiset-vps`
@@ -870,6 +904,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : Tarifs relus le 2026-09-05 sur https://multiset.ai/pricing — **à re-vérifier le jour où tu décides** (règle n°9 : les tiers gratuits bougent tout seuls). « L'entreprise a un an et déjà notée plus robuste que Niantic » dixit la vidéo — c'est le seul acteur qui touche les lunettes grand public ; le modèle économique reste fragile, ne pas s'y marier. Point qui compte pour la tour : l'**on-device** n'existe qu'en Enterprise → aucun VPS du commerce ne te donne l'autonomie hors-ligne que `hloc` te donne à 0 €. 
 - **Sources** : https://www.multiset.ai/visual-positioning-system · https://www.multiset.ai/pricing · https://www.multiset.ai/developers
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "multiset-vps"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
@@ -898,6 +933,7 @@
 - **Vérification (à mettre dans `doctor`)** : `node -e "import('@manycore/aholo-viewer').then(m=>{if(!m)process.exit(1);console.log('ok')}).catch(()=>process.exit(1))"`
 - **Notes / pièges** : Le repo amont est **conçu pour le pilotage par agent** (AGENTS.md + skills) : c'est le cas d'usage n°1 de « copier un repo public et l'adapter ». Sous-module `external/egs-core` → cloner avec `--recurse-submodules`.
 - **Sources** : https://github.com/manycoretech/aholo-viewer · https://aholojs.dev/en-US/manual/getting-started/ · https://www.npmjs.com/package/@manycore/aholo-viewer
+- **Né du lien analysé** : [manycoretech/aholo-viewer](https://github.com/manycoretech/aholo-viewer) *(audit, réf. n°11b)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aholo-viewer"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### @manycore/aholo-splat-transform — `aholo-splat-transform`
@@ -912,6 +948,7 @@
 - **Vérification (à mettre dans `doctor`)** : `aholo-splat-transform --help | head -5`
 - **Notes / pièges** : C'est l'outil qui rend le 3DGS *utilisable* sur une tour : sans LOD/streaming, une scène de 20 Go plante le poste.
 - **Sources** : https://www.npmjs.com/package/@manycore/aholo-splat-transform · https://github.com/manycoretech/aholo-viewer/tree/master/packages
+- **Né du lien analysé** : [manycoretech/aholo-viewer](https://github.com/manycoretech/aholo-viewer) *(audit, réf. n°11b)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aholo-splat-transform"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Brush — `brush`
@@ -964,6 +1001,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : ⚠️ Comptes/crédits + tes photos chez un tiers. Le viewer GitHub reste MIT et gratuit : ne pas confondre les deux.
 - **Sources** : https://www.aholo3d.com
+- **Né du lien analysé** : [manycoretech/aholo-viewer](https://github.com/manycoretech/aholo-viewer) *(audit, réf. n°11b)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "aholo-platform"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
@@ -1006,6 +1044,7 @@
 - **Vérification (à mettre dans `doctor`)** : `ls voices/*.onnx && piper --list-voices 2>/dev/null | head -3`
 - **Notes / pièges** : Voix monocorde mais 0 latence GPU. Qualité supérieure → Qwen3-TTS (nécessite GPU).
 - **Sources** : https://github.com/rhasspy/piper · https://huggingface.co/rhasspy/piper-voices · https://github.com/OHF-Voice/piper1-gpl
+- **Né du lien analysé** : [I Built a Local AI Assistant: 100% Free & No Subscriptions!](https://www.youtube.com/watch?v=7ffF3fumhcQ) *(audit, réf. n°4)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "piper"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Qwen3-TTS — `qwen3-tts`
@@ -1020,6 +1059,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s http://127.0.0.1:8880/v1/models | head -c 120`
 - **Notes / pièges** : La vidéo n°7 montre ça dans ComfyUI : le workflow est pratique pour itérer, mais pour la tour un **endpoint HTTP** est plus simple à brancher. Cloner **ta** voix ; pas celle d'un tiers sans son accord.
 - **Sources** : https://github.com/QwenLM/Qwen3-TTS · https://huggingface.co/spaces/Qwen/Qwen3-TTS · https://github.com/groxaxo/Qwen3-TTS-Openai-Fastapi · https://github.com/flybirdxx/ComfyUI-Qwen-TTS
+- **Né du lien analysé** : [Elevenlabs just got wrecked. This free AI text to speech is WILD!](https://www.youtube.com/watch?v=eC8mZceIy5k) *(audit, réf. n°7)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "qwen3-tts"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Kokoro-82M — `kokoro`
@@ -1058,6 +1098,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090`
 - **Notes / pièges** : Petit projet mono-mainteneur : épingler l'image, ne pas en dépendre pour le cœur.
 - **Sources** : https://github.com/rishikanthc/Scriberr · https://scriberr.app
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "scriberr"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 
@@ -1115,6 +1156,7 @@
 - **Vérification (à mettre dans `doctor`)** : `openhands --version 2>/dev/null`
 - **Notes / pièges** : Nécessite un bon modèle : sur un petit modèle local, il fait plus de dégâts que de bien. À utiliser avec garde-fous (branche dédiée, diffs revus).
 - **Sources** : https://github.com/All-Hands-AI/OpenHands · https://docs.all-hands.dev
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "openhands"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Open WebUI — `open-webui`
@@ -1129,6 +1171,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3005/health`
 - **Notes / pièges** : Au-dessus de ~50 users la clause de branding s'applique → sans objet pour une tour. Alternative 100 % sans conteneur : `pip install open-webui`.
 - **Sources** : https://github.com/open-webui/open-webui · https://docs.openwebui.com/getting-started/quick-start/
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "open-webui"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Jan — `jan`
@@ -1156,6 +1199,7 @@
 - **Vérification (à mettre dans `doctor`)** : `curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4200/health`
 - **Notes / pièges** : n8n : 203 k★ mais **Sustainable Use License** (non-OSI) + fonctions enterprise → garder Activepieces comme choix par défaut.
 - **Sources** : https://github.com/activepieces/activepieces · https://docs.activepieces.com/docs/activepieces/setup/installation
+- **Né du lien analysé** : [OpenSource AI Tools That Feel ILLEGAL To Get Free](https://www.youtube.com/watch?v=PeYlw9OOqmw) *(audit, réf. n°2)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "activepieces"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### n8n — `n8n`
@@ -1194,6 +1238,7 @@
 - **Vérification (à mettre dans `doctor`)** : `python3 -c 'import RNS;print(RNS.__version__)' 2>/dev/null || echo absent`
 - **Notes / pièges** : Logiciel 0 €. Le LoRa réel demande du matériel (~15-40 €). Exposer un backbone = responsabilité (abus, relai de trafic) : par défaut, garder privé.
 - **Sources** : https://github.com/softwaregroupdm/reticulum · https://reticulum.network · https://rmap.world · https://github.com/buildwithparallel/crosstalk · https://columba.network
+- **Né du lien analysé** : [How to Become Your Own ISP](https://www.youtube.com/watch?v=V3kZwsysuqQ) *(audit, réf. n°9)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "reticulum"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Meshtastic — `meshtastic`
@@ -1209,6 +1254,7 @@
 - **Vérification (à mettre dans `doctor`)** : `mosquitto_sub -h <noeud> -t msh/2/e/# 2>/dev/null | head -3`
 - **Notes / pièges** : ⚠️ Réglementation 868 MHz (puissance/duty), pas d'usurpation, pas de contenu illicite. Le seul vrai coût matériel de tout cet audit.
 - **Sources** : https://meshtastic.org · https://github.com/meshtastic/firmware · https://meshtastic.org/docs/getting-started/hardware-suggestions/
+- **Né du lien analysé** : [Meshtastic Crash Course Part 1 — What is Meshtastic?](https://www.youtube.com/watch?v=n_Cie7uGu4c) *(audit, réf. n°10)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "meshtastic"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### RTL-SDR (option réception locale) — `rtl-sdr`
@@ -1315,6 +1361,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : ⚠️ Son tutoriel complet est derrière un Patreon : pas besoin, le motif est simple et on le documente ici.
 - **Sources** : https://github.com/nazirlouis/ada_local · https://huggingface.co/nlouis/ada_model · https://www.youtube.com/watch?v=7ffF3fumhcQ
+- **Né du lien analysé** : [I Built a Local AI Assistant: 100% Free & No Subscriptions!](https://www.youtube.com/watch?v=7ffF3fumhcQ) *(audit, réf. n°4)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "ada-local"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### Mark-LII (FatihMakes) — `mark-lii`
@@ -1328,6 +1375,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : Cas d'école de « open source sur GitHub » qui ne l'est pas juridiquement.
 - **Sources** : https://github.com/FatihMakes/Mark-LII · https://aistudio.google.com/apikey · https://www.youtube.com/watch?v=u6c-6RF6J_g
+- **Né du lien analysé** : [Jarvis Mark 51 Installation — Step by Step Guide](https://www.youtube.com/watch?v=u6c-6RF6J_g) *(audit, réf. n°6)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "mark-lii"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ### fullstack-agent (jaredrhod) — `jared-fullstack`
@@ -1390,6 +1438,7 @@
 - **Vérification (à mettre dans `doctor`)** : `—`
 - **Notes / pièges** : Le vrai sujet n'est pas le hardware, c'est la carte ancrée partagée. Et là, tu l'as déjà (splats) — il manque l'API de pose, qui est une demi-journée de code.
 - **Sources** : https://www.anduril.com/eagleeye · https://developers.meta.com/horizon/
+- **Né du lien analysé** : [This Shouldn't Be Possible With an iPhone](https://www.youtube.com/watch?v=CU02AeUCIHc) *(audit, réf. n°12)*
 - **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: "rayban-capture"` (généré par `generate-reference.py`, ne pas éditer le markdown)
 
 ---

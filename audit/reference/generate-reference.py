@@ -6,11 +6,14 @@ Produit, à partir des mêmes données :
   - audit/reference/REGISTRE-OUTILS.json   (machine-readable, pour agents)
   - audit/REFERENCE.md                     (humain + agent, tables par catégorie, étapes A→B→C)
 
+Chaque fiche peut porter un champ `origine` (le lien de l'audit qui l'a fait naître) : il est
+dérivé automatiquement d'AUDIT-OUTILS-2026.md §1 par `charger_origines()` — ne pas le saisir à la main.
+
 Règle d'or pour les agents : ne JAMAIS éditer REFERENCE.md / REGISTRE-OUTILS.json à la main.
 Modifier OUTILS ici, puis  :  python3 audit/reference/generate-reference.py
 """
 from __future__ import annotations
-import json, datetime, pathlib, sys
+import json, datetime, pathlib, sys, re
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
@@ -1023,6 +1026,120 @@ LEGEND_STATUS = {
 }
 
 
+# ───────────────── Rattachement : quel lien analysé a produit quel outil (auto-dérivé)
+# L'audit §1 d'AUDIT-OUTILS-2026.md liste les liens sources avec, dans chaque ligne, les URLs
+# officielles des outils cités. On recroise ces URLs avec le champ `urls` de chaque fiche pour
+# que toute affirmation reste vérifiable à la source. SOURCE_MANUELLE couvre les entrées nées
+# d'un **motif** (et non d'un lien d'outil) dans une ligne du tableau.
+SOURCE_MANUELLE = {
+    "hloc": "https://www.youtube.com/watch?v=CU02AeUCIHc",
+    "colmap": "https://www.youtube.com/watch?v=CU02AeUCIHc",
+    "arcore-geospatial": "https://www.youtube.com/watch?v=CU02AeUCIHc",
+    "niantic-vps": "https://www.youtube.com/watch?v=CU02AeUCIHc",
+    "multiset-vps": "https://www.youtube.com/watch?v=CU02AeUCIHc",
+    "rayban-capture": "https://www.youtube.com/watch?v=CU02AeUCIHc",
+    "recorder-4d": "https://www.youtube.com/watch?v=0p8o7AeHDzg",
+    "shadowbroker": "https://www.youtube.com/watch?v=0p8o7AeHDzg",
+    "satellite-passes": "https://www.youtube.com/watch?v=0p8o7AeHDzg",
+    "notams": "https://www.youtube.com/watch?v=0p8o7AeHDzg",
+    "outages": "https://www.youtube.com/watch?v=0p8o7AeHDzg",
+    "aisstream": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+    "pipe-gaps": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+    "gdelt": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+    "sar-opera": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+    "gibis": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+    "eia-oil": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+    "desal-power": "https://www.spatialintelligence.ai/p/one-chokepoint-controls-everything",
+}
+
+_LIGNE_LIEN = re.compile(r"^\|\s*(\d+[a-z]?)\s*\|\s*\[([^\]]+)\]\((\S+?)\)")
+_URL = re.compile(r"\((https?://[^)\s]+)\)")
+
+
+def _norm(u: str) -> str:
+    u = u.strip().rstrip("/").lower()
+    return u.replace("://www.", "://", 1)
+
+
+def _plat(x: str) -> str:
+    """Comparaison tolérante : liens réduits à leur libellé, markdown et ponctuation retirés."""
+    x = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", x)
+    x = re.sub(r"\((?:https?|mailto):[^)]*\)", " ", x)
+    x = re.sub(r"\*+|`|→", " ", x)
+    return re.sub(r"[^a-z0-9]+", " ", x.lower()).strip()
+
+
+def _nom_court(nom: str) -> str:
+    """"hloc (localisation visuelle 6-DoF)" → "hloc"."""
+    return _plat(re.split(r"\s*[\(—–:]", nom)[0])
+
+
+def charger_origines() -> dict:
+    """Rattache chaque outil au lien de l'audit (§1) qui l'a fait naître.
+
+    Deux croisements : les **URLs** citées dans la ligne (fiable), puis le **nom** de l'outil
+    tel qu'il est écrit dans les colonnes de citation (jamais dans la colonne « verdict », pour
+    ne pas s'auto-attribuer nos propres commentaires). `SOURCE_MANUELLE` couvre les entrées nées
+    d'un motif et non d'un lien d'outil. Retourne {} sans lever d'erreur si l'audit est absent :
+    le registre reste produisible.
+    """
+    doc = ROOT / "AUDIT-OUTILS-2026.md"
+    if not doc.exists():
+        return {}
+    lignes = doc.read_text(encoding="utf-8").splitlines()
+    try:
+        debut = next(i for i, l in enumerate(lignes) if l.startswith("## 1. Audit"))
+    except StopIteration:
+        return {}
+    fin = next((i for i in range(debut + 1, len(lignes)) if lignes[i].startswith("## 2.")), len(lignes))
+
+    rows = []
+    for l in lignes[debut:fin]:
+        m = _LIGNE_LIEN.match(l)
+        if not m:
+            continue
+        cellules = [c for c in l.strip().strip("|").split("|")]
+        # format : | réf | lien analysé | chaîne·date·vues | outils cités | verdict |
+        # on ne croise que « outils cités » : ni notre prose (verdict), ni la ligne éditoriale (chaîne/date)
+        cite = cellules[3:-1] if len(cellules) >= 5 else cellules[2:-1] if len(cellules) == 4 else cellules[1:-1]
+        corps = " ".join(cite or cellules[1:-1])
+        citees = [_norm(u) for u in _URL.findall(l) if _norm(u)]
+        rows.append({"ref": m.group(1), "titre": m.group(2).strip(), "url": m.group(3),
+                     "citees": [c for c in citees if c != _norm(m.group(3))],
+                     "plat": " " + _plat(corps) + " "})
+    if not rows:
+        return {}
+    par_url = {_norm(r["url"]): r for r in rows}
+
+    out: dict = {}
+    for t in OUTILS:
+        trace = None
+        for u in t.get("urls", []):
+            cu = _norm(u)
+            for r in rows:
+                if any(cu == c or cu.startswith(c + "/") or c.startswith(cu + "/") for c in r["citees"]):
+                    trace = r
+                    break
+            if trace:
+                break
+        if trace is None:  # 2e croisement : le nom, dans les colonnes de citation
+            cles = {c for c in (_nom_court(t["nom"]), _plat(t["id"])) if len(c) >= 5}
+            for r in rows:
+                if any(re.search(r"(?<![a-z0-9])" + re.escape(c) + r"(?![a-z0-9])", r["plat"]) for c in cles):
+                    trace = r
+                    break
+        if trace is None:
+            continue
+        out[t["id"]] = {"ref": trace["ref"], "titre": trace["titre"], "url": trace["url"]}
+    for id_, url in SOURCE_MANUELLE.items():  # priorités explicites, y compris contre un croisement ambigu
+        r = par_url.get(_norm(url))
+        if r:
+            out[id_] = {"ref": r["ref"], "titre": r["titre"], "url": r["url"]}
+    return out
+
+
+ORIGINES = charger_origines()
+
 def build_json() -> dict:
     tools = []
     for t in OUTILS:
@@ -1031,6 +1148,9 @@ def build_json() -> dict:
         t.setdefault("gpu", "")
         t.setdefault("integree", "")
         t.setdefault("verifier", "")
+        o = ORIGINES.get(t["id"])
+        if o:
+            t["origine"] = o
         tools.append(t)
     return {
         "version": 1,
@@ -1053,12 +1173,15 @@ def build_md() -> str:
     compte = sum(1 for t in OUTILS if t["prix"] == "avec-compte")
     payant = sum(1 for t in OUTILS if t["prix"] in ("payant", "freemium"))
     ncat = len(CATEGORIES)
+    norig = sum(1 for t in OUTILS if t["id"] in ORIGINES)
     L = []
     L.append(f"""# 📖 RÉFÉRENCE OUTILS — Watchtower (source de vérité pour les agents)
 
 > **Statut** : référence canonique. Générée le `{today}` depuis `audit/reference/generate-reference.py`
 > — **ne pas éditer ce fichier à la main** : modifier le générateur, puis
 > `python3 audit/reference/generate-reference.py` (qui réécrit aussi `reference/REGISTRE-OUTILS.json`).
+> **Traçabilité** : **{norig}/{n} fiches** sont rattachées au lien analysé qui les a fait naître (champ `origine`, croisé automatiquement depuis l'audit §1) — les autres sont des outils ajoutés **hors lien**, par nous, à partir de la vérification des licences et des remplacements de tiers payants.
+
 > **{n} outils catalogués** en **{ncat} catégories**, dont **{gratuit} 🟢 100 % gratuits et locaux**, **{compte} 🟡 avec compte gratuit**, **{payant} 🔴/🟠 payants ou semi-payants (remplacements écrits dans le §6 d’`AUDIT-OUTILS-2026.md`)**. Toute décision d'outillage se prend ici, pas dans une vidéo.
 
 ## 0. Règles d'ingénierie (à lire avant de toucher au code)
@@ -1072,7 +1195,7 @@ def build_md() -> str:
 7. **Pas de personnes.** Aucune fonctionnalité de recherche nominative, de visage ou de pistage individuel : la tour porte sur **infrastructures, flux, documents, données ouvertes**. (Ligne héritée de l'amont, et obligation juridique.)
 8. **Avant d'installer** : `python3 audit/reference/doctor.py` → ce qui tourne déjà, ce qui manque, ce qui bloque. Après : relancer `doctor` et consigner dans `audit/stack/INSTALL-REPORT.txt`.
 9. **Toujours vérifier les prix/quotas** au moment de l'écriture : les tiers gratuits sont le premier poste de régression (le tier Gemini l'a été en avril 2026).
-10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`.
+10. **Traçabilité** : une décision = une ligne dans ce fichier (via le générateur) + une note de commit. Les liens sources sont dans les champs `urls`, et le champ `origine` (auto-dérivé des tableaux du §1 de `AUDIT-OUTILS-2026.md`, cf. `charger_origines()`) rattache chaque fiche au lien qui l'a fait naître : **une affirmation non rattachée = une affirmation à re-vérifier avant de coder**.
 11. **Journal d'abord, calque ensuite.** Tout flux public consommé par la tour est **aussi écrit** dans le `recorder-4d` (`data/4d/` → Parquet) : un flux interrogé à la demande est un flux perdu (caches TTL, latence imposée sur l'imagerie). Un nouveau calque sans collecteur est refusé en revue.
 12. **Un événement = un alignement temporel, jamais une assertion.** La tour affiche des coïncidences datées et sourcées (« 3 coupures AIS entre 02:10 et 03:40 dans cette bbox », « satellite X au-dessus à 14:07 »), pas des conclusions (« ce navire fait de la contrebande »).
 
@@ -1122,6 +1245,9 @@ def build_md() -> str:
             if t.get("notes"):
                 L.append(f"- **Notes / pièges** : {t['notes']}")
             L.append("- **Sources** : " + " · ".join(t["urls"]))
+            o = ORIGINES.get(t["id"])
+            if o:
+                L.append(f"- **Né du lien analysé** : [{o['titre']}]({o['url']}) *(audit, réf. n°{o['ref']})*")
             L.append(f"- **Registre** : `audit/reference/REGISTRE-OUTILS.json` → champ `id: \"{t['id']}\"` (généré par `generate-reference.py`, ne pas éditer le markdown)")
             L.append("")
 

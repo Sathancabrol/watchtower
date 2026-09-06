@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "genere_le": "2026-09-05",
+  "genere_le": "2026-09-06",
   "source": "audit/reference/generate-reference.py (ne pas éditer ce fichier à la main)",
   "legende": {
     "prix": {
@@ -62,7 +62,12 @@
       "integree": "src/ai/llmClient.js lit OLLAMA_BASE_URL + OLLAMA_MODEL depuis .env ; repli silencieusement désactivé si l'API ne répond pas.",
       "verifier": "curl -s http://127.0.0.1:11434/api/tags | head -c 200",
       "notes": "Le seul composant obligatoire de la V2. Rien ne part sur internet avec un modèle local.",
-      "gpu": "CPU possible (lent), GPU recommandé ≥ 6 Go pour 8B"
+      "gpu": "CPU possible (lent), GPU recommandé ≥ 6 Go pour 8B",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "litellm",
@@ -86,7 +91,12 @@
       "integree": "Un seul endpoint pour `chatConsole`, `intelTwin`, `reaserch-engine`, les agents. Budgets/limits dans le config.",
       "verifier": "curl -s http://127.0.0.1:4000/v1/models | head -c 300",
       "notes": "Gratuit et local. Ne colle une clé payante que si tu choisis explicitement un secours cloud.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "lm-studio",
@@ -132,7 +142,12 @@
       "integree": "Ne pas lier. Nos équivalents : `audit/stack/install-stack.ps1|.sh` + Ollama + Open WebUI.",
       "verifier": "—",
       "notes": "Gratuit et honnête mais « open source » au sens large seulement. Windows only, Linux « probablement buggé » dixit l'auteur.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "8",
+        "titre": "The 1-Click Chatbot Alternative You Actually Own: GobboNet",
+        "url": "https://www.youtube.com/watch?v=wxMB1OvJX2I&t=141s"
+      }
     },
     {
       "id": "pinokio",
@@ -203,7 +218,12 @@
       "integree": "SEARCH_BASE_URL=http://localhost:8080/search dans .env ; Vane peut l'utiliser comme backend.",
       "verifier": "curl -s 'http://127.0.0.1:8080/search?q=frontignan&format=json' | python3 -c 'import json,sys;print(len(json.load(sys.stdin)[\"results\"]))'",
       "notes": "Sans le `format=json`, un agent ne peut pas consommer le résultat : ne pas oublier le [B].",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "vane-perplexica",
@@ -227,7 +247,12 @@
       "integree": "VANE_BASE_URL=http://localhost:3000/api ; les réponses citées nourrissent `hudSummaryResponse.js` et les dossiers de recherche.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' http://localhost:3000",
       "notes": "⚠️ Le nom a changé en mars 2026 (repo `Perplexica` → `Vane`) : les vieux tutos donnent une image Docker obsolète. Vérifier le nom d'image au build.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "crawl4ai",
@@ -251,7 +276,12 @@
       "integree": "engine/retrieval.py → `Crawl4AiRetriever(search_request)` renvoie du markdown horodaté, prêt pour l'extraction d'évidence.",
       "verifier": "crwl https://en.wikipedia.org/wiki/Frontignan -o markdown | head -20",
       "notes": "Pas de clé, pas de facture ; le mode extraction LLM est optionnel et marchera sur Ollama. ~300 Mo de RAM idle + Chromium.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "firecrawl",
@@ -298,7 +328,12 @@
       "integree": "corpus/ + CLI `python -m engine.ingest <pdf>` → alimente le graphe d'évidence.",
       "verifier": "marker_single --help >/dev/null && echo ok",
       "notes": "La licence est revenue en Apache-2.0 : usage commercial redevenu propre (à re-vérifier au moment de l'install).",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "docling",
@@ -368,7 +403,12 @@
       "integree": "src/ocr.js : bouton « lire cette image » sur `ficheLieu` et les flux CCTV ; texte → `reaserch-engine`.",
       "verifier": "tesseract --version && tesseract --list-langs | grep -i fra",
       "notes": "Sur captures basse qualité, PaddleOCR gagne ; Tesseract gagne en zéro-dépendance et vitesse CPU.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "paddleocr",
@@ -414,7 +454,12 @@
       "integree": "src/i18n/translateLocal.js, branché sur les fiches et les résultats de recherche.",
       "verifier": "curl -s http://127.0.0.1:5000/languages | head -c 200",
       "notes": "Qualité correcte FR↔EN/ES/DE ; loin de DeepL sur les langues hors européen. Version hébergée publique = dépannage, pas confidentiel.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "chonkie",
@@ -437,7 +482,12 @@
       "integree": "`reaserch-engine` : l'étape d'ingestion d'évidence avant l'extraction.",
       "verifier": "python3 -c 'import chonkie;print(chonkie.__version__)'",
       "notes": "Léger, mono-mainteneur : épingler la version dans requirements.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "qdrant",
@@ -460,7 +510,12 @@
       "integree": "Optionnel au-dessous de ~50 k chunks → sinon LanceDB.",
       "verifier": "curl -s http://127.0.0.1:6333/readyz",
       "notes": "Qdrant Cloud a un tier gratuit (avec compte) : inutile ici.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "lancedb",
@@ -507,7 +562,12 @@
       "integree": "`reaserch-engine` : chaque agent (claims/evidence/conclusion) sort du validé par `schemas/*.schema.json`.",
       "verifier": "python3 -c 'import outlines;print(\"ok\")'",
       "notes": "Marche avec modèles locaux (transformers/vLLM/llamacpp). Avec Ollama, préfère Instructor+jsonschema si Outlines refuse le backend.",
-      "gpu": "GPU utile, pas obligatoire"
+      "gpu": "GPU utile, pas obligatoire",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "instructor",
@@ -531,7 +591,12 @@
       "integree": "Le pont propre entre les LLM et les schémas JSON du repo.",
       "verifier": "python3 -c 'import instructor;print(instructor.__version__)'",
       "notes": "La voie la plus simple pour une tour sans GPU. Recommandé en premier choix.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "dspy",
@@ -555,7 +620,12 @@
       "integree": "`reaserch-engine` : optimiser la stratégie de décomposition de question sur tes dossiers archivés.",
       "verifier": "python3 -c 'import dspy;print(dspy.__version__)'",
       "notes": "Avant d'optimiser : il te faut des exemples annotés. Ne pas commencer par là.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "langfuse",
@@ -579,7 +649,12 @@
       "integree": "Chaque agent du moteur émet une trace nommée ; le `docs/` de l'audit recommande de logger `run.context`.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' http://localhost:3001",
       "notes": "Lourd (~4 Go RAM) : sur une tour 8 Go, préfère des traces JSONL dans `data/traces/` — ton moteur écrit déjà des checkpoints JSON, c'est à 80 % ça.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "1",
+        "titre": "Open-Source AI Tools That Feel ILLEGAL To Use",
+        "url": "https://www.youtube.com/watch?v=-9Iw86Y991E"
+      }
     },
     {
       "id": "spiderfoot",
@@ -902,7 +977,12 @@
       "integree": "Nouveau calque `splats` dans `displayOptions.js` ; partage d'URL via le pattern `sharelink.js`.",
       "verifier": "node -e \"import('@manycore/aholo-viewer').then(m=>{if(!m)process.exit(1);console.log('ok')}).catch(()=>process.exit(1))\"",
       "notes": "Le repo amont est **conçu pour le pilotage par agent** (AGENTS.md + skills) : c'est le cas d'usage n°1 de « copier un repo public et l'adapter ». Sous-module `external/egs-core` → cloner avec `--recurse-submodules`.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "11b",
+        "titre": "manycoretech/aholo-viewer",
+        "url": "https://github.com/manycoretech/aholo-viewer"
+      }
     },
     {
       "id": "aholo-splat-transform",
@@ -926,7 +1006,12 @@
       "integree": "Pipeline `scripts/prepare-splat.sh` appelé par l'agent après chaque capture.",
       "verifier": "aholo-splat-transform --help | head -5",
       "notes": "C'est l'outil qui rend le 3DGS *utilisable* sur une tour : sans LOD/streaming, une scène de 20 Go plante le poste.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "11b",
+        "titre": "manycoretech/aholo-viewer",
+        "url": "https://github.com/manycoretech/aholo-viewer"
+      }
     },
     {
       "id": "brush",
@@ -1017,7 +1102,12 @@
       "integree": "Non.",
       "verifier": "—",
       "notes": "⚠️ Comptes/crédits + tes photos chez un tiers. Le viewer GitHub reste MIT et gratuit : ne pas confondre les deux.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "11b",
+        "titre": "manycoretech/aholo-viewer",
+        "url": "https://github.com/manycoretech/aholo-viewer"
+      }
     },
     {
       "id": "faster-whisper",
@@ -1065,7 +1155,12 @@
       "integree": "Remplace la voix du navigateur dans `freeVoice.js` (garde le Web Speech en repli si `PIPER=off`).",
       "verifier": "ls voices/*.onnx && piper --list-voices 2>/dev/null | head -3",
       "notes": "Voix monocorde mais 0 latence GPU. Qualité supérieure → Qwen3-TTS (nécessite GPU).",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "4",
+        "titre": "I Built a Local AI Assistant: 100% Free & No Subscriptions!",
+        "url": "https://www.youtube.com/watch?v=7ffF3fumhcQ"
+      }
     },
     {
       "id": "qwen3-tts",
@@ -1091,7 +1186,12 @@
       "integree": "src/voice/ttsLocal.js : `PIPER` par défaut, `QWEN_TTS_URL` si l'endpoint répond (détection au boot).",
       "verifier": "curl -s http://127.0.0.1:8880/v1/models | head -c 120",
       "notes": "La vidéo n°7 montre ça dans ComfyUI : le workflow est pratique pour itérer, mais pour la tour un **endpoint HTTP** est plus simple à brancher. Cloner **ta** voix ; pas celle d'un tiers sans son accord.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "7",
+        "titre": "Elevenlabs just got wrecked. This free AI text to speech is WILD!",
+        "url": "https://www.youtube.com/watch?v=eC8mZceIy5k"
+      }
     },
     {
       "id": "kokoro",
@@ -1208,7 +1308,12 @@
       "integree": "Les tâches de refactor lourdes (P1/P5) peuvent lui être confiées, sous revue de diff.",
       "verifier": "openhands --version 2>/dev/null",
       "notes": "Nécessite un bon modèle : sur un petit modèle local, il fait plus de dégâts que de bien. À utiliser avec garde-fous (branche dédiée, diffs revus).",
-      "gpu": "GPU fortement conseillé (ou secours cloud gratuit)"
+      "gpu": "GPU fortement conseillé (ou secours cloud gratuit)",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "open-webui",
@@ -1232,7 +1337,12 @@
       "integree": "Console humaine de la tour ; `reaserch-engine` peut y lire des knowledge bases.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3005/health",
       "notes": "Au-dessus de ~50 users la clause de branding s'applique → sans objet pour une tour. Alternative 100 % sans conteneur : `pip install open-webui`.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "jan",
@@ -1279,7 +1389,12 @@
       "integree": "Peut déclencher l'API de la tour, publier l'état quotidien dans un canal, et lancer `reaserch-engine` sur des sujets.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4200/health",
       "notes": "n8n : 203 k★ mais **Sustainable Use License** (non-OSI) + fonctions enterprise → garder Activepieces comme choix par défaut.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "n8n",
@@ -1323,7 +1438,12 @@
       "integree": "Peut servir de « voutre de transcriptions » indexée par le RAG.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8090",
       "notes": "Petit projet mono-mainteneur : épingler l'image, ne pas en dépendre pour le cœur.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "2",
+        "titre": "OpenSource AI Tools That Feel ILLEGAL To Get Free",
+        "url": "https://www.youtube.com/watch?v=PeYlw9OOqmw"
+      }
     },
     {
       "id": "reticulum",
@@ -1351,7 +1471,12 @@
       "integree": "`src/meshNodes.js` : afficher les nœuds announced (rmap) + l'état du canal dans le globe ; la tour peut **envoyer** une alerte par Reticulum quand internet tombe.",
       "verifier": "python3 -c 'import RNS;print(RNS.__version__)' 2>/dev/null || echo absent",
       "notes": "Logiciel 0 €. Le LoRa réel demande du matériel (~15-40 €). Exposer un backbone = responsabilité (abus, relai de trafic) : par défaut, garder privé.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "9",
+        "titre": "How to Become Your Own ISP",
+        "url": "https://www.youtube.com/watch?v=V3kZwsysuqQ"
+      }
     },
     {
       "id": "meshtastic",
@@ -1377,7 +1502,12 @@
       "integree": "Calque « contacts mesh » sur le globe + alertes de la tour qui partent par mesh quand le net tombe.",
       "verifier": "mosquitto_sub -h <noeud> -t msh/2/e/# 2>/dev/null | head -3",
       "notes": "⚠️ Réglementation 868 MHz (puissance/duty), pas d'usurpation, pas de contenu illicite. Le seul vrai coût matériel de tout cet audit.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "10",
+        "titre": "Meshtastic Crash Course Part 1 — What is Meshtastic?",
+        "url": "https://www.youtube.com/watch?v=n_Cie7uGu4c"
+      }
     },
     {
       "id": "rtl-sdr",
@@ -1518,7 +1648,12 @@
       "integree": "Modèle de `src/ai/router.js` + `.env` `ROUTER=on|off`.",
       "verifier": "—",
       "notes": "⚠️ Son tutoriel complet est derrière un Patreon : pas besoin, le motif est simple et on le documente ici.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "4",
+        "titre": "I Built a Local AI Assistant: 100% Free & No Subscriptions!",
+        "url": "https://www.youtube.com/watch?v=7ffF3fumhcQ"
+      }
     },
     {
       "id": "mark-lii",
@@ -1542,7 +1677,12 @@
       "integree": "Notre `src/plugins/` dans la tour, avec la même règle : un plugin cassé ne tue pas l'app (try/catch par module).",
       "verifier": "—",
       "notes": "Cas d'école de « open source sur GitHub » qui ne l'est pas juridiquement.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "6",
+        "titre": "Jarvis Mark 51 Installation — Step by Step Guide",
+        "url": "https://www.youtube.com/watch?v=u6c-6RF6J_g"
+      }
     },
     {
       "id": "gods-eye-view",
@@ -1566,7 +1706,12 @@
       "integree": "C'est la base de la tour ; l'audit §0 décrit ce qui en a déjà été dérivé.",
       "verifier": "test -d app/node_modules && echo 'déjà en place'",
       "notes": "La ligne amont est claire : pas de recherche de personne, pas de visage, pas de pistage — à conserver.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     },
     {
       "id": "jared-fullstack",
@@ -1678,7 +1823,12 @@
       "integree": "Source de patterns pour 8 couches de la tour : `gpsJamming.js`, `darkVessels.js`, `satPasses.js`, `notams.js`, `outages.js`, `sarChanges.js`, `telegramPins.js`, `countryDossier.js`. Et surtout son **modèle serveur** : recon proxifiée côté backend + SSRF guard + auth opérateur local = exactement ce que notre tour doit imiter.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' http://localhost:3000",
       "notes": "AGPL : si tu **publies un service** dérivé, tu rediffuses les modifs (usage perso = aucun souci). Projet jeune (1 fork de migration de repo en mars 2026, README le dit) → ne jamais le mettre en dépendance de build, seulement en source d'idées et de connecteurs. **C'est la découverte la plus rentable de cet audit.**",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "13",
+        "titre": "Ex-Google PM Builds God's Eye to Monitor Iran in 4D",
+        "url": "https://www.youtube.com/watch?v=0p8o7AeHDzg"
+      }
     },
     {
       "id": "recorder-4d",
@@ -1703,7 +1853,12 @@
       "integree": "`src/timeline/replayer.js`, `src/recorder/collectors/*.mjs`, et le calque `darkVessels.js` qui n'existe **que** grâce à l'historique (un trou dans l'AIS = une détection, sinon rien à détecter).",
       "verifier": "ls data/4d/ && sqlite3 data/4d.duckdb 'select count(*) from ais' 2>/dev/null || python3 -c \"import duckdb;print(duckdb.sql('select count(*) from \\u0027data/4d.parquet\\u0027').fetchone())\"",
       "notes": "Coût : 0 €. Disque : ~1-3 Go/mois pour 4-5 flux à 60 s. C'est le P8 prioritaire, avant tout nouveau calque.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "13",
+        "titre": "Ex-Google PM Builds God's Eye to Monitor Iran in 4D",
+        "url": "https://www.youtube.com/watch?v=0p8o7AeHDzg"
+      }
     },
     {
       "id": "satellite-passes",
@@ -1728,7 +1883,12 @@
       "integree": "`src/satPasses.js` : lignes de visée vers une zone suivie + fenêtre d'imagerie Sentinel-2 (nuages via Open-Meteo) → la tour dit **quand** photographier.",
       "verifier": "python3 -c 'import skyfield,sgp4;print(skyfield.__version__)'",
       "notes": "Space-Track (compte gratuit) = catalogue plus complet/à jour ; utile seulement si tu veux les objets classifiés légaux (USA-234 Topaz est public, lui).",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "13",
+        "titre": "Ex-Google PM Builds God's Eye to Monitor Iran in 4D",
+        "url": "https://www.youtube.com/watch?v=0p8o7AeHDzg"
+      }
     },
     {
       "id": "aisstream",
@@ -1752,7 +1912,12 @@
       "integree": "`src/vessels.js` (déjà prévu amont) + enregistrement → indispensable pour `darkVessels.js`.",
       "verifier": "python3 -c \"import websockets;print(1)\"",
       "notes": "La clé ne doit jamais transiter par le navigateur : côté serveur uniquement (modèle déjà appliqué par `shadowbroker`).",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "pipe-gaps",
@@ -1775,7 +1940,12 @@
       "integree": "`src/darkVessels.js` : le navire disparaît → un pointillé + une fiche « dernière position connue » ; **aucune** identification de personne, uniquement des entités maritimes.",
       "verifier": "python3 -c 'import pandas,shapely;print(\"deps gaps ok\")'",
       "notes": "La GFW API (clé gratuite) fournit déjà des événements `ais_gaps` prêts à l'emploi : commencer par l'API, puis passer au calcul local pour les zones qui intéressent la tour.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "notams",
@@ -1800,7 +1970,12 @@
       "integree": "`src/airspace.js` (nouveau) + agrégat `nearbyPlaces.js` ; alerte quand une zone surveillée est couverte.",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' https://notamweb.faa.gov/ 2>/dev/null || echo 'réseau à valider depuis la tour'",
       "notes": "Le parsing NOTAM est ingrat (format texte de 1970) : accepter un taux de faux positifs, et toujours afficher le texte brut à côté de l'interprétation.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "13",
+        "titre": "Ex-Google PM Builds God's Eye to Monitor Iran in 4D",
+        "url": "https://www.youtube.com/watch?v=0p8o7AeHDzg"
+      }
     },
     {
       "id": "outages",
@@ -1826,7 +2001,12 @@
       "integree": "`src/outages.js` + un KPI `intelTwin.js` (« connectivité territoriale ») — très pertinent pour un usage FR (outre-mer, crises).",
       "verifier": "curl -s -o /dev/null -w '%{http_code}' https://api.cloudflare.com/client/v4/radar/datasets 2>/dev/null || echo 'nécessite jeton'",
       "notes": "API tier gratuit → prévoir cache 15 min et repli silencieux si le quota tombe.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "13",
+        "titre": "Ex-Google PM Builds God's Eye to Monitor Iran in 4D",
+        "url": "https://www.youtube.com/watch?v=0p8o7AeHDzg"
+      }
     },
     {
       "id": "gdelt",
@@ -1851,7 +2031,12 @@
       "integree": "`src/gdelt.js` → pins « incidents » cliquables dans `ficheLieu` ; nourrit le MODE ANALYSE de `intelTwin`.",
       "verifier": "curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=FRANCE&mode=artlist&format=json&maxrecords=1' | head -c 200",
       "notes": "⚠️ **Ne jamais transformer cette couche en surveillance de personnes** : agrégats thématiques/géographiques uniquement. GDELT est bruyant : toujours afficher la source, jamais une interprétation seule.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "sar-opera",
@@ -1877,7 +2062,12 @@
       "integree": "`src/sar.js` (diff avant/après) + alertes de déformation sur les sites suivis (via l'API alertes d'EGMS).",
       "verifier": "python3 -c 'import asf_search;print(asf_search.__version__)'",
       "notes": "Traitement lourd : 20-60 s par interférométrie sur CPU, quelques minutes sur GPU → lancer en tâche de fond (Activepieces), jamais dans le cycle de rendu de la tour.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "gibis",
@@ -1902,7 +2092,12 @@
       "integree": "Calque `dailyImagery.js` dans la pile `mapStackController` (3e source gratuite, après Esri et CARTO).",
       "verifier": "curl -sI 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-09-04/GoogleMapsCompatible_Level9/5/16/11.jpg' | head -1",
       "notes": "La force de GIBS : c'est **temporel par conception**. Avec le recorder, la tour devient rétrospective sans aucun abonnement.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "eia-oil",
@@ -1926,7 +2121,12 @@
       "integree": "`src/markets.js` + un KPI dans le bandeau `intelTwin.js`.",
       "verifier": "python3 -c 'import requests;print(requests.get(\"https://api.eia.gov/v2\",timeout=8).status_code)'",
       "notes": "⚠️ Les cotations (Bloomberg/Refinitiv) ne sont **pas** redistribuables : n'afficher que des données publiques (EIA) ou un lien sortant.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "desal-power",
@@ -1951,7 +2151,12 @@
       "integree": "KPI « civilisation territoriale » déjà dans `intelTwin.js` → devient alimenté par des données sourcées au lieu d'heuristiques.",
       "verifier": "curl -s 'https://overpass-api.de/api/interpreter?data=[out:json];node[power=plant](43.4,3.0,43.8,4.0);out%205;' | head -c 200",
       "notes": "La valeur ajoutée ici, c'est **la rigueur des sources**, pas la quantité de points. Chaque entité : lien + date + licence.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "14",
+        "titre": "One Chokepoint Controls Everything",
+        "url": "https://spatialintelligence.ai/p/one-chokepoint-controls-everything"
+      }
     },
     {
       "id": "hloc",
@@ -1975,7 +2180,12 @@
       "integree": "Anchoring des calques : positionner une caméra CCTV, un drone ou un téléphone **dans** le scan 3DGS, puis relier « qui regarde quoi » dans `cctvFocusPolicy.js` / `intelTwin.js`.",
       "verifier": "python3 -c 'import hloc;print(\"hloc ok\")'",
       "notes": "GPU fortement conseillé. C'est le chemin 100 % gratuit quand Google/Niantic/MultiSet coûtent ou exigent un compte — et le seul qui marche sans réseau sur un site isolé.",
-      "gpu": "6 Go+ recommandé (PyTorch)"
+      "gpu": "6 Go+ recommandé (PyTorch)",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     },
     {
       "id": "colmap",
@@ -1999,7 +2209,12 @@
       "integree": "`scripts/photo-to-model.sh` : 150 photos d'un site → COLMAP → Brush → splats → ancrage via hloc.",
       "verifier": "colmap help >/dev/null && echo 'colmap ok'",
       "notes": "⚠️ Cas d'école de la règle n°4 du §0 : la licence est bonne (BSD) mais **l'API GitHub ne la voit pas** → vérifier le fichier LICENSE, pas l'auto-détection.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     },
     {
       "id": "arcore-geospatial",
@@ -2022,7 +2237,12 @@
       "integree": "Non (dépendance mobile + compte Google). Pattern utile : « match image → modèle 3D », c'est exactement `hloc`.",
       "verifier": "—",
       "notes": "Gratuit mais : indoor = mort, zones sans Street View = mort, et tes images partent chez Google. Les deux cas où l'on paie ou où l'on est bloqué sont précisément ceux où hloc gagne.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     },
     {
       "id": "niantic-vps",
@@ -2047,7 +2267,12 @@
       "integree": "`scripts/scan-to-globe.sh` : Scaniverse export `.splat` → aholo-splat-transform (SPZ + LOD + collisions) → calque de la tour. Le VPS de Niantic, lui, ne sert pas si on reste en local.",
       "verifier": "—",
       "notes": "Le meilleur compromis capture/gratuit pour un **site précis** (ton domicile, une friche, un poste de garde). Attention : tes scans partent dans leur cloud → lire la politique, et ne scanner aucun site sensible.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     },
     {
       "id": "multiset-vps",
@@ -2073,7 +2298,12 @@
       "integree": "Aucune. Si un jour du hardware (lunettes, drone, robot) doit être ancré sur un site, évaluer MultiSet **vs** hloc en coût total, pas en démo.",
       "verifier": "—",
       "notes": "Tarifs relus le 2026-09-05 sur https://multiset.ai/pricing — **à re-vérifier le jour où tu décides** (règle n°9 : les tiers gratuits bougent tout seuls). « L'entreprise a un an et déjà notée plus robuste que Niantic » dixit la vidéo — c'est le seul acteur qui touche les lunettes grand public ; le modèle économique reste fragile, ne pas s'y marier. Point qui compte pour la tour : l'**on-device** n'existe qu'en Enterprise → aucun VPS du commerce ne te donne l'autonomie hors-ligne que `hloc` te donne à 0 €. ",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     },
     {
       "id": "rayban-capture",
@@ -2097,7 +2327,12 @@
       "integree": "`src/anchors/cameraPose.js` : recevoir des poses depuis un client mobile (WebSocket vers la tour) et les dessiner — c'est **tout** l'effet « voir à travers les murs » : plusieurs caméras, une seule carte.",
       "verifier": "—",
       "notes": "Le vrai sujet n'est pas le hardware, c'est la carte ancrée partagée. Et là, tu l'as déjà (splats) — il manque l'API de pose, qui est une demi-journée de code.",
-      "gpu": ""
+      "gpu": "",
+      "origine": {
+        "ref": "12",
+        "titre": "This Shouldn't Be Possible With an iPhone",
+        "url": "https://www.youtube.com/watch?v=CU02AeUCIHc"
+      }
     }
   ]
 }
