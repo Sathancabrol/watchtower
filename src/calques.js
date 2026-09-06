@@ -138,6 +138,15 @@ export const CALQUES = [
     mettre: (v) => clique('#detection-toggle', v),
   },
   {
+    id: 'origine', nom: 'Panneaux d’origine', icone: '📦', niveau: 'gratuit', famille: 'OUTILS',
+    aide: 'DATA LAYERS · CCTV · SCENES · CONTEXT — rangés ici pour épurer l’écran, rien n’est perdu',
+    actif: () => {
+      const n = document.getElementById('data-panel');
+      return n ? !n.classList.contains('wt-origine-cache') : false;
+    },
+    mettre: (v) => window.__wtPanneauxOrigine?.(!v),
+  },
+  {
     id: 'bandeau', nom: 'Bandeau live', icone: '📶', niveau: 'gratuit', famille: 'DONNÉES',
     aide: 'Bandeau d’informations en direct en haut de l’écran',
     actif: () => {

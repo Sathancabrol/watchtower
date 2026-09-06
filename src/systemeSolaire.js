@@ -183,8 +183,19 @@ export function positionLune(date) {
  * dans le champ de la caméra terrestre. Échelle logarithmique pure.
  * @param {number} ua distance réelle en unités astronomiques
  */
-export function rayonAffiche(ua, echelle = 1) {
+/**
+ * Rayon affiché d'une orbite.
+ * ⚠ Deux échelles :
+ *  · `compresse` (défaut historique) — `r^0.28`, lisible mais FAUSSE : les
+ *    distances ne sont pas proportionnelles et les orbites ne respectent
+ *    visuellement aucune loi de Kepler ;
+ *  · `vraie` — rayon strictement proportionnel à la distance réelle : les
+ *    planettes suivent alors leur orbite elliptique aux bonnes vitesses
+ *    (T² ∝ a³ est déjà dans le calcul des positions).
+ */
+export function rayonAffiche(ua, echelle = 1, mode = 'compresse') {
   const r = Math.max(0.05, Number(ua) || 1);
+  if (mode === 'vraie') return r * 30e6 * Number(echelle || 1); // 1 UA = 30 000 km
   return (11e6 * ((r / 0.387) ** 0.28)) * Number(echelle || 1);
 }
 
@@ -237,6 +248,7 @@ export function initSystemeSolaire(viewer, options = {}) {
     <div class="sy-ligne"><span>échelle</span><input type="range" min="0.5" max="2.5" step="0.05" value="1"><span class="sy-ech">×1.00</span></div>
     <div class="sy-ligne"><span>date</span><input type="range" min="-365" max="365" step="1" value="0"><span class="sy-date">maintenant</span></div>
     <button class="sy-btn gris" data-a="orbites">⭕ ORBITES : OUI</button>
+    <button class="sy-btn gris" data-a="echelle">📐 ÉCHELLE : COMPRESSÉE</button>
     <button class="sy-btn gris" data-a="reinitialiser">↺ MAINTENANT</button>
     <div class="sy-liste"></div>
     <div class="sy-note">Positions réelles : éléments képleriens du JPL (domaine public) + série
@@ -306,6 +318,8 @@ export function initSystemeSolaire(viewer, options = {}) {
     return points;
   }
 
+  let modeEchelle = 'compresse';
+
   function construire() {
     ds.entities.removeAll();
     entites.clear();
@@ -314,7 +328,7 @@ export function initSystemeSolaire(viewer, options = {}) {
     const t = positionHeliocentrique('terre', dateSimulee());
     const dirSoleil = { x: -t.x, y: -t.y, z: -t.z };
     const nS = Math.hypot(dirSoleil.x, dirSoleil.y, dirSoleil.z) || 1;
-    const rS = rayonAffiche(1, echelle) * 4.2;
+    const rS = rayonAffiche(1, echelle, modeEchelle) * 4.2;
     const soleil = entite('Soleil', '#ffd24a', 696_000);
     soleil.position = new Cesium.Cartesian3(
       ...Object.values(inertielVersFixe(ecliptiqueVersEquatorial({
@@ -336,7 +350,7 @@ export function initSystemeSolaire(viewer, options = {}) {
       const g = positionGeocentrique(nom, dateSimulee());
       if (!g) continue;
       const n = Math.hypot(g.x, g.y, g.z) || 1;
-      const r = rayonAffiche(g.distance, echelle);
+      const r = rayonAffiche(g.distance, echelle, modeEchelle);
       const pos = cartesien({ x: (g.x / n) * r, y: (g.y / n) * r, z: (g.z / n) * r }, 1);
       const ent = entite(e.nom, e.couleur, e.rayon);
       ent.position = pos;
@@ -349,7 +363,7 @@ export function initSystemeSolaire(viewer, options = {}) {
           const gg = positionGeocentrique(nom, d);
           if (!gg) continue;
           const nn = Math.hypot(gg.x, gg.y, gg.z) || 1;
-          const rr = rayonAffiche(gg.distance, echelle);
+          const rr = rayonAffiche(gg.distance, echelle, modeEchelle);
           anneau.push(cartesien({ x: (gg.x / nn) * rr, y: (gg.y / nn) * rr, z: (gg.z / nn) * rr }, 1));
         }
         ds.entities.add({
@@ -431,6 +445,16 @@ export function initSystemeSolaire(viewer, options = {}) {
     orbites = !orbites;
     btnOrbites.textContent = `⭕ ORBITES : ${orbites ? 'OUI' : 'NON'}`;
     if (actif) construire();
+  });
+  el.querySelector('[data-a="echelle"]').addEventListener('click', () => {
+    modeEchelle = modeEchelle === 'vraie' ? 'compresse' : 'vraie';
+    const bE = el.querySelector('[data-a="echelle"]');
+    bE.textContent = modeEchelle === 'vraie' ? '📐 ÉCHELLE : VRAIE (KEPLER)' : '📐 ÉCHELLE : COMPRESSÉE';
+    bE.classList.toggle('gris', modeEchelle !== 'vraie');
+    construire();
+    options.surMessage?.(modeEchelle === 'vraie'
+      ? '📐 Échelle VRAIE : distances proportionnelles, orbites elliptiques (T² ∝ a³).'
+      : '📐 Échelle compressée : tout tient à l’écran, mais les distances ne sont plus proportionnelles.');
   });
   el.querySelector('[data-a="reinitialiser"]').addEventListener('click', () => {
     decalageJours = 0;

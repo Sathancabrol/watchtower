@@ -4,7 +4,10 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 18** (🎯 lanceur compact : une catégorie
+Dernière mise à jour : **itération 19** (🧭 boussole relisible · 😴 veille
+patientée · 🧹 panneaux d'origine rangés · 📍 pastilles dispersées · 📐
+échelle VRAIE du système solaire).
+Itération **18** = (🎯 lanceur compact : une catégorie
 = un bouton · 🗺 minicarte et boussole qui épousent le globe · 📍 pastilles
 d'entités posées sur un lieu réel · 🔥 2 modules coupés par mon propre script
 réparés).
@@ -54,7 +57,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 sexies. Itération 13 — terminée
+## 0 septies. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -66,7 +69,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 septies. Itération 12 — terminée
+## 0 octies. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -77,7 +80,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 octies. Itération 11 — terminée
+## 0 nonies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -88,7 +91,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 nonies. Itération 10 — terminée
+## 0 decies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -105,7 +108,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 decies. Itération 9 — terminée
+## 0 undecies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -158,6 +161,27 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **19** :
+
+* **« change la boussole, on voit rien comme ça »** — fond opaque sous le
+  ruban et **cap affiché en clair** (`042°`) : lisible par-dessus n'importe
+  quel fond de carte. La variante « arc » reste accessible depuis ⚙.
+* **« la veille s'active trop vite »** — 60 s avant de s'estomper, 90 s avant
+  de disparaître (au lieu de 10/15 s).
+* **« les boutons COUCHES DE DONNÉES / SCENES / CCTV / CONTEXT sont encore
+  présents »** — ces quatre panneaux d'origine sont **masqués** (pas
+  détruits) ; le bouton 📦 « Panneaux d'origine » des CALQUES les remet à
+  tout moment : **aucune fonction perdue**, et le choix est mémorisé.
+* **« pastille mal placée et se superpose »** — en plus de l'ancrage sur un
+  lieu réel (it. 18), les pastilles à moins de 22 m l'une de l'autre sont
+  **dispersées sur un petit cercle** à l'écran (boulangerie + restaurant dans
+  le même bâtiment ne se marchent plus dessus).
+* **« la vue système solaire doit suivre les lois de notre orbite »** — les
+  positions étaient déjà calculées avec les éléments képleriens JPL, mais
+  l'AFFICHAGE compressait les rayons (`r^0.28`) : les distances n'étaient plus
+  proportionnelles. Nouveau bouton 📐 **ÉCHELLE : VRAIE (KEPLER)** : rayon
+  proportionnel à la distance réelle, orbites elliptiques, vitesses conformes.
 
 Itération **18** :
 

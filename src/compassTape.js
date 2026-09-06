@@ -329,6 +329,24 @@ export function initCompassTape(viewer) {
     const pxParDeg = W / geo.amplitude;
     const debut = cap - geo.amplitude / 2;
     ctx.clearRect(0, 0, W, H);
+    // 🧭 fond opaque : sans lui le ruban était illisible par-dessus la carte
+    ctx.fillStyle = 'rgba(5,9,16,0.86)';
+    ctx.beginPath();
+    const rr = Math.min(8, H / 3);
+    ctx.moveTo(rr, 0);
+    ctx.lineTo(W - rr, 0);
+    ctx.quadraticCurveTo(W, 0, W, rr);
+    ctx.lineTo(W, H - rr);
+    ctx.quadraticCurveTo(W, H, W - rr, H);
+    ctx.lineTo(rr, H);
+    ctx.quadraticCurveTo(0, H, 0, H - rr);
+    ctx.lineTo(0, rr);
+    ctx.quadraticCurveTo(0, 0, rr, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,212,255,0.28)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
     const premier = Math.ceil(debut / 5) * 5;
@@ -360,6 +378,14 @@ export function initCompassTape(viewer) {
     ctx.lineTo(W / 2, 8);
     ctx.closePath();
     ctx.fill();
+    // 📐 le cap en clair, dans un pavé cyan : c'est ce qu'on vient lire
+    const texte = `${String(Math.round(norm(cap))).padStart(3, '0')}°`;
+    ctx.font = '700 13px "JetBrains Mono", monospace';
+    const largeurPave = Math.max(38, ctx.measureText(texte).width + 14);
+    ctx.fillStyle = '#00d4ff';
+    ctx.fillRect(W / 2 - largeurPave / 2, H - 16, largeurPave, 16);
+    ctx.fillStyle = '#04121a';
+    ctx.fillText(texte, W / 2, H - 4);
   }
 
   /**

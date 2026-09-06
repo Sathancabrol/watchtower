@@ -665,11 +665,12 @@ export function initMinimap(viewer) {
     if (!boussole?.element || !logementBoussole) return false;
     logementBoussole.appendChild(boussole.element);
     try {
-      // 🧭 La boussole ÉPOUSE LE GLOBE : variante « arc », posée juste au-dessus
-      // de la sphère, courbée sur le même rayon qu'elle.
+      // 🧭 Boussole lisible avant tout : ruban horizontal avec fond opaque et
+      // cap affiché en clair, posé juste au-dessus du globe (variante « arc »
+      // toujours disponible depuis ⚙).
       boussole.regler?.({
-        variante: 'arc', longueur: LARGEUR - 10, largeur: 46,
-        amplitude: 140, rayon: 420, visible: true,
+        variante: 'droit', orientation: 'horizontal',
+        longueur: LARGEUR - 12, largeur: 40, amplitude: 120, visible: true,
       });
       boussole.heberger?.(logementBoussole);
     } catch { /* boussole absente */ }

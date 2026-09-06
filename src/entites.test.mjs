@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   FAMILLES, ICONE_DEFAUT, TABLE_ENTITES, adresseDe, categorieDe, distanceM,
-  entitesDepuisReponse, liensSources, regrouper, requeteOverpass, spriteEntite, titreEntite,
+  disperser, entitesDepuisReponse, liensSources, regrouper, requeteOverpass, spriteEntite, titreEntite,
 } from './entites.js';
 
 test('une boulangerie est reconnue comme telle (icône 🥐)', () => {
@@ -204,4 +204,40 @@ test('les sources sont des hyperliens vérifiables', () => {
     assert.ok(x.nom && x.detail);
   }
   assert.ok(s.some((x) => /overpass/i.test(x.nom)));
+});
+
+test('deux pastilles au même endroit sont dispersées (fin de la superposition)', () => {
+  const g = [
+    { lat: 43.44, lon: 3.69, cle: 'a', nom: 'A' },
+    { lat: 43.44001, lon: 3.69, cle: 'b', nom: 'B' },
+  ];
+  const d = disperser(g);
+  assert.equal(d.length, 2);
+  const ec = Math.hypot(d[0].dx - d[1].dx, d[0].dy - d[1].dy);
+  assert.ok(ec >= 20, `les deux pastilles doivent être séparées à l’écran (écart ${ec.toFixed(1)} px)`);
+});
+
+test('trois pastilles serrées forment un trèfle et non une pile', () => {
+  const g = [0, 1, 2].map((i) => ({ lat: 43.44 + i * 0.00001, lon: 3.69, cle: `c${i}` }));
+  const d = disperser(g);
+  const uniques = new Set(d.map((p) => `${p.dx},${p.dy}`));
+  assert.equal(uniques.size, 3, 'chaque pastille a sa propre position écran');
+});
+
+test('une pastille isolée n’est pas décalée', () => {
+  const d = disperser([{ lat: 43.44, lon: 3.69 }]);
+  assert.deepEqual(d[0], { dx: 0, dy: 0 });
+});
+
+test('des pastilles éloignées ne sont pas dispersées', () => {
+  const d = disperser([
+    { lat: 43.44, lon: 3.69 },
+    { lat: 43.46, lon: 3.71 },
+  ]);
+  assert.deepEqual(d, [{ dx: 0, dy: 0 }, { dx: 0, dy: 0 }]);
+});
+
+test('une liste vide ou invalide ne casse pas la dispersion', () => {
+  assert.deepEqual(disperser(), []);
+  assert.deepEqual(disperser([{ lat: NaN, lon: 3 }]), [{ dx: 0, dy: 0 }]);
 });

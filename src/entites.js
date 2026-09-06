@@ -317,6 +317,39 @@ export function adresseDe(tags = {}) {
  * @param {number} [rayonM=45]
  * @returns {Array} groupes {lat, lon, cle, ic, nom, fonction, membres, nombre}
  */
+/**
+ * Dispersion : deux pastilles à quelques mètres l'une de l'autre se
+ * superposaient à l'écran (boulangerie + restaurant dans le même bâtiment…).
+ * On les répartit sur un petit cercle autour du point, en pixels — la carte
+ * reste juste, seule la pastille est décalée. Fonction pure, testée.
+ * @param {Array<{lat:number,lon:number}>} groupes
+ * @param {number} [seuilM] distance en deçà de laquelle on disperse
+ * @param {number} [rayonPx] écart en pixels
+ * @returns {Array<{dx:number,dy:number}>} décalage écran pour chaque pastille
+ */
+export function disperser(groupes = [], seuilM = 22, rayonPx = 26) {
+  const out = groupes.map(() => ({ dx: 0, dy: 0 }));
+  const clusters = [];
+  groupes.forEach((g, i) => {
+    if (!Number.isFinite(g?.lat) || !Number.isFinite(g?.lon)) return;
+    let c = clusters.find((cl) => distanceM({ lat: cl.lat, lon: cl.lon }, g) <= seuilM);
+    if (!c) { c = { lat: g.lat, lon: g.lon, membres: [] }; clusters.push(c); }
+    c.membres.push(i);
+  });
+  for (const c of clusters) {
+    const n = c.membres.length;
+    if (n < 2) continue;
+    c.membres.forEach((i, k) => {
+      const a = (2 * Math.PI * k) / n - Math.PI / 2; // on commence en haut
+      out[i] = {
+        dx: Math.round(Math.cos(a) * rayonPx),
+        dy: Math.round(Math.sin(a) * rayonPx),
+      };
+    });
+  }
+  return out;
+}
+
 export function regrouper(liste = [], rayonM = 45) {
   const groupes = [];
   for (const e of liste) {
@@ -682,9 +715,11 @@ export function initEntites(viewer, options = {}) {
     ds.entities.removeAll();
     const retenues = entites.filter((e) => filtres.has(e.cle));
     groupes = regrouper(retenues, RAYON_REGROUPEMENT);
-    for (const g of groupes) {
+    const ecarts = disperser(groupes);
+    groupes.forEach((g, index) => {
       const image = spriteEntite({ ic: g.ic, couleur: g.couleur, nombre: g.nombre });
-      if (!image) continue;
+      if (!image) return;
+      const { dx, dy } = ecarts[index] || { dx: 0, dy: 0 };
       ds.entities.add({
         id: `wt-ent-${g.id}`,
         position: Cesium.Cartesian3.fromDegrees(g.lon, g.lat, altitudeIcone(g.lon, g.lat)),
@@ -699,6 +734,7 @@ export function initEntites(viewer, options = {}) {
           verticalOrigin: Cesium.VerticalOrigin.CENTER,
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
           scaleByDistance: new Cesium.NearFarScalar(250, 1.05, 12000, 0.42),
+          pixelOffset: new Cesium.Cartesian2(dx, dy),
         },
         label: {
           text: g.nom,
@@ -706,13 +742,13 @@ export function initEntites(viewer, options = {}) {
           fillColor: Cesium.Color.WHITE,
           showBackground: true,
           backgroundColor: Cesium.Color.fromCssColorString('#0a0a0f').withAlpha(0.78),
-          pixelOffset: new Cesium.Cartesian2(0, -26),
+          pixelOffset: new Cesium.Cartesian2(dx, dy - 26),
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
           distanceDisplayCondition: new Cesium.DistanceDisplayCondition(0, 1100),
           translucencyByDistance: new Cesium.NearFarScalar(300, 1, 1100, 0.25),
         },
       });
-    }
+    });
     viewer.scene.requestRender?.();
     rendreListe();
     elStats.innerHTML = groupes.length

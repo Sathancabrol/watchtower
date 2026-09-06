@@ -893,8 +893,29 @@ async function init() {
 
       // 😴 VEILLE : plus aucun HUD à l'écran après 15 s sans contact
       // (fondu de 10 s à 15 s, réapparition au moindre mouvement).
-      const veille = initVeille({ debut: 10_000, fin: 15_000 });
+      // Veille : 60 s avant de s'estomper, 90 s avant de disparaître (au lieu
+      // de 10/15 s, jugé beaucoup trop rapide) — et réglable depuis AFFICHAGE.
+      const veille = initVeille({ debut: 60_000, fin: 90_000 });
       window.__godsEyeView.veille = veille;
+      const styleOrigine = document.createElement('style');
+      styleOrigine.textContent = '.wt-origine-cache { display: none !important; }';
+      document.head.appendChild(styleOrigine);
+      // 🧹 AFFICHAGE PRINCIPAL ÉPURÉ : les panneaux d'origine (DATA LAYERS,
+      // CCTV, SCENES, CONTEXT) encombrent l'écran alors que leurs fonctions
+      // sont dans CALQUES. On les MASQUE sans les détruire : le bouton
+      // « PANNEAUX D'ORIGINE » des CALQUES les remet (aucune fonction perdue).
+      window.__wtPanneauxOrigine = (on) => {
+        const cibles = ['data-panel', 'cctv-panel', 'scene-panel', 'global-context-panel'];
+        for (const id of cibles) {
+          const n = document.getElementById(id);
+          if (n) n.classList.toggle('wt-origine-cache', on !== false);
+        }
+        try { window.localStorage.setItem('watchtower.panneauxOrigine.v1', on !== false ? '0' : '1'); } catch { /* plein */ }
+        return on !== false;
+      };
+      try {
+        if (window.localStorage.getItem('watchtower.panneauxOrigine.v1') !== '1') window.__wtPanneauxOrigine(true);
+      } catch { window.__wtPanneauxOrigine(true); }
       // pendant une urgence (ou dans le palais), on ne laisse pas l'écran s'effacer
       window.setInterval(() => {
         const enUrgence = Boolean(window.__godsEyeView.urgence?.estActive?.());
