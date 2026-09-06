@@ -59,6 +59,7 @@ export const ATTENDUS = {
   comptes: 'comptes & clés',
   palais: 'palais mental',
   assistant: 'assistant',
+  hq: 'HQ — la tour de guet dans le ciel (apparition par distance)',
   cinematique: 'cinématique & rendu vidéo',
 };
 

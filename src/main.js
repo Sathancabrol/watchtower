@@ -41,6 +41,7 @@ import { initHudCentral } from './hudCentral.js';
 import { capturerErreurs, initDiagnostic, toutReafficher } from './diagnostic.js';
 import { initMedaillons } from './medaillons.js';
 import { initDossier } from './dossier.js';
+import { initHQ } from './hq.js';
 import { initTheme } from './theme.js';
 import { initVuesTerritoire } from './vueCommunale.js';
 import { initPins } from './pins.js';
@@ -549,7 +550,10 @@ async function init() {
           + 'jusqu\u2019à <b>ta position</b> (GPS), ou ton domicile, ou la Méditerranée '
           + 'si la position est inconnue : c\u2019est la cinématique d\u2019arrivée de '
           + 'WATCHTOWER, pas un simple zoom.');
-        const jouer = (lo, la, nom) => window.__godsEyeView.cinematique?.rechercheHQ(la, lo, nom);
+        const jouer = (lo, la, nom) => {
+          window.__godsEyeView.hq?.placer(la, lo, nom);
+          window.__godsEyeView.cinematique?.rechercheHQ(la, lo, nom);
+        };
         const replis = () => {
           try {
             const h = JSON.parse(window.localStorage.getItem('watchtower.domicile.v1') || 'null');
@@ -570,6 +574,18 @@ async function init() {
         surMessage: (m) => window.__wtToast?.(m),
       });
       window.__godsEyeView.cinematique = cinematique;
+      // 🏰 HQ = LA TOUR DE GUET DANS LE CIEL. Elle n'est pas dessinée en
+      // permanence : comme les repères 3D de Maps, elle apparaît par paliers
+      // (balise → silhouette → détail) à mesure qu'on se rapproche.
+      const hq = proteger('hq', () => initHQ(viewer, {
+        surMessage: (m) => window.__wtToast?.(m),
+      }));
+      window.__godsEyeView.hq = hq;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'hq', icone: '🏰', libelle: 'HQ', groupe: 'vues',
+        titre: '🏰 HQ — LA TOUR DE GUET DANS LE CIEL', element: null, cote: 'droite',
+        surClic: () => hq.centrer(),
+      });
 
       // 🎛 COCKPIT : en mode vol, une seule instrumentation, centrée, façon
       // simulateur. Le tiroir « SYSTÈMES » rouvre chaque fenêtre rangée.

@@ -56,6 +56,8 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Régressions** | 🔥 Fenêtre WATCHTOWER · vue HQ : **non reproduites au build ni aux tests** — en attente de ton **F3** pour travailler sur pièce | 🟡 | `fenetres.js`, `mobiDock.js` | — |
 | **INTEL** | ⬜ Hub d'investigation : drill-down de l'arborescence, « Bloomberg de la ville », analyse territoriale | ⬜ | `intel.js` | SIRENE, OSM |
 | **3D** | ⬜ Bascule **2D ↔ 3D** (MapLibre GL) : Cesium sature la carte graphique H24 | ⬜ | à créer | https://maplibre.org/ |
+| **HQ** | 🏰 **La tour de guet dans le ciel** — ce qu'est vraiment « HQ » : une tour procédurale (aucun fichier 3D) qui **apparaît par paliers** comme les repères Maps : 🔦 balise ≤ 120 km → 🗼 silhouette ≤ 40 km → 🏰 détail ≤ 12 km | ✅ | `hq.js` | — |
+| **HQ** | 🎯 Suit « ME LOCALISER » : elle se pose sur ta position GPS (domicile / Sète à défaut), bouton 🏰 **HQ** dans le lanceur (VUES) et clé `hq` au diagnostic F3 | ✅ | `main.js`, `diagnostic.js` | — |
 
 ## 0 bis. Itération 20 — terminée
 
