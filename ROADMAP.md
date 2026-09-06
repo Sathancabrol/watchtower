@@ -4,7 +4,12 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 20** (🗂 dossier d'investigation du
+Dernière mise à jour : **itération 21** — 🔍 **audit général** : chronologie
+1 → 20, état réel, sources, ce qui manque et dettes techniques. Voir
+**`docs/AUDIT.md`**. **Attention** : deux régressions signalées (fenêtre
+WATCHTOWER, vue HQ) ne sont **pas** reproduites au build ni aux tests — j'attends
+ton **F3** pour les réparer sur pièce.
+Itération **20** = (🗂 dossier d'investigation du
 tableau + 📺 télé cathodique + 🪟 fenêtre → vue stellaire + 🚁 décollage
 confirmé + 🗺 minicarte sans cadre + 🧭 médaillons emboîtés).
 Itération **19** = (🧭 boussole relisible · 😴 veille
@@ -37,7 +42,69 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 15 — en cours
+## 0. Itération 21 — en cours
+
+> 🔍 **Itération d'audit.** Bilan complet des itérations 1 → 20 dans
+> **`docs/AUDIT.md`** : nos discussions, ce qui est implanté, ce qui manque,
+> les sources avec liens, les dettes techniques et l'ordre proposé pour la
+> suite. La numérotation de cette feuille de route a été remise à plat.
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Audit** | 🔍 Bilan général : chronologie, état réel (100 modules, 3 136 tests), sources, dettes | ✅ | `docs/AUDIT.md` | — |
+| **Roadmap** | 🧭 Numérotation latine continue + **toutes** les itérations 9 → 21 en table (les tables s'étaient arrêtées à 15 alors que l'en-tête annonçait 20) | ✅ | `ROADMAP.md` | — |
+| **Régressions** | 🔥 Fenêtre WATCHTOWER · vue HQ : **non reproduites au build ni aux tests** — en attente de ton **F3** pour travailler sur pièce | 🟡 | `fenetres.js`, `mobiDock.js` | — |
+| **INTEL** | ⬜ Hub d'investigation : drill-down de l'arborescence, « Bloomberg de la ville », analyse territoriale | ⬜ | `intel.js` | SIRENE, OSM |
+| **3D** | ⬜ Bascule **2D ↔ 3D** (MapLibre GL) : Cesium sature la carte graphique H24 | ⬜ | à créer | https://maplibre.org/ |
+
+## 0 bis. Itération 20 — terminée
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Palais** | 🗂 **Dossier d'investigation** : 6 étapes déduites (zone → sources → vérifier → cartographier → observer → conclure), chacune associée aux fonctions WATCHTOWER qui la servent | ✅ | `dossier.js` | — |
+| **Palais** | 📝 Notes : créer · modifier · épingler · ranger dans un dossier · supprimer (mémorisé) | ✅ | `dossier.js` | localStorage |
+| **Palais** | 📺 **Télé cathodique** : affiche le dossier en cours (progression, fait, suivant, dossiers) | ✅ | `dossier.js`, `palais.js` | — |
+| **Palais** | 🪟 **Fenêtre** : rideaux animés (état mémorisé) **+** bascule en vue stellaire | ✅ | `palais.js`, `main.js` | — |
+| **Palais** | 🚁 Le drone **confirme** avant de décoller au-dessus de ta position | ✅ | `main.js` | — |
+| **Minicarte** | 🗂 Plus de cadre ni de fond : globe, boussole et pastilles flottent | ✅ | `minimap.js` | — |
+| **Médaillons** | 🧭 Emboîtement organique : niveau courant + monter/descendre, au lieu d'empiler 4-5 pastilles | ✅ | `medaillons.js` | — |
+
+## 0 ter. Itération 19 — terminée
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Boussole** | 🧹 Fond opaque + **cap en clair** (`042°`) : enfin lisible par-dessus la carte | ✅ | `compassTape.js` | — |
+| **Veille** | 😴 **60 s / 90 s** au lieu de 10 s / 15 s | ✅ | `main.js`, `veille.js` | — |
+| **Écran** | 🧹 `DATA LAYERS · CCTV · SCENES · CONTEXT` **retirés**, jamais perdus : bouton 📦 « Panneaux d'origine » dans CALQUES | ✅ | `main.js`, `calques.js` | — |
+| **Entités** | 📍 Pastilles **dispersées** : moins de 22 m → petit cercle de 26 px (fin de la superposition) | ✅ | `entites.js` | — |
+| **Système** | 📐 **Échelle VRAIE** (1 UA = 30 000 km) : orbites elliptiques, T² ∝ a³ | ✅ | `systemeSolaire.js` | éléments JPL |
+
+## 0 quater. Itération 18 — terminée
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Lanceur** | 🎯 **2 lignes** : une catégorie = un bouton (🧭 NAVIGATION · 👁 VUES · 📊 DONNÉES · 🛠 OUTILS · 🎮 MODES) | ✅ | `mobiDock.js` | — |
+| **Minicarte** | 🗺 Fenêtre en bulle ronde + boussole **arc** épousant le globe | ✅ | `minimap.js`, `compassTape.js` | — |
+| **Entités** | 📍 Pastilles **ancrées sur un lieu réel** (fin du barycentre dans le vide) | ✅ | `entites.js` | — |
+| **Réparation** | 🔥 2 blocs que **mon propre script** avait tronqués (`surMess`, chat) → CHAT et HISTORIQUE revivent | ✅ | `main.js` | — |
+
+## 0 quinquies. Itération 17 — terminée
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Bug** | 🔥 **19 modules coupés** : doublon de `function rendreListe()` dans `flightMode.js` → TDZ `ReferenceError` | ✅ | `flightMode.js` | — |
+| **Garde-fous** | 🛡 `proteger()` / `elDe()` + tests structurels : plus jamais un module ne vide l'écran en silence | ✅ | `gardeFous.test.mjs` | — |
+| **Doc** | 📖 `docs/DIAGNOSTIC.md` : comment l'app est montée, les 5 mécanismes qui vident l'écran | ✅ | `docs/DIAGNOSTIC.md` | — |
+
+## 0 sexies. Itération 16 — terminée
+
+| Domaine | Fonction | État | Module | Source |
+|---|---|---|---|---|
+| **Diagnostic** | 🐞 **F3** : rapport de démarrage (33 clés attendues + erreurs runtime) et « tout réafficher » | ✅ | `diagnostic.js` | — |
+| **Bandeau** | 📶 Bandeau live rendu (il n'atteignait jamais l'écran) | ✅ | `main.js` | — |
+| **Médaillons** | 🧭 Repli sans réseau | ✅ | `medaillons.js` | — |
+
+## 0 septies. Itération 15 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -48,7 +115,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Lieux** | Au clic : **⬆ MONTER · ⬇ DESCENDRE** dans la hiérarchie pays → région → département → commune → quartier, + 📄 FICHE · 🎯 RECENTRER | ✅ | `medaillons.js` | Nominatim |
 | **Lanceur** | 🎛 **Une pastille par catégorie** dans la barre du haut : chaque famille se remet d'un clic (fin du « les outils / INTEL ont disparu ») | ✅ | `mobiDock.js` | — |
 
-## 0 bis. Itération 14 — terminée
+## 0 octies. Itération 14 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -60,7 +127,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 octies. Itération 13 — terminée
+## 0 nonies. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -72,7 +139,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 nonies. Itération 12 — terminée
+## 0 decies. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -83,7 +150,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 decies. Itération 11 — terminée
+## 0 undecies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -94,7 +161,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 undecies. Itération 10 — terminée
+## 0 duodecies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -111,7 +178,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 duodecies. Itération 9 — terminée
+## 0 terdecies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
