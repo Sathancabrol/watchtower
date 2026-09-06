@@ -154,3 +154,32 @@ instruction de `init()`** : sans ça, une erreur de démarrage reste invisible.
   `mobiDock`, `hudCentral`, `calques`, `theme` sans Cesium et vérifier que
   les boutons existent, que les catégories se pilotent et qu'aucun clic ne
   jette. Voir le §6.
+
+---
+
+## 8. Relancer l'aperçu (serveur de développement)
+
+Le dossier `node_modules` est effacé entre les sessions : il faut réinstaller
+avant de relancer.
+
+```bash
+cd /home/user/watchtower
+PUPPETEER_SKIP_DOWNLOAD=1 npm install --no-audit --fund=false
+HOST=0.0.0.0 PORT=4173 ALLOW_FRAMING=1 node_modules/.bin/vite --strictPort
+```
+
+Trois pièges, dans l'ordre où on les rencontre :
+
+1. **`npm install` échoue sur `puppeteer`** — son script d'installation
+   télécharge Chrome, ce que le réseau du bac à sable refuse. La variable
+   `PUPPETEER_SKIP_DOWNLOAD=1` évite l'étape ; Vite n'a pas besoin de Chrome.
+2. **`--host 0.0.0.0` ne suffit pas** — `vite.config.js` lit la variable
+   d'environnement `HOST` (`env.HOST`) pour décider de `allowedHosts`. Sans
+   `HOST=0.0.0.0`, Vite répond **403 « host not allowed »** à l'URL de l'aperçu
+   et la page reste blanche.
+3. **`ALLOW_FRAMING=1`** est nécessaire : sans lui le serveur pose
+   `X-Frame-Options: DENY` + `frame-ancestors 'none'`, et l'aperçu (qui
+   affiche l'app dans une iframe) refuse de charger.
+
+Vérification : `curl -s -o /dev/null -w '%{http_code}' -H 'Host: <hôte de
+l'aperçu>' http://localhost:4173/` doit renvoyer **200**.
