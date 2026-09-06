@@ -31,6 +31,8 @@ export const DEFAUTS = Object.freeze({
   longueur: 0,             // 0 = toute la hauteur (ou 300 px en horizontal)
   opacite: 0.9,
   amplitude: 90,           // degrés visibles sur la hauteur du ruban
+  variante: 'droit',       // 'droit' | 'arc' (arc = la boussole épouse le globe)
+  rayon: 420,              // courbure de l'arc (px) — grand rayon = courbe douce
   visible: true,
 });
 
@@ -62,6 +64,8 @@ export function reglagesValides(p = {}) {
     longueur: Math.round(borne(p.longueur, 0, 4000, DEFAUTS.longueur)),
     opacite: Math.round(borne(p.opacite, 0.2, 1, DEFAUTS.opacite) * 100) / 100,
     amplitude: Math.round(borne(p.amplitude, 30, 360, DEFAUTS.amplitude)),
+    variante: p.variante === 'arc' ? 'arc' : 'droit',
+    rayon: Math.round(borne(p.rayon, 60, 4000, DEFAUTS.rayon)),
     visible: p.visible !== false,
   };
 }
@@ -74,6 +78,21 @@ export function disposition(r, viewport = {}) {
   const g = reglagesValides(r);
   const vw = Number(viewport.largeur) || 1920;
   const vh = Number(viewport.hauteur) || 1080;
+  // ARC : une bande large et peu haute, posée SUR le globe. Pas de centrage
+  // forcé : c'est le conteneur (la minicarte) qui la place.
+  if (g.variante === 'arc') {
+    const largeur = Math.max(120, Math.min(vw - 24, g.longueur || 320));
+    const hauteur = Math.max(26, Math.min(64, g.largeur));
+    return {
+      ...g,
+      canvasLargeur: largeur,
+      canvasHauteur: hauteur,
+      style: {
+        left: 'auto', right: 'auto', top: 'auto', bottom: 'auto',
+        transform: 'none', width: `${largeur}px`, height: `${hauteur}px`,
+      },
+    };
+  }
   if (g.orientation === 'horizontal') {
     const longueur = g.longueur || 380;
     return {
@@ -343,10 +362,85 @@ export function initCompassTape(viewer) {
     ctx.fill();
   }
 
+  /**
+   * Variante « ARC » : le ruban épouse le globe. Les graduations ne sont plus
+   * alignées sur une droite mais posées sur un cercle de grand rayon, donc
+   * légèrement courbées et inclinées comme une couronne autour de la sphère.
+   */
+  function dessinerArc(cap) {
+    const W = geo.canvasLargeur;
+    const H = geo.canvasHauteur;
+    const pxParDeg = W / geo.amplitude;
+    const debut = cap - geo.amplitude / 2;
+    const R = Math.max(60, Number(geo.rayon) || DEFAUTS.rayon);
+    const cx = W / 2;
+    const base = Math.max(24, H - 8);      // ordonnée de l'arc au centre
+    const cy = base + R;                    // centre du cercle, sous la bande
+    const yDe = (x) => {
+      const dx = Math.max(-R + 1, Math.min(R - 1, x - cx));
+      return cy - Math.sqrt(R * R - dx * dx);
+    };
+    ctx.clearRect(0, 0, W, H);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+
+    // la couronne de fond : elle suit le globe
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 2) {
+      const y = yDe(x);
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'rgba(0,212,255,0.22)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const premier = Math.ceil(debut / 5) * 5;
+    for (let d = premier; d <= debut + geo.amplitude; d += 5) {
+      const x = (d - debut) * pxParDeg;
+      if (x < -24 || x > W + 24) continue;
+      const y = yDe(x);
+      const theta = Math.asin(Math.max(-1, Math.min(1, (x - cx) / R)));
+      const dn = norm(d);
+      const cardinal = CARDINAUX[dn];
+      const majeur = dn % 15 === 0;
+      const longueur = cardinal ? 15 : majeur ? 11 : 6;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(theta);                    // graduation radiale
+      ctx.strokeStyle = cardinal ? 'rgba(0,212,255,0.9)' : majeur ? 'rgba(232,234,237,0.75)' : 'rgba(232,234,237,0.32)';
+      ctx.lineWidth = cardinal ? 2 : 1;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(0, -longueur);
+      ctx.stroke();
+      ctx.restore();
+      if (cardinal) {
+        ctx.fillStyle = '#00d4ff';
+        ctx.font = '700 12px JetBrains Mono, monospace';
+        ctx.fillText(cardinal, x, y - longueur - 4);
+      } else if (dn % 30 === 0) {
+        ctx.fillStyle = 'rgba(232,234,237,0.7)';
+        ctx.font = '10px JetBrains Mono, monospace';
+        ctx.fillText(String(dn), x, y - longueur - 3);
+      }
+    }
+
+    // index central (triangle plein nord, posé sur l'arc)
+    ctx.fillStyle = '#00d4ff';
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - 6, base + 4);
+    ctx.lineTo(W / 2 + 6, base + 4);
+    ctx.lineTo(W / 2, base - 5);
+    ctx.closePath();
+    ctx.fill();
+  }
+
   function dessiner(cap, force = false) {
     if (!geo) return;
     lecture.textContent = fmtCap(cap);
-    if (geo.orientation === 'vertical') dessinerVertical(cap); else dessinerHorizontal(cap);
+    if (reglages.variante === 'arc') dessinerArc(cap);
+    else if (geo.orientation === 'vertical') dessinerVertical(cap);
+    else dessinerHorizontal(cap);
     void force;
   }
 

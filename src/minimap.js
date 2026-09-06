@@ -83,9 +83,27 @@ const CSS = `
   border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,212,255,0.35), 0 0 18px rgba(0,212,255,0.18);
 }
 /* la boussole vit DANS la minicarte, au-dessus du globe */
-#wt-minimap .wt-mm-boussole { padding: 4px 0 2px; display: flex; justify-content: center; }
-#wt-minimap .wt-mm-boussole:empty { display: none; }
-#wt-minimap .wt-mm-boussole #wt-boussole { position: static !important; transform: none !important; }
+#wt-minimap .wt-mm-boussole {
+  padding: 2px 0 0; display: flex; justify-content: center; align-items: flex-end;
+  height: 42px; overflow: visible;
+}
+#wt-minimap .wt-mm-boussole:empty { display: none; height: 0; padding: 0; }
+#wt-minimap .wt-mm-boussole #wt-boussole {
+  position: static !important; transform: none !important;
+  filter: drop-shadow(0 0 6px rgba(0,212,255,0.35));
+}
+/* 🗺 LA FENÊTRE ÉPOUSE LE GLOBE : plus de cadre carré, une bulle ronde */
+#wt-minimap {
+  border-radius: 50% 50% 46% 46% / 46% 46% 54% 54%;
+  background: radial-gradient(circle at 50% 42%, rgba(8,14,22,0.86) 0%, rgba(6,10,18,0.94) 62%, rgba(4,8,14,0.98) 100%);
+  border: 1px solid rgba(0,212,255,0.28);
+  box-shadow: 0 0 24px rgba(0,212,255,0.14), inset 0 0 30px rgba(0,0,0,0.55);
+  padding: 6px 8px 10px; overflow: visible;
+}
+#wt-minimap .wt-mm-tete { justify-content: center; border: 0; padding: 2px 0 0; }
+#wt-minimap .wt-mm-titre { font-size: 7px; letter-spacing: 2px; }
+#wt-minimap .wt-mm-boutons { justify-content: center; flex-wrap: wrap; row-gap: 2px; padding-top: 2px; }
+#wt-minimap .wt-mm-note { text-align: center; font-size: 6.5px; opacity: .45; }
 #wt-minimap .wt-mm-note { padding: 3px 7px; font-size: 7.5px; letter-spacing: 0.5px; color: rgba(232,234,237,0.5); }
 #wt-minimap .wt-mm-note b { color: #00d4ff; font-weight: 700; }
 #wt-minimap-puce {
@@ -647,7 +665,12 @@ export function initMinimap(viewer) {
     if (!boussole?.element || !logementBoussole) return false;
     logementBoussole.appendChild(boussole.element);
     try {
-      boussole.regler?.({ orientation: 'horizontal', longueur: LARGEUR - 6, largeur: 30, visible: true });
+      // 🧭 La boussole ÉPOUSE LE GLOBE : variante « arc », posée juste au-dessus
+      // de la sphère, courbée sur le même rayon qu'elle.
+      boussole.regler?.({
+        variante: 'arc', longueur: LARGEUR - 10, largeur: 46,
+        amplitude: 140, rayon: 420, visible: true,
+      });
       boussole.heberger?.(logementBoussole);
     } catch { /* boussole absente */ }
     return true;

@@ -59,7 +59,7 @@ export const ATTENDUS = {
   comptes: 'comptes & clés',
   palais: 'palais mental',
   assistant: 'assistant',
-  film: 'rendu vidéo',
+  cinematique: 'cinématique & rendu vidéo',
 };
 
 /** Éléments DOM qui doivent exister. */

@@ -4,7 +4,11 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 17** (🔥 le bug qui coupait 19 modules
+Dernière mise à jour : **itération 18** (🎯 lanceur compact : une catégorie
+= un bouton · 🗺 minicarte et boussole qui épousent le globe · 📍 pastilles
+d'entités posées sur un lieu réel · 🔥 2 modules coupés par mon propre script
+réparés).
+Itération **17** = (🔥 le bug qui coupait 19 modules
 d'un coup est trouvé et réparé · 🛡 garde-fous structurels automatisés).
 Itération **16** = (🐞 diagnostic de démarrage F3 +
 « tout réafficher » · 📶 bandeau live rendu · 🧭 médaillons repli sans
@@ -50,7 +54,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Minicarte** | 🗺 **Forme globe** : dessin circulaire (178 px), graticule, ombre de limbe, reflet, anneau | ✅ | `minimap.js` | tuiles raster |
 | **Boussole** | 🧭 **Posée dans la fenêtre de la minicarte**, au-dessus du globe ; ⚙ la remet en ruban sur la hauteur (détachable) | ✅ | `compassTape.js`, `minimap.js` | — |
 
-## 0 quinquies. Itération 13 — terminée
+## 0 sexies. Itération 13 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -62,7 +66,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 👁 **Œil dans le logo** du titre : intégré à la marque, à côté de WATCHTOWER, il ne bouge plus jamais | ✅ | `hudCentral.js` | — |
 | **HUD** | Filets : impossible de tout masquer (la barre du bas revient) + bouton « REMETTRE LA BARRE DU BAS » | ✅ | `hudCentral.js` | — |
 
-## 0 sexies. Itération 12 — terminée
+## 0 septies. Itération 12 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -73,7 +77,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **HUD** | 🕰 **HUD progressif** (option) : écran nu au démarrage, un clic sur l'œil fait apparaître l'interface bloc par bloc (cascade 45 ms) | ✅ | `hudCentral.js` | — |
 | **HUD** | Réglages mémorisés (`watchtower.hudCentral.v1`) + message d'accueil qui dit où est l'œil à la première visite | ✅ | `hudCentral.js` | localStorage |
 
-## 0 septies. Itération 11 — terminée
+## 0 octies. Itération 11 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -84,7 +88,7 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 | **Temps** | Rendu « vieille photo » (sépia) + bâti actuel masqué pendant le mode ; sortie = bâti rendu (cache) | ✅ | `historique.js` | — |
 | **Traçabilité** | 3 provenances jamais mélangées : **daté OSM** · **estimé (hypothèse, option)** · **non daté (masqué)** | ✅ | `data/historique.js` | — |
 
-## 0 octies. Itération 10 — terminée
+## 0 nonies. Itération 10 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -101,7 +105,7 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 
 ---
 
-## 0 nonies. Itération 9 — terminée
+## 0 decies. Itération 9 — terminée
 
 | Domaine | Fonction | État | Module | Source |
 |---|---|---|---|---|
@@ -154,6 +158,27 @@ pourquoi. Document à compléter dès qu'un outil est croisé.
 | **Interface** | **Fenêtres réductibles en icône (–) en plus du déplacement / redimensionnement / formes** | ✅ | `fenetres.js` | — |
 
 ## 2. Ce que cette itération a corrigé / ajouté
+
+Itération **18** :
+
+* **« les icônes du bas prennent trop de place, attribue les catégories à un
+  bouton »** — le lanceur passe de 6 lignes à **2** : une ligne de
+  préréglages, une ligne de familles. Chaque famille est un bouton qui
+  déploie ses fonctions.
+* **« la minicarte, la fenêtre et la boussole doivent épouser le globe »** —
+  la fenêtre devient une bulle ronde et la boussole adopte une variante
+  **arc** : ses graduations sont posées sur un cercle de grand rayon et
+  inclinées radialement, comme une couronne autour de la sphère.
+* **« les icônes des entités s'affichent mais ne sont pas au bon endroit »** —
+  les pastilles étaient placées au **barycentre** de groupes qui
+  s'étiraient de proche en proche (45 m à chaque saut, sans limite) :
+  l'icône atterrissait au milieu de nulle part. Elles sont maintenant
+  **ancrées sur un lieu réel** (le membre nommé, sinon le premier), et un
+  groupe ne peut plus dépasser 2× le rayon.
+* **Deux modules morts à cause de mon propre script** (itération 17) :
+  `surMess` et `affichage: window.__godsEy` tronqués — CHAT et HISTORIQUE ne
+  démarraient plus. Réparé, et `chantier`/`vol` sont enfin enregistrés dans
+  `window.__godsEyeView` (le rapport F3 ne les annoncera plus absents).
 
 Itération **17** :
 

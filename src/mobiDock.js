@@ -26,6 +26,11 @@ const HUD_AUTO_KEY = 'watchtower.hudAuto.v1';
 
 import { rendreDeplacable } from './draggable.js';
 
+/** Icône affichée sur la pastille de chaque catégorie. */
+export const ICONE_GROUPE = {
+  nav: '🧭', vues: '👁', donnees: '📊', outils: '🛠', modes: '🎮',
+};
+
 /** Catégories par défaut (ordre d'affichage). */
 export const GROUPES_DEFAUT = [
   { id: 'nav', nom: 'NAVIGATION' },
@@ -83,7 +88,8 @@ const CSS = `
   border: 1px solid rgba(0,212,255,0.22);
 }
 .wt-dock-chip:hover { border-color: #00d4ff; color: #e8eaed; }
-.wt-dock-sep { opacity: .3; font-size: 9px; }
+#wt-dock .wt-dock-categories { gap: 5px; }
+#wt-dock .wt-dock-categories .wt-dock-chip { padding: 5px 10px; font-size: 8px; }
 .wt-dock-chip.actif {
   background: rgba(0,212,255,0.18); border-color: #00d4ff; color: #00d4ff;
   box-shadow: 0 0 10px rgba(0,212,255,0.3);
@@ -180,6 +186,12 @@ export function initMobiDock({
   const barrePresets = document.createElement('div');
   barrePresets.className = 'wt-dock-ligne wt-dock-presets';
   dock.appendChild(barrePresets);
+  // 🎯 Une CATÉGORIE = UN BOUTON : la barre ne montre que les familles, et
+  // les boutons de la famille choisie remplacent la ligne (2 lignes au lieu
+  // de 6). C'est la réponse à « les icônes du bas prennent trop de place ».
+  const barreCategories = document.createElement('div');
+  barreCategories.className = 'wt-dock-ligne wt-dock-categories';
+  dock.appendChild(barreCategories);
 
   // ── catégories ─────────────────────────────────────────────────────────
   function rangDe(idGroupe) {
@@ -188,6 +200,13 @@ export function initMobiDock({
     const ligne = document.createElement('div');
     ligne.className = 'wt-dock-ligne wt-dock-groupe';
     ligne.dataset.groupe = g.id;
+    const retour = document.createElement('button');
+    retour.type = 'button';
+    retour.className = 'wt-dock-chip wt-dock-retour';
+    retour.textContent = `⏴ ${g.nom}`;
+    retour.title = `Revenir aux catégories`;
+    retour.addEventListener('click', () => ouvrirCategorie(null));
+    ligne.appendChild(retour);
     const nom = document.createElement('span');
     nom.className = 'wt-dock-gn';
     nom.textContent = g.nom;
@@ -310,9 +329,23 @@ export function initMobiDock({
       : groupes.map((g) => g.id),
   );
 
+  let categorieOuverte = null;
+
+  /** Ouvre une catégorie (ses boutons remplacent la ligne) — `null` = retour. */
+  function ouvrirCategorie(gid) {
+    categorieOuverte = gid && actifs.has(gid) ? gid : null;
+    rendreGroupes();
+  }
+
   function rendreGroupes() {
+    const ouverte = categorieOuverte && actifs.has(categorieOuverte) ? categorieOuverte : null;
+    barreCategories.style.display = (ouverte || replie) ? 'none' : '';
+    for (const c of barreCategories.querySelectorAll('.wt-dock-chip[data-groupe]')) {
+      c.style.display = actifs.has(c.dataset.groupe) ? '' : 'none';
+    }
     for (const [gid, ligne] of rangs) {
-      ligne.style.display = actifs.has(gid) && ligne.children.length > 1 ? '' : 'none';
+      // une seule catégorie à la fois : la barre du bas reste sur 2 lignes
+      ligne.style.display = ouverte === gid ? '' : 'none';
     }
     for (const c of barrePresets.querySelectorAll('.wt-dock-chip[data-groupe]')) {
       c.classList.toggle('actif', actifs.has(c.dataset.groupe));
@@ -331,6 +364,7 @@ export function initMobiDock({
   function appliquerPreset(id) {
     const pr = presets.find((x) => x.id === id) || presets[0];
     preset = pr.id;
+    categorieOuverte = null;
     actifs.clear();
     for (const g of pr.groupes || groupes.map((x) => x.id)) actifs.add(g);
     rendreGroupes();
@@ -350,21 +384,6 @@ export function initMobiDock({
     c.textContent = p.nom;
     c.title = p.groupes ? `Catégories : ${p.groupes.join(', ')}` : 'Toutes les catégories';
     c.addEventListener('click', () => { replie = false; appliquerPreset(p.id); });
-    barrePresets.appendChild(c);
-  }
-
-  const separateur = document.createElement('span');
-  separateur.className = 'wt-dock-sep';
-  separateur.textContent = '│';
-  barrePresets.appendChild(separateur);
-  for (const g of groupes) {
-    const c = document.createElement('button');
-    c.type = 'button';
-    c.className = 'wt-dock-chip';
-    c.dataset.groupe = g.id;
-    c.textContent = g.nom;
-    c.title = `Afficher / masquer la catégorie ${g.nom}`;
-    c.addEventListener('click', () => basculerGroupe(g.id));
     barrePresets.appendChild(c);
   }
 
@@ -422,6 +441,22 @@ export function initMobiDock({
   window.setTimeout(mesurer, 600);
   window.setTimeout(mesurer, 2500);
 
+  // pastilles de catégories (créées maintenant : on connaît le nombre de
+  // boutons de chaque famille)
+  for (const g of groupes) {
+    const ligne = rangs.get(g.id);
+    const nb = ligne ? Math.max(0, ligne.querySelectorAll('.wt-dock-btn').length) : 0;
+    if (!nb) continue;
+    const c = document.createElement('button');
+    c.type = 'button';
+    c.className = 'wt-dock-chip';
+    c.dataset.groupe = g.id;
+    c.textContent = `${ICONE_GROUPE[g.id] || '▫'} ${g.nom} · ${nb}`;
+    c.title = `Ouvrir la catégorie ${g.nom} (${nb} fonctions)`;
+    c.addEventListener('click', () => ouvrirCategorie(g.id));
+    barreCategories.appendChild(c);
+  }
+
   appliquerPreset(preset);
   reveiller();
 
@@ -436,6 +471,8 @@ export function initMobiDock({
     preset: () => preset,
     appliquerPreset,
     basculerGroupe,
+    ouvrirCategorie,
+    categorieOuverte: () => categorieOuverte,
     categories: () => [...actifs],
     mesurer,
   };

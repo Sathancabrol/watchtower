@@ -114,14 +114,38 @@ test('les entités sans coordonnées sont écartées', () => {
   assert.equal(g[0].nombre, 1);
 });
 
-test('le barycentre d’un groupe est dans son emprise', () => {
-  const g = regrouper([
+test('la pastille est POSÉE SUR UN LIEU RÉEL, pas au barycentre', () => {
+  const membres = [
     { lat: 43.44, lon: 3.69, cle: 'a', ic: 'x', fonction: 'F', couleur: '#fff' },
     { lat: 43.45, lon: 3.70, cle: 'a', ic: 'x', fonction: 'F', couleur: '#fff' },
-  ], 5000);
+  ];
+  const g = regrouper(membres, 5000);
   assert.equal(g.length, 1);
-  assert.ok(g[0].lat > 43.44 && g[0].lat < 43.45);
-  assert.ok(g[0].lon > 3.69 && g[0].lon < 3.70);
+  // 1 ou 2 membres → la pastille prend la position exacte d'un lieu existant
+  const sur = membres.some((m) => m.lat === g[0].lat && m.lon === g[0].lon);
+  assert.ok(sur, `pastille en ${g[0].lat},${g[0].lon} : aucun membre à cet endroit`);
+});
+
+test('un membre NOMMÉ ancre la pastille (c’est le lieu qu’on cherche)', () => {
+  const g = regrouper([
+    { lat: 43.44, lon: 3.69, cle: 'a', ic: 'x', fonction: 'F', couleur: '#fff' },
+    { lat: 43.4402, lon: 3.6902, cle: 'a', ic: 'x', fonction: 'F', couleur: '#fff', nom: 'Chez Josette' },
+    { lat: 43.4404, lon: 3.6904, cle: 'a', ic: 'x', fonction: 'F', couleur: '#fff' },
+  ], 45);
+  assert.equal(g.length, 1);
+  assert.equal(g[0].lat, 43.4402, 'la pastille doit être POSÉE sur le lieu nommé');
+  assert.equal(g[0].lon, 3.6902);
+});
+
+test('un groupe ne s’étire pas indéfiniment de proche en proche', () => {
+  // 6 points espacés de 40 m : avec un rayon de 45 m, le chaînage les
+  // fusionnait en un nuage de 200 m dont le barycentre n’était sur aucun lieu.
+  const base = 43.44;
+  const liste = Array.from({ length: 6 }, (_, i) => ({
+    lat: base + i * 0.00036, lon: 3.69, cle: 'a', ic: 'x', fonction: 'F', couleur: '#fff',
+  }));
+  const g = regrouper(liste, 45);
+  assert.ok(g.length >= 2, `attendu au moins 2 pastilles, obtenu ${g.length}`);
 });
 
 test('requête Overpass : rayon borné et centres demandés', () => {

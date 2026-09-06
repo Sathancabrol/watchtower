@@ -326,6 +326,10 @@ export function regrouper(liste = [], rayonM = 45) {
     let trouve = null;
     for (const g of groupes) {
       if (g.cleGroupe !== cleGroupe) continue;
+      // ⚠ Borné : un groupe ne s'étire pas indéfiniment de proche en proche
+      // (sinon la pastille atterrissait au barycentre d'un nuage large de
+      // plusieurs centaines de mètres, donc « à côté » de tout).
+      if (distanceM(g, e) > rayonM * 2) continue;
       if (g.membres.some((m) => distanceM(m, e) <= rayonM)) { trouve = g; break; }
     }
     if (trouve) {
@@ -337,17 +341,24 @@ export function regrouper(liste = [], rayonM = 45) {
       });
     }
   }
-  // barycentre + nom + compte
+  // Position + nom + compte.
+  // ⚠ La pastille doit être POSÉE SUR UN LIEU RÉEL, pas au barycentre :
+  //   · un membre nommé (boulangerie « Chez… ») → sa position exacte ;
+  //   · un groupe de 1 ou 2 → la position du premier ;
+  //   · au-delà → le barycentre (c'est alors un vrai regroupement).
   return groupes.map((g, i) => {
     const n = g.membres.length;
-    const lat = g.membres.reduce((s, m) => s + m.lat, 0) / n;
-    const lon = g.membres.reduce((s, m) => s + m.lon, 0) / n;
     const nomme = g.membres.find((m) => m.nom);
+    const ancre = nomme || g.membres[0];
+    const barycentre = n >= 3 && !nomme;
+    const lat = barycentre ? g.membres.reduce((s, m) => s + m.lat, 0) / n : ancre.lat;
+    const lon = barycentre ? g.membres.reduce((s, m) => s + m.lon, 0) / n : ancre.lon;
     return {
       id: `ent-${i}-${g.cleGroupe.replace(/[^a-z0-9]/gi, '')}`,
       lat, lon,
       cle: g.cle, ic: g.ic, fonction: g.fonction, couleur: g.couleur,
       nombre: n,
+      // label : le lieu seul garde son nom, un groupe garde sa fonction (×n)
       nom: n === 1 ? (g.membres[0].nom || g.fonction) : `${g.fonction} ×${n}`,
       adresse: n === 1 ? (g.membres[0].adresse || '') : '',
       membres: g.membres,

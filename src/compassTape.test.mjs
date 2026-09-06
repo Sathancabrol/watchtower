@@ -74,3 +74,26 @@ test('le cap est toujours affiché sur 3 chiffres, 0 → 359', () => {
   assert.equal(fmtCap(-10), '350°');
   assert.equal(fmtCap(359.6), '000°');
 });
+
+test('variante « arc » : une bande large et basse, sans position forcée', () => {
+  const d = disposition({ variante: 'arc', longueur: 168, largeur: 46, orientation: 'vertical' });
+  assert.equal(d.variante, 'arc');
+  assert.equal(d.canvasLargeur, 168);
+  assert.equal(d.canvasHauteur, 46, 'la bande reste basse : elle se pose sur le globe');
+  assert.equal(d.style.left, 'auto', 'le conteneur (minicarte) place la boussole');
+  assert.equal(d.style.transform, 'none');
+});
+
+test('variante « arc » : des valeurs absurdes retombent sur du sûr', () => {
+  const d = disposition({ variante: 'arc', longueur: 99999, largeur: 500 }, { largeur: 400, hauteur: 300 });
+  assert.ok(d.canvasLargeur <= 400 - 24, 'ne dépasse jamais la fenêtre');
+  assert.ok(d.canvasHauteur <= 64, 'hauteur de bande plafonnée');
+});
+
+test('réglages : la variante et le rayon sont validés', () => {
+  const r = reglagesValides({ variante: 'arc', rayon: 999999 });
+  assert.equal(r.variante, 'arc');
+  assert.ok(r.rayon <= 4000 && r.rayon >= 60, 'rayon borné');
+  assert.equal(reglagesValides({}).variante, 'droit', 'droit par défaut');
+  assert.equal(reglagesValides({ variante: 'nawak' }).variante, 'droit', 'valeur inconnue → droit');
+});

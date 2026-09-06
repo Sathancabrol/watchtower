@@ -468,8 +468,8 @@ async function init() {
     // Dock MobiGlas : TOUTES les options en bas, par catégories de fonctions.
     try {
       const chat = proteger('chat / console', () => initChatConsole(viewer, {
-        affichage: window.__godsEy
-      }))
+        affichage: window.__godsEyeView.watchtower?.displayOptions,
+      }));
       // 🚨 MODE URGENCE : « /urgence » — temps gelé, mascotte qui veille, chat
       // en grand au centre, procédure officielle + secours proches + itinéraire
       // le plus rapide + guidage pas à pas. Le panneau du chat est résolu à la
@@ -534,10 +534,11 @@ async function init() {
       // les dates viennent d'OpenStreetMap (start_date), déjà dans les tags.
       const historique = proteger('mode historique', () => initHistorique(viewer, {
         bati: batiRapide,
-        surMess
-      }))
+        surMessage: (m) => window.__wtToast?.(m),
+      }));
       window.__godsEyeView.historique = historique;
       const chantier = proteger('hub chantier', () => initChantier(viewer));
+      window.__godsEyeView.chantier = chantier;
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
       const recentrerHQ = () => {
         // 🎬 « ME LOCALISER » : on part de l'espace et on descend en cinématique
@@ -612,6 +613,7 @@ async function init() {
       const mobiglas = initMobiglas({ surMessage: (m) => window.__wtToast?.(m) });
       window.__godsEyeView.mobiglas = mobiglas;
       const vol = proteger('mode pilotage', () => initFlightMode(viewer, { cockpit, mobiglas }));
+      window.__godsEyeView.vol = vol;
 
       // INTEL nouvelle génération : tableau de bord « jumeau numérique »
       // (remplace le HUD intel d'origine — créé AVANT le dock qui le bascule).
