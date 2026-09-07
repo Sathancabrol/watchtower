@@ -1,10 +1,11 @@
 # AGENTS.md — mode d'emploi du repo
 
-> ⚙️ **Généré** par `audit/reference/generate-reference.py` (le 2026-09-06).
+> ⚙️ **Généré** par `audit/reference/generate-reference.py` (le 2026-09-07).
 > Ne pas éditer : modifier le générateur puis `python3 audit/reference/generate-reference.py`.
 
-Ce repo = une tour de veille **CesiumJS** (`watchtower-mods`, 57 modules) + un plan de contrôle de
-recherche (`reaserch-engine`) + l'**audit d'outillage** qui dit quoi installer, à quel prix, sous quelle licence.
+Ce repo porte la tour de veille **CesiumJS** (l'app : `index.html`, `vite.config.js`, `src/**.js`,
+`docs/`), un plan de contrôle de recherche (le repo `reaserch-engine`, faute de slug incluse) et l'
+**audit d'outillage** : quoi installer, à quel prix, sous quelle licence, et où le brancher dans `src/`.
 
 ## Où chercher
 

@@ -1,6 +1,6 @@
 # 📖 RÉFÉRENCE OUTILS — Watchtower (source de vérité pour les agents)
 
-> **Statut** : référence canonique. Générée le `2026-09-06` depuis `audit/reference/generate-reference.py`
+> **Statut** : référence canonique. Générée le `2026-09-07` depuis `audit/reference/generate-reference.py`
 > — **ne pas éditer ce fichier à la main** : modifier le générateur, puis
 > `python3 audit/reference/generate-reference.py` (qui réécrit aussi `reference/REGISTRE-OUTILS.json`).
 > **Traçabilité** : **47/86 fiches** sont rattachées au lien analysé qui les a fait naître (champ `origine`, croisé automatiquement depuis l'audit §1) — les autres sont des outils ajoutés **hors lien**, par nous, à partir de la vérification des licences et des remplacements de tiers payants.

@@ -13,6 +13,11 @@ Audit produit le 2026-09-05 · sources vérifiées en ligne · liens dans chaque
 
 ## 0. Ce que tu as déjà (l'inventaire, avant de comparer)
 
+> **Mise à jour du 2026-09-06** — à relire avant d'agir : depuis la [PR #1](https://github.com/Sathancabrol/watchtower/pull/1),
+> le repo `watchtower` **contient l'app** (`index.html`, `vite.config.js`, `src/**.js`, `docs/`, `scripts/`, `tools/`).
+> Le constat ci-dessous date du 2026-09-05 (« le repo en ligne est vide ») et reste la trace de l'audit :
+> les lignes « ce qui manque » gardent leur sens pour les **capacités**, plus pour l'emplacement du code.
+
 | Repo | Ce que c'est réellement | État | Ce qui manque |
 |---|---|---|---|
 | `watchtower` (la tour) | Fork de [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view) (CesiumJS) + 57 modules maison dans `COGNITORIUM/watchtower-mods/src` : `startGate.js` (MODE GRATUIT / PAYANT), `freeVoice.js` (Web Speech), `chatConsole.js` (console de commandes FR), `intelTwin.js` (jumeau numérique, heuristiques geo.gouv.fr/OSM), `posteCommandement.js`, `ficheLieu.js`, `osmBuildings3D.js`, `mapStackController.js` (tuiles CARTO), `locations.js` (Photon/Nominatim) | ⚠️ **Le repo `watchtower` en ligne est vide** (juste un README). Les 57 modules vivent dans `COGNITORIUM/watchtower-mods` + la procédure `APPLIQUER.md` | Un repo `watchtower` qui contient vraiment l'app + l'install |
