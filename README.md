@@ -931,3 +931,35 @@ One heads-up from the inside: build in this space for a week and you learn that 
 **🌐 God's Eye View. No place left behind.**
 
 </div>
+
+---
+
+## 📚 Audit d'outillage & préparation R&D (`audit/`)
+
+Issue de l'audit de **14 liens** (vidéos OSINT/IA + l'étude du détroit d'Ormuz) croisés avec les repos du projet :
+**86 outils** catalogués, leurs licences vérifiées, ce qui est faisable à 0 €/mois, et dans quel ordre.
+
+| Fichier | Ce qu'il répond |
+|---|---|
+| [`AGENTS.md`](AGENTS.md) | la porte d'entrée d'un agent : où vit chaque réponse, les 6 commandes, les 9 règles non négociables |
+| [`audit/REFERENCE.md`](audit/REFERENCE.md) ⭐ | **la référence canonique** : 86 fiches (rôle · palier machine · prix · licence · URLs · étapes A→B→C · point d'intégration dans `src/` · commande de vérification), un index alphabétique et un routage « par besoin » |
+| [`AUDIT-OUTILS-2026.md`](AUDIT-OUTILS-2026.md) | l'audit narratif, source par source, avec les verdicts et la feuille de route P0→P10 |
+| [`audit/RND-PROPOSITIONS-2026.md`](audit/RND-PROPOSITIONS-2026.md) | préparation R&D : 12 constats de structure, 6 chantiers additifs, 12 gabarits de code, 14 tâches à critère mesurable, 10 anti-patterns |
+| [`audit/CAPACITES-AGENT.md`](audit/CAPACITES-AGENT.md) | 25 tâches cotées : ce que l'agent fait seul, ce qui reste à un humain, ce qui est refusé |
+| [`audit/COUTS-LICENCES-LEGAL.md`](audit/COUTS-LICENCES-LEGAL.md) | ardoise réelle (0 €/mois), coûts one-shot, pièges de licence, cadre légal FR |
+| [`audit/stack/`](audit/stack/) | le socle gratuit à poser : `install-stack.sh` / `.ps1` (lisibles, `-DryRun`), `docker-compose.yml` (SearXNG, Vane, SpiderFoot, Activepieces), `gen-secrets.sh` |
+
+### 🔎 Trouver vite (humain comme agent)
+
+```bash
+python3 audit/reference/cherche.py "pdf scanné"            # recherche plein texte, pondérée
+python3 audit/reference/cherche.py --besoin 4d             # partir du besoin, pas du nom
+python3 audit/reference/cherche.py --sans-cle --palier A   # gratuit, local, sans GPU
+python3 audit/reference/cherche.py --fiche marker          # une fiche complète
+python3 audit/reference/doctor.py --json                   # ce qui tourne vraiment sur la machine
+grep -i ais audit/reference/REGISTRE.tsv                   # version plate ; cut -f1,5,6 pour les colonnes
+```
+
+`REFERENCE.md`, `REGISTRE-OUTILS.json`, `REGISTRE.tsv` et `AGENTS.md` sont **générés** : on édite
+`audit/reference/generate-reference.py`, puis `python3 audit/reference/generate-reference.py`.
+Le CI (`git diff --exit-code` après régénération) refuse toute édition manuelle du généré.

@@ -1,3 +1,4 @@
+# Dépendances, builds, poids et secrets — jamais dans le repo
 node_modules
 dist
 .env
@@ -12,3 +13,20 @@ output/
 3d-models/
 pinokio/ENVIRONMENT
 pinokio/.installed
+audit/stack/.env
+audit/stack/.venv/
+audit/stack/voices/
+audit/stack/models/
+audit/stack/INSTALL-REPORT.txt
+audit/stack/config/searxng/*
+!audit/stack/config/searxng/.gitkeep
+app/
+.env.*
+!.env.example
+**/__pycache__/
+*.onnx
+*.gguf
+*.splat
+*.spz
+*.ply
+*.pyc
