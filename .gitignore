@@ -12,3 +12,7 @@ output/
 3d-models/
 pinokio/ENVIRONMENT
 pinokio/.installed
+
+# Donnees personnelles - ne jamais committer
+identity/
+docs/profil*
