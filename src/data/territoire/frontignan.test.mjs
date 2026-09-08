@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { dossierFrontignan, COMMUNES_THAU, CODE_INSEE, REPERE } from './frontignan.js';
+import {
+  dossierFrontignan, COMMUNES_THAU, CODE_INSEE, REPERE,
+  toutesCommunes, communeParInsee, EPCI_SAM,
+} from './frontignan.js';
 import { trouverNoeud, cheminVers, bilanCertitude, rendreFait } from './dossierTerritorial.js';
 
 test('le dossier suit l entonnoir national -> projet', () => {
@@ -59,22 +62,60 @@ test('le bilan reste majoritairement source', () => {
   assert.ok(b.partInferee < 0.3, `part inferee maitrisee, vu ${b.partInferee}`);
 });
 
-test('les 9 communes de l etang de Thau sont couvertes', () => {
-  assert.equal(COMMUNES_THAU.length, 9);
-  for (const nom of ['Sète', 'Frontignan', 'Bouzigues', 'Loupian', 'Mèze', 'Marseillan', 'Agde']) {
+test('le referentiel communal est complet', () => {
+  assert.equal(COMMUNES_THAU.length, 9, '9 communes du jeu d essai etang de Thau');
+  assert.equal(toutesCommunes().length, 15, '15 communes au total avec le complement SAM');
+  for (const nom of ['Sète', 'Frontignan', 'Bouzigues', 'Loupian', 'Mèze', 'Marseillan', 'Agde',
+                     'Balaruc-les-Bains', 'Balaruc-le-Vieux']) {
     assert.ok(COMMUNES_THAU.some((c) => c.nom === nom), `${nom} present`);
   }
 });
 
-test('les codes INSEE et reperes sont plausibles', () => {
+test('les codes INSEE sont ceux verifies sur geo.api.gouv.fr', () => {
+  // Ce test existe parce qu une premiere version portait 3 codes faux.
+  const attendus = {
+    Frontignan: '34108', 'Sète': '34301', 'Balaruc-les-Bains': '34023',
+    'Balaruc-le-Vieux': '34024', Bouzigues: '34039', Loupian: '34143',
+    'Mèze': '34157', Marseillan: '34150', Agde: '34003',
+  };
+  for (const [nom, insee] of Object.entries(attendus)) {
+    assert.equal(COMMUNES_THAU.find((c) => c.nom === nom).insee, insee, `${nom} => ${insee}`);
+  }
+});
+
+test('aucun code INSEE en double et tous dans l Herault', () => {
   const vus = new Set();
-  for (const c of COMMUNES_THAU) {
+  for (const c of toutesCommunes()) {
     assert.match(c.insee, /^34\d{3}$/, `${c.nom} : code INSEE de l Herault`);
     assert.ok(!vus.has(c.insee), `${c.insee} unique`);
     vus.add(c.insee);
-    assert.ok(c.lat > 43.2 && c.lat < 43.6, `${c.nom} latitude bassin de Thau`);
-    assert.ok(c.lon > 3.4 && c.lon < 3.9, `${c.nom} longitude bassin de Thau`);
   }
+});
+
+test('les reperes geographiques tombent dans le bassin de Thau', () => {
+  for (const c of toutesCommunes()) {
+    assert.ok(c.lat > 43.2 && c.lat < 43.6, `${c.nom} latitude plausible`);
+    assert.ok(c.lon > 3.4 && c.lon < 3.9, `${c.nom} longitude plausible`);
+    assert.ok(c.pop > 0 && c.pop < 100000, `${c.nom} population plausible`);
+    assert.match(c.cp, /^34\d{3}$/, `${c.nom} code postal`);
+  }
+});
+
+test('Agde n appartient pas a Sete Agglopole', () => {
+  assert.equal(COMMUNES_THAU.find((c) => c.nom === 'Agde').sam, false,
+    'Agde est en CA Hérault Méditerranée, pas en SAM');
+  assert.equal(COMMUNES_THAU.find((c) => c.nom === 'Sète').sam, true);
+  assert.equal(toutesCommunes().filter((c) => c.sam).length, 14, 'SAM compte 14 communes');
+});
+
+test('communeParInsee retrouve et rejette proprement', () => {
+  assert.equal(communeParInsee('34108').nom, 'Frontignan');
+  assert.equal(communeParInsee('34301').pop, 45337);
+  assert.equal(communeParInsee('99999'), null);
+});
+
+test('les codes INSEE et reperes de reference sont exacts', () => {
   assert.equal(CODE_INSEE, '34108');
   assert.equal(REPERE.nom, 'Frontignan la Peyrade');
+  assert.ok(Math.abs(REPERE.lat - 43.4486) < 0.01);
 });

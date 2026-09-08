@@ -112,17 +112,61 @@ export function dossierFrontignan() {
 }
 
 /**
- * Communes de l'étang de Thau — jeu d'essai du chantier E (vue communale).
- * Codes INSEE réels, repères approximatifs de centre-bourg.
+ * Communes du bassin de Thau — jeu d'essai du chantier E (vue communale).
+ *
+ * ⚠️ Données **vérifiées à la source** le 08/09/2026 via `geo.api.gouv.fr`
+ * (API officielle de l'État, Licence Ouverte). Une première version de ce
+ * fichier portait trois codes INSEE erronés (Balaruc-les-Bains, Balaruc-le-Vieux,
+ * Loupian) — d'où la vérification systématique désormais couverte par les tests.
+ *
+ * `sam` indique l'appartenance à Sète Agglopôle Méditerranée (EPCI 200066355).
+ * Agde n'en fait PAS partie (CA Hérault Méditerranée, EPCI 243400819) : elle est
+ * conservée car elle figure dans le jeu d'essai de l'étang de Thau.
+ *
+ * Population : population municipale légale en vigueur (millésime 2023).
+ * Centre : coordonnées du chef-lieu. Surface en hectares.
  */
 export const COMMUNES_THAU = Object.freeze([
-  Object.freeze({ insee: '34108', nom: 'Frontignan',  lat: 43.4486, lon: 3.7561 }),
-  Object.freeze({ insee: '34301', nom: 'Sète',        lat: 43.4075, lon: 3.6936 }),
-  Object.freeze({ insee: '34022', nom: 'Balaruc-les-Bains', lat: 43.4436, lon: 3.6811 }),
-  Object.freeze({ insee: '34023', nom: 'Balaruc-le-Vieux',  lat: 43.4589, lon: 3.6864 }),
-  Object.freeze({ insee: '34039', nom: 'Bouzigues',   lat: 43.4494, lon: 3.6564 }),
-  Object.freeze({ insee: '34152', nom: 'Loupian',     lat: 43.4489, lon: 3.6142 }),
-  Object.freeze({ insee: '34157', nom: 'Mèze',        lat: 43.4256, lon: 3.6053 }),
-  Object.freeze({ insee: '34150', nom: 'Marseillan',  lat: 43.3567, lon: 3.5289 }),
-  Object.freeze({ insee: '34003', nom: 'Agde',        lat: 43.3097, lon: 3.4756 }),
+  Object.freeze({ insee: '34108', nom: 'Frontignan',        cp: '34110', pop: 24136, lat: 43.4486, lon: 3.7493, surfaceHa: 4001.24, sam: true }),
+  Object.freeze({ insee: '34301', nom: 'Sète',              cp: '34200', pop: 45337, lat: 43.3844, lon: 3.6441, surfaceHa: 4058.10, sam: true }),
+  Object.freeze({ insee: '34023', nom: 'Balaruc-les-Bains', cp: '34540', pop:  7139, lat: 43.4476, lon: 3.6922, surfaceHa:  867.47, sam: true }),
+  Object.freeze({ insee: '34024', nom: 'Balaruc-le-Vieux',  cp: '34540', pop:  2737, lat: 43.4650, lon: 3.6971, surfaceHa:  692.37, sam: true }),
+  Object.freeze({ insee: '34039', nom: 'Bouzigues',         cp: '34140', pop:  1601, lat: 43.4450, lon: 3.6563, surfaceHa:  649.85, sam: true }),
+  Object.freeze({ insee: '34143', nom: 'Loupian',           cp: '34140', pop:  2169, lat: 43.4509, lon: 3.6279, surfaceHa: 2325.60, sam: true }),
+  Object.freeze({ insee: '34157', nom: 'Mèze',              cp: '34140', pop: 12669, lat: 43.4323, lon: 3.5843, surfaceHa: 4772.88, sam: true }),
+  Object.freeze({ insee: '34150', nom: 'Marseillan',        cp: '34340', pop:  8414, lat: 43.3543, lon: 3.5560, surfaceHa: 5273.21, sam: true }),
+  Object.freeze({ insee: '34003', nom: 'Agde',              cp: '34300', pop: 29939, lat: 43.3084, lon: 3.4838, surfaceHa: 5144.00, sam: false }),
 ]);
+
+/**
+ * Les 14 communes de Sète Agglopôle Méditerranée non déjà listées ci-dessus.
+ * Complète la couverture de l'EPCI pour la vue intercommunale.
+ */
+export const COMMUNES_SAM_COMPLEMENT = Object.freeze([
+  Object.freeze({ insee: '34113', nom: 'Gigean',          cp: '34770', pop: 6639, lat: 43.4953, lon: 3.7242, surfaceHa: 1630.09, sam: true }),
+  Object.freeze({ insee: '34159', nom: 'Mireval',         cp: '34110', pop: 3301, lat: 43.5158, lon: 3.8022, surfaceHa: 1122.66, sam: true }),
+  Object.freeze({ insee: '34165', nom: 'Montbazin',       cp: '34560', pop: 2877, lat: 43.5325, lon: 3.6694, surfaceHa: 2148.52, sam: true }),
+  Object.freeze({ insee: '34213', nom: 'Poussan',         cp: '34560', pop: 6797, lat: 43.4976, lon: 3.6623, surfaceHa: 2991.74, sam: true }),
+  Object.freeze({ insee: '34333', nom: 'Vic-la-Gardiole', cp: '34110', pop: 3428, lat: 43.4838, lon: 3.8046, surfaceHa: 3071.74, sam: true }),
+  Object.freeze({ insee: '34341', nom: 'Villeveyrac',     cp: '34560', pop: 3972, lat: 43.4956, lon: 3.5931, surfaceHa: 3726.49, sam: true }),
+]);
+
+/** Identifiant SIREN de l'EPCI Sète Agglopôle Méditerranée. */
+export const EPCI_SAM = '200066355';
+
+/**
+ * Toutes les communes connues, dédoublonnées par code INSEE.
+ * @returns {Array<object>} Référentiel complet (15 communes).
+ */
+export function toutesCommunes() {
+  return [...COMMUNES_THAU, ...COMMUNES_SAM_COMPLEMENT];
+}
+
+/**
+ * Retrouve une commune par code INSEE.
+ * @param {string} insee - Code INSEE à 5 caractères.
+ * @returns {object|null} La commune, ou null.
+ */
+export function communeParInsee(insee) {
+  return toutesCommunes().find((c) => c.insee === insee) || null;
+}
