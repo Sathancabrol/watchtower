@@ -31,6 +31,11 @@ export const DISPLAY_OVERLAYS = Object.freeze([
   Object.freeze({ id: 'rail', label: '🚆 Rails & infrastructures ferroviaires', type: 'orm', alpha: 0.85 }),
   Object.freeze({ id: 'mer', label: '⚓ Balisage marin (OpenSeaMap)', type: 'seamap', alpha: 0.9 }),
   Object.freeze({ id: 'jour', label: '🛰 Photo satellite du JOUR (NASA)', type: 'gibs', alpha: 0.85 }),
+  // ——— Fonds IGN Géoplateforme : Licence Ouverte, sans clé (roadmap it. 21) ———
+  Object.freeze({ id: 'ign-plan', label: '🗺 Plan IGN (France)', type: 'ign-wmts', alpha: 1.0, couche: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2', format: 'image/png' }),
+  Object.freeze({ id: 'ign-ortho', label: '📸 Photo aérienne IGN (20 cm)', type: 'ign-wmts', alpha: 1.0, couche: 'ORTHOIMAGERY.ORTHOPHOTOS', format: 'image/jpeg' }),
+  Object.freeze({ id: 'ign-1950', label: '🕰 Photo aérienne 1950-65 (IGN)', type: 'ign-wmts', alpha: 1.0, couche: 'ORTHOIMAGERY.ORTHOPHOTOS.1950-1965', format: 'image/png' }),
+  Object.freeze({ id: 'ign-topo', label: '🧭 Carte topographique IGN', type: 'ign-wmts', alpha: 0.9, couche: 'GEOGRAPHICALGRIDSYSTEMS.MAPS', format: 'image/jpeg' }),
 ]);
 
 /** Dernier index RainViewer (timestamps des frames radar/satellite). */
@@ -70,6 +75,19 @@ async function buildProvider(type, option = {}) {
       url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
       maximumLevel: 18,
       credit: '© OpenSeaMap · données OSM',
+    });
+  }
+  if (type === 'ign-wmts') {
+    // Géoplateforme IGN : Licence Ouverte, sans clé depuis 2021. Une seule
+    // branche sert tous les fonds IGN — la couche vient de la définition.
+    return new Cesium.WebMapTileServiceImageryProvider({
+      url: 'https://data.geopf.fr/wmts',
+      layer: option?.couche || 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
+      style: 'normal',
+      format: option?.format || 'image/png',
+      tileMatrixSetID: 'PM',
+      maximumLevel: 19,
+      credit: 'IGN — Géoplateforme (data.geopf.fr) · Licence Ouverte',
     });
   }
   if (type === 'gibs') {

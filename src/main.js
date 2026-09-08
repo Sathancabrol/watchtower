@@ -16,6 +16,7 @@ import militaryInstallationsLayer from './data/militaryInstallations.js';
 import militaryAwarenessLayer from './data/militaryAwareness.js';
 import localDataLayers from './data/localLayers.js';
 import { LAYER_STATE_REGISTRY } from './data/layerState.js';
+import { deciderReprise, messageUtilisateur } from './data/reprisRendu.js';
 import { registerDataCredits } from './data/dataCredits.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
@@ -224,6 +225,36 @@ async function init() {
     // 2026-08-05 perf investigation as a strict halving of idle burn on
     // 120 Hz hardware; a no-op on 60 Hz displays. (perf item 2)
     viewer.targetFrameRate = 60;
+
+    // ——— Reprise après incident de rendu (roadmap it. 21 : « Cesium sature la
+    // carte graphique H24 ») ———
+    // Sans cela, la moindre perte de contexte WebGL — rechargement à chaud,
+    // veille de la machine, mémoire vidéo saturée, `maximumTextureSize` sur une
+    // carte modeste — arrête DÉFINITIVEMENT la boucle : le globe disparaît et
+    // l'utilisateur n'a plus qu'un message d'erreur. Ces incidents sont
+    // transitoires : on relance la boucle, avec une attente croissante et un
+    // plafond pour ne pas masquer une panne réelle.
+    {
+      let reprises = 0;
+      let dernierIncidentMs = null;
+      viewer.scene.renderError.addEventListener((_scene, erreur) => {
+        const maintenantMs = Date.now();
+        const decision = deciderReprise({ erreur, reprises, dernierIncidentMs, maintenantMs });
+        reprises = decision.reprises;
+        dernierIncidentMs = maintenantMs;
+        console.warn('[rendu]', messageUtilisateur(decision), erreur?.message || erreur);
+        if (!decision.reprendre) return;
+        window.setTimeout(() => {
+          try {
+            // useDefaultRenderLoop repasse à true : Cesium redémarre sa boucle.
+            viewer.useDefaultRenderLoop = true;
+            viewer.scene.requestRender();
+          } catch (echec) {
+            console.warn('[rendu] reprise impossible :', echec?.message || echec);
+          }
+        }, decision.delaiMs);
+      });
+    }
 
     // Register per-layer data attribution into the "Attribution des données" popover.
     // Required by each source's license (ODbL, CC BY-NC-SA, NASA FIRMS, etc.);
