@@ -136,7 +136,7 @@ const CSS = `
 }
 .wt-dock-panel .wt-dock-corps { overflow-y: auto; flex: 1; }
 .wt-dock-cache { display: none !important; }
-/* œil animé du bouton « ME LOCALISER » (logo de l'app) */
+/* œil animé du bouton « ME LOCALISER » (logo de l’app) */
 .wt-oeil { display: inline-block; animation: wt-oeil 3.4s ease-in-out infinite; }
 @keyframes wt-oeil {
   0%, 52%, 100% { transform: none; }
@@ -161,7 +161,7 @@ function ecrireEtat(etat) {
  * @param {object} opts
  * @param {Array} [opts.groupes] voir `GROUPES_DEFAUT`.
  * @param {Array} [opts.presets] voir `PRESETS_DEFAUT`.
- * @param {Array} opts.panneauxAncres panneaux fournis par l'app.
+ * @param {Array} opts.panneauxAncres panneaux fournis par l’app.
  * @param {Array} opts.panneauxExistants panneaux DOM existants basculés.
  */
 export function initMobiDock({

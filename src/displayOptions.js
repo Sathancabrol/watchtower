@@ -16,6 +16,7 @@
  */
 
 import * as Cesium from 'cesium';
+import { urlTuilesGibs } from './data/archives.js';
 
 const RAINVIEWER_INDEX = 'https://api.rainviewer.com/public/weather-maps.json';
 const RADAR_REFRESH_MS = 5 * 60_000;
@@ -41,7 +42,7 @@ async function rainviewerPaths() {
 }
 
 /** Construit le provider Cesium d'un calque. */
-async function buildProvider(type) {
+async function buildProvider(type, option = {}) {
   if (type === 'rv-radar' || type === 'rv-ir') {
     const { host, radar, ir } = await rainviewerPaths();
     const path = type === 'rv-radar' ? radar : ir;
@@ -72,13 +73,13 @@ async function buildProvider(type) {
     });
   }
   if (type === 'gibs') {
-    // image satellite MODIS de la veille (NASA GIBS, mondial, sans clé)
-    const d = new Date(Date.now() - 86400000);
-    const date = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    // Image satellite MODIS (NASA GIBS, mondial, sans clé). `option.date` permet
+    // de remonter jusqu'au 24/02/2000 : c'est le curseur temporel du globe.
+    const t = urlTuilesGibs(option?.date);
     return new Cesium.UrlTemplateImageryProvider({
-      url: `https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/${date}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
-      maximumLevel: 9,
-      credit: 'NASA GIBS · MODIS Terra (image de la veille)',
+      url: t.url,
+      maximumLevel: t.maximumLevel,
+      credit: t.credit,
     });
   }
   if (type === 'esri-hillshade') {
@@ -149,7 +150,7 @@ export function initDisplayOptions(viewer, container) {
     btn.disabled = true;
     btn.textContent = `${def.label} …`;
     try {
-      const provider = await buildProvider(def.type);
+      const provider = await buildProvider(def.type, def);
       const layer = viewer.imageryLayers.addImageryProvider(provider);
       layer.alpha = def.alpha;
       actifs.set(def.id, { layer, def });
@@ -180,7 +181,7 @@ export function initDisplayOptions(viewer, container) {
       const actif = actifs.get(id);
       if (!actif) continue;
       try {
-        const provider = await buildProvider(actif.def.type);
+        const provider = await buildProvider(actif.def.type, actif.def);
         const nouveau = viewer.imageryLayers.addImageryProvider(provider);
         nouveau.alpha = actif.def.alpha;
         viewer.imageryLayers.remove(actif.layer, true);

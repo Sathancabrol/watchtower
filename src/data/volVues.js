@@ -3,11 +3,11 @@
  *
  * Trois façons de regarder, une seule physique :
  *
- *  · **POV**  — caméra embarquée : elle regarde où va l'appareil ;
- *  · **VTOL** — l'appareil fait du SUR-PLACE et la caméra devient une NACELLE
+ *  · **POV**  — caméra embarquée : elle regarde où va l’appareil ;
+ *  · **VTOL** — l’appareil fait du SUR-PLACE et la caméra devient une NACELLE
  *    d'observation : lacet 360° continu, site borné, indépendante du cap ;
- *  · **TPS**  — 3ᵉ personne : la caméra recule derrière l'appareil (toujours
- *    dans l'axe de la nacelle) et l'appareil devient visible.
+ *  · **TPS**  — 3ᵉ personne : la caméra recule derrière l’appareil (toujours
+ *    dans l'axe de la nacelle) et l’appareil devient visible.
  *
  * Ce module ne connaît ni le DOM ni Cesium : il est donc testable, et les
  * limites (site, distance, arrondi des caps) sont définies une seule fois.

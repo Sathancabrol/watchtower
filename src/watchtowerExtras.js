@@ -284,9 +284,9 @@ export function initWatchtowerExtras({ viewer }) {
 
   /* ── AFFICHAGE : calques activables (pluie, nuages, relief, noms, cadastre) ── */
   const displayOptions = initDisplayOptions(viewer, el('calques'));
-  /* 🗂 TOUS LES CALQUES de l'application, rangés par familles, avec leur
+  /* 🗂 TOUS LES CALQUES de l’application, rangés par familles, avec leur
      niveau de compte (🟢 gratuit · 🔵 compte · 🔑 payant) — aucun n'est
-     bloqué : 🔑 fonctionne avec le repli gratuit de l'app. */
+     bloqué : 🔑 fonctionne avec le repli gratuit de l’app. */
   try {
     window.__godsEyeView.calques = initCalques(viewer, {
       conteneur: el('calques'),

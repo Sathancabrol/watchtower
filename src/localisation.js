@@ -352,7 +352,7 @@ export function initLocalisation(viewer, options = {}) {
   // ⚠ Un `attendre` qui ne résout pas quand on annule laisse `demarrer()`
   // suspendu pour de bon : le drapeau `__wtLocEnCours` restait à vrai et tout
   // nouveau clic sur « ME LOCALISER » ne faisait plus rien. On résout TOUJOURS
-  // (l'appelant teste `annule` juste après) et on force la résolution à
+  // (l’appelant teste `annule` juste après) et on force la résolution à
   // l'arrêt.
   const enAttente = new Set();
   const attendre = (ms) => new Promise((res) => {

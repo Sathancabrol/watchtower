@@ -301,7 +301,7 @@ export function initComptes(options = {}) {
         </div>
         <div class="note">Les clés sont stockées <b>uniquement dans ce navigateur</b>
         (localStorage) et ne sont envoyées qu'au service choisi. Rien ne part
-        chez nous : l'application n'a pas de serveur. 🟢 gratuit · 🔵 compte · 🟣 payant.</div>
+        chez nous : l’application n'a pas de serveur. 🟢 gratuit · 🔵 compte · 🟣 payant.</div>
       </form>
     </div>`;
   document.body.appendChild(el);

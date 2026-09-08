@@ -1,19 +1,19 @@
 /**
  * WATCHTOWER — CALQUES : LA LISTE COMPLÈTE.
  *
- * Demande : « dans CALQUES, mettre tous les calques disponibles dans l'app en
+ * Demande : « dans CALQUES, mettre tous les calques disponibles dans l’app en
  * fonction du style de compte pour rien bloqué ».
  *
  * Le panneau d'origine ne proposait que quatre ou cinq superpositions
- * météo. Ici : **tout** ce que l'application sait afficher, rangé par
+ * météo. Ici : **tout** ce que l’application sait afficher, rangé par
  * familles (RELIEF · BÂTI · DONNÉES · TRAFIC · AMBIANCE · MÉTÉO), avec :
  *
  *  · **un niveau par calque** — 🟢 gratuit (données ouvertes), 🔵 compte
  *    (une clé gratuite améliore), 🔑 payant (clé payante) ;
  *  · **rien n'est bloqué** : un calque 🔑/🔵 reste coché, il fonctionne avec
- *    le repli gratuit de l'app et s'annonce comme tel. Aucun calque n'est
+ *    le repli gratuit de l’app et s'annonce comme tel. Aucun calque n'est
  *    masqué à cause du compte ;
- *  · un état **lu dans l'application** (pas mémorisé à côté) : si la fonction
+ *  · un état **lu dans l’application** (pas mémorisé à côté) : si la fonction
  *    est déjà active, la case est cochée.
  *
  * Chaque calque sait : dire s'il est actif (`actif`) et se mettre dans l'état
@@ -32,7 +32,7 @@ export const NIVEAUX = {
 
 const g = () => (typeof window !== 'undefined' ? window.__godsEyeView || {} : {});
 
-/** Clique un bouton de l'app d'origine seulement si l'état demandé diffère. */
+/** Clique un bouton de l’app d'origine seulement si l'état demandé diffère. */
 function clique(sel, voulu) {
   const el = typeof sel === 'string' ? document.querySelector(sel) : sel;
   if (!el) return false;
@@ -357,7 +357,7 @@ export function initCalques(viewer, options = {}) {
   const niveaux = compterNiveaux();
   racine.insertAdjacentHTML('beforeend',
     `<div class="wc-aide">${niveaux.gratuit} 🟢 gratuit · ${niveaux.compte} 🔵 compte · ${niveaux.payant} 🔑 payant
-     — <b>aucun calque n'est bloqué</b> : 🔑 fonctionne avec le repli gratuit de l'app.</div>`);
+     — <b>aucun calque n'est bloqué</b> : 🔑 fonctionne avec le repli gratuit de l’app.</div>`);
   conteneur?.appendChild(racine);
 
   const boutons = new Map();
@@ -380,7 +380,7 @@ export function initCalques(viewer, options = {}) {
     b.addEventListener('click', () => {
       const voulu = !b.classList.contains('actif');
       try { c.mettre(voulu); } catch (e) { /* fonction absente : on ne casse rien */ }
-      window.setTimeout(peindre, 120); // l'app met parfois une frame à réagir
+      window.setTimeout(peindre, 120); // l’app met parfois une frame à réagir
       peindre();
       surMessage?.(`${c.icone} ${c.nom} → ${voulu ? 'activé' : 'désactivé'}`);
     });

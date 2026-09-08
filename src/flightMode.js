@@ -143,7 +143,7 @@ export function initFlightMode(viewer, options = {}) {
   document.head.appendChild(style);
 
   let vol = null;      // état du vol en cours ({ atterrir })
-  let avatar = null;   // entité Cesium de l'appareil (vue 3ᵉ personne)
+  let avatar = null;   // entité Cesium de l’appareil (vue 3ᵉ personne)
   let etatVol = null;  // télémétrie du vol en cours (pour les parcours)
   let departVol = null;// point de décollage (navette « retour à la base »)
 
@@ -209,7 +209,7 @@ export function initFlightMode(viewer, options = {}) {
 
   // ── 👁 VUES DE CAMÉRA : POV (embarquée) · VTOL (sur-place + nacelle 360°)
   // · TPS (3ᵉ personne, appareil visible). La NACELLE (gimbal) est une
-  // orientation de caméra INDÉPENDANTE du cap de l'appareil : en VTOL comme
+  // orientation de caméra INDÉPENDANTE du cap de l’appareil : en VTOL comme
   // en 3ᵉ personne on peut tourner le regard sur 360° sans bouger l'engin.
   const VUES = VUES_VOL;
   const CLE_VUE = 'watchtower.vol.vue.v1';
@@ -287,7 +287,7 @@ export function initFlightMode(viewer, options = {}) {
 
   /**
    * Applique une vue (POV / VTOL / 3ᵉ personne) — UNE SEULE fonction, pour que
-   * l'avatar de l'appareil suive TOUJOURS (boutons comme touche V). Avant, les
+   * l'avatar de l’appareil suive TOUJOURS (boutons comme touche V). Avant, les
    * boutons changeaient `modeVue` sans toucher à `avatar.show` : la 3ᵉ personne
    * semblait « ne pas marcher » (caméra reculée mais appareil invisible, ou
    * appareil collé à l'écran en POV).
@@ -364,7 +364,7 @@ export function initFlightMode(viewer, options = {}) {
     return Math.hypot(dx, dy);
   }
 
-  /** Le centre du parcours : le centre de la vue (ou la position de l'appareil en vol). */
+  /** Le centre du parcours : le centre de la vue (ou la position de l’appareil en vol). */
   function centreParcours() {
     if (etatVol && Number.isFinite(etatVol.lon)) return { lon: etatVol.lon, lat: etatVol.lat };
     const c = viewer.camera.positionCartographic;
@@ -498,7 +498,7 @@ export function initFlightMode(viewer, options = {}) {
     const opts = paramsActuels();
     let brut = [];
     if (preset === 'navette') {
-      // aller-retour : en vol, on relie l'appareil à son point de décollage ;
+      // aller-retour : en vol, on relie l’appareil à son point de décollage ;
       // au sol, on fait une navette nord-sud de la longueur demandée.
       const arrivee = departVol && (!etatVol || distanceVol(departVol, c) > 50)
         ? departVol
@@ -723,7 +723,7 @@ export function initFlightMode(viewer, options = {}) {
 
       // ── 🧭 NACELLE : en VTOL / 3ᵉ personne la caméra pivote sur 360° ──
       // C'est une tourelle d'observation : son orientation est INDÉPENDANTE du
-      // cap de l'appareil. Souris (glisser) ou flèches ←/→ + PAGE↑/↓.
+      // cap de l’appareil. Souris (glisser) ou flèches ←/→ + PAGE↑/↓.
       const vitNacelle = 1.6 * dt;
       if (modeVue !== 'pov') {
         if (touches.has('ArrowLeft')) gimbal.cap -= vitNacelle;
@@ -743,7 +743,7 @@ export function initFlightMode(viewer, options = {}) {
       if (touches.has('KeyC')) { gimbal.cap = 0; gimbal.tangage = 0; }
 
       if (vtol) {
-        // 🧭 VTOL : l'appareil tient son altitude, on translate doucement
+        // 🧭 VTOL : l’appareil tient son altitude, on translate doucement
         const montee = Math.max(1.2, B.montee * 0.55) * (boost > 1 ? 1.6 : 1);
         if (touches.has('ArrowUp')) etat.alt += montee * dt;
         if (touches.has('ArrowDown')) etat.alt -= montee * dt;
@@ -752,7 +752,7 @@ export function initFlightMode(viewer, options = {}) {
         if (touches.has('ArrowUp')) etat.vitesse = Math.min(B.vMax, etat.vitesse + accel * dt);
         if (touches.has('ArrowDown')) etat.vitesse = Math.max(B.peutStationner ? 0 : B.vMin, etat.vitesse - accel * dt);
       }
-      // garde-fou : sous la vitesse de décrochage, l'appareil perd de l'altitude
+      // garde-fou : sous la vitesse de décrochage, l’appareil perd de l'altitude
       const decroche = !vtol && !B.peutStationner && etat.vitesse < B.vMin * 0.95;
 
       if (vtol) {
@@ -831,7 +831,7 @@ export function initFlightMode(viewer, options = {}) {
       const capCam = oCam.cap;
       const pitchCam = oCam.tangage;
       if (modeVue === 'tps') {
-        // recul derrière l'appareil, dans l'axe de la nacelle
+        // recul derrière l’appareil, dans l'axe de la nacelle
         const c = cameraTroisiemePersonne(etat, { distance: TPS.distance, hauteur: TPS.hauteur });
         viewer.camera.setView({
           destination: Cesium.Cartesian3.fromDegrees(c.lon, c.lat, c.alt),
@@ -843,7 +843,7 @@ export function initFlightMode(viewer, options = {}) {
           orientation: { heading: capCam, pitch: pitchCam, roll: vtol ? 0 : (B.auSol || B.surEau ? 0 : etat.roulis) },
         });
       }
-      // avatar de l'appareil : visible en 3ᵉ personne
+      // avatar de l’appareil : visible en 3ᵉ personne
       if (avatar) {
         avatar.position = Cesium.Cartesian3.fromDegrees(etat.lon, etat.lat, etat.alt);
         if (avatar.billboard) avatar.billboard.rotation = -etat.cap;

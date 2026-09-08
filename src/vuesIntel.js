@@ -1,5 +1,5 @@
 /**
- * WATCHTOWER — VUES DE L'INTEL (le cœur « expert » de l'application).
+ * WATCHTOWER — VUES DE L'INTEL (le cœur « expert » de l’application).
  *
  * L'INTEL n'est plus un tableau de bord décoratif : c'est le poste de
  * l'utilisateur avancé. Chaque vue regarde le territoire par une LENTILLE
@@ -268,7 +268,7 @@ async function rendreEconomique(c, ctx) {
     <div class="v-sous">SOURCES</div>
     <div class="v-liens">${htmlSources(['entreprises', 'insee', 'pappers', 'bodacc'])}</div>
     <div class="v-note">Les comptes annuels certifiés (CA, résultat) demandent un jeton
-    <b>Pappers</b> ou <b>API Entreprise</b> : sans jeton, l'app affiche l'identité et
+    <b>Pappers</b> ou <b>API Entreprise</b> : sans jeton, l’app affiche l'identité et
     l'activité — et renvoie vers la source officielle pour les chiffres.</div>`;
 }
 

@@ -3,7 +3,7 @@
  *
  * Nouveau MODE D'AFFICHAGE : à la place de la carte, on entre dans une pièce
  * — un mobile-home fixe, papier peint jauni, lit défait, bureau encombré.
- * C'est l'équivalent « physique » de l'application : chaque outil devient un
+ * C'est l'équivalent « physique » de l’application : chaque outil devient un
  * objet posé dans la pièce, chaque dossier devient une carte épinglée au mur.
  * (Hommage assumé à la salle des scénaristes d'Alan Wake 2 — sans en copier
  * un seul pixel : tout est dessiné en CSS/SVG, aucune image, aucun modèle 3D.)
@@ -14,7 +14,7 @@
  *    cartes analogiques — photo aérienne, mugshot, polaroïd, plan, planche
  *    contact — qu'on OUvre pour descendre jusqu'au plus petit élément, avec
  *    une recherche qui affine en direct ;
- *  · le BUREAU : les outils de l'app incarnés — carte papier épinglée (vue
+ *  · le BUREAU : les outils de l’app incarnés — carte papier épinglée (vue
  *    principale), drone bas de gamme (pilotage), téléphone satellite (chat +
  *    IA locale), calendrier relié (planning/budget), radio, moniteur
  *    (caméras), lampe (ambiance), chemise cartonnée (dossiers) ;
@@ -325,7 +325,7 @@ body.wt-rideaux-ouverts #wt-palais { box-shadow: inset 0 -40px 90px rgba(120,160
 #wt-palais .barre .t { opacity: .6; }
 `;
 
-/** Objets posés sur le bureau (outils de l'app incarnés). */
+/** Objets posés sur le bureau (outils de l’app incarnés). */
 export const OBJETS = Object.freeze([
   { id: 'carte', nom: 'Carte papier épinglée', aide: 'la vue principale, en version papier', gauche: '4%', taille: 96 },
   { id: 'drone', nom: 'Drone bas de gamme', aide: 'mode pilotage / parcours de vol', gauche: '22%', taille: 84 },
@@ -611,7 +611,7 @@ export function initPalais(options = {}) {
       return api;
     },
     /**
-     * Incarne un module de l'application dans un objet du bureau : l'élément
+     * Incarne un module de l’application dans un objet du bureau : l'élément
      * s'affiche dans une fenêtre posée sur la scène (le téléphone = le chat,
      * le moniteur = les caméras, le calendrier = le planning…). En fermant la
      * fenêtre, l'élément retourne EXACTEMENT où il était (dock, panneau…).

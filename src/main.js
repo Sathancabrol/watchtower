@@ -140,7 +140,7 @@ function describeError(error) {
 /* ⚠ Garde-fous posés après le bug de l'itération 10 : deux fonctions
    `rendreListe` dans le même scope — la seconde écrasait la première et
    touchait une `const` encore en zone morte temporelle. Une seule exception
-   privait alors l'application du lanceur, du poste, d'INTEL et de dix autres
+   privait alors l’application du lanceur, du poste, d'INTEL et de dix autres
    modules d'un coup. `proteger` isole désormais chaque module ; `elDe`
    récupère un élément sans jamais jeter si le module parent est absent. */
 function proteger(nom, fn) {
@@ -200,7 +200,7 @@ async function init() {
       // subtly via #cesium-credits). The credit line stays visible in
       // clean-view AND recording modes too (ToS requires attribution while the
       // content is displayed — those are the exact modes used to record
-      // demos), including the "Data attribution" link that opens the per-layer
+      // demos), including the "Attribution des données" link that opens the per-layer
       // license popover.
       creditContainer: (() => {
         const el = document.createElement('div');
@@ -225,7 +225,7 @@ async function init() {
     // 120 Hz hardware; a no-op on 60 Hz displays. (perf item 2)
     viewer.targetFrameRate = 60;
 
-    // Register per-layer data attribution into the "Data attribution" popover.
+    // Register per-layer data attribution into the "Attribution des données" popover.
     // Required by each source's license (ODbL, CC BY-NC-SA, NASA FIRMS, etc.);
     // strings are verbatim from DATA_SOURCES.md. Static + always-present in the
     // expandable bottom-left credit lightbox (showOnScreen=false), so they never
@@ -463,7 +463,7 @@ async function init() {
     // Boussole FPS (ruban de cap : glisser = tourner, double-clic = nord).
     try {
       window.__godsEyeView.boussole = initCompassTape(viewer);
-      // 🎨 PEAU NÉON : les contours et ascenseurs blancs de l'app d'origine
+      // 🎨 PEAU NÉON : les contours et ascenseurs blancs de l’app d'origine
       // passent au cyan WATCHTOWER (désactivable dans AFFICHAGE → F2).
       window.__godsEyeView.theme = initTheme();
     } catch (e) { console.error('[watchtower] boussole:', e); }
@@ -724,7 +724,7 @@ async function init() {
       window.__godsEyeView.streetView = streetView;
 
       // 🖼 IDENTIFIER UN LIEU : photo → coordonnées GPS EXIF (+ bouton dock
-      // juste à côté de MOI, et glisser-déposer n'importe où sur l'app).
+      // juste à côté de MOI, et glisser-déposer n'importe où sur l’app).
       const photoSearch = initPhotoSearch(viewer, {
         fiche: (lat, lon, nom) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom),
         poserEpingle: (o) => {
@@ -825,7 +825,7 @@ async function init() {
       });
 
       // 🧠 PALAIS MENTAL : à la place de la carte, une chambre de motel des
-      // années 70. Les outils de l'app sont des objets posés sur le bureau et
+      // années 70. Les outils de l’app sont des objets posés sur le bureau et
       // les dossiers sont épinglés au mur — on descend jusqu'au plus petit
       // élément, avec une recherche qui affine en direct.
       const palais = initPalais({
@@ -890,7 +890,7 @@ async function init() {
       });
       window.__godsEyeView.palais = palais;
 
-      /** Alimente le mur du palais avec les données VIVANTES de l'app. */
+      /** Alimente le mur du palais avec les données VIVANTES de l’app. */
       function nourrirPalais() {
         const dossiers = [];
         try {

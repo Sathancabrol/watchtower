@@ -13,7 +13,7 @@
  *    sombre + un liseré lumineux ;
  *  · les fonds sont légèrement assombris pour que le texte reste lisible.
  *
- * Rien n'est supprimé : la peau ne touche qu'à l'apparence, et se retire
+ * Rien n'est supprimé : la peau ne touche qu'à l’apparence, et se retire
  * d'un coup (`appliquer(false)`).
  */
 

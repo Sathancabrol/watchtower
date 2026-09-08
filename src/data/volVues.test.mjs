@@ -37,7 +37,7 @@ test('en POV la nacelle n’altère pas l’orientation', () => {
 });
 
 test('la nacelle s’ajoute au cap de l’appareil et tourne sur 360°', () => {
-  // demi-tour de nacelle : on regarde derrière sans que l'appareil ne pivote
+  // demi-tour de nacelle : on regarde derrière sans que l’appareil ne pivote
   const o = orientationCamera({ cap: 0.4, tangage: 0 }, { cap: Math.PI, tangage: 0 });
   assert.ok(proche(o.cap, 0.4 + Math.PI));
   // un tour complet revient au point de départ

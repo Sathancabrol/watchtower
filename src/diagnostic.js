@@ -1,7 +1,7 @@
 /**
  * WATCHTOWER — DIAGNOSTIC DE DÉMARRAGE.
  *
- * Pourquoi ce module : l'application est assemblée à la main dans
+ * Pourquoi ce module : l’application est assemblée à la main dans
  * `main.js` (une trentaine de modules initialisés à la suite). Quand une
  * pièce manque à l'écran, il est impossible de savoir **où** la chaîne s'est
  * rompue sans regarder la console du navigateur — et l'utilisateur n'a pas
@@ -154,7 +154,7 @@ export function rapport() {
 
 /**
  * Remet TOUT à l'écran : neutralise les cinq mécanismes de masquage,
- * déplie les panneaux de l'app, libère le bandeau live, remontre le
+ * déplie les panneaux de l’app, libère le bandeau live, remontre le
  * lanceur et ses catégories, et vide les masques mémorisés.
  * @returns {string[]} la liste des actions effectuées (traçabilité)
  */
@@ -197,7 +197,7 @@ export function toutReafficher() {
   window.__godsEyeView?.hudCentral?.reveler?.();
   fait.push('masques AFFICHAGE levés');
 
-  // panneaux de l'app d'origine repliés
+  // panneaux de l’app d'origine repliés
   for (const n of document.querySelectorAll('.panel-collapsible.collapsed')) n.classList.remove('collapsed');
   fait.push('panneaux dépliés');
 

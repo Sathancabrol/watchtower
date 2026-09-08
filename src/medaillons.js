@@ -17,7 +17,7 @@
  *    ⬆ MONTER · ⬇ DESCENDRE · 📄 FICHE · 🎯 RECENTRER.
  *
  * Rien n'est bloqué : sans réseau, la hiérarchie reste vide et les
- * médaillons n'apparaissent pas — l'appli continue normalement.
+ * médaillons n'apparaissent pas — l’appli continue normalement.
  */
 
 import * as Cesium from 'cesium';
@@ -225,7 +225,7 @@ export function initMedaillons(viewer, options = {}) {
   }
 
   /**
-   * Repli SANS RÉSEAU : l'application affiche déjà pays / région /
+   * Repli SANS RÉSEAU : l’application affiche déjà pays / région /
    * département / ville dans le panneau WATCHTOWER · FR. On les lit plutôt
    * que d'afficher rien du tout quand Nominatim est muet (traceabilité : la
    * source est notée).

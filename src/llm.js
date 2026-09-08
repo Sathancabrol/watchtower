@@ -15,7 +15,7 @@
  *
  * Rien n'est inventé : sans réponse de l'IA, on le dit et on propose la
  * commande locale qui va bien. Le prompt système décrit les capacités réelles
- * de l'application pour éviter les hallucinations.
+ * de l’application pour éviter les hallucinations.
  *
  * Les fonctions de construction d'URL/messages sont pures et testées.
  */
@@ -37,7 +37,7 @@ export const MODELES_CONNUS = Object.freeze([
 export const SYSTEME = `Tu es l'assistant de WATCHTOWER, une application de cartographie
 et d'analyse de terrain (Cesium + OpenStreetMap).
 
-Capacités réelles de l'application :
+Capacités réelles de l’application :
 - voler vers un lieu (géocodage BAN/Photon), vue orbitale, recadrage au nord ;
 - météo (Open-Meteo), risques (Géorisques), entreprises (recherche-entreprises) ;
 - entités de la carte (OpenStreetMap/Overpass), cadrans d'une commune, cadastre ;

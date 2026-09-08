@@ -6,7 +6,7 @@
  * n'échoue pas en silence : une boîte de dialogue explique ce qu'il faut,
  * propose « OBTENIR MA CLÉ ↗ » (connexion avec son compte Google / Cesium sur
  * le site du fournisseur) et un champ pour coller la clé. À l'activation, la
- * clé est mémorisée et l'app redémarre directement en mode payant.
+ * clé est mémorisée et l’app redémarre directement en mode payant.
  */
 
 import { isPlausibleKey } from './startGate.js';
@@ -126,7 +126,7 @@ export function ouvrirDialoguePayant(besoin) {
 
 /**
  * Installe l'interception des clics payants (MODE GRATUIT uniquement).
- * Capture les clics sur les chips de fond de carte payants avant l'app.
+ * Capture les clics sur les chips de fond de carte payants avant l’app.
  */
 export function initPaywallGate({ mode }) {
   if (mode === 'paid') return;

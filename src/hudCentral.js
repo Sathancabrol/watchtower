@@ -237,7 +237,7 @@ export function initHudCentral(options = {}) {
 
   /**
    * Applique les cases à cocher.
-   * @param {boolean} [deplier] déplie aussi les panneaux repliés de l'app
+   * @param {boolean} [deplier] déplie aussi les panneaux repliés de l’app
    *   d'origine (`panel-collapsible collapsed`) — utile pour « tout afficher »,
    *   jamais pour une case cochée une par une (l'utilisateur reste maître).
    */
@@ -370,7 +370,7 @@ export function initHudCentral(options = {}) {
       n.style.animationDelay = `${Math.min(i, 14) * 45}ms`;
       n.classList.add('wt-hud-revele');
       // une animation avec `fill: both` continue d'écraser les règles
-      // `!important` de l'app (vue propre…). On la retire dès la fin.
+      // `!important` de l’app (vue propre…). On la retire dès la fin.
       setTimeout(() => {
         n.classList.remove('wt-hud-revele');
         n.style.animationDelay = '';

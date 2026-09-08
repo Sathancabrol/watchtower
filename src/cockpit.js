@@ -11,7 +11,7 @@
  *   · **bandeau bas** : gaz (poussée), vario, facteur de charge, distance,
  *     chrono, masse ;
  *   · **tiroir SYSTÈMES** à gauche : rouvre n'importe quelle fenêtre de
- *     l'application sans quitter le vol — aucune fonction n'est perdue,
+ *     l’application sans quitter le vol — aucune fonction n'est perdue,
  *     elles sont juste rangées.
  *
  * Le reste de l'interface (panneau HQ, INTEL, fiche, épingles…) est masqué
@@ -203,7 +203,7 @@ export function dessinerHorizon(ctx, { largeur, hauteur, roulis = 0, tangage = 0
   ctx.stroke();
   ctx.restore();
 
-  // cap sous l'horizon
+  // cap sous l’horizon
   ctx.save();
   ctx.fillStyle = 'rgba(216,255,226,0.9)';
   ctx.font = 'bold 10px monospace';

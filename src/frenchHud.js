@@ -32,7 +32,7 @@ const DICO = {
   'ESC to dismiss': 'ÉCHAP pour fermer', 'Begin with a clean globe': 'Commencer avec un globe vierge',
   'Choose your first view': 'Choisis ta première vue', 'Power up the globe': 'Allumer le globe',
   'Clean UI': 'UI épurée', 'Density': 'Densité', 'Layout': 'Disposition', 'Style': 'Style',
-  'Minimal': 'Minimal', 'Radio off': 'Radio coupée', 'Operator': 'Opérateur',
+  'Minimal': 'Minimal', 'Radio éteinte': 'Radio coupée', 'Operator': 'Opérateur',
   'Models': 'Modèles', 'Proximity': 'Proximité', 'Outside': 'Extérieur', 'Fade': 'Fondu',
   'Feather': 'Adoucir', 'Snow': 'Neige', 'Allocation': 'Répartition',
 };

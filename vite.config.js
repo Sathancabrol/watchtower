@@ -1655,6 +1655,129 @@ export function launchLibraryRequestHeaders(token = process.env.LL2_API_TOKEN) {
 }
 
 /** Proxy the public Launch Library 2 recent-launch feed server-side. */
+/**
+ * Vigicrues proxy — official French flood vigilance (SCHAPI).
+ * Keyless, open licence. Cached in-memory: the upstream refreshes ~every 10 min.
+ */
+function vigicruesProxy() {
+  const TTL_MS = 300_000;
+  const MAX_BYTES = 4 * 1024 * 1024;
+  const UPSTREAM = 'https://www.vigicrues.gouv.fr/services/v1/InfoVigiCru.jsonld/?TypEntVigiCru=TronconVigiCru';
+  let cache = null;
+  let inFlight = null;
+
+  async function fetchUpstream() {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 12_000);
+    try {
+      const r = await fetch(UPSTREAM, {
+        signal: ctl.signal,
+        headers: { Accept: 'application/ld+json, application/json', 'User-Agent': 'watchtower/0.1 (+local)' },
+      });
+      if (!r.ok) throw new Error(`upstream ${r.status}`);
+      const text = await r.text();
+      if (text.length > MAX_BYTES) throw new Error('response too large');
+      JSON.parse(text);
+      return text;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  return {
+    name: 'gev-vigicrues',
+    configureServer(server) {
+      server.middlewares.use('/api/vigicrues', async (req, res) => {
+        const send = (status, body, state) => {
+          res.writeHead(status, {
+            'Content-Type': 'application/json',
+            'Cache-Control': status === 200 ? 'public, max-age=300' : 'no-store',
+            'X-GEV-Cache': state,
+          });
+          res.end(body);
+        };
+        const fresh = cache && Date.now() - cache.at < TTL_MS;
+        if (fresh) return send(200, cache.body, 'hit');
+        try {
+          inFlight = inFlight || fetchUpstream().finally(() => { inFlight = null; });
+          const body = await inFlight;
+          cache = { at: Date.now(), body };
+          return send(200, body, 'miss');
+        } catch (error) {
+          // Serve stale rather than dropping the layer — the flood picture
+          // changes slowly and an old reading beats a blank panel.
+          if (cache) return send(200, cache.body, 'stale');
+          return send(502, JSON.stringify({ error: 'Vigicrues indisponible', detail: String(error?.message || error) }), 'error');
+        }
+      });
+    },
+  };
+}
+
+/**
+ * Wayback proxy — Internet Archive availability lookup (keyless, open).
+ * Lets the app ask "what did this page look like back then?" without CORS pain.
+ */
+function waybackProxy() {
+  const TTL_MS = 3_600_000;
+  const MAX_ENTRIES = 200;
+  const cache = new Map();
+
+  return {
+    name: 'gev-wayback',
+    configureServer(server) {
+      server.middlewares.use('/api/wayback', async (req, res) => {
+        const send = (status, body, state) => {
+          res.writeHead(status, {
+            'Content-Type': 'application/json',
+            'Cache-Control': status === 200 ? 'public, max-age=3600' : 'no-store',
+            'X-GEV-Cache': state,
+          });
+          res.end(typeof body === 'string' ? body : JSON.stringify(body));
+        };
+        let target;
+        try {
+          target = new URL(req.url, 'http://localhost');
+        } catch {
+          return send(400, { error: 'Requête illisible' }, 'error');
+        }
+        const cible = String(target.searchParams.get('url') || '').trim();
+        const quand = String(target.searchParams.get('date') || '').trim();
+        // Only absolute http(s) targets: never let this proxy reach a local address.
+        if (!/^https?:\/\//i.test(cible)) {
+          return send(400, { error: 'Paramètre url manquant ou invalide' }, 'error');
+        }
+        const cle = `${cible}|${quand}`;
+        const hit = cache.get(cle);
+        if (hit && Date.now() - hit.at < TTL_MS) return send(200, hit.body, 'hit');
+
+        const params = new URLSearchParams({ url: cible });
+        if (/^\d{4}-\d{2}-\d{2}$/.test(quand)) params.set('timestamp', quand.replace(/-/g, ''));
+        const ctl = new AbortController();
+        const timer = setTimeout(() => ctl.abort(), 12_000);
+        try {
+          const r = await fetch(`https://archive.org/wayback/available?${params.toString()}`, {
+            signal: ctl.signal,
+            headers: { Accept: 'application/json', 'User-Agent': 'watchtower/0.1 (+local)' },
+          });
+          if (!r.ok) throw new Error(`upstream ${r.status}`);
+          const body = await r.text();
+          if (body.length > 512 * 1024) throw new Error('response too large');
+          JSON.parse(body);
+          if (cache.size >= MAX_ENTRIES) cache.delete(cache.keys().next().value);
+          cache.set(cle, { at: Date.now(), body });
+          return send(200, body, 'miss');
+        } catch (error) {
+          if (hit) return send(200, hit.body, 'stale');
+          return send(502, { error: 'Archive indisponible', detail: String(error?.message || error) }, 'error');
+        } finally {
+          clearTimeout(timer);
+        }
+      });
+    },
+  };
+}
+
 function rocketLaunchesProxy() {
   const ttlMs = LL2_CACHE_TTL_MS;
   const maxResponseBytes = 12 * 1024 * 1024;
@@ -7766,6 +7889,8 @@ export default defineConfig(({ mode }) => {
       tomtomProxy(),
       firmsProxy(),
       rocketLaunchesProxy(),
+      vigicruesProxy(),
+      waybackProxy(),
       terrainHeightsProxy(),
       adsbdbProxy(),
       overpassProxy(),

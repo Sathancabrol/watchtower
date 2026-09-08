@@ -12,7 +12,7 @@
  *      écrasait la première pour tous les appels, et elle touchait
  *      `elListeParcours` — une `const` déclarée plus bas, donc en zone morte
  *      temporelle (TDZ). Une seule exception au démarrage privait alors
- *      l'application du lanceur, du poste, d'INTEL et de dix autres modules.
+ *      l’application du lanceur, du poste, d'INTEL et de dix autres modules.
  *
  *   2. **Un `display: none !important` posé en ligne.** Un style inline
  *      `!important` écrase toutes les feuilles de style : c'est ainsi que le

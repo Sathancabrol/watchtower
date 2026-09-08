@@ -115,7 +115,7 @@ export function initVuesTerritoire(viewer, deps = {}) {
   let animationEnCours = null;
   // 🐛 BUG CORRIGÉ : les couches AR / contour restaient vivantes quand on
   // changeait de vue — les icônes continuaient de flotter (CallbackProperty) et
-  // le rendu CONTINU n'était jamais relâché : l'application ne redevenait
+  // le rendu CONTINU n'était jamais relâché : l’application ne redevenait
   // jamais idle (« animation de scan en continu », ventilateur qui tourne).
   // `generationContour` invalide un tracé devenu obsolète, et `AR_FLOTTEMENT_MS`
   // borne la durée du flottement : ensuite les icônes se posent et on relâche.

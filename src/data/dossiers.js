@@ -7,7 +7,7 @@
  * petit élément**. Une recherche filtre l'arbre en direct.
  *
  * Ce module est **pur** : il normalise n'importe quel objet vivant de
- * l'application (un chantier, une analyse de commune, la liste des entités…)
+ * l’application (un chantier, une analyse de commune, la liste des entités…)
  * en arbre de cartes, et sait le filtrer / l'aplatir. Aucun DOM, aucun Cesium.
  */
 
@@ -124,7 +124,7 @@ export function typeSelonNom(nom = '') {
 }
 
 /**
- * Convertit un OBJET VIVANT de l'application en arbre de cartes.
+ * Convertit un OBJET VIVANT de l’application en arbre de cartes.
  * Les tableaux/objets deviennent des branches, les valeurs simples des fiches.
  * C'est ce qui permet d'ouvrir n'importe quoi (un chantier, une analyse…) sur
  * le tableau du palais et de descendre jusqu'au plus petit élément.

@@ -10,7 +10,7 @@
  *     d'ancrage T0 de la fonction « ME LOCALISER ».
  *
  * Accessible de deux façons : bouton 🖼 dans l'interface de base (à côté de
- * MOI) et glisser-déposer une photo n'importe où sur l'application.
+ * MOI) et glisser-déposer une photo n'importe où sur l’application.
  */
 
 import * as Cesium from 'cesium';

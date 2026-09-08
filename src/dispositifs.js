@@ -156,7 +156,7 @@ export function enregistrerFlux(flux, stockage = null) {
   return l;
 }
 
-/** Devine la nature d'un flux depuis son URL. */
+/** Devine la nature d’un flux depuis son URL. */
 export function natureFlux(url = '') {
   const u = String(url || '').toLowerCase();
   if (!u) return 'aucun';

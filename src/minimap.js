@@ -14,6 +14,7 @@
  */
 
 import * as Cesium from 'cesium';
+import { extraireTrame } from './data/matrixTrame.js';
 import { rendreDeplacable } from './draggable.js';
 import {
   canvasVersLonLat,
@@ -58,6 +59,8 @@ const TEINTE_MATRIX = 'grayscale(1) brightness(0.55) sepia(1) hue-rotate(62deg) 
 const CSS = `
 #wt-minimap {
   position: fixed; left: 12px; bottom: 88px; z-index: 948; width: ${LARGEUR + 2}px;
+  /* A4 : le cadre épouse le disque de la carte au lieu d'un rectangle. */
+  background: transparent; border: 0; box-shadow: none;
   font-family: var(--font-mono, monospace);
   background: rgba(6,10,16,0.94); border: 1px solid rgba(0,212,255,0.4);
   border-radius: 10px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.5);
@@ -88,6 +91,22 @@ const CSS = `
   height: 42px; overflow: visible;
 }
 #wt-minimap .wt-mm-boussole:empty { display: none; height: 0; padding: 0; }
+/* A3 : les réglages vivent dans un pop-up, la barre ne porte qu'un bouton. */
+#wt-minimap .wt-mm-menu {
+  position: absolute; right: 6px; top: 26px; z-index: 5;
+  display: flex; flex-direction: column; gap: 2px; padding: 5px;
+  background: rgba(6,10,16,0.97); border: 1px solid rgba(0,212,255,0.35);
+  border-radius: 9px; box-shadow: 0 8px 26px rgba(0,0,0,0.6); min-width: 176px;
+}
+#wt-minimap .wt-mm-menu[hidden] { display: none; }
+#wt-minimap .wt-mm-menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 6px 8px; text-align: left; border-radius: 6px;
+  background: transparent; border: 0; color: #cfe9f5;
+  font-family: inherit; font-size: 11px; cursor: pointer;
+}
+#wt-minimap .wt-mm-menu button:hover { background: rgba(0,212,255,0.16); }
+#wt-minimap .wt-mm-menu button.actif { color: #00d4ff; background: rgba(0,212,255,0.10); }
 #wt-minimap .wt-mm-boussole #wt-boussole {
   position: static !important; transform: none !important;
   filter: drop-shadow(0 0 6px rgba(0,212,255,0.35));
@@ -161,13 +180,16 @@ export function initMinimap(viewer) {
   div.innerHTML = `
     <div class="wt-mm-titre"><span>🗺 MINICARTE</span>
       <span style="margin-left:auto;display:flex;gap:4px">
-        <button type="button" data-a="suivre" class="actif" title="Suivre la vue principale">🔒</button>
-        <button type="button" data-a="fond" title="Changer le fond de carte">🛰</button>
-        <button type="button" data-a="filtre" title="Filtre d’affichage (nuit, infra, sépia…)">🎨</button>
-        <button type="button" data-a="matrix" title="▚ MATRIX : la couche OpenStreetMap sur le satellite, en vert néon">▚</button>
-        <button type="button" data-a="puce" title="Replier en puce">▣</button>
-        <button type="button" data-a="fermer" title="Fermer (revenir via la puce 🗺)">✕</button>
+        <button type="button" data-a="reglages" title="Réglages de la minicarte" aria-haspopup="menu" aria-expanded="false">⚙</button>
       </span>
+    </div>
+    <div class="wt-mm-menu" role="menu" hidden>
+      <button type="button" data-a="suivre" class="actif" role="menuitem">🔒 <span>Suivre la vue</span></button>
+      <button type="button" data-a="fond" role="menuitem">🛰 <span>Fond de carte</span></button>
+      <button type="button" data-a="filtre" role="menuitem">🎨 <span>Filtre d’affichage</span></button>
+      <button type="button" data-a="matrix" role="menuitem">▚ <span>MATRIX (bâti + cadastre)</span></button>
+      <button type="button" data-a="puce" role="menuitem">▣ <span>Replier en puce</span></button>
+      <button type="button" data-a="fermer" role="menuitem">✕ <span>Fermer</span></button>
     </div>
     <div class="wt-mm-boussole"></div>
     <div class="wt-mm-vid"></div>
@@ -251,7 +273,7 @@ export function initMinimap(viewer) {
    * Emprise au sol de la vue PRINCIPALE (les 4 coins de l'écran projetés sur
    * l'ellipsoïde). Rend la minicarte lisible comme un vrai plan 2D à
    * l'échelle : on voit exactement ce que la caméra couvre.
-   * @returns {Array<{lon:number,lat:number}>|null} null si l'horizon est dans
+   * @returns {Array<{lon:number,lat:number}>|null} null si l’horizon est dans
    * le champ (les coins hauts ne touchent pas le globe).
    */
   function empreintePrincipale() {
@@ -303,6 +325,40 @@ export function initMinimap(viewer) {
     const grille = tuilesVisibles({
       lon: centre.lon, lat: centre.lat, mpp, largeur: LARGEUR, hauteur: HAUTEUR, z,
     });
+    /**
+     * Peint une couche en ne conservant que ses TRAITS (bâti, parcellaire,
+     * voirie) : les aplats clairs de la tuile OSM deviennent transparents.
+     * C'est ce qui distingue MATRIX d'un filtre de vision nocturne — la photo
+     * satellite reste visible en dessous, seul le dessin passe en vert.
+     * @param {number} src - Index de source de tuiles.
+     * @param {string} css - Filtre CSS de teinte.
+     * @param {number} alpha - Opacité de la trame.
+     */
+    const peindreTrame = (src, css, alpha) => {
+      for (const t of grille) {
+        const img = tuile(t.x, t.y, z, src);
+        if (!img.complete || img.naturalWidth <= 0) continue;
+        const taille = Math.max(1, Math.round(t.taille));
+        let tampon;
+        try {
+          tampon = document.createElement('canvas');
+          tampon.width = taille;
+          tampon.height = taille;
+          const tctx = tampon.getContext('2d', { willReadFrequently: true });
+          if (!tctx) continue;
+          tctx.drawImage(img, 0, 0, taille, taille);
+          const px = tctx.getImageData(0, 0, taille, taille);
+          // OSM dessine des traits sombres sur fond clair : on garde le sombre.
+          extraireTrame(px.data);
+          tctx.putImageData(px, 0, 0);
+        } catch { continue; } // tuile d'une autre origine : on saute, sans casser le rendu
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        if (filtrable && css && css !== 'none') ctx.filter = css;
+        try { ctx.drawImage(tampon, t.dx, t.dy, t.taille, t.taille); } catch { /* image morte */ }
+        ctx.restore();
+      }
+    };
     const peindre = (src, css, alpha) => {
       ctx.save();
       if (alpha < 1) ctx.globalAlpha = alpha;
@@ -318,10 +374,11 @@ export function initMinimap(viewer) {
     // 1) le fond : le satellite en MATRIX (l'OSM vient se poser dessus),
     //    sinon la source choisie avec son filtre.
     peindre(matrice ? ID_SATELLITE : source, mode.css, 1);
-    // 2) ▚ MATRIX : la couche OpenStreetMap PROJETÉE sur le satellite, en
-    //    vert néon — on lit la voirie et les noms par-dessus la photo.
+    // 2) ▚ MATRIX : le vert néon ne touche QUE le bâti et le cadastre.
+    //    La photo satellite reste en couleurs réelles dessous : on veut lire
+    //    le parcellaire, pas repeindre la vue en vision nocturne.
     if (matrice) {
-      peindre(ID_OSM, TEINTE_MATRIX, 0.78);
+      peindreTrame(ID_OSM, TEINTE_MATRIX, 0.9);
       // grille + balayage, pour l'ambiance « affichage de casque »
       ctx.save();
       ctx.strokeStyle = 'rgba(125,255,74,0.13)';
@@ -561,6 +618,31 @@ export function initMinimap(viewer) {
     dessiner();
   };
   div.querySelector('[data-a="filtre"]').addEventListener('click', () => appliquerFiltre(filtre + 1));
+  // ⚙ A3 : le bouton unique ouvre/ferme le pop-up des réglages.
+  const menu = div.querySelector('.wt-mm-menu');
+  const btnReglages = div.querySelector('[data-a="reglages"]');
+  /**
+   * Ouvre ou ferme le menu des réglages.
+   * @param {boolean} [ouvrir] - Force l'état ; sinon bascule.
+   */
+  const basculerMenu = (ouvrir) => {
+    const cible = ouvrir === undefined ? menu.hidden : ouvrir;
+    menu.hidden = !cible;
+    btnReglages.setAttribute('aria-expanded', String(cible));
+    btnReglages.classList.toggle('actif', cible);
+  };
+  btnReglages.addEventListener('click', (e) => { e.stopPropagation(); basculerMenu(); });
+  // Un clic hors du menu le referme — sans quoi il resterait ouvert sur la carte.
+  document.addEventListener('click', (e) => {
+    if (!menu.hidden && !menu.contains(e.target) && e.target !== btnReglages) basculerMenu(false);
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) basculerMenu(false); });
+  // Les actions terminales referment le menu ; les bascules le laissent ouvert
+  // pour enchaîner plusieurs réglages.
+  for (const b of menu.querySelectorAll('[data-a="puce"], [data-a="fermer"]')) {
+    b.addEventListener('click', () => basculerMenu(false));
+  }
+
   // ▚ un seul clic : MATRIX (OSM vert néon sur le satellite), re-clic = retour
   div.querySelector('[data-a="matrix"]').addEventListener('click', () => appliquerFiltre(filtre === ID_MATRIX ? 0 : ID_MATRIX));
   const replier = () => { div.style.display = 'none'; puce.style.display = 'flex'; };

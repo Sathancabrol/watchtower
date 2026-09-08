@@ -1,7 +1,7 @@
 /**
  * WATCHTOWER — FENÊTRES : déplacer, redimensionner, changer de forme.
  *
- * Toutes les fenêtres flottantes de l'app peuvent être :
+ * Toutes les fenêtres flottantes de l’app peuvent être :
  *  · DÉPLACÉES (poignée = barre de titre — reprend `rendreDeplacable`) ;
  *  · REDIMENSIONNÉES (poignée native en bas à droite, `resize: both`) ;
  *  · MISES EN FORME (⚙ : normale → compacte → large → bandeau → pilule) ;
@@ -259,7 +259,7 @@ export function amenagerFenetres(cibles = []) {
 }
 
 /**
- * Aménage « tout ce qui flotte » : fenêtres connues de l'application.
+ * Aménage « tout ce qui flotte » : fenêtres connues de l’application.
  * Ignore les fenêtres absentes et ne réaménage jamais deux fois la même
  * (marqueur `data-wt-fen`).
  *
@@ -280,7 +280,7 @@ export function amenagerToutes(cibles = FENETRES_APP) {
   return n;
 }
 
-/** Fenêtres flottantes de l'application (barre de titre = poignée). */
+/** Fenêtres flottantes de l’application (barre de titre = poignée). */
 export const FENETRES_APP = Object.freeze([
   { selecteur: '#wt-panel', poignee: '.wt-tete' },
   { selecteur: '#wt-pins', poignee: '.t' },

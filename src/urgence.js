@@ -18,7 +18,7 @@
  *
  * ⚠️ Les procédures reprennent les **messages officiels** (service-public.fr,
  * ministères). Elles ne remplacent ni un appel aux secours, ni une formation
- * aux premiers secours ; chaque procédure cite sa source, et l'app affiche
+ * aux premiers secours ; chaque procédure cite sa source, et l’app affiche
  * d'abord les NUMÉROS D'URGENCE.
  *
  * Rien n'est inventé : sans données (réseau, OSM), on le dit et on renvoie vers

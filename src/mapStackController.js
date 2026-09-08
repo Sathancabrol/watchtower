@@ -75,7 +75,7 @@ export const MAP_STACKS = [
 const DEFAULT_OSM_CREDIT = '© OpenStreetMap contributors © CARTO';
 
 // WATCHTOWER — road basemap. tile.openstreetmap.org blocks this app outright
-// ("Access blocked — tile usage policy", osm.wiki/Blocked), and CARTO's
+// ("Accès bloqué — politique d’usage des tuiles", osm.wiki/Blocked), and CARTO's
 // keyless raster tiles watermark "carto.com/basemaps — API key required" on
 // apps they have not authorized. Esri's World Street Map answers keyless the
 // same way the World Imagery stack already shipped here does, with the same

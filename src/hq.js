@@ -181,7 +181,7 @@ export function initHQ(viewer, options = {}) {
 
   construire();
 
-  // 🎯 Le HQ suit la caméra : on annonce l'apparition, comme Maps
+  // 🎯 Le HQ suit la caméra : on annonce l’apparition, comme Maps
   let dernierEtage = null;
   const ecoute = () => {
     if (!actif) return;

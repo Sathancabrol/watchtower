@@ -3,7 +3,7 @@
  *
  * L'équivalent libre de Radio Garden : on interroge **Radio-Browser**
  * (annuaire communautaire mondial, API JSON ouverte, sans clé — plusieurs
- * millions de stations) et on écoute le flux directement dans l'app.
+ * millions de stations) et on écoute le flux directement dans l’app.
  *
  *   · bouton 📻 RADIO dans le dock → stations autour du point visé ;
  *   · recherche par nom, pays, langue, genre (tags) ;

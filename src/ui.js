@@ -6063,7 +6063,7 @@ export class StyleManager {
         : (state.stale ? ' · stale directory' : '');
       const outsideFilter = selected && state.selectedIndex < 0 ? ' · outside current filter' : '';
       const messages = {
-        stopped: enabled ? 'Ready — playback starts only from your action' : 'Radio off',
+        stopped: enabled ? 'Ready — playback starts only from your action' : 'Radio éteinte',
         loading: 'Connecting directly to broadcaster…',
         buffering: 'Buffering broadcaster stream…',
         playing: `Playing ${selected?.name || 'station'}`,
@@ -6629,7 +6629,7 @@ export class StyleManager {
           ? `${cameras.length} cameras loaded · click a camera to activate`
           : `${cameras.length} cameras loaded · enable CCTV to activate`;
       } else {
-        this._cctvMeta.textContent = 'Enable CCTV to load camera intersections';
+        this._cctvMeta.textContent = 'Active la vidéosurveillance pour charger les carrefours équipés';
       }
     }
 
@@ -6651,7 +6651,7 @@ export class StyleManager {
     }
 
     this._syncCctvSourceBadge(activeCamera, enabled);
-    this._typeCctvSummary(state?.summary || 'Enable CCTV to start camera-linked intelligence summaries.');
+    this._typeCctvSummary(state?.summary || 'Active la vidéosurveillance pour lancer les synthèses liées aux caméras.');
   }
 
   /**

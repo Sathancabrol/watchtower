@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -291,7 +291,7 @@
             <div><span>SKY</span><strong id="cockpit-local-condition">UNKNOWN</strong><small id="cockpit-local-cloud">—</small></div>
             <div><span>PRECIP</span><strong id="cockpit-local-precipitation">—</strong><small>MM</small></div>
           </div>
-          <a class="cockpit-weather-credit" href="https://open-meteo.com/" target="_blank" rel="noopener">Weather data by Open-Meteo.com</a>
+          <a class="cockpit-weather-credit" href="https://open-meteo.com/" target="_blank" rel="noopener">Données météo par Open-Meteo.com</a>
         </section>
       </div>
       <footer class="cockpit-signal-footer">
@@ -368,8 +368,8 @@
       <div class="pp-slider-row" id="hud-layout-row">
         <span class="pp-slider-mini-label">Layout</span>
         <select id="hud-layout-select" class="pp-select" aria-label="HUD layout">
-          <option value="tactical">Tactical</option>
-          <option value="operator">Operator</option>
+          <option value="tactical">Tactique</option>
+          <option value="operator">Opérateur</option>
           <option value="minimal">Minimal</option>
         </select>
       </div>
@@ -385,10 +385,10 @@
         <span class="pp-slider-value" id="detection-density-value">50%</span>
       </div>
       <div class="pp-slider-row detection-allocation-row" id="detection-allocation-row">
-        <span class="pp-slider-mini-label">Allocation</span>
+        <span class="pp-slider-mini-label">Répartition</span>
         <div class="pp-mode-seg detection-allocation-seg" role="radiogroup" aria-label="Detection label allocation">
           <button class="pp-mode-btn active" id="detection-allocation-elastic" data-allocation="ELASTIC" role="radio" aria-checked="true">Elastic</button>
-          <button class="pp-mode-btn" id="detection-allocation-weighted" data-allocation="WEIGHTED" role="radio" aria-checked="false">Weighted</button>
+          <button class="pp-mode-btn" id="detection-allocation-weighted" data-allocation="WEIGHTED" role="radio" aria-checked="false">Pondérée</button>
         </div>
       </div>
       <div class="pp-slider-row detection-fade-row" id="detection-fade-row">
@@ -423,7 +423,7 @@
       <div class="pp-slider-row visible" id="models3d-mode-row">
         <span class="pp-slider-mini-label">Models</span>
         <div class="pp-mode-seg" role="radiogroup" aria-label="3D model coverage">
-          <button class="pp-mode-btn active" id="models3d-mode-proximity" data-mode="proximity" role="radio" aria-checked="true">Proximity</button>
+          <button class="pp-mode-btn active" id="models3d-mode-proximity" data-mode="proximity" role="radio" aria-checked="true">Proximité</button>
           <button class="pp-mode-btn" id="models3d-mode-all" data-mode="all" role="radio" aria-checked="false">All</button>
         </div>
       </div>
@@ -447,12 +447,12 @@
     <div class="pp-toggle-group">
       <button class="pp-toggle-btn" id="celestial-toggle" title="Celestial ring — reveal the full globe" aria-pressed="false">
         <span class="pp-icon material-symbols-outlined" aria-hidden="true">flare</span>
-        <span class="pp-label">Celestial</span>
+        <span class="pp-label">Astres</span>
       </button>
     </div>
     <button class="pp-toggle-btn" id="clean-view-toggle" title="Hide UI chrome">
       <span class="pp-icon">&#x25A1;</span>
-      <span class="pp-label">Clean UI</span>
+      <span class="pp-label">Interface épurée</span>
     </button>
     <div class="pp-toggle-group">
       <button class="pp-toggle-btn" id="bloom-toggle" title="Bloom / Glow">
@@ -553,7 +553,7 @@
       </div>
       <div id="location-mini-status" class="location-mini-status" aria-live="polite">
         <div id="location-mini-city" class="location-mini-city">📍 Location: --</div>
-        <div id="location-mini-poi" class="location-mini-poi">Landmark: --</div>
+        <div id="location-mini-poi" class="location-mini-poi">Point de repère : --</div>
       </div>
       <div class="dock-popover-content">
         <button class="dock-pin-btn" data-pin-target="location-bar" type="button" aria-label="Pin location tray" aria-pressed="false" title="Keep location tray open"><img src="/pin.svg" alt="" /></button>
@@ -600,7 +600,7 @@
         <img id="cctv-frame" alt="CCTV feed frame" />
       </div>
       <div id="cctv-source-badge" role="status" aria-live="polite">SOURCE · UNKNOWN</div>
-      <div id="cctv-meta">Enable CCTV to load camera intersections</div>
+      <div id="cctv-meta">Active la vidéosurveillance pour charger les carrefours équipés</div>
       <div class="cctv-controls">
         <button id="cctv-enable-btn" class="scene-btn">CCTV OFF</button>
         <button id="cctv-nearest-btn" class="scene-btn">NEAREST</button>
@@ -639,7 +639,7 @@
         </div>
       </div>
       <div class="cctv-summary-label">SCENE SUMMARY</div>
-      <div id="cctv-summary">Enable CCTV to start camera-linked intelligence summaries.</div>
+      <div id="cctv-summary">Active la vidéosurveillance pour lancer les synthèses liées aux caméras.</div>
     </div>
   </div>
 
@@ -785,7 +785,7 @@
             </div>
             <div id="radio-station-card" class="radio-station-card" aria-live="polite">
               <strong id="radio-station-name">NO STATION SELECTED</strong>
-              <span id="radio-station-meta">Enable Radio, then choose a globe marker or use next.</span>
+              <span id="radio-station-meta">Active la radio, puis choisis une pastille sur le globe ou passe à la suivante.</span>
               <span id="radio-station-tags"></span>
             </div>
             <div id="radio-tuner" class="radio-tuner" hidden>
@@ -815,12 +815,12 @@
               <input id="radio-volume" class="gev-quantitative-slider" type="range" min="0" max="100" value="80" aria-label="Radio volume" />
               <output id="radio-volume-value" class="gev-slider-value" for="radio-volume">80%</output>
             </label>
-            <div id="radio-playback-state" class="radio-playback-state" role="status" aria-live="polite">Radio off</div>
+            <div id="radio-playback-state" class="radio-playback-state" role="status" aria-live="polite">Radio éteinte</div>
             <div class="radio-links">
               <a id="radio-station-homepage" href="#" target="_blank" rel="noopener noreferrer" hidden>STATION SITE</a>
               <a href="https://www.radio-browser.info/" target="_blank" rel="noopener noreferrer">DIRECTORY: RADIO BROWSER</a>
             </div>
-            <p class="radio-privacy">Audio connects directly to the broadcaster after you press play. Your IP is visible to that broadcaster.</p>
+            <p class="radio-privacy">Le son se connecte directement à la station dès que tu appuies sur lecture. Ton adresse IP est visible par cette station.</p>
           </div>
         </section>
       </div>
@@ -838,21 +838,21 @@
     <header class="first-run-header">
       <span class="first-run-kicker">MISSION CONTROL · FIRST LAUNCH</span>
     </header>
-    <h2 id="first-run-title">Choose your first view</h2>
+    <h2 id="first-run-title">Choisis ta première vue</h2>
     <!-- The card's one persuasive line, owner-authored and VERBATIM (2026-08-23)
          — including the unspaced em dash. The arc it has to carry: this looks
          like something you should not have access to → the sources are all
          public → the data is real. Tile subcopy stays purely functional. -->
-    <p id="first-run-description">It feels like a forbidden cockpit—then you realize the sources are public and the data is real.</p>
+    <p id="first-run-description">On dirait un cockpit interdit — puis on réalise que les sources sont publiques et les données bien réelles.</p>
     <div class="first-run-choices">
       <button type="button" data-first-run-choice="contacts">
         <span class="material-symbols-outlined" aria-hidden="true">radar</span>
-        <span><strong>LIVE CONTACTS</strong><small>Aircraft, vessels and nearby intelligence</small></span>
+        <span><strong>CONTACTS EN DIRECT</strong><small>Avions, navires et renseignement de proximité</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" data-first-run-choice="space-missions">
         <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
-        <span><strong>SPACE MISSIONS</strong><small>Launches, spacecraft and orbital context</small></span>
+        <span><strong>MISSIONS SPATIALES</strong><small>Lancements, engins spatiaux et contexte orbital</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" data-first-run-choice="environmental">
@@ -861,25 +861,25 @@
         <!-- Subcopy names BOTH feeds this tile turns on, because the launcher
              optimizes for the fully configured experience (owner ruling,
              2026-08-23) — see the mission table in src/firstRunExperience.js. -->
-        <span><strong data-first-run-environmental-title>ENVIRONMENTAL</strong><small>Live earthquakes and active fires, from USGS and NASA</small></span>
+        <span><strong data-first-run-environmental-title>ENVIRONMENTAL</strong><small>Séismes en direct et feux actifs, via USGS et NASA</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
       <button type="button" class="first-run-explore" data-first-run-choice="explore">
         <span class="material-symbols-outlined" aria-hidden="true">public</span>
-        <span><strong>EXPLORE MANUALLY</strong><small>Begin with a clean globe</small></span>
+        <span><strong>EXPLORER LIBREMENT</strong><small>Démarrer sur un globe vierge</small></span>
         <span class="material-symbols-outlined first-run-arrow" aria-hidden="true">arrow_forward</span>
       </button>
     </div>
     <div class="first-run-footer">
       <label class="first-run-suppress">
         <input type="checkbox" data-first-run-suppress />
-        <span>Don't show this again</span>
+        <span>Ne plus afficher</span>
       </label>
       <span>ESC to dismiss</span>
     </div>
     <!-- Kept out of the footer row: it swaps to mission progress and errors, and
          a live region that also holds layout makes the row jump as it speaks. -->
-    <p class="first-run-note" data-first-run-status role="status" aria-live="polite">Tip: the GEV MIC button in the dock lets you talk to the map.</p>
+    <p class="first-run-note" data-first-run-status role="status" aria-live="polite">Astuce : le bouton MICRO dans la barre permet de parler à la carte.</p>
   </aside>
 
   <!-- POWER UP — in-app key setup. Dev-server only: src/keySetup.js removes
@@ -898,14 +898,14 @@
         <span class="material-symbols-outlined" aria-hidden="true">close</span>
       </button>
     </header>
-    <h2 id="key-setup-title">Power up the globe</h2>
-    <p id="key-setup-description">The globe already flies keyless. Every key below switches on another real feed — paste one and it's saved into this app's local configuration, then the server restarts itself. Server-side keys stay on this machine; Google Maps and Cesium ion run in the browser and must be provider-restricted. Keys you configured elsewhere are shown but never touched.</p>
+    <h2 id="key-setup-title">Alimenter le globe</h2>
+    <p id="key-setup-description">Le globe fonctionne déjà sans aucune clé. Chaque clé ci-dessous active un flux réel supplémentaire — colle-la et elle est enregistrée dans la configuration locale de l'app, puis le serveur redémarre tout seul. Les clés côté serveur restent sur cette machine ; Google Maps et Cesium ion tournent dans le navigateur et doivent être restreintes chez le fournisseur. Les clés configurées ailleurs sont affichées mais jamais modifiées.</p>
     <div class="key-setup-rows" data-key-setup-rows></div>
     <div class="key-setup-footer">
       <button type="button" class="key-setup-apply" data-key-setup-apply>SAVE KEYS</button>
       <span class="key-setup-hint">ESC to close</span>
     </div>
-    <p class="key-setup-note" data-key-setup-status role="status" aria-live="polite">The Google Maps key buys the photorealistic planet — everything else stacks on top.</p>
+    <p class="key-setup-note" data-key-setup-status role="status" aria-live="polite">La clé Google Maps débloque la planète photoréaliste — tout le reste vient se superposer.</p>
   </aside>
 
   <!-- Intelligence HUD Overlay -->
@@ -916,7 +916,7 @@
     <div class="loader-content">
       <span class="loader-logo brand-logo" data-logo-gaze data-logo-src="/logo.svg" aria-hidden="true"><img src="/logo.svg" alt="" /></span>
       <h2>WATCH<span class="title-accent">TOWER</span></h2>
-      <p class="loader-status">Initializing photorealistic world...</p>
+      <p class="loader-status">Initialisation du monde photoréaliste...</p>
     </div>
   </div>
 

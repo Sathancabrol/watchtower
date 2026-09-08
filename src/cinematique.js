@@ -69,7 +69,7 @@ const CSS = `
 `;
 
 /**
- * Paliers de l'approche. `altitude` (m) et `tangage` (°, négatif = regard
+ * Paliers de l’approche. `altitude` (m) et `tangage` (°, négatif = regard
  * vers le bas) déterminent la distance au sol : d = altitude / tan(|tangage|)
  * — la caméra descend ET se rapproche en même temps, comme un travelling
  * hélicoptère. `derive` est la fraction de tour parcourue pendant le palier.
@@ -214,7 +214,7 @@ export function initCinematique(viewer, options = {}) {
   }
 
   /**
-   * Joue l'approche cinématique vers un point.
+   * Joue l’approche cinématique vers un point.
    * @param {number} lat
    * @param {number} lon
    * @param {{nom?:string, sous?:string, altitudeFin?:number}} [opts]

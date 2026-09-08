@@ -4,7 +4,7 @@
  *  · 📡 ME LOCALISER — GPS du navigateur (permission, jamais envoyée à un
  *    serveur tiers : seulement des APIs ouvertes reçoivent les coordonnées).
  *  · ✍️ SAISIR MON ADRESSE — entrée manuelle (BAN France → Photon monde).
- *  · 🏠 C'EST MA MAISON — mémorise le domicile (partagé avec l'app entière).
+ *  · 🏠 C'EST MA MAISON — mémorise le domicile (partagé avec l’app entière).
  *  · 🚶 VUE POV MA RUE — la vue principale devient la rue DEVANT chez toi
  *    (caméra à hauteur d'homme, ZQSD pour bouger) — même moteur que la
  *    fiche lieu.
@@ -244,7 +244,7 @@ export function initNearbyPlaces(viewer) {
   // 🖼 IDENTIFIER UN LIEU — photo → GPS (EXIF, lu dans le navigateur).
   // Le bouton est aussi présent en permanence dans le dock, juste à côté de MOI.
   el.querySelector('.photo').addEventListener('click', () => {
-    // résolu à l'appel : le module photo est créé après ce panneau
+    // résolu à l’appel : le module photo est créé après ce panneau
     const ps = window.__godsEyeView?.photoSearch;
     if (ps) { ps.ouvrir(); return; }
     statut.textContent = '⚠ Module photo non prêt — recharge la page.';

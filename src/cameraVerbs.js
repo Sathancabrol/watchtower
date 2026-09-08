@@ -1027,7 +1027,7 @@ export function moveCamera(args = {}, runNavigation = null) {
       return { ok: false, action: 'move_camera', error: 'Already at the upper tilt limit (near the horizon) — tilt down, or zoom/pan instead.' };
     }
     if (direction === 'down' && pitch <= PITCH_MIN + Cesium.Math.toRadians(0.5)) {
-      return { ok: false, action: 'move_camera', error: 'Already looking straight down — tilt up to raise the horizon.' };
+      return { ok: false, action: 'move_camera', error: 'Vue déjà à la verticale — incline vers le haut pour relever l’horizon.' };
     }
   }
   if (motion === 'orbit' && _viewer?.trackedEntity && typeof runNavigation !== 'function') {

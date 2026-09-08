@@ -377,7 +377,7 @@ export function creerBatiRapide(viewer, options = {}) {
     viewer.scene.requestRender?.();
   }
 
-  /** Lots de la zone affichée (servent à l'appariement AR : POI → bâtiment). */
+  /** Lots de la zone affichée (servent à l’appariement AR : POI → bâtiment). */
   function lots() {
     const e = cleCourante ? cache.get(cleCourante) : null;
     return e?.lots || [];

@@ -5,7 +5,7 @@
  * remontée jusqu'à sa source, en un clic.**
  *
  *  1 · `SOURCES` — le registre unique de toutes les sources utilisées par
- *    l'application (nom, URL, licence, nature des données). Les fiches, l'INTEL
+ *    l’application (nom, URL, licence, nature des données). Les fiches, l'INTEL
  *    et les couches piochent dedans : un jeu de données qui n'est pas dans ce
  *    registre ne doit pas être affiché.
  *

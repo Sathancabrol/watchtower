@@ -206,7 +206,7 @@ const _dynamicCreditKeys = new Set();
 
 /**
  * Register a conditional credit at the moment its data source activates.
- * Idempotent per `credit.key`; lands in the same "Data attribution" popover
+ * Idempotent per `credit.key`; lands in the same "Attribution des données" popover
  * as the static credits (showOnScreen=false).
  * @param {Cesium.Viewer} viewer — the initialized Cesium viewer
  * @param {{ key: string, html: string }} credit — e.g. `TOMTOM_CREDIT`
@@ -227,7 +227,7 @@ export function registerDynamicCredit(viewer, credit) {
 /**
  * Register every per-layer data credit into the viewer's credit display.
  * Idempotent: safe to call once at init. Credits are static and always
- * present in the "Data attribution" popover.
+ * present in the "Attribution des données" popover.
  * @param {Cesium.Viewer} viewer — the initialized Cesium viewer
  */
 export function registerDataCredits(viewer) {
@@ -236,7 +236,7 @@ export function registerDataCredits(viewer) {
     return;
   }
   for (const { html } of DATA_CREDITS) {
-    // showOnScreen=false → lives in the expandable "Data attribution" popover,
+    // showOnScreen=false → lives in the expandable "Attribution des données" popover,
     // not the on-globe credit line.
     creditDisplay.addStaticCredit(new Cesium.Credit(html, false));
   }
