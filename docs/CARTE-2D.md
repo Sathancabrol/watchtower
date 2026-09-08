@@ -94,7 +94,60 @@ vérification a été faite dans le fichier LICENSE du dépôt.)
 Modules purs : ni réseau, ni DOM, ni dépendance à Cesium ou MapLibre. Ils sont
 donc testables intégralement hors navigateur — 29 tests, tous hors ligne.
 
+## Montage dans l'interface
+
+`src/carte2dControleur.js` branche le socle au DOM et aux deux moteurs. Il est
+monté depuis `src/main.js` **après le voile de chargement** : le bouton
+n'apparaît pas avant que la scène soit prête. L'appel est protégé par un
+`try/catch` — si la bascule échoue à s'installer, l'application démarre quand même.
+
+### Ce qui se passe au passage en 2D
+
+1. L'état de caméra Cesium est lu et converti (`lireEtatCesium`).
+2. MapLibre est **importé dynamiquement** — première fois seulement.
+3. La carte est créée ou repositionnée (`jumpTo`) sur la vue équivalente.
+4. `viewer.useDefaultRenderLoop = false` et le canevas Cesium est masqué.
+
+Le point 4 est celui qui compte : **c'est là que le GPU est réellement libéré**.
+Masquer sans arrêter la boucle n'aurait rien résolu.
+
+### Ce qui se passe au retour en 3D
+
+L'état MapLibre est relu, reconverti et appliqué à Cesium (`appliquerEtatCesium`),
+la boucle repart, un rendu est demandé. Cesium **n'est jamais détruit**, seulement
+suspendu : le retour est instantané, sans rechargement de tuiles ni de terrain.
+
+### Chargement à la demande — vérifié
+
+Le build sort MapLibre dans un **chunk séparé** :
+
+```
+dist/assets/maplibre-gl-CJG3b3mk.js   1 045 kB │ gzip: 280 kB
+```
+
+Un utilisateur qui reste en 3D ne le télécharge jamais. C'est la raison de
+l'`import()` dynamique plutôt que d'un import statique en tête de fichier.
+
+### Interface
+
+- Bouton `🗺 Vue 3D / 2D` en bas à gauche, aux couleurs du HUD existant.
+- Sélecteur de fond en 2D, alimenté par `listerFonds()` — donc les **mêmes
+  couches IGN** qu'en 3D, y compris « Remonter le temps ».
+- Contrôle de navigation MapLibre avec visualisation du pitch.
+
+### Tests
+
+7 tests supplémentaires avec des **doublures de Cesium** (pas de navigateur
+requis) : conversion radians/degrés dans les deux sens, aller-retour sans dérive,
+viewer incomplet ou absent, état aberrant assaini avant d'atteindre Cesium,
+et dégradation propre quand il n'y a pas de DOM.
+
+**Total du chantier : 36 tests, tous hors ligne.**
+
 ## Reste à faire
 
-Le montage dans l'interface : conteneur MapLibre, bouton de bascule, extinction
-du moteur inactif. Le cœur délicat — le transfert d'état — est fait et vérifié.
+- Brancher `conseiller()` sur le compteur d'images pour proposer la bascule
+  spontanément quand le GPU souffre (la fonction existe et est testée, elle n'est
+  pas encore appelée automatiquement).
+- Reporter en 2D les couches de données applicatives (actuellement seuls les
+  fonds IGN sont rendus côté MapLibre).

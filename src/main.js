@@ -18,6 +18,7 @@ import localDataLayers from './data/localLayers.js';
 import { LAYER_STATE_REGISTRY } from './data/layerState.js';
 import { deciderReprise, messageUtilisateur } from './data/reprisRendu.js';
 import { registerDataCredits } from './data/dataCredits.js';
+import { initCarte2D } from './carte2dControleur.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
 import { initFreeVoiceCommands } from './voice/freeVoice.js';
@@ -391,6 +392,15 @@ async function init() {
       new Promise((resolve) => setTimeout(resolve, 1000)),
     ]).finally(() => {
       loadingScreen.classList.add('hidden');
+      // Chantier A2 — bascule 2D/3D (lacune #9 « 3D saturée » de docs/AUDIT.md).
+      // Montée après le voile de chargement : le bouton ne doit pas apparaître
+      // avant que la scène soit prête. MapLibre n'est téléchargé qu'au premier
+      // passage en 2D, donc rester en 3D ne coûte rien. Voir docs/CARTE-2D.md.
+      try {
+        initCarte2D({ viewer, Cesium });
+      } catch (err) {
+        console.warn('[carte2d] bascule 2D indisponible', err);
+      }
       // Reveal only after the loading cover has yielded. transitionend can be
       // absent under reduced motion, so a bounded fallback makes this reliable.
       let firstRunRevealed = false;
