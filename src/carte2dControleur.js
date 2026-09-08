@@ -176,8 +176,11 @@ export function initCarte2D({ viewer, Cesium, conteneur, document: doc = globalT
 
     div.classList.add('actif');
     // Couper réellement la boucle Cesium : c'est ici que le GPU est libéré.
+    // On ne touche PAS à la visibilité du canevas Cesium : le conteneur 2D est
+    // opaque et le recouvre déjà. Masquer le canevas provoquait, au retour en
+    // 3D, une scène figée sur la dernière image (le contexte WebGL ne se
+    // réveille pas toujours d'un canevas passé en visibility:hidden).
     viewer.useDefaultRenderLoop = false;
-    if (viewer.canvas) viewer.canvas.style.visibility = 'hidden';
     en2D = true;
     majBouton();
     // MapLibre a pu être créé sur un conteneur masqué : forcer la remesure.
@@ -194,8 +197,11 @@ export function initCarte2D({ viewer, Cesium, conteneur, document: doc = globalT
       appliquerEtatCesium(viewer, etat, Cesium);
     }
     div.classList.remove('actif');
+    // Réveil complet : la boucle repart, puis on force une image. Le resize est
+    // nécessaire car le canevas a pu être redimensionné pendant la 2D.
     if (viewer.canvas) viewer.canvas.style.visibility = '';
     viewer.useDefaultRenderLoop = true;
+    try { viewer.resize?.(); } catch { /* viewer minimal (tests) */ }
     if (viewer.scene?.requestRender) viewer.scene.requestRender();
     en2D = false;
     majBouton();

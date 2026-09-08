@@ -19,6 +19,7 @@ import { LAYER_STATE_REGISTRY } from './data/layerState.js';
 import { deciderReprise, messageUtilisateur } from './data/reprisRendu.js';
 import { registerDataCredits } from './data/dataCredits.js';
 import { initCarte2D } from './carte2dControleur.js';
+import { initVolant } from './volant.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
 import { initFreeVoiceCommands } from './voice/freeVoice.js';
@@ -280,6 +281,8 @@ async function init() {
     loaderStatus.textContent = googleApiKey || cesiumToken
       ? 'Loading Google 3D Tiles...'
       : 'Loading the keyless globe...';
+    // Fond de repli quand les 3D Tiles Google ne sont pas disponibles.
+    const REPLI_SANS_CLE = 'ign-plan';
     const photoreal = await loadPhotorealisticTileset(Cesium, {
       googleApiKey,
       cesiumToken,
@@ -306,7 +309,10 @@ async function init() {
     const mapStackController = new MapStackController(viewer, {
       googleTileset: tileset,
       cesiumToken,
-      initialStack: tileset ? 'photoreal' : 'esri-imagery',
+      // Repli sans clé Google : le Plan IGN plutôt que l'imagerie satellite nue.
+      // L'ortho satellite ne montre ni rues nommées, ni limites, ni bâti —
+      // inutilisable pour se repérer. Le Plan IGN est gratuit et sans clé.
+      initialStack: tileset ? 'photoreal' : REPLI_SANS_CLE,
       // Task 5 (height-datum fix): rebroadcast stack changes as a window
       // CustomEvent so data layers (CCTV per-regime ground resolution) can
       // react without coupling MapStackController to layer modules. Fires on
@@ -317,7 +323,7 @@ async function init() {
       },
       onError: (message) => console.warn('[MapStack]', message),
     });
-    await mapStackController.setStack(tileset ? 'photoreal' : 'esri-imagery', { silent: true });
+    await mapStackController.setStack(tileset ? 'photoreal' : REPLI_SANS_CLE, { silent: true });
 
     // Initialize the style manager (post-processing, HUD, locations, share links)
     const styleManager = new StyleManager(viewer, { mapStackController });
@@ -724,6 +730,13 @@ async function init() {
       });
       window.__godsEyeView.vues = vues;
       window.__godsEyeView.intel?.setVues?.(vues);
+      // 🎛 LE VOLANT (chantier B) — un seul moyeu, sous le logo, qui donne accès
+      // à tout. Il RÉFÉRENCE le dock et les modules existants, il ne les remplace
+      // pas : sans lui l'application reste entière. Voir docs/VOLANT.md.
+      window.__godsEyeView.volant = proteger('volant', () => initVolant({
+        dock: window.__godsEyeView.dock,
+        surMessage: (m) => window.__wtToast?.(m),
+      }));
       // 🔲 CADRANS : la commune découpée en cadrans nommés (quartiers OSM, sinon
       // alphabet OTAN) avec tracé animé — donne un repère commun pour en parler.
       const cadrans = initCadrans(viewer, {
