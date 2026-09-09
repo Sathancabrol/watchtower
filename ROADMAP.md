@@ -4,11 +4,17 @@ Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
 
-Dernière mise à jour : **itération 21** — 🔍 **audit général** : chronologie
+Dernière mise à jour : **itération 23** — 🔒 **intégrité UI** : les 7 fonctions
+rendues orphelines par l'itération 22 sont rapatriées, et un garde-fou
+automatique (`src/integriteUI.test.mjs`) refuse désormais qu'une fonction perde
+son point d'entrée. Voir **`docs/AUDIT-UI.md`** (2ᵉ passe), qui contient aussi
+les **retours arrière copier-coller** pour chaque correctif.
+Itération **22** = 🎛 audit UI sur plainte « je peux pas installer ça dans
+l'état » : barre unique des fonctions, planchers de lisibilité, pastilles
+éteintes par défaut, HQ en hub centré.
+Itération **21** = 🔍 **audit général** : chronologie
 1 → 20, état réel, sources, ce qui manque et dettes techniques. Voir
-**`docs/AUDIT.md`**. **Attention** : deux régressions signalées (fenêtre
-WATCHTOWER, vue HQ) ne sont **pas** reproduites au build ni aux tests — j'attends
-ton **F3** pour les réparer sur pièce.
+**`docs/AUDIT.md`**.
 Itération **20** = (🗂 dossier d'investigation du
 tableau + 📺 télé cathodique + 🪟 fenêtre → vue stellaire + 🚁 décollage
 confirmé + 🗺 minicarte sans cadre + 🧭 médaillons emboîtés).
@@ -42,7 +48,44 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 0. Itération 21 — en cours
+## 0. Itération 23 — intégrité, performance, UX
+
+> 🔒 **Itération de consolidation.** L'itération 22 avait masqué le rail du
+> dock pour supprimer une redondance visuelle — et rendu **7 fonctions
+> inatteignables** au passage. Aucun test ne l'avait vu. Cette itération
+> répare, puis **outille** pour que ça ne se reproduise pas.
+
+| # | Sujet | État | Détail |
+|---|---|---|---|
+| 23.1 | 7 fonctions orphelines | ✅ fait | calques/partage/globe, vue de rue, photo, panneau localiser → catégorie **Outils** ; PALAIS, AFFICHAGE, DIAG → `barre.accueillir()` |
+| 23.2 | `dock.ranger()` détourné | ✅ fait | renvoi vers la barre, repli sur l'ancien comportement |
+| 23.3 | `--wt-hauteur-dock` réparée | ✅ fait | `max-height:0` corrompait la hauteur publiée dont dépendent les panneaux ancrés |
+| 23.4 | Garde-fou automatique | ✅ fait | `src/integriteUI.test.mjs`, 6 tests : plus aucune fonction ne peut disparaître en silence |
+| 23.5 | Layout thrash supprimé | ✅ fait | `placerPoignee` regroupé sur `requestAnimationFrame` |
+| 23.6 | Fuite d'écouteur `resize` | ✅ fait | `detruire()` le retire enfin |
+| 23.7 | Débordement de la barre | ✅ fait | une seule ligne conservée ; dégradé sur les bords + molette → défilement horizontal |
+| 23.8 | Retours arrière documentés | ✅ fait | `docs/AUDIT-UI.md`, section « Si quelque chose casse » |
+| 23.9 | Époques (Overpass) | ⬜ **non vérifié** | aucun réseau sortant dans le bac à sable — irreproductible ici |
+| 23.10 | Charger bâti (Overpass) | ⬜ **non vérifié** | même cause |
+
+**Décision assumée** : le bundle principal (2,24 Mo, 86 imports statiques dans
+`main.js`) n'est **pas** découpé. Le gain serait réel mais imposerait de
+réordonner le démarrage — risque disproportionné sur une application que
+l'utilisateur veut pouvoir installer maintenant. Les gros jeux de données sont
+déjà en import dynamique (vérifié).
+
+**Reste ouvert, par priorité** :
+
+1. **Époques et bâti** — attendent un test côté utilisateur, console ouverte.
+   C'est le seul point qui bloque encore l'installation.
+2. **`POTES.md`** — mode d'emploi pour les amis (jamais écrit).
+3. **Volant** — 8 rayons sur 23 ancres du dock : reste à étendre.
+4. **Chantier E** — vue communale, tracé cadastral animé (`ign-wfs` non branché).
+5. **Chantier F** — niveaux mondial · national · régional de l'INTEL.
+
+---
+
+## 1. Itération 21 — audit général
 
 > 🔍 **Itération d'audit.** Bilan complet des itérations 1 → 20 dans
 > **`docs/AUDIT.md`** : nos discussions, ce qui est implanté, ce qui manque,

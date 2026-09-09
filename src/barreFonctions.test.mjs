@@ -129,3 +129,17 @@ test('initBarreFonctions expose replacer pour repositionner a la demande', () =>
   assert.doesNotThrow(() => api.replacer());
   api.detruire();
 });
+
+test('la barre reste sur une ligne et signale son debordement', () => {
+  // Exigence : UNE SEULE LIGNE. Donc elle defile, et il faut le montrer.
+  assert.ok(CSS_SOURCE.includes('wt-deborde'), 'indice de debordement present');
+  assert.ok(!/#wt-barre\s*\{[^}]*flex-wrap:\s*wrap/.test(CSS_SOURCE),
+    'la barre ne doit jamais passer a la ligne');
+});
+
+test('placerPoignee tolere un DOM minimal sans scrollWidth ni classList.toggle', () => {
+  const doc = fauxDoc();
+  const api = initBarreFonctions({ document: doc });
+  assert.doesNotThrow(() => api.replacer(), 'aucune exception sur DOM partiel');
+  api.detruire();
+});

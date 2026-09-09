@@ -83,3 +83,101 @@ provisoire, à confirmer chez toi.
   `voice/gevActions`). Aucune régression introduite.
 - 14 tests neufs (10 barre, 4 lisibilité) + 1 test de non-régression sur les
   bascules éteintes par défaut.
+
+---
+
+# Deuxieme passe — integrite, perf, UX
+
+Trois retours apres essai en preview : la barre masquait les boutons voix, le
+rail TOUT/EXPLORER/VOL faisait doublon, HQ s'ouvrait decale a gauche. Corriges
+en `cdddaf1`. Cette passe couvre ce que ces correctifs avaient eux-memes casse.
+
+## La regression que le premier correctif a introduite
+
+Masquer le rail du dock a rendu **7 fonctions inatteignables**. Aucun test ne
+l'a vu : les modules etaient bien construits, simplement plus affiches.
+
+| Fonction | Pourquoi elle disparaissait | Correctif |
+|---|---|---|
+| Actions (calques, partage, globe) | ne vivait que dans le rail | categorie **Outils** |
+| Vue de rue (`wt-sv`) | idem | categorie **Outils** |
+| Recherche par photo (`wt-photo`) | idem | categorie **Outils** |
+| Panneau me localiser (`wt-panel`) | idem | categorie **Outils** |
+| PALAIS | injecte via `dock.ranger()` | `barre.accueillir()` |
+| AFFICHAGE | idem | `barre.accueillir()` |
+| DIAG | idem | `barre.accueillir()` |
+
+`dock.ranger()` est desormais **detourne vers la barre**, avec repli sur le
+comportement d'origine si la barre n'a pas demarre. Rien n'est supprime.
+
+Effet de bord corrige au passage : `max-height: 0` sur `#wt-dock` corrompait
+`--wt-hauteur-dock`, la variable que mobiDock publie et dont dependent les
+panneaux ancres. Remplace par une neutralisation de l'habillage seul.
+
+## Garde-fou automatique
+
+`src/integriteUI.test.mjs` (6 tests) relit les sources et **echoue** si une
+ancre ou un panneau perd son point d'entree. C'est la reponse durable a
+« tu perds rien » : la prochaine fois, le test le dira avant toi.
+
+## Performance
+
+- `placerPoignee()` lit `getBoundingClientRect()` **et** `offsetHeight` : il
+  force un calcul de mise en page synchrone. Branche directement sur `resize`
+  et sur le `ResizeObserver`, il provoquait du *layout thrash*. Regroupe sur
+  `requestAnimationFrame`.
+- `detruire()` retirait l'observateur mais **pas** l'ecouteur `resize` : fuite
+  corrigee.
+- Les gros jeux de donnees (`regions` 1,99 Mo, `marine` 633 ko) sont **deja**
+  en import dynamique : verifie, rien a gagner la.
+- Le bundle principal reste a 2,24 Mo (86 imports statiques dans `main.js`).
+  **Volontairement pas touche** : le decoupage imposerait de reordonner le
+  demarrage, risque disproportionne face au gain.
+
+## UX
+
+Avec la 5e categorie la barre atteint ~1150 px. Elle reste sur **une seule
+ligne** (exigence) et defile en dessous ; un degrade sur les bords signale
+qu'il reste du contenu, et la molette verticale fait defiler horizontalement.
+
+## Si quelque chose casse — retours arriere
+
+Chaque correctif s'annule seul, sans toucher au reste.
+
+**Rendre le rail du dock a nouveau visible** — retirer ce bloc de
+`src/barreFonctions.js` (constante `CSS`) :
+
+```css
+#wt-dock .wt-dock-presets,
+#wt-dock .wt-dock-categories,
+#wt-dock .wt-dock-groupe { display: none !important; }
+```
+
+Les boutons reapparaissent en double (barre + rail), mais rien n'est perdu.
+
+**Annuler le detournement de `ranger()`** — dans `src/main.js`, supprimer le
+bloc `try { const _dock = ...` qui suit `initBarreFonctions`. PALAIS,
+AFFICHAGE et DIAG retournent au rail : ne le faire **que** si le rail est
+redevenu visible, sinon ils disparaissent.
+
+**Remettre HQ en fenetre de bord** — dans `src/main.js`, remplacer
+`cote: 'centre'` par `cote: 'droite'`. Garder `element: hubHQ` :
+`element: null` faisait rejeter le panneau par le dock, c'etait le bug.
+
+**Repositionner la barre a la main** — si elle flotte mal, ajuster
+`const MARGE = 8;` dans `src/barreFonctions.js`. En dernier recours, revenir
+a une valeur fixe : `bottom: calc(2vh + 9rem)` a la place de
+`var(--wt-barre-bas, ...)`.
+
+**Rallumer les pastilles pays-commune** — dans
+`src/data/volant/registreBascules.js`, repasser `medaillons` et
+`anneau-celeste` a `parDefaut: true`.
+
+## Etat
+
+- `npx vite build` : succes.
+- `npm test` : **3304 pass / 4 fail** — les 4 echecs preexistants, inchanges
+  (`telegeographySubmarineCables`, `firstRunExperience`, `radioMarkup`,
+  `voice/gevActions`).
+- Toujours **non verifies faute de reseau sortant** dans le bac a sable :
+  epoques et charger bati (les deux passent par Overpass).

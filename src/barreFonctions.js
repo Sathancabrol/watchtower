@@ -33,6 +33,14 @@ const CSS = `
   backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px);
   scrollbar-width: thin; scrollbar-color: rgba(0,212,255,.4) transparent;
 }
+/* La barre reste sur UNE SEULE LIGNE (exigence). En dessous d'environ
+   1200px elle defile horizontalement : sans indice visuel les derniers
+   boutons semblent absents. Un degrade sur les bords signale qu'il reste
+   du contenu, et la molette verticale fait defiler horizontalement. */
+#wt-barre.wt-deborde {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+}
 #wt-barre::-webkit-scrollbar { height: 5px; }
 #wt-barre::-webkit-scrollbar-thumb { background: rgba(0,212,255,.4); border-radius: 3px; }
 #wt-barre.wt-cache { display: none; }
@@ -305,6 +313,13 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
     poignee.style.bottom = socle
       ? `calc(${socle} + ${h}px)`
       : `calc(2vh + 9rem + ${h}px)`;
+
+    // Signale le debordement : sinon les derniers boutons paraissent perdus.
+    // Garde : sur un DOM minimal, scrollWidth et toggle peuvent manquer.
+    if (typeof barre.classList?.toggle === 'function'
+        && Number.isFinite(barre.scrollWidth) && Number.isFinite(barre.clientWidth)) {
+      barre.classList.toggle('wt-deborde', barre.scrollWidth > barre.clientWidth + 2);
+    }
   };
 
   const afficher = () => { barre.classList.remove('wt-cache'); placerPoignee(); };
@@ -312,6 +327,13 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
   const basculer = () => (barre.classList.contains('wt-cache') ? afficher() : masquer());
 
   poignee.addEventListener('click', basculer);
+  // Molette verticale -> defilement horizontal : sans cela, sur un pave
+  // tactile, les categories de droite sont difficiles a atteindre.
+  barre.addEventListener('wheel', (ev) => {
+    if (ev.deltaY === 0 || barre.scrollWidth <= barre.clientWidth) return;
+    ev.preventDefault();
+    barre.scrollLeft += ev.deltaY;
+  }, { passive: false });
   placerPoignee();
 
   // ⚡ PERF : placerPoignee lit getBoundingClientRect + offsetHeight, donc il
