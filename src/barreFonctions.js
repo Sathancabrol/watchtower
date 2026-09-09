@@ -263,7 +263,7 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
     if (!bloc) return false;
     bloc.appendChild(btn);
     // Garde-fou : accueillir peut etre appele avant la fin de l'installation.
-    try { placerPoignee(); } catch { /* pas encore prete, le filet la replacera */ }
+    try { replacerBientot(); } catch { /* pas encore prete, le filet la replacera */ }
     return true;
   };
 
@@ -313,14 +313,30 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
 
   poignee.addEventListener('click', basculer);
   placerPoignee();
-  globalThis.addEventListener?.('resize', placerPoignee);
+
+  // ⚡ PERF : placerPoignee lit getBoundingClientRect + offsetHeight, donc il
+  // force un calcul de mise en page synchrone. Appele tel quel sur 'resize' et
+  // sur chaque notification du ResizeObserver, il provoquait du layout thrash
+  // pendant les redimensionnements. On le regroupe sur la frame suivante.
+  let planifie = false;
+  const replacerBientot = () => {
+    if (planifie) return;
+    planifie = true;
+    const suite = () => { planifie = false; placerPoignee(); };
+    if (typeof globalThis.requestAnimationFrame === 'function') {
+      globalThis.requestAnimationFrame(suite);
+    } else {
+      setTimeout(suite, 16);
+    }
+  };
+  globalThis.addEventListener?.('resize', replacerBientot);
 
   // Le dock change de hauteur (prereglage, repli) sans evenement dedie :
   // on observe sa taille pour que la barre ne le recouvre jamais.
   let obs = null;
   const cible = doc.getElementById('command-dock');
   if (cible && typeof globalThis.ResizeObserver === 'function') {
-    obs = new globalThis.ResizeObserver(() => placerPoignee());
+    obs = new globalThis.ResizeObserver(replacerBientot);
     obs.observe(cible);
   }
   // Filet : quelques repositionnements apres le demarrage, le temps que les
@@ -333,6 +349,11 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
     basculer,
     replacer: placerPoignee,
     accueillir,
-    detruire() { obs?.disconnect?.(); barre.remove(); poignee.remove(); },
+    detruire() {
+      obs?.disconnect?.();
+      globalThis.removeEventListener?.('resize', replacerBientot);
+      barre.remove();
+      poignee.remove();
+    },
   };
 }
