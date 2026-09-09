@@ -786,6 +786,22 @@ async function init() {
         dock: window.__godsEyeView.dock,
         surMessage: (m) => window.__wtToast?.(m),
       }));
+      // ⚠ INTEGRITE : le rail du dock est masque (redondance visuelle), or des
+      // modules y rangent encore des boutons au demarrage — PALAIS, AFFICHAGE,
+      // DIAG. Sans ce renvoi ils seraient construits puis invisibles. On
+      // detourne `ranger` vers la barre, en gardant l'ancien comportement en
+      // repli pour ne rien perdre si la barre n'a pas demarre.
+      try {
+        const _dock = window.__godsEyeView.dock;
+        const _barre = window.__godsEyeView.barre;
+        if (_dock?.ranger && _barre?.accueillir) {
+          const _rangerOrigine = _dock.ranger.bind(_dock);
+          _dock.ranger = (btn, groupe) => {
+            if (_barre.accueillir(btn)) return;
+            _rangerOrigine(btn, groupe);
+          };
+        }
+      } catch (e) { console.warn('[watchtower] renvoi ranger:', e); }
       // Planchers de lisibilité (largeur des fiches, taille des boutons fermer
       // et modifier). Chargé en dernier pour primer sur les styles des modules.
       proteger('lisibilité', () => initLisibilite());

@@ -46,7 +46,13 @@ const CSS = `
 #wt-dock .wt-dock-presets,
 #wt-dock .wt-dock-categories,
 #wt-dock .wt-dock-groupe { display: none !important; }
-#wt-dock { background: none !important; padding: 0 !important; max-height: 0 !important; }
+/* Le rail se replie a plat SANS max-height:0 : mobiDock publie
+   --wt-hauteur-dock a partir de sa hauteur mesuree, et d'autres panneaux s'y
+   accrochent. On neutralise l'habillage, la hauteur tombe d'elle-meme. */
+#wt-dock {
+  background: none !important; padding: 0 !important;
+  gap: 0 !important; overflow: visible !important;
+}
 
 #wt-barre .wt-bf-cat {
   position: relative; display: flex; gap: 3px; align-items: center;
@@ -55,6 +61,21 @@ const CSS = `
   background: rgba(0, 30, 46, 0.30);
   flex: 0 0 auto;
 }
+/* Boutons injectes au runtime (PALAIS, AFFICHAGE, DIAG...) : ils etaient
+   ranges dans le rail masque. On les re-heberge ici, meme habillage. */
+#wt-barre .wt-bf-cat .wt-dock-btn {
+  width: 30px; height: 30px; flex: 0 0 auto; padding: 0;
+  display: grid; place-items: center; cursor: pointer;
+  border-radius: 5px; line-height: 1; color: #d8f2ff;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-family: inherit;
+}
+#wt-barre .wt-bf-cat .wt-dock-btn:hover {
+  background: rgba(0, 212, 255, 0.20); border-color: rgba(0, 212, 255, 0.55);
+}
+#wt-barre .wt-bf-cat .wt-dock-btn .ic { font-size: 15px; }
+#wt-barre .wt-bf-cat .wt-dock-btn .lb { display: none; }
 #wt-barre .wt-bf-cat > .wt-bf-nom {
   position: absolute; top: 1px; left: 7px;
   font: 700 8px/1 system-ui, sans-serif; letter-spacing: .1em;
@@ -145,6 +166,18 @@ export const CATEGORIES = Object.freeze([
       { icone: '🎛', info: 'Paramètres', cible: 'param-slider-panel' },
     ]),
   }),
+  // ⚠ Ces quatre panneaux vivaient UNIQUEMENT dans le rail du dock. En
+  // masquant le rail (redondance visuelle) ils devenaient inatteignables :
+  // calques, partage, vue de rue et recherche par photo. Ils sont rapatries
+  // ici. Ne pas retirer sans leur donner un autre point d'entree.
+  Object.freeze({
+    nom: 'Outils', entrees: Object.freeze([
+      { icone: '⚙', info: 'Actions — calques, partage, globe', cible: 'top-center-actions' },
+      { icone: '🛣', info: 'Vue de rue', cible: 'wt-sv' },
+      { icone: '🖼', info: 'Rechercher par photo', cible: 'wt-photo' },
+      { icone: '👁', info: 'Panneau me localiser', cible: 'wt-panel' },
+    ]),
+  }),
 ]);
 
 /**
@@ -211,9 +244,28 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
       });
       bloc.appendChild(b);
     }
+    bloc.dataset.categorie = cat.nom;
     barre.appendChild(bloc);
   }
   doc.body.appendChild(barre);
+
+  /**
+   * Accueille un bouton deja construit ailleurs (dock.ranger).
+   *
+   * Sans cela les boutons injectes au demarrage — PALAIS, AFFICHAGE, DIAG —
+   * atterrissaient dans le rail masque et disparaissaient de l'ecran.
+   * @param {HTMLElement} btn - Bouton deja pret.
+   * @returns {boolean} Vrai s'il a ete accroche.
+   */
+  const accueillir = (btn) => {
+    if (!btn) return false;
+    const bloc = barre.querySelector('[data-categorie="Outils"]');
+    if (!bloc) return false;
+    bloc.appendChild(btn);
+    // Garde-fou : accueillir peut etre appele avant la fin de l'installation.
+    try { placerPoignee(); } catch { /* pas encore prete, le filet la replacera */ }
+    return true;
+  };
 
   const poignee = doc.createElement('button');
   poignee.id = 'wt-barre-poignee';
@@ -280,6 +332,7 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
     masquer,
     basculer,
     replacer: placerPoignee,
+    accueillir,
     detruire() { obs?.disconnect?.(); barre.remove(); poignee.remove(); },
   };
 }
