@@ -630,10 +630,50 @@ async function init() {
         surMessage: (m) => window.__wtToast?.(m),
       }));
       window.__godsEyeView.hq = hq;
+      // 🏰 HUB HQ : un overlay CENTRE par-dessus le globe, pas une fenetre
+      // collee a un bord. Il fallait un `element` : sans lui le dock refusait
+      // le panneau et le bouton HQ ne faisait rien.
+      const hubHQ = document.createElement('div');
+      hubHQ.className = 'wt-hq-hub';
+      hubHQ.innerHTML = `
+        <p class="wt-hq-intro">Ta tour de guet. Elle se pose a ta position GPS,
+          sinon sur le point vise, et sert de point de retour.</p>
+        <div class="wt-hq-actions">
+          <button type="button" data-hq="centrer">🎯 Cap sur la tour</button>
+          <button type="button" data-hq="poser">📍 Poser ici</button>
+          <button type="button" data-hq="visible">👁 Afficher / masquer</button>
+        </div>
+        <p class="wt-hq-etat" aria-live="polite"></p>`;
+      const etatHQ = hubHQ.querySelector('.wt-hq-etat');
+      const rafraichirHQ = () => {
+        const d = hq?.distance?.();
+        const p = hq?.position?.();
+        etatHQ.textContent = [
+          p ? `Position : ${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}` : null,
+          Number.isFinite(d) ? `Distance : ${(d / 1000).toFixed(1)} km` : null,
+          hq?.visible?.() ? 'Visible' : 'Masquee',
+        ].filter(Boolean).join(' · ');
+      };
+      hubHQ.addEventListener('click', (ev) => {
+        const a = ev.target?.dataset?.hq;
+        if (!a) return;
+        if (a === 'centrer') hq?.centrer?.();
+        if (a === 'poser') {
+          const c = viewer.camera?.positionCartographic;
+          if (c) {
+            hq?.deplacer?.(Cesium.Math.toDegrees(c.latitude), Cesium.Math.toDegrees(c.longitude));
+            window.__wtToast?.('🏰 HQ repose sous la camera.');
+          }
+        }
+        if (a === 'visible') hq?.activer?.(!hq?.visible?.());
+        rafraichirHQ();
+      });
+      rafraichirHQ();
       window.__godsEyeView.dock?.ajouter?.({
         id: 'hq', icone: '🏰', libelle: 'HQ', groupe: 'vues',
-        titre: '🏰 HQ — LA TOUR DE GUET DANS LE CIEL', element: null, cote: 'droite',
-        surClic: () => hq.centrer(),
+        titre: '🏰 HQ — LA TOUR DE GUET DANS LE CIEL',
+        element: hubHQ, cote: 'centre',
+        surOuverture: rafraichirHQ,
       });
 
       // 🎛 COCKPIT : en mode vol, une seule instrumentation, centrée, façon

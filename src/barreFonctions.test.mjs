@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CATEGORIES, revelerPanneau, initBarreFonctions } from './barreFonctions.js';
+import { readFileSync } from 'node:fs';
+const CSS_SOURCE = readFileSync(new URL('./barreFonctions.js', import.meta.url), 'utf8');
 
 test('les categories sont nommees et non vides', () => {
   assert.ok(CATEGORIES.length >= 4);
@@ -101,4 +103,29 @@ test('initBarreFonctions construit la barre sans DOM reel', () => {
 test('initBarreFonctions degrade proprement sans document', () => {
   const api = initBarreFonctions({ document: null });
   assert.doesNotThrow(() => { api.afficher(); api.masquer(); api.basculer(); api.detruire(); });
+});
+
+// ── Defauts signales apres essai en preview ────────────────────────────────
+
+test('la barre masque le rail du dock : plus de redondance visuelle', () => {
+  // Les prereglages TOUT / EXPLORER / VOL doublonnaient la barre.
+  for (const sel of ['.wt-dock-presets', '.wt-dock-categories', '.wt-dock-groupe']) {
+    assert.ok(CSS_SOURCE.includes(sel), `${sel} doit etre neutralise par la barre`);
+  }
+});
+
+test('la barre se cale sur la hauteur mesuree du dock, pas sur une valeur en dur', () => {
+  // Une marge fixe (4.6rem) passait PAR-DESSUS les boutons voix.
+  assert.ok(CSS_SOURCE.includes('--wt-barre-bas'),
+    'la position doit venir d une variable mesuree au runtime');
+  assert.ok(!CSS_SOURCE.includes('bottom: calc(2vh + 4.6rem)'),
+    'plus aucune marge en dur qui recouvre le dock');
+});
+
+test('initBarreFonctions expose replacer pour repositionner a la demande', () => {
+  const doc = fauxDoc();
+  const api = initBarreFonctions({ document: doc });
+  assert.equal(typeof api.replacer, 'function');
+  assert.doesNotThrow(() => api.replacer());
+  api.detruire();
 });

@@ -125,6 +125,17 @@ const CSS = `
 @keyframes wt-dock-pop { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
 .wt-dock-panel.gauche { left: 12px; }
 .wt-dock-panel.droite { right: 12px; }
+/* Un hub se pose PAR-DESSUS le globe, centre : cale sur un bord il se lisait
+   comme une fenetre perdue dans un coin. */
+.wt-dock-panel.centre {
+  left: 50%; transform: translateX(-50%);
+  bottom: auto; top: 50%; margin-top: -18vh;
+  width: min(520px, 94vw); max-height: 62vh;
+  border-color: rgba(0,212,255,0.55);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.7), 0 0 34px rgba(0,212,255,0.14);
+}
+@keyframes wt-hub-pop { from { transform: translate(-50%, 10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+.wt-dock-panel.centre { animation: wt-hub-pop 170ms ease; }
 .wt-dock-panel .wt-dock-titre {
   padding: 8px 12px; font-size: 9px; letter-spacing: 3px; font-weight: 700;
   color: #00d4ff; border-bottom: 1px solid rgba(0,212,255,0.2);
@@ -247,7 +258,9 @@ export function initMobiDock({
       return null;
     }
     const wrap = document.createElement('div');
-    wrap.className = `wt-dock-panel ${p.cote === 'droite' ? 'droite' : 'gauche'} wt-dock-cache`;
+    // 'centre' = hub en overlay par-dessus le globe ; sinon ancre a un bord.
+    const cote = ['droite', 'centre'].includes(p.cote) ? p.cote : 'gauche';
+    wrap.className = `wt-dock-panel ${cote} wt-dock-cache`;
     wrap.id = `wt-dock-${p.id}`;
     wrap.innerHTML = `
       <div class="wt-dock-titre"><span>${p.titre}</span>

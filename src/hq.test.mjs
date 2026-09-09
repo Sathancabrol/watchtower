@@ -53,3 +53,22 @@ test('distanceTerrestre : Sète → Montpellier ≈ 25 km', () => {
 test('distanceTerrestre : un point sur lui-même = 0', () => {
   assert.ok(distanceM({ lat: 43.4, lon: 3.69 }, { lat: 43.4, lon: 3.69 }) < 1);
 });
+
+// ── Hub HQ : overlay centre, pas fenetre collee a un bord ─────────────────
+import { readFileSync as _lire } from 'node:fs';
+
+test('le dock accepte un panneau centre en overlay', () => {
+  const src = _lire(new URL('./mobiDock.js', import.meta.url), 'utf8');
+  assert.ok(src.includes(".wt-dock-panel.centre"),
+    'la classe centre doit exister');
+  assert.ok(src.includes("['droite', 'centre'].includes(p.cote)"),
+    'cote:centre ne doit plus retomber en gauche');
+});
+
+test('HQ est branche comme hub centre avec un element reel', () => {
+  const m = _lire(new URL('./main.js', import.meta.url), 'utf8');
+  assert.ok(m.includes("cote: 'centre'"), 'HQ doit etre centre');
+  assert.ok(m.includes('wt-hq-hub'), 'HQ doit avoir un contenu');
+  assert.ok(!/id: 'hq',[\s\S]{0,220}element: null/.test(m),
+    'element:null faisait rejeter le panneau par le dock');
+});

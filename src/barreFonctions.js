@@ -22,7 +22,9 @@ const STYLE_ID = 'wt-barre-fonctions-css';
 const CSS = `
 #wt-barre {
   position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: calc(2vh + 4.6rem); z-index: 144;
+  /* Hauteur reelle du dock, mesuree au runtime : une valeur en dur passait
+     PAR-DESSUS les boutons voix et les masquait. */
+  bottom: var(--wt-barre-bas, calc(2vh + 9rem)); z-index: 144;
   display: flex; gap: 6px; align-items: stretch;
   max-width: calc(100vw - 2rem); padding: 4px 6px;
   overflow-x: auto; overflow-y: visible;
@@ -34,6 +36,17 @@ const CSS = `
 #wt-barre::-webkit-scrollbar { height: 5px; }
 #wt-barre::-webkit-scrollbar-thumb { background: rgba(0,212,255,.4); border-radius: 3px; }
 #wt-barre.wt-cache { display: none; }
+
+/* ── Fin de la redondance visuelle ──────────────────────────────────────
+   Le rail du bas (prereglages TOUT / EXPLORER / VOL, puis les categories)
+   proposait EXACTEMENT les memes fonctions que cette barre, en deux clics
+   de plus. On masque le rail : ses boutons restent dans le DOM, donc
+   dock.ouvrir() continue de fonctionner en les cliquant par programme.
+   Rien n est supprime, seul l empilement visuel disparait.                */
+#wt-dock .wt-dock-presets,
+#wt-dock .wt-dock-categories,
+#wt-dock .wt-dock-groupe { display: none !important; }
+#wt-dock { background: none !important; padding: 0 !important; max-height: 0 !important; }
 
 #wt-barre .wt-bf-cat {
   position: relative; display: flex; gap: 3px; align-items: center;
@@ -76,13 +89,13 @@ const CSS = `
 
 #wt-barre-poignee {
   position: fixed; left: 50%; transform: translateX(-50%);
-  bottom: calc(2vh + 4.6rem); z-index: 145;
+  bottom: var(--wt-barre-bas, calc(2vh + 9rem)); z-index: 145;
   padding: 2px 12px; border-radius: 0 0 6px 6px; cursor: pointer;
   background: rgba(6, 14, 22, 0.8); color: #7fe7ff;
   border: 1px solid rgba(0, 212, 255, 0.3); border-top: none;
   font: 700 9px/1.5 system-ui, sans-serif; letter-spacing: .1em;
 }
-@media (max-width: 900px) { #wt-barre { bottom: calc(2vh + 4rem); } }
+
 `;
 
 /**
@@ -209,12 +222,37 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
   poignee.title = 'Afficher ou masquer la barre des fonctions';
   doc.body.appendChild(poignee);
 
-  /** Place la poignée juste au-dessus de la barre, quelle que soit sa hauteur. */
+  /**
+   * Mesure le dock et pose la barre JUSTE AU-DESSUS de lui.
+   *
+   * Une marge en dur ne peut pas marcher : le dock change de hauteur selon le
+   * prereglage et le repli du panneau. On lit donc sa position reelle.
+   */
+  const MARGE = 8;
+  const mesurerDock = () => {
+    const d = doc.getElementById('command-dock');
+    if (!d) return null;
+    const r = d.getBoundingClientRect?.();
+    if (!r || !r.height) return null;
+    const vh = globalThis.innerHeight || 0;
+    if (!vh) return null;
+    // distance entre le bas de l ecran et le HAUT du dock
+    return Math.max(0, Math.round(vh - r.top));
+  };
+
+  /** Place la barre au-dessus du dock, puis la poignee au-dessus de la barre. */
   const placerPoignee = () => {
     const cache = barre.classList.contains('wt-cache');
     poignee.textContent = cache ? '▲ FONCTIONS' : '▼ FONCTIONS';
+
+    const bas = mesurerDock();
+    const socle = bas === null ? null : `${bas + MARGE}px`;
+    if (socle) doc.documentElement?.style?.setProperty('--wt-barre-bas', socle);
+
     const h = cache ? 0 : barre.offsetHeight;
-    poignee.style.bottom = `calc(2vh + 4.6rem + ${h}px)`;
+    poignee.style.bottom = socle
+      ? `calc(${socle} + ${h}px)`
+      : `calc(2vh + 9rem + ${h}px)`;
   };
 
   const afficher = () => { barre.classList.remove('wt-cache'); placerPoignee(); };
@@ -225,10 +263,23 @@ export function initBarreFonctions({ dock, document: doc = globalThis.document, 
   placerPoignee();
   globalThis.addEventListener?.('resize', placerPoignee);
 
+  // Le dock change de hauteur (prereglage, repli) sans evenement dedie :
+  // on observe sa taille pour que la barre ne le recouvre jamais.
+  let obs = null;
+  const cible = doc.getElementById('command-dock');
+  if (cible && typeof globalThis.ResizeObserver === 'function') {
+    obs = new globalThis.ResizeObserver(() => placerPoignee());
+    obs.observe(cible);
+  }
+  // Filet : quelques repositionnements apres le demarrage, le temps que les
+  // modules injectent leurs boutons (la voix arrive tard).
+  for (const t of [300, 900, 2000]) setTimeout(placerPoignee, t);
+
   return {
     afficher,
     masquer,
     basculer,
-    detruire() { barre.remove(); poignee.remove(); },
+    replacer: placerPoignee,
+    detruire() { obs?.disconnect?.(); barre.remove(); poignee.remove(); },
   };
 }
