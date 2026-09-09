@@ -143,14 +143,15 @@ export function dessinerMedaillon(nom, { taille = 256, couleur = '#00d4ff', sous
 
 const CSS = `
 #wt-medaillon-carte {
-  position: fixed; z-index: 970; left: 50%; top: 76px; transform: translateX(-50%);
-  width: min(320px, 92vw); display: none; flex-direction: column; gap: 5px;
+  /* Colle au bord droit : au centre en haut, il masquait la vue. */
+  position: fixed; z-index: 970; right: 14px; top: 104px; left: auto; transform: none;
+  width: min(272px, 78vw); display: none; flex-direction: column; gap: 5px;
   padding: 9px 11px; border-radius: 10px; font-family: var(--font-mono, monospace);
   background: rgba(6,10,18,0.95); color: #e8eaed;
   border: 1px solid rgba(0,212,255,0.45); box-shadow: 0 12px 34px rgba(0,0,0,0.6);
 }
 #wt-medaillon-carte.ouvert { display: flex; animation: wt-med-pop 200ms ease; }
-@keyframes wt-med-pop { from { opacity: 0; transform: translate(-50%, -8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes wt-med-pop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
 #wt-medaillon-carte .mc-titre { font-size: 12px; font-weight: 700; color: #00d4ff; letter-spacing: 1px; }
 #wt-medaillon-carte .mc-niveau { font-size: 8px; letter-spacing: 2px; opacity: .6; }
 #wt-medaillon-carte .mc-rang { display: flex; flex-wrap: wrap; gap: 4px; }

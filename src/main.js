@@ -20,6 +20,8 @@ import { deciderReprise, messageUtilisateur } from './data/reprisRendu.js';
 import { registerDataCredits } from './data/dataCredits.js';
 import { initCarte2D } from './carte2dControleur.js';
 import { initVolant } from './volant.js';
+import { initBarreFonctions } from './barreFonctions.js';
+import { initLisibilite } from './lisibilite.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
 import { initFreeVoiceCommands } from './voice/freeVoice.js';
@@ -737,6 +739,16 @@ async function init() {
         dock: window.__godsEyeView.dock,
         surMessage: (m) => window.__wtToast?.(m),
       }));
+      // 🎛 BARRE DES FONCTIONS — une seule ligne sous les boutons voix, toutes
+      // les fonctions classées par catégorie. Rend de nouveau atteignables
+      // CONTEXTE, CCTV, ÉPOQUES… Voir docs/AUDIT-UI.md.
+      window.__godsEyeView.barre = proteger('barre des fonctions', () => initBarreFonctions({
+        dock: window.__godsEyeView.dock,
+        surMessage: (m) => window.__wtToast?.(m),
+      }));
+      // Planchers de lisibilité (largeur des fiches, taille des boutons fermer
+      // et modifier). Chargé en dernier pour primer sur les styles des modules.
+      proteger('lisibilité', () => initLisibilite());
       // 🔲 CADRANS : la commune découpée en cadrans nommés (quartiers OSM, sinon
       // alphabet OTAN) avec tracé animé — donne un repère commun pour en parler.
       const cadrans = initCadrans(viewer, {

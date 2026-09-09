@@ -41,12 +41,14 @@ export const BASCULES_AFFICHAGE = Object.freeze([
   Object.freeze({
     id: 'anneau-celeste', libelle: 'Anneau céleste', icone: '☀',
     aide: 'Cercle du soleil et de la lune autour du globe.',
-    selecteur: '#celestial-ring-overlay', famille: 'vues', parDefaut: true,
+    // Éteint par défaut : signalé comme gênant, « ça gâche la vue ».
+    selecteur: '#celestial-ring-overlay', famille: 'vues', parDefaut: false,
   }),
   Object.freeze({
     id: 'medaillons', libelle: 'Médaillons flottants', icone: '🔵',
     aide: 'Pastilles de lieux qui flottent au-dessus de la carte.',
-    selecteur: '.wt-medaillon, #wt-medaillons', famille: 'vues', parDefaut: true,
+    // Éteint par défaut : « les pastilles/cercles des pays, communes, ça gonfle ».
+    selecteur: '#wt-medaillon-carte, .wt-medaillon, #wt-medaillons', famille: 'vues', parDefaut: false,
   }),
   Object.freeze({
     id: 'titre', libelle: 'Titre WATCHTOWER', icone: '🏷',

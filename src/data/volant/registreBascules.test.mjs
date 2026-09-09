@@ -71,9 +71,20 @@ test('toutAllumer restaure tout — rien n est perdu', () => {
 
 test('compter alimente la pastille du moyeu', () => {
   const total = BASCULES_AFFICHAGE.length;
-  assert.deepEqual(compter(normaliserEtat({})), { allumes: total, total });
-  assert.deepEqual(compter(basculer(normaliserEtat({}), 'titre')), { allumes: total - 1, total });
+  // Deux bascules sont eteintes d origine (anneau celeste, medaillons) : elles
+  // ont ete signalees comme genant la vue.
+  const allumesParDefaut = BASCULES_AFFICHAGE.filter((b) => b.parDefaut !== false).length;
+  assert.deepEqual(compter(normaliserEtat({})), { allumes: allumesParDefaut, total });
+  assert.deepEqual(compter(basculer(normaliserEtat({}), 'titre')),
+    { allumes: allumesParDefaut - 1, total });
   assert.equal(compter(null).total, total, 'etat absent tolere');
+});
+
+test('les elements signales comme genants sont eteints d origine', () => {
+  const e = normaliserEtat({});
+  assert.equal(e['anneau-celeste'], false, 'anneau celeste eteint par defaut');
+  assert.equal(e.medaillons, false, 'medaillons eteints par defaut');
+  assert.equal(e.minicarte, true, 'la minicarte reste allumee');
 });
 
 test('parFamille regroupe sans rien perdre ni inventer', () => {
