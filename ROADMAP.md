@@ -74,6 +74,13 @@ réordonner le démarrage — risque disproportionné sur une application que
 l'utilisateur veut pouvoir installer maintenant. Les gros jeux de données sont
 déjà en import dynamique (vérifié).
 
+**Note transverse — charge mentale** : `docs/CHARGE-MENTALE.md` fait le tri
+entre l'état de l'art réel et un document source aux références en partie
+fabriquées. **Décision : aucune caméra, aucun capteur, aucune biométrie.** La
+reconnaissance émotionnelle sur un lieu de travail est interdite en Europe
+(règlement IA, art. 5(1)(f), depuis le 02/02/2025). On agit uniquement sur la
+**charge extrinsèque** — ce que l'audit UI fait déjà.
+
 **Reste ouvert, par priorité** :
 
 1. **Époques et bâti** — attendent un test côté utilisateur, console ouverte.
