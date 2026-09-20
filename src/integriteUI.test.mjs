@@ -71,3 +71,32 @@ test('les fonctions signalees comme perdues par l utilisateur sont presentes', (
   // Calques et partage vivent dans top-center-actions.
   assert.ok(exposes.has('top-center-actions'), 'calques et partage atteignables');
 });
+
+test('les medaillons demarrent eteints et la bascule les atteint vraiment', () => {
+  // Plainte repetee : « les ronds qui survolent la terre ». Ce sont des
+  // billboards Cesium, pas du DOM : masquer leur carte HTML ne suffisait pas.
+  const REG = lire('data/volant/registreBascules.js');
+  const blocMed = REG.slice(REG.indexOf("id: 'medaillons'"));
+  assert.ok(/parDefaut:\s*false/.test(blocMed.slice(0, 420)),
+    'les medaillons doivent etre eteints au premier lancement');
+  assert.ok(!/actif: true,\s*\}\);/.test(MAIN.slice(MAIN.indexOf('initMedaillons'),
+    MAIN.indexOf('initMedaillons') + 700)),
+    'initMedaillons ne doit plus forcer actif:true');
+  const VOL = lire('volant.js');
+  assert.ok(VOL.includes("bascule.id === 'medaillons'"),
+    'la bascule doit relayer vers medaillons.activer() (entites Cesium)');
+});
+
+test('le relief sans cle a plusieurs miroirs et signale son absence', () => {
+  const MSC = lire('mapStackController.js');
+  assert.ok(MSC.includes('MIROIRS_TERRAIN_SANS_CLE'), 'liste de miroirs presente');
+  const n = (MSC.match(/https:\/\/terrain\.reearth\.land/g) || []).length;
+  assert.ok(n >= 3, `au moins 3 routes de terrain, vu ${n}`);
+  // On verifie la LISTE, pas les commentaires qui l'expliquent.
+  const liste = MSC.slice(MSC.indexOf('const MIROIRS_TERRAIN_SANS_CLE'),
+    MSC.indexOf('];', MSC.indexOf('const MIROIRS_TERRAIN_SANS_CLE')));
+  assert.ok(!liste.includes('tiles.mapterhorn.com'),
+    'Mapterhorn sert du raster Terrarium, illisible par CesiumTerrainProvider');
+  assert.ok(/Relief 3D indisponible/.test(MSC),
+    'un globe plat doit etre annonce, pas subi en silence');
+});

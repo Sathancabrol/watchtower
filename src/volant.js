@@ -133,6 +133,14 @@ export function appliquerBascule(bascule, actif, doc) {
     n.style.visibility = actif ? '' : 'hidden';
     n.style.pointerEvents = actif ? '' : 'none';
   }
+  // ⚠ Certaines fonctions ne sont PAS du DOM : les medaillons sont des
+  // billboards Cesium qui flottent au-dessus du globe. Masquer leur carte
+  // HTML ne les eteignait pas — c'est pour ca que les ronds restaient
+  // visibles malgre la bascule. On relaie donc au module concerne.
+  if (bascule.id === 'medaillons') {
+    try { globalThis.__godsEyeView?.medaillons?.activer?.(Boolean(actif)); }
+    catch { /* module absent : la bascule reste sans effet, sans casser */ }
+  }
 }
 
 /**

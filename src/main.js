@@ -21,6 +21,7 @@ import { registerDataCredits } from './data/dataCredits.js';
 import { initCarte2D } from './carte2dControleur.js';
 import { initVolant } from './volant.js';
 import { initBarreFonctions } from './barreFonctions.js';
+import { CLE_ETAT as CLE_BASCULES } from './data/volant/registreBascules.js';
 import { initLisibilite } from './lisibilite.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
@@ -922,10 +923,22 @@ async function init() {
       // grande icône qui FLOTTE et tourne lentement en 360°. Au clic :
       // fiche + monter / descendre dans la hiérarchie.
       try {
+        // ⚠ Les medaillons sont ETEINTS AU DEMARRAGE : ces grands ronds qui
+        // flottent au-dessus du globe ont ete juges genants (« ca gonfle, ca
+        // gache la vue »). La bascule « medaillons » du volant les rallume.
+        // On lit l'etat memorise pour ne pas contredire ce reglage.
+        let medaillonsActifs = false;
+        try {
+          const brut = localStorage.getItem(CLE_BASCULES);
+          if (brut) {
+            const lu = JSON.parse(brut);
+            if (typeof lu?.medaillons === 'boolean') medaillonsActifs = lu.medaillons;
+          }
+        } catch { /* stockage indisponible : on reste eteint */ }
         const medaillons = initMedaillons(viewer, {
           fiche: (lon, lat, nom) => window.__godsEyeView.fiche?.ouvrir(lon, lat, nom),
           surMessage: (m) => window.__wtToast?.(m),
-          actif: true,
+          actif: medaillonsActifs,
         });
         window.__godsEyeView.medaillons = medaillons;
       } catch (e) { console.error('[watchtower] medaillons:', e); }

@@ -137,6 +137,23 @@ const ESRI_ATTRIBUTION_HTML =
 // URL (review correction, spec §1a).
 const REEARTH_TERRAIN_URL = 'https://terrain.reearth.land/cesium-mesh/ellipsoid';
 
+// ⚠ RELIEF SANS CLE : un seul serveur = un seul point de panne. Quand
+// Re:Earth ne repond pas, Cesium retombe sur un ellipsoide PLAT et la vue 3D
+// parait « cassee » alors que tout fonctionne. On essaie donc plusieurs
+// miroirs quantized-mesh gratuits avant d'abandonner le relief.
+// Routes documentees par Re:Earth Terrain (terrain.reearth.land) :
+//   /{tileset}/cesium-mesh/{data_type}   avec tileset = mapterhorn-egm08
+// La forme courte /cesium-mesh/ellipsoid est l'alias par defaut. On garde en
+// secours la forme explicite, puis le datum geoidal : si l'alias change ou
+// qu'une route repond mal, le relief survit.
+// ⚠ Ne PAS mettre ici tiles.mapterhorn.com : il sert du Terrarium raster,
+// que CesiumTerrainProvider ne sait pas lire (il lui faut du quantized-mesh).
+const MIROIRS_TERRAIN_SANS_CLE = [
+  REEARTH_TERRAIN_URL,
+  'https://terrain.reearth.land/mapterhorn-egm08/cesium-mesh/ellipsoid',
+  'https://terrain.reearth.land/mapterhorn-egm08/cesium-mesh/geoid',
+];
+
 /**
  * Controls the active globe/map stack. Google Photorealistic 3D Tiles remain
  * the cinematic default, while Cesium ion world imagery and OSM run as globe
@@ -532,12 +549,30 @@ export class MapStackController {
    */
   async _getKeylessTerrainProvider() {
     if (this._reearthTerrainProvider) return this._reearthTerrainProvider;
-    try {
-      this._reearthTerrainProvider = await Cesium.CesiumTerrainProvider.fromUrl(REEARTH_TERRAIN_URL);
-    } catch (error) {
-      console.warn('[mapStackController] Re:Earth terrain unavailable, falling back to flat ellipsoid terrain:', error);
-      this._reearthTerrainProvider = new Cesium.EllipsoidTerrainProvider();
+    const echecs = [];
+    for (const url of MIROIRS_TERRAIN_SANS_CLE) {
+      try {
+        this._reearthTerrainProvider = await Cesium.CesiumTerrainProvider.fromUrl(url);
+        this.keylessTerrainSource = url;
+        if (echecs.length) {
+          console.info(`[mapStackController] relief sans cle via le miroir ${url}`);
+        }
+        return this._reearthTerrainProvider;
+      } catch (error) {
+        echecs.push(`${url} (${error?.message || error})`);
+      }
     }
+    // Aucun miroir : on garde un globe utilisable, mais PLAT. Le dire tout
+    // haut evite de croire que la 3D est cassee.
+    console.warn(
+      '[mapStackController] aucun relief sans cle joignable, globe plat. '
+      + `Miroirs essayes : ${echecs.join(' | ')}`,
+    );
+    this.keylessTerrainSource = null;
+    this._onError?.(
+      'Relief 3D indisponible (serveurs de terrain injoignables) : globe affiché à plat.',
+    );
+    this._reearthTerrainProvider = new Cesium.EllipsoidTerrainProvider();
     return this._reearthTerrainProvider;
   }
 
