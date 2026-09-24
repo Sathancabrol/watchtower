@@ -48,6 +48,123 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
+## ⭐ CAP FIXÉ (25/09/2026) — décisions d'architecture
+
+Arbitrages rendus après l'audit technique du 25/09/2026. Rapport intégral et
+reproductible : `docs/AUDIT-2026-09-25.md`. Ces cinq décisions commandent
+toutes les itérations qui suivent.
+
+### D1 — WATCHTOWER est une application de bureau installable
+
+Cible : une personne **sans aucune connaissance technique** télécharge un
+fichier, clique sur une icône, et l'application s'installe avec tout ce dont
+elle a besoin. Elle fonctionne **gratuitement** dès le premier lancement ; les
+clés API et les comptes tiers (Google et autres) ne sont que des **suppléments**
+optionnels, ajoutables depuis l'interface.
+
+**Conséquence majeure — l'architecture actuelle est la bonne.** L'audit avait
+classé comme risque n°1 le fait que `vite.config.js` (7 946 lignes, 28 routes
+`/api/*`) serve de backend et disparaisse au `build`. Dans un modèle
+installable, ce serveur devient le **serveur local embarqué** de l'application.
+**Il n'y a rien à réécrire** : ce qui était un défaut de déploiement devient le
+cœur du produit.
+
+Ce choix apporte en prime ce qu'un site hébergé ne pourrait pas offrir : les
+clés restent sur la machine de l'utilisateur ; le cache disque (`.gev-cache/`)
+devient une **réserve hors ligne** qui grossit à l'usage ; et l'accès au réseau
+local ouvre des fonctions impossibles dans un navigateur distant.
+
+**Reste à faire** : choisir l'empaquetage (Electron, Tauri ou Pinokio — noter
+que `scripts/pinokio-environment.mjs` existe déjà), produire les installeurs
+Windows/macOS/Linux, et garantir un premier lancement sans terminal.
+
+### D2 — RECON : jusqu'à la limite du légal, le reste en local éducatif
+
+Vérification faite dans le droit français (sources dans
+`docs/AUDIT-2026-09-25.md`) :
+
+* **Article 323-1 du code pénal** — l'accès ou le maintien *frauduleux* dans un
+  système de traitement automatisé de données : **3 ans et 100 000 €** (version
+  en vigueur depuis le 26/01/2023), aggravé si l'État est visé.
+  **L'article 323-7 punit la tentative des mêmes peines.**
+* **Article 323-3-1** — fournir un outil « conçu ou spécialement adapté » pour
+  commettre ces infractions est puni **des mêmes peines**, sauf « motif
+  légitime, notamment de recherche ou de sécurité informatique ». C'est
+  l'article décisif quand on **distribue** un logiciel au grand public.
+* **Arrêt Kitetoa c/ Tati** (CA Paris, 12e ch. A, 30/10/2002) — consulter des
+  données atteignables « par la simple utilisation d'un logiciel grand public
+  de navigation » **n'est pas frauduleux** : ces parties non protégées sont
+  « réputées non confidentielles ». La consultation de données publiques est
+  donc **licite**.
+
+**Règle retenue pour WATCHTOWER — deux régimes séparés :**
+
+| Régime | Contenu | Cible autorisée |
+|---|---|---|
+| 🟢 **PASSIF — activé par défaut** | DNS, WHOIS, certificat TLS publié, en-têtes HTTP, ASN/BGP, Wikidata, registres ouverts, sanctions OFAC | **n'importe quel domaine public** — simple consultation de données publiées (jurisprudence Kitetoa) |
+| 🟠 **ACTIF — bridé, éducatif** | scan de ports, découverte de services, bannières | **uniquement `localhost`, `127.0.0.0/8` et les plages privées RFC 1918** (`10/8`, `172.16/12`, `192.168/16`) — donc le poste et le réseau de l'utilisateur |
+
+Le régime actif est **techniquement contraint dans le code**, pas seulement
+déconseillé dans la documentation : toute cible hors plages privées est
+**refusée par le serveur local**, avec le motif juridique affiché. Scanner son
+propre réseau ne constitue aucune infraction ; c'est l'usage éducatif voulu.
+
+**Explicitement écarté** : tout contournement d'authentification, toute
+exploitation de faille, tout scan de cible tierce. Un logiciel distribué à des
+non-spécialistes ne peut pas se prévaloir sereinement de l'exception de
+« motif légitime » de l'article 323-3-1.
+
+### D3 — Priorité : le territoire français
+
+L'effort porte d'abord sur les données FR (cadastre, INSEE, Géorisques, IGN
+Géoplateforme, entreprises, transports), avant l'OSINT mondial et avant
+l'export 3D. Le jeu d'essai reste **Thau Agglo**, l'objectif restant que
+**chaque commune** fonctionne.
+
+Chantier prioritaire déjà identifié : **WFS IGN Géoplateforme**
+(`https://data.geopf.fr/wfs/ows`), sans clé, **repéré mais jamais branché**.
+
+### D4 — L'audit de référence est celui du 25/09/2026
+
+Le cahier des charges transmis décrivait l'état du dépôt en **début de mois**.
+Plusieurs de ses constats sont **périmés** et ne doivent plus servir de base de
+décision. Rectifications établies par lecture du code :
+
+| Affirmation du brief | Réalité vérifiée le 25/09/2026 |
+|---|---|
+| « Aucun import GeoJSON/KML/GPX » | **Faux** — implémenté et branché (`src/watchtowerExtras.js:459-474`, `src/main.js:512`), formats KML/KMZ/GeoJSON/GPX par glisser-déposer |
+| « Dépendance aux serveurs publics sans proxy/cache » | **Faux** — 28 routes `/api/*` avec cache disque et 5 miroirs Overpass |
+| « 27 couches, 24 gratuites » | **29 couches, 26 gratuites**, 1 compte, 2 payantes |
+| « Worker 3D absent » | **Exact** — le bâti utilise `requestAnimationFrame` sur le thread principal |
+| « Identité de fork incomplète » | **Exact** — `package.json` toujours amont |
+| « Pas de RECON » | **Exact** — zéro fichier |
+
+### D5 — Traçabilité et reproductibilité maximales
+
+Règles désormais contraignantes, en plus de celles de la section 5 :
+
+* **Tout audit est daté, versionné et conservé** dans `docs/AUDIT-<date>.md`.
+  Aucun audit n'est écrasé : on en ajoute un nouveau.
+* **Tout constat cite son chemin et sa ligne** (`src/fichier.js:123`), afin
+  d'être revérifiable par un tiers.
+* **Toute mesure est accompagnée de sa commande**, pour être rejouable à
+  l'identique.
+* **Toute affirmation juridique cite son article ou sa décision** ; aucune
+  reformulation de mémoire.
+* **Ce qui n'a pas pu être vérifié est déclaré comme tel**, avec le motif.
+
+### Plan retenu (ordre d'exécution)
+
+| # | Étape | Priorité | Dépend de |
+|---|---|---|---|
+| 1 | `docs/ARCHITECTURE.md` : les 28 routes `/api/*`, leur portée, le serveur local | **P0** | — |
+| 2 | Achever le fork : `package.json`, `TESTING.md`, README, worker 3D, comptage des couches | **P0** | — |
+| 3 | Empaquetage installable + assistant de premier lancement (clés facultatives) | **P0** | D1 |
+| 4 | Territoire FR : brancher le WFS IGN Géoplateforme, enrichir la base hors ligne | **P1** | — |
+| 5 | Robustesse : miroirs OSRM, repli de géocodage | **P1** | — |
+| 6 | RECON passif (DNS/WHOIS/TLS) puis actif bridé aux plages privées | **P2** | D1, D2 |
+| 7 | Export 3D (GLB puis STL) | **P2** | — |
+
 ## 0. Itération 23 — intégrité, performance, UX
 
 > 🔒 **Itération de consolidation.** L'itération 22 avait masqué le rail du
