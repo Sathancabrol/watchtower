@@ -74,6 +74,14 @@ réordonner le démarrage — risque disproportionné sur une application que
 l'utilisateur veut pouvoir installer maintenant. Les gros jeux de données sont
 déjà en import dynamique (vérifié).
 
+**Itération 24 — ☀ SOLEIL (fait)** : les fonctions de suncalc.org, calculées
+**en local** (algorithme SunCalc/Meeus, aucune API, aucune clé, hors ligne).
+Position du soleil et de la lune, 13 phases du jour (aube astronomique →
+crépuscule astronomique), heure dorée, **ombres portées** dans la scène 3D,
+curseur d'heure, trajectoire du soleil. Validé contre les **valeurs de
+référence publiées par SunCalc** : écart < 1 min sur les heures, < 0,01° sur
+les positions. Modules `src/data/soleil/calculSolaire.js` + `src/soleil.js`.
+
 **Note transverse — charge mentale** : `docs/CHARGE-MENTALE.md` fait le tri
 entre l'état de l'art réel et un document source aux références en partie
 fabriquées. **Décision : aucune caméra, aucun capteur, aucune biométrie.** La
