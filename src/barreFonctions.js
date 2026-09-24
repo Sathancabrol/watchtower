@@ -141,6 +141,7 @@ export const CATEGORIES = Object.freeze([
       { icone: '🏙', info: 'Bâti 3D', dock: 'bati' },
       { icone: '🔲', info: 'Cadrans', dock: 'cadrans' },
       { icone: '🕰', info: 'Époques', dock: 'temps' },
+      { icone: '☀', info: 'Soleil — ombres, lever, coucher', dock: 'soleil' },
       { icone: '🎚', info: 'Visuel +', cible: 'pp-toggles' },
     ]),
   }),

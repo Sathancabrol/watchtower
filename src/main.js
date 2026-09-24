@@ -21,6 +21,7 @@ import { registerDataCredits } from './data/dataCredits.js';
 import { initCarte2D } from './carte2dControleur.js';
 import { initVolant } from './volant.js';
 import { initBarreFonctions } from './barreFonctions.js';
+import { initSoleil } from './soleil.js';
 import { CLE_ETAT as CLE_BASCULES } from './data/volant/registreBascules.js';
 import { initLisibilite } from './lisibilite.js';
 import { SceneDirector } from './scenes/director.js';
@@ -589,6 +590,13 @@ async function init() {
         surMessage: (m) => window.__wtToast?.(m),
       }));
       window.__godsEyeView.historique = historique;
+      // ☀ SOLEIL : position, ombres portees, lever/coucher, heure doree.
+      // Tout est calcule en local (algorithme SunCalc/Meeus) : aucune API,
+      // aucune cle, fonctionne hors ligne.
+      const soleil = proteger('soleil', () => initSoleil(viewer, {
+        surMessage: (m) => window.__wtToast?.(m),
+      }));
+      window.__godsEyeView.soleil = soleil;
       const chantier = proteger('hub chantier', () => initChantier(viewer));
       window.__godsEyeView.chantier = chantier;
       // HQ : recentre sur ta position (GPS → domicile → orbite terrestre)
@@ -740,6 +748,7 @@ async function init() {
           { id: 'lieux', icone: '🧭', libelle: 'LIEUX', titre: '🧭 LIEUX — RECHERCHE + MES LIEUX', element: elDe(poste, 'panneaux', 'lieux'), cote: 'gauche', groupe: 'nav' },
           { id: 'histo', icone: '🏛', libelle: 'HISTO', titre: '🏛 ÉVÉNEMENTS HISTORIQUES DE LA COMMUNE', element: elDe(poste, 'panneaux', 'histo'), cote: 'droite', groupe: 'donnees' },
           { id: 'favoris', icone: '⭐', libelle: 'FAVORIS', titre: '⭐ FAVORIS — MES VUES + DOMICILE', element: elDe(poste, 'panneaux', 'favoris'), cote: 'gauche', groupe: 'nav' },
+          { id: 'soleil', icone: '☀', libelle: 'SOLEIL', titre: '☀ SOLEIL — POSITION, OMBRES, LEVER / COUCHER', element: elDe(soleil), cote: 'gauche', groupe: 'vues' },
           { id: 'temps', icone: '🕰', libelle: 'ÉPOQUES', titre: '🕰 MODE HISTORIQUE — LA VILLE À TRAVERS LE TEMPS (OSM)', element: elDe(historique), cote: 'gauche', groupe: 'vues' },
           { id: 'cam', icone: '📷', libelle: 'CAM', titre: '📷 CAMÉRAS GRATUITES — TRAFFIC / VILLE', element: elDe(cctv), cote: 'droite', groupe: 'donnees' },
         ],
