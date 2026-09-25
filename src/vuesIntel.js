@@ -22,6 +22,8 @@
 import { filComplet, filEconomie, filtrerParCategorie, tickerHtml } from './filInfo.js';
 import { htmlSources, liensVerification } from './tracabilite.js';
 import { resumeGeorisques, urlGeorisques } from './empreinte.js';
+import { EXECUTIF, JUMELAGES } from './data/territoire/gouvernance.js';
+import { ACCES_FLUVIAL, ACCES_MER, ACCES_TERRE, leveesPourMois } from './data/territoire/accesTerritoire.js';
 
 /** Vues de l'INTEL (les deux premières et la dernière existent déjà). */
 export const VUES_INTEL = Object.freeze([
@@ -174,6 +176,7 @@ async function rendreCommunal(c, ctx) {
     <div class="v-liste">${(ctx.listes ? Object.entries(ctx.listes) : []).slice(0, 8)
       .map(([k, v]) => `<div class="li">${ech(k)} — <b>${(v?.length ?? v) || 0}</b></div>`).join('')
       || '<div class="li">Lance « ANALYSER LA VUE » pour compter les équipements.</div>'}</div>
+    ${estFrontignan(com.code) ? blocAccesFrontignan() : ''}
     <div class="v-sous">SOURCES</div>
     <div class="v-liens">${htmlSources(['osm', 'insee', 'geoapigouv', 'ign'])}</div>
     <div class="v-note">Les cadrans découpent la commune en zones lisibles : les quartiers
@@ -219,6 +222,7 @@ async function rendrePolitique(c, ctx) {
     { nom: '🧠 ANALYSER LA VUE', aller: () => h().intel?.analyser?.() },
     { nom: '📰 FLUX PRESSE (GDELT)', aller: () => h().dock?.ouvrir?.('chat') },
   ]);
+  const blocFr = estFrontignan(com.code) ? blocGouvernanceFrontignan() : '';
   c.querySelector('.v-contenu').innerHTML = `
     <div class="v-titre">🗳 GOUVERNANCE & DOCUMENTS</div>
     <div class="v-grille">
@@ -234,11 +238,82 @@ async function rendrePolitique(c, ctx) {
       <div class="li"><a href="https://www.insee.fr/fr/statistiques/2011101?geo=COM-${ech(com.code || '')}" target="_blank" rel="noopener">Dossier INSEE</a> — population, revenus, emploi</div>
       ${com.nom ? `<div class="li"><a href="https://www.wikidata.org/w/index.php?search=${encodeURIComponent(com.nom)}&ns0=1&ns120=1" target="_blank" rel="noopener">Wikidata</a> — maire, mandats, liens</div>` : ''}
     </div>
+    ${blocFr}
     <div class="v-sous">SOURCES</div>
     <div class="v-liens">${htmlSources(['datagouv', 'bodacc', 'insee', 'wikidata', 'gdelt'])}</div>
     <div class="v-note">Aucune donnée « politique » n'est recalculée ici : on renvoie vers les
     <b>registres officiels</b>, seuls habilités. L'app ne note personne et n'évalue
     personne — elle donne les pièces du dossier.</div>`;
+}
+
+/**
+ * Bloc « points d'acces » de Frontignan pour la vue COMMUNAL.
+ * Met en avant la levee du pont mobile applicable au mois courant : c'est la
+ * contrainte de passage la plus operationnelle du territoire.
+ * @returns {string} Fragment HTML.
+ */
+function blocAccesFrontignan() {
+  const mois = new Date().getMonth() + 1;
+  const lv = leveesPourMois(mois);
+  const rdv = lv.surRendezVous
+    ? ` <b>uniquement sur rendez-vous</b> (${ech(ACCES_FLUVIAL.contactPontHorsSaison)})`
+    : '';
+  const terre = ACCES_TERRE.map((a) => {
+    const t = a.minutes ? ` — ${a.minutes} min` : '';
+    const res = a.fiable === false ? ' <i>(a verifier)</i>' : '';
+    return `<div class="li"><b>${ech(a.libelle)}</b> ${ech(a.detail)}${t}${res}</div>`;
+  }).join('');
+  return `
+    <div class="v-sous">POINTS D ACCES</div>
+    <div class="v-liste">${terre}</div>
+    <div class="v-sous">PONT MOBILE — levees du mois</div>
+    <div class="v-liste">
+      <div class="li">${ech(lv.periode)} : <b>${lv.heures.join(' · ')}</b>${rdv}</div>
+      <div class="li">Tirant d air ${ACCES_FLUVIAL.tirantAirM} m · mouillage ${ACCES_FLUVIAL.mouillageM} m
+        · ${ACCES_FLUVIAL.postesAmarrage} postes gratuits, escale ${ACCES_FLUVIAL.escaleMaxHeures} h max</div>
+    </div>
+    <div class="v-sous">ENTREE PAR LA MER</div>
+    <div class="v-liste">
+      <div class="li">Passe orientee ${ech(ACCES_MER.orientationPasse)} · tirant d eau ${ACCES_MER.tirantEauM} m</div>
+      <div class="li">${ech(ACCES_MER.deconseille)}</div>
+    </div>`;
+}
+
+/**
+ * Vrai si la commune affichee est Frontignan la Peyrade.
+ * @param {string} code Code INSEE.
+ * @returns {boolean} Correspondance.
+ */
+function estFrontignan(code) {
+  return String(code || '').trim() === '34108';
+}
+
+/**
+ * Bloc gouvernance propre a Frontignan : executif installe en mars 2026 et
+ * jumelages. Les delegations non publiees par la Ville restent vides plutot
+ * que devinees.
+ * @returns {string} Fragment HTML.
+ */
+function blocGouvernanceFrontignan() {
+  const adj = EXECUTIF.adjoints.map((a) => {
+    const d = a.delegation ? ech(a.delegation) : '<i>delegation non publiee</i>';
+    return `<div class="li"><b>${ech(a.nom)}</b>${a.premiere ? ' (1re adjointe)' : ''} — ${d}</div>`;
+  }).join('');
+  const jum = JUMELAGES.map((j) => {
+    const an = j.depuis ? ` (depuis ${j.depuis})` : '';
+    return `<div class="li">${ech(j.ville)} — ${ech(j.pays)}${an}</div>`;
+  }).join('');
+  return `
+    <div class="v-sous">EXECUTIF MUNICIPAL — mandat ${ech(EXECUTIF.mandat)}</div>
+    <div class="v-liste">
+      <div class="li"><b>${ech(EXECUTIF.maire.nom)}</b> — ${ech(EXECUTIF.maire.fonction)}
+        · delegation conservee : ${ech(EXECUTIF.maire.delegation)}</div>
+      ${adj}
+    </div>
+    <div class="v-sous">JUMELAGES</div>
+    <div class="v-liste">${jum}</div>
+    <div class="v-note">Executif installe le ${ech(EXECUTIF.installe)}.
+    Une delegation non publiee par la Ville est affichee comme telle : l app ne la devine pas.</div>`;
 }
 
 async function rendreEconomique(c, ctx) {
