@@ -74,7 +74,7 @@ import { COMMANDES } from './commandes.js';
 import { depuisObjet } from './data/dossiers.js';
 import { modelesOllama } from './llm.js';
 import { initRadio } from './radio.js';
-import { amenagerFenetres, amenagerToutes } from './fenetres.js';
+import { amenagerFenetres, amenagerToutes, amenagerPanneauxDock } from './fenetres.js';
 import { creerCockpit } from './cockpit.js';
 import { initCinematique } from './cinematique.js';
 import { initCctvCam } from './cctvCam.js';
@@ -1136,6 +1136,13 @@ async function init() {
       // création des fenêtres tardives (fiche, street view, photo…).
       amenagerToutes();
       window.setTimeout(() => amenagerToutes(), 2500);
+      // Les panneaux du dock naissent a l'ouverture : on les rattrape apres
+      // chaque clic, sinon ils restent figes et non redimensionnables.
+      amenagerPanneauxDock();
+      window.setTimeout(() => amenagerPanneauxDock(), 2500);
+      window.addEventListener('click', () => {
+        window.setTimeout(() => { try { amenagerPanneauxDock(); } catch { /* ok */ } }, 150);
+      });
       // « chaque bouton envoie vers sa fenêtre / fiche » — navigation globale
       window.wtAller = {
         pageChantier: (p) => {

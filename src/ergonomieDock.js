@@ -52,25 +52,24 @@ export function renommerEnOutils(doc) {
  */
 export function rapatrierBoutons(doc) {
   const hote = doc?.querySelector?.('#control-panel-popover');
-  if (!hote) return 0;
-  let zone = doc.querySelector('#wt-outils-repris');
+  const source = doc?.getElementById?.('top-center-actions');
+  if (!hote || !source) return 0;
+  // Deja rapatrie.
+  if (source.closest?.('#control-panel-popover')) return 0;
+  // ON DEPLACE LE CONTENEUR ENTIER, PAS LES BOUTONS.
+  // Tout l'habillage de ces icones est porte par des selecteurs
+  // « #top-center-actions button » (style.css l.1884-1919). Sortir les boutons
+  // du conteneur leur retire police, taille et couleur : ils paraissent casses.
+  // En deplacant la nav elle-meme, les selecteurs continuent de s'appliquer.
+  let zone = doc.getElementById('wt-outils-repris');
   if (!zone) {
     zone = doc.createElement('div');
     zone.id = 'wt-outils-repris';
     hote.appendChild(zone);
   }
-  let n = 0;
-  for (const id of A_RAPATRIER) {
-    const b = doc.getElementById(id);
-    // Deja deplace : on ne le compte pas deux fois.
-    if (!b || b.closest?.('#wt-outils-repris')) continue;
-    zone.appendChild(b);
-    n += 1;
-  }
-  const source = doc.getElementById('top-center-actions');
-  // La barre videe ne doit plus capter le pointeur au milieu de l'ecran.
-  if (source && !source.querySelector('button')) source.style.display = 'none';
-  return n;
+  zone.appendChild(source);
+  source.classList?.add?.('wt-dans-outils');
+  return source.querySelectorAll ? source.querySelectorAll('button').length : 1;
 }
 
 /** Styles du bouton chat et de la zone des outils rapatriés. */
@@ -79,9 +78,11 @@ const CSS = `
   display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
   padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.12);
 }
-#wt-outils-repris > button {
-  min-width: 38px; min-height: 38px; display: inline-flex;
-  align-items: center; justify-content: center;
+/* La nav est en position:fixed au milieu de l'ecran ; une fois dans le tiroir
+   elle doit redevenir un simple bloc, sinon elle flotte encore par-dessus. */
+#top-center-actions.wt-dans-outils {
+  position: static; transform: none; top: auto; left: auto;
+  z-index: auto; flex-wrap: wrap; gap: 8px;
 }
 #wt-chat-dock {
   display: flex; align-items: center; justify-content: center; gap: 6px;

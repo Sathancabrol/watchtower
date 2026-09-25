@@ -179,6 +179,8 @@ export function initMedaillons(viewer, options = {}) {
 
   const ds = new Cesium.CustomDataSource('wt-medaillons');
   viewer.dataSources.add(ds);
+  // Etat de depart explicite : sans cela la source est visible par defaut.
+  ds.show = options.actif !== false;
 
   const carte = document.createElement('div');
   carte.id = 'wt-medaillon-carte';
@@ -340,7 +342,9 @@ export function initMedaillons(viewer, options = {}) {
       });
       entites.set(niv, e);
     });
-    ds.show = true;
+    // JAMAIS « true » en dur : si la bascule est eteinte, forcer l'affichage
+    // ici rallume les pastilles par un chemin detourne.
+    ds.show = actif;
     governorRequestRender('wt-medaillons');
   }
 

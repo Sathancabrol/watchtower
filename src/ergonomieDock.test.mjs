@@ -58,27 +58,35 @@ test('le tiroir est renomme en OUTILS', () => {
   assert.equal(titre.children.at(-1).nodeText, TITRE_OUTILS);
 });
 
-test('les boutons flottants migrent dans le tiroir', () => {
+test('le conteneur entier migre dans le tiroir', () => {
   const { doc, reg, top } = faireDoc();
-  assert.equal(rapatrierBoutons(doc), A_RAPATRIER.length);
+  assert.ok(rapatrierBoutons(doc) > 0);
+  assert.equal(top.parent.id, 'wt-outils-repris', 'la nav elle-meme est deplacee');
   for (const id of A_RAPATRIER) {
-    assert.equal(reg.get(id).parent.id, 'wt-outils-repris', `${id} deplace`);
+    assert.equal(reg.get(id).parent.id, 'top-center-actions',
+      `${id} RESTE dans la nav : son habillage CSS en depend`);
   }
-  assert.equal(top.style.display, 'none', 'la barre videe ne capte plus le pointeur');
 });
 
-test('AUCUNE FONCTION PERDUE : les boutons sont deplaces, jamais supprimes', () => {
+test('AUCUNE FONCTION PERDUE : rien n est supprime', () => {
   const { doc, reg } = faireDoc();
   rapatrierBoutons(doc);
   for (const id of A_RAPATRIER) {
-    assert.ok(reg.get(id), `${id} existe toujours dans le document`);
-    assert.ok(reg.get(id).parent, `${id} est rattache a un parent`);
+    assert.ok(reg.get(id), `${id} existe toujours`);
+    assert.ok(reg.get(id).parent, `${id} est rattache`);
   }
+});
+
+test('REGRESSION : les boutons ne quittent jamais leur conteneur', () => {
+  // Les sortir de #top-center-actions leur retire tout leur CSS
+  // (style.css l.1884-1919) et les icones paraissent cassees.
+  const src = fs.readFileSync(new URL('./ergonomieDock.js', import.meta.url), 'utf8');
+  assert.ok(src.includes('zone.appendChild(source)'), 'on deplace la nav, pas les boutons');
 });
 
 test('l operation est idempotente', () => {
   const { doc } = faireDoc();
-  assert.equal(rapatrierBoutons(doc), A_RAPATRIER.length);
+  assert.ok(rapatrierBoutons(doc) > 0);
   assert.equal(rapatrierBoutons(doc), 0, 'un second passage ne redeplace rien');
 });
 

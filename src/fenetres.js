@@ -295,6 +295,34 @@ export const FENETRES_APP = Object.freeze([
   { selecteur: '#param-slider-panel', poignee: '.entete' },
 ]);
 
+/**
+ * Aménage les panneaux du dock (`.wt-dock-panel`) et la fenêtre INTEL.
+ *
+ * Ces panneaux sont créés à l'ouverture, donc APRÈS `amenagerToutes()` : ils
+ * échappaient au gestionnaire et restaient figés à leur bord, sans pouvoir
+ * être déplacés ni redimensionnés. On les rattrape ici, à la demande.
+ *
+ * Idempotent : un panneau déjà aménagé porte `data-wt-fen`.
+ * @param {Document} [doc] Document hôte.
+ * @returns {number} Nombre de panneaux aménagés à cet appel.
+ */
+export function amenagerPanneauxDock(doc = globalThis.document) {
+  if (!doc?.querySelectorAll) return 0;
+  let n = 0;
+  for (const el of doc.querySelectorAll('.wt-dock-panel')) {
+    if (el.dataset?.wtFen) continue;
+    const titre = el.querySelector('.wt-dock-titre');
+    if (!titre) continue;
+    const cle = `dock:${titre.textContent?.trim().slice(0, 40) || n}`;
+    try {
+      amenagerFenetre(el, { cle, poignee: '.wt-dock-titre', redimensionnable: true });
+      el.dataset.wtFen = '1';
+      n += 1;
+    } catch { /* un panneau recalcitrant ne doit pas bloquer les autres */ }
+  }
+  return n;
+}
+
 export function oublierGeometries() {
   try { window.localStorage.removeItem(CLE); } catch { /* ok */ }
 }
