@@ -50,7 +50,13 @@ const CSS = `
 .wti-cat .niv { display: flex; gap: 7px; align-items: center; margin-top: 6px; font-size: 8px; color: rgba(232,234,237,0.55); }
 .wti-cat .niv .barre { flex: 1; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.09); overflow: hidden; }
 .wti-cat .niv .barre i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #37b7ab, #7de8b0); }
-#wti-droit { position: absolute; top: 66px; right: 12px; width: 272px; padding: 12px; max-height: calc(100vh - 200px); overflow-y: auto; }
+#wti-droit { position: absolute; top: 66px; right: 12px; width: 310px; padding: 12px; max-height: calc(100vh - 200px); overflow-y: auto; }
+/* Zone centrale : l'INTEL doit ENCADRER l'ecran (haut + gauche + centre +
+   droite), pas se tasser dans une colonne laterale. Le centre reste en
+   retrait des deux colonnes pour ne jamais les recouvrir. */
+#wti-centre { position: absolute; top: 108px; left: 268px; right: 334px; bottom: calc(var(--wt-hauteur-dock, 150px) + 16px); padding: 14px 16px; overflow-y: auto; pointer-events: auto; }
+#wti-centre:empty { display: none; }
+@media (max-width: 1100px) { #wti-centre { left: 12px; right: 12px; top: 320px; } }
 #wti-droit .ongles { display: flex; gap: 5px; margin-bottom: 8px; }
 #wti-droit .ong { flex: 1; cursor: pointer; padding: 6px; font-family: inherit; font-size: 8px; font-weight: 700; letter-spacing: 2px; border-radius: 7px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(232,234,237,0.7); }
 #wti-droit .ong.actif { background: rgba(120,200,190,0.14); border-color: #7dd3c8; color: #7dd3c8; }
@@ -167,6 +173,7 @@ export function initIntelTwin(viewer) {
       <div class="note">Indices calculés depuis les données ouvertes (INSEE via geo.gouv.fr ·
       OpenStreetMap, rayon 1,2 km). Heuristiques transparentes, pas une IA. Gratuit, sans clé.</div>
     </div>
+    <div id="wti-centre" class="wti-glass"></div>
     <div id="wti-droit" class="wti-glass">
       <div class="ongles">
         <button class="ong actif" data-v="contexte" type="button">CONTEXTE</button>

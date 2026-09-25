@@ -418,6 +418,10 @@ export function initIntelVues(root, options = {}) {
   // ── onglets + conteneurs ──
   const ongles = root.querySelector('.ongles');
   const droit = root.querySelector('#wti-droit');
+  // Les vues s'affichent au CENTRE (elles sont larges et se lisent mal dans une
+  // colonne de 310 px) ; repli sur la colonne droite si la zone n'existe pas,
+  // pour ne jamais perdre l'acces a une vue.
+  const centre = root.querySelector('#wti-centre') || droit;
   const vueContexte = root.querySelector('.vue-contexte');
   const vueProfil = root.querySelector('.vue-profil');
   const conteneurs = new Map();
@@ -435,7 +439,7 @@ export function initIntelVues(root, options = {}) {
     d.className = `wti-vue vue-${v.cle}`;
     d.style.display = 'none';
     d.innerHTML = `<div class="v-actions"></div><div class="v-contenu"></div>`;
-    if (droit) droit.appendChild(d);
+    if (centre) centre.appendChild(d);
     conteneurs.set(v.cle, d);
 
     b.addEventListener('click', () => {

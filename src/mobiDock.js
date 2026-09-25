@@ -137,13 +137,27 @@ const CSS = `
 @keyframes wt-hub-pop { from { transform: translate(-50%, 10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 .wt-dock-panel.centre { animation: wt-hub-pop 170ms ease; }
 .wt-dock-panel .wt-dock-titre {
-  padding: 8px 12px; font-size: 9px; letter-spacing: 3px; font-weight: 700;
+  padding: 6px 8px 6px 12px; font-size: 9px; letter-spacing: 3px; font-weight: 700;
   color: #00d4ff; border-bottom: 1px solid rgba(0,212,255,0.2);
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
 }
+/* Le libelle cede la place au bouton, jamais l'inverse : sans min-width:0 un
+   titre long pousse la croix hors du cadre et les deux se chevauchent. */
+.wt-dock-panel .wt-dock-titre > :first-child {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Cible de 32 px : en dessous, le bouton se voit mal et se rate au doigt. */
 .wt-dock-panel .wt-dock-fermer {
-  cursor: pointer; background: none; border: none; color: rgba(232,234,237,0.6);
-  font-size: 12px; font-family: inherit; padding: 0 2px;
+  cursor: pointer; flex: none; width: 32px; height: 32px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; line-height: 1; font-family: inherit;
+  color: rgba(232,234,237,0.92);
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 8px;
+}
+.wt-dock-panel .wt-dock-fermer:hover,
+.wt-dock-panel .wt-dock-fermer:focus-visible {
+  background: rgba(240,122,106,0.20); border-color: #f07a6a; color: #fff; outline: none;
 }
 .wt-dock-panel .wt-dock-corps { overflow-y: auto; flex: 1; }
 .wt-dock-cache { display: none !important; }

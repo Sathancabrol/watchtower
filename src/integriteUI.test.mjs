@@ -68,8 +68,9 @@ test('les fonctions signalees comme perdues par l utilisateur sont presentes', (
   for (const id of ['wt-intel', 'cam', 'temps', 'bati', 'cadastre', 'radio']) {
     assert.ok(exposes.has(id), `${id} doit rester atteignable`);
   }
-  // Calques et partage vivent dans top-center-actions.
-  assert.ok(exposes.has('top-center-actions'), 'calques et partage atteignables');
+  // Calques, partage et globe ont migre dans le tiroir OUTILS (#control-panel)
+  // via ergonomieDock.js : c est desormais lui qui doit rester atteignable.
+  assert.ok(exposes.has('control-panel'), 'calques, partage et globe atteignables');
 });
 
 test('les medaillons demarrent eteints et la bascule les atteint vraiment', () => {

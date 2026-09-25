@@ -24,6 +24,7 @@ import { initBarreFonctions } from './barreFonctions.js';
 import { initSoleil } from './soleil.js';
 import { CLE_ETAT as CLE_BASCULES } from './data/volant/registreBascules.js';
 import { initLisibilite } from './lisibilite.js';
+import { initErgonomieDock } from './ergonomieDock.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
 import { initFreeVoiceCommands } from './voice/freeVoice.js';
@@ -761,7 +762,7 @@ async function init() {
           { icone: '🧠', libelle: 'INTEL', cibleId: 'wt-intel', groupe: 'donnees', titre: '🧠 INTEL — tableau de bord expert' },
           { icone: '🎚', libelle: 'VISUEL+', cibleId: 'pp-toggles', groupe: 'vues', titre: '🎚 Réglages visuels' },
           { icone: '🎛', libelle: 'PARAMS', cibleId: 'param-slider-panel', groupe: 'outils', titre: '🎛 Curseurs de paramètres' },
-          { icone: '⚙', libelle: 'ACTIONS', cibleId: 'top-center-actions', groupe: 'outils', titre: '⚙ Actions (calques, partage, globe)' },
+          { icone: '⚙', libelle: 'OUTILS', cibleId: 'control-panel', groupe: 'outils', titre: '⚙ Outils (calques, partage, globe, préréglages)' },
           { icone: '📌', libelle: 'ÉPINGLES', cibleId: 'wt-pins', groupe: 'vues', titre: '📌 Mes épingles' },
           { icone: '🗺', libelle: 'GLOBE', cibleId: 'wt-minimap', groupe: 'vues', titre: '🗺 Minicarte globe (boussole + matrice)' },
           { icone: '🛣', libelle: 'RUE', cibleId: 'wt-sv', groupe: 'vues', titre: '🛣 Street view — photos de rue libres' },
@@ -815,6 +816,14 @@ async function init() {
       // Planchers de lisibilité (largeur des fiches, taille des boutons fermer
       // et modifier). Chargé en dernier pour primer sur les styles des modules.
       proteger('lisibilité', () => initLisibilite());
+      // Le bloc voix est injecte a l'execution : on rejoue le regroupement
+      // quelques fois pour l'attraper quel que soit l'ordre de montage.
+      proteger('ergonomie dock', () => {
+        initErgonomieDock();
+        for (const d of [400, 1200, 2500]) setTimeout(() => {
+          try { initErgonomieDock(); } catch { /* sans consequence */ }
+        }, d);
+      });
       // 🔲 CADRANS : la commune découpée en cadrans nommés (quartiers OSM, sinon
       // alphabet OTAN) avec tracé animé — donne un repère commun pour en parler.
       const cadrans = initCadrans(viewer, {
