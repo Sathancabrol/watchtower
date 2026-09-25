@@ -40,10 +40,21 @@ export const BUDGETS = Object.freeze([
     source: 'https://www.frontignan.fr/flp-mag-36-le-dossier-un-financement-au-cordeau/',
   }),
   Object.freeze({
-    exercice: 'BP 2026', fonctionnement: null, investissement: null,
-    total: 52_000_000, tauxStables: true, fiable: true,
-    note: 'Voté par anticipation le 13 janvier 2026. Périmètre budget primitif seul.',
-    source: 'https://actudirect24.fr/frontignan-budget-taxes-elus/',
+    exercice: 'BP 2026', fonctionnement: 39_230_000, investissement: 13_130_000,
+    total: 52_360_000, tauxStables: true, fiable: true,
+    note: 'Voté le 13 janvier 2026 (41ᵉ et dernier conseil du mandat). Périmètre budget '
+      + 'primitif seul. Sections désormais renseignées par la source officielle de la Ville : '
+      + '39,23 M€ + 13,13 M€ = 52,36 M€. Remplace l’arrondi « 52 M€ » de la presse locale.',
+    source: 'https://www.frontignan.fr/ce-quil-faut-retenir-du-dernier-conseil-municipal/',
+  }),
+  Object.freeze({
+    exercice: 'CFU 2025 (exécuté)', fonctionnement: 37_300_000, investissement: null,
+    total: null, tauxStables: true, fiable: true,
+    note: 'Compte financier unique adopté en juin 2026 — comptes RÉALISÉS, à ne pas comparer '
+      + 'aux budgets prévisionnels ci-dessus. Dépenses de fonctionnement 37,30 M€ pour '
+      + '45 M€ de recettes, soit un excédent de 8,20 M€. Investissement en déficit brut de '
+      + '6,20 M€, ramené à 4,20 M€ après reports. Autofinancement 73 %, emprunt 2,30 M€.',
+    source: 'https://www.midilibre.fr/2026/06/06/budget-de-la-ville-de-frontignan-rigueur-epargne-et-investissements-au-rendez-vous-13403954.php',
   }),
   Object.freeze({
     exercice: '2026 consolidé (BP+BS+reports)', fonctionnement: 43_900_000, investissement: 20_900_000,
@@ -51,6 +62,75 @@ export const BUDGETS = Object.freeze([
     note: '9ᵉ année de taux stables. Périmètre élargi : Ne pas comparer au BP seul.',
     source: 'https://actudirect24.fr/frontignan-budget-taxes-elus/',
   }),
+]);
+
+/**
+ * Programme d'équipement 2026 — le détail des investissements votés.
+ *
+ * ATTENTION AU PÉRIMÈTRE, c'est la première source d'erreur sur ce dossier :
+ * la section d'investissement du BP 2026 vaut **13,13 M€** (elle inclut le
+ * remboursement du capital de la dette et les opérations d'ordre), tandis que le
+ * **programme d'équipement** — les travaux eux-mêmes — pèse **9,1 M€**.
+ * Le rapport d'orientation budgétaire de décembre 2025 annonçait « près de
+ * 10 M€ » : c'est le même agrégat, avant arbitrages finaux.
+ *
+ * `montant` est le crédit inscrit **pour la seule année 2026**, et non le coût
+ * total de l'opération. Un PEM à 25 M€ ne mobilise que 350 000 € en 2026,
+ * parce que l'exercice ne finance que l'étude opérationnelle.
+ */
+export const PROGRAMME_EQUIPEMENT_2026 = Object.freeze({
+  total: 9_100_000,
+  anneeExercice: 2026,
+  source: 'https://www.frontignan.fr/flp-mag-46-le-dossier-budgets-et-fiscalite-2026-responsabilite-et-proximite/',
+  postes: Object.freeze([
+    Object.freeze({
+      libelle: 'Aménagement du territoire', montant: 4_400_000, fiable: true,
+      note: 'Enveloppe agrégée regroupant les trois opérations ci-dessous et d’autres non détaillées.',
+    }),
+    Object.freeze({
+      libelle: 'Quai Voltaire prolongé', montant: 1_800_000, fiable: true,
+      note: 'Requalification + piste cyclable connectée à la voie verte. Crédit 2026.',
+    }),
+    Object.freeze({
+      libelle: 'Cœur de ville', montant: 1_200_000, fiable: true,
+      note: 'Tranche 2026 de l’opération pluriannuelle (voir la contradiction 15 / 35 M€).',
+    }),
+    Object.freeze({
+      libelle: 'Pôle d’échanges multimodal (PEM)', montant: 350_000, fiable: true,
+      note: 'ÉTUDE OPÉRATIONNELLE uniquement. Le coût total du PEM est de 25 M€, '
+        + 'à horizon 2028 : ne pas imputer 25 M€ à l’exercice 2026.',
+    }),
+    Object.freeze({
+      libelle: 'Maison Mathieu', montant: null, fiable: false,
+      note: 'Transformation de l’ancien Cinémistral en salle de spectacles. Opération votée, '
+        + 'montant non publié à ce jour.',
+    }),
+    Object.freeze({
+      libelle: 'École des Terres Blanches', montant: null, fiable: false,
+      note: 'Rénovation thermique et désimperméabilisation de la cour. Montant non publié.',
+    }),
+    Object.freeze({
+      libelle: 'Crèche Roger-Michel', montant: null, fiable: false,
+      note: 'Modernisation et extension. Montant non publié.',
+    }),
+  ]),
+});
+
+/**
+ * Les neuf axes d'investissement du rapport d'orientation budgétaire
+ * (conseil municipal du 4 décembre 2025), structurés en trois priorités :
+ * une ville dynamique, solidaire et attractive.
+ */
+export const AXES_ROB_2026 = Object.freeze([
+  'Aménagement urbain du Boulevard Urbain (BUC)',
+  'Mobilité partagée',
+  'Un cœur de ville rénové',
+  'Créer des équipements de proximité',
+  'Investir pour la petite enfance et l’éducation',
+  'Inventer la zone littorale de demain',
+  'Pôle d’échanges multimodal',
+  'Transition numérique',
+  'Dépollution',
 ]);
 
 /**
@@ -126,6 +206,38 @@ export const CONTRADICTIONS = Object.freeze([
     versions: ['23,9 M€ / 995 €.hab (fin 2024, DGFiP)', '≈ 21 M€ (CM de janvier 2026)'],
     retenu: 'les deux, à des dates différentes',
     justification: 'Évolution 2024→2026 cohérente avec un remboursement d’environ 2,3 M€/an.', resolu: true,
+  }),
+  Object.freeze({
+    sujet: 'Épargne nette 2025',
+    versions: ['≈ 1,40 M€ (Midi Libre, CFU 2025, juin 2026)', '≈ 3,1 M€ (dossier IA, sept. 2026)'],
+    retenu: '1,40 M€',
+    justification: 'Le chiffre de 3,1 M€ provient d’un tableau d’estimations non sourcé. La '
+      + 'source de presse cite le maire : épargne nette « le double de celle de 2024 » et '
+      + 'au-delà de l’objectif de 1,20 M€. Un taux d’épargne de 28 % serait incompatible '
+      + 'avec une capacité de désendettement de 7,5 ans.', resolu: true,
+  }),
+  Object.freeze({
+    sujet: 'Encours de dette 2026',
+    versions: ['≈ 21 M€ (CM janvier 2026)', '≈ 11 M€ / 456 € par habitant (dossier IA)'],
+    retenu: '≈ 21 M€',
+    justification: 'La valeur de 11 M€ est incompatible avec les 23,9 M€ constatés fin 2024 '
+      + 'et un remboursement d’environ 2,3 M€ par an. 21 M€ sur 24 136 habitants donne '
+      + '≈ 870 €/hab, et non 456 €.', resolu: true,
+  }),
+  Object.freeze({
+    sujet: 'Recours à l’emprunt en 2026',
+    versions: ['emprunt de 2,30 M€ (CFU 2025)', 'aucun nouvel emprunt, 0 € (dossier IA)'],
+    retenu: 'emprunt mobilisé',
+    justification: 'Le « 0 € » du dossier IA n’est sourcé par aucune délibération. La commune '
+      + 'communique sur la poursuite du désendettement, ce qui n’exclut pas un emprunt '
+      + 'inférieur au remboursement annuel.', resolu: true,
+  }),
+  Object.freeze({
+    sujet: 'Crédit 2026 du pôle d’échanges multimodal',
+    versions: ['350 000 € inscrits au programme d’équipement 2026', '25 M€ (coût total du projet)'],
+    retenu: 'les deux, périmètres distincts',
+    justification: 'CONFUSION FRÉQUENTE : 350 000 € financent l’étude opérationnelle de '
+      + 'l’exercice ; 25 M€ est le coût complet à horizon 2028, tous financeurs confondus.', resolu: true,
   }),
   Object.freeze({
     sujet: 'Population de l’agglomération',
