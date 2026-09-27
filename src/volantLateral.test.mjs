@@ -202,3 +202,45 @@ test('la largeur reste dans ses bornes', () => {
   assert.equal(largeurValide(217.6), 218, 'arrondi');
   assert.ok(LARGEUR_MIN < LARGEUR_DEFAUT && LARGEUR_DEFAUT < LARGEUR_MAX);
 });
+
+test('l oeil radial est retire : il faisait doublon avec l oeil du logo', () => {
+  const m = ELEMENTS_MASQUES.find((x) => x.selecteur === '#wt-volant');
+  assert.ok(m, 'le volant radial doit etre masque');
+  assert.match(m.raison, /doublon/i);
+});
+
+test('la barre du bas est masquee mais reste rappelable', () => {
+  const m = ELEMENTS_MASQUES.find((x) => x.selecteur === '#command-dock');
+  assert.ok(m, 'la barre du bas doit etre masquee');
+  assert.ok(m.couvertPar.includes('action:dock-bas'), 'il faut un moyen de la rappeler');
+  // ses trois fonctions visibles doivent AUSSI etre joignables directement
+  assert.ok(m.couvertPar.includes('dock:lieux'), 'la recherche de lieux doit rester joignable');
+  assert.ok(m.couvertPar.includes('dock:chat'), 'le chat doit rester joignable');
+});
+
+test('l action dock-bas rend sa visibilite a la barre du bas, sans la recreer', () => {
+  const dock = { classList: { valeurs: new Set(['wt-repris-par-volant']),
+    toggle(c) { if (this.valeurs.has(c)) this.valeurs.delete(c); else this.valeurs.add(c); },
+    contains(c) { return this.valeurs.has(c); } } };
+  const docAvant = globalThis.document;
+  globalThis.document = { querySelector: (s) => (s === '#command-dock' ? dock : null) };
+  try {
+    const entree = ENTREES_SUPPLEMENTAIRES.find((e) => e.id === 'dock-bas');
+    assert.equal(lancerAction(entree, {}), true);
+    assert.equal(dock.classList.contains('wt-repris-par-volant'), false, 'la barre revient');
+    assert.equal(lancerAction(entree, {}), true);
+    assert.equal(dock.classList.contains('wt-repris-par-volant'), true, 'et repart');
+  } finally {
+    globalThis.document = docAvant;
+  }
+});
+
+test('aucun bouton masque ne l est sans etre couvert — garde-fou global', () => {
+  const cles = new Set(toutesLesEntrees(construireCatalogue()).map((e) => e.cle));
+  for (const m of ELEMENTS_MASQUES) {
+    assert.ok(m.couvertPar.length > 0, `${m.selecteur} masque sans contrepartie`);
+    for (const c of m.couvertPar) {
+      assert.ok(cles.has(c), `${m.selecteur} annonce ${c}, absent du catalogue`);
+    }
+  }
+});

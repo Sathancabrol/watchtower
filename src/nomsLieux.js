@@ -20,6 +20,7 @@
 import * as Cesium from 'cesium';
 import { governorRequestRender } from './renderGovernor.js';
 import { amenagerFenetre } from './fenetres.js';
+import { echelleSelonAltitude, echelonDemandeUneCommune, zoneMondiale } from './data/geo/echelleVue.js';
 
 const CSS = `
 #wt-ville {
@@ -89,6 +90,18 @@ export function enFrance(lat, lon) {
 }
 
 /**
+ * Altitude ecrite comme on la lit : en metres pres du sol, en kilometres
+ * au-dela. « 0 km d'altitude » affiche a 400 m ne disait rien.
+ * @param {number} m
+ * @returns {string}
+ */
+export function lisibleAltitude(m) {
+  const h = Math.max(0, Number(m) || 0);
+  if (h < 2_000) return `${Math.round(h)} m d'altitude`;
+  return `${Math.round(h / 1000).toLocaleString('fr-FR')} km d'altitude`;
+}
+
+/**
  * @param {object} viewer
  * @param {{fenetres?:boolean}} [options]
  */
@@ -114,13 +127,34 @@ export function initNomsLieux(viewer, options = {}) {
   const metaEl = fen.querySelector('.wv-meta');
 
   let dernierCentre = null;
+  let dernierEchelon = '';
   let dernierPays = '';
   let enCours = false;
   let timer = null;
 
-  /** Nom du lieu central : commune FR (INSEE) ou Nominatim ailleurs. */
+  /**
+   * Nom du lieu central, A L'ECHELLE DE CE QUI EST A L'ECRAN.
+   *
+   * La fenetre annoncait la commune quelle que soit la hauteur : depuis
+   * l'espace elle affichait FRONTIGNAN - COMMUNE 34 alors que l'image montrait
+   * un quart de l'Europe. On lit donc d'abord l'echelon que la vue couvre
+   * reellement, et on ne descend au niveau communal que quand la commune
+   * remplit l'image.
+   */
   async function lieuCentral(lat, lon, altitude) {
-    if (enFrance(lat, lon)) {
+    const ech = echelleSelonAltitude(altitude);
+
+    // Echelons larges : reponse LOCALE, immediate, sans reseau.
+    if (ech.cle === 'continent') {
+      const z = zoneMondiale(lat, lon);
+      return {
+        nom: z.nom.toUpperCase(),
+        sous: z.type === 'continent' ? 'CONTINENT' : z.type === 'mer' ? 'MER' : 'OCÉAN',
+        meta: `${z.precision} · ${Math.round(altitude / 1000).toLocaleString('fr-FR')} km · zoome pour voir les pays`,
+      };
+    }
+
+    if (echelonDemandeUneCommune(ech.cle) && enFrance(lat, lon)) {
       try {
         const r = await fetch(`https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=nom,population,codeDepartement,codesPostaux`);
         const c = (await r.json())?.[0];
@@ -128,26 +162,41 @@ export function initNomsLieux(viewer, options = {}) {
           return {
             nom: c.nom,
             sous: `COMMUNE · ${c.codeDepartement || ''}`.trim(),
-            meta: `${(c.population || 0).toLocaleString('fr-FR')} hab. · ${c.codesPostaux?.[0] || ''} · ${Math.round(altitude / 1000)} km d'altitude`,
+            meta: `${(c.population || 0).toLocaleString('fr-FR')} hab. · ${c.codesPostaux?.[0] || ''} · ${lisibleAltitude(altitude)}`,
           };
         }
       } catch { /* repli Nominatim */ }
     }
-    // zoom Nominatim : 3 = pays, 8 = région, 10 = ville, 16 = adresse
-    const z = altitude > 6_000_000 ? 3 : altitude > 1_200_000 ? 6 : altitude > 200_000 ? 8 : altitude > 20_000 ? 10 : 14;
+    // Le zoom Nominatim suit l'echelon : on demande le PAYS quand on voit un
+    // pays, la region quand on voit une region. Demander l'adresse a 500 km
+    // etait la cause du nom de commune affiche depuis l'orbite.
+    const z = ech.zoomOsm;
     try {
       const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${z}&accept-language=fr`);
       const d = await r.json();
       const a = d?.address || {};
-      const nom = a.city || a.town || a.village || a.municipality || a.county || a.state || a.country || d?.name || '—';
-      const sous = a.city ? 'VILLE' : a.town ? 'VILLE' : a.village ? 'COMMUNE' : a.county ? 'DÉPARTEMENT' : a.state ? 'RÉGION' : a.country ? 'PAYS' : 'ZONE';
+      // On prend le champ qui CORRESPOND a l'echelon vise, et on ne redescend
+      // que s'il manque : sinon Nominatim renvoie la commune pour un cadrage
+      // national et on retombe dans le travers corrige ici.
+      const parEchelon = {
+        pays: [a.country],
+        region: [a.state, a.region, a.country],
+        departement: [a.county, a.state, a.country],
+        commune: [a.city, a.town, a.village, a.municipality, a.county],
+        quartier: [a.neighbourhood, a.suburb, a.city_district, a.city, a.town, a.village],
+      };
+      const suite = parEchelon[ech.cle] || [a.city, a.town, a.village, a.country];
+      const nom = suite.find(Boolean) || a.country || d?.name || '—';
       return {
-        nom,
-        sous,
-        meta: `${a.country || ''} · ${Math.round(altitude / 1000)} km d'altitude`.trim(),
+        nom: String(nom).toUpperCase(),
+        sous: ech.sous,
+        meta: `${a.country || ''} · ${lisibleAltitude(altitude)}`.replace(/^ · /, ''),
       };
     } catch {
-      return null;
+      // Hors ligne ou source muette : la base locale repond toujours quelque
+      // chose plutot que de laisser la fenetre figee sur l'ancien lieu.
+      const z = zoneMondiale(lat, lon);
+      return { nom: z.nom.toUpperCase(), sous: 'APPROX.', meta: `${z.precision} · ${lisibleAltitude(altitude)} · source locale` };
     }
   }
 
@@ -156,20 +205,34 @@ export function initNomsLieux(viewer, options = {}) {
     const lat = Cesium.Math.toDegrees(c.latitude);
     const lon = Cesium.Math.toDegrees(c.longitude);
     const alt = c.height;
-    if (alt > 25_000_000) {
-      nomEl.textContent = 'ORBITE';
-      sousEl.textContent = 'ESPACE';
-      metaEl.textContent = `${Math.round(alt / 1000).toLocaleString('fr-FR')} km d'altitude`;
+    const ech = echelleSelonAltitude(alt);
+
+    // Vue de l'espace : on annonce le continent ou l'ocean, pas « ORBITE ».
+    // C'est la reponse utile quand on regarde la Terre entiere — et elle est
+    // locale, donc instantanee.
+    if (ech.cle === 'espace') {
+      const z = zoneMondiale(lat, lon);
+      nomEl.textContent = z.nom.toUpperCase();
+      sousEl.textContent = z.type === 'continent' ? 'CONTINENT' : z.type === 'mer' ? 'MER' : 'OCÉAN';
+      metaEl.textContent = `${lisibleAltitude(alt)} · rapproche-toi pour voir les pays`;
+      dernierEchelon = ech.cle;
+      dernierCentre = { lat, lon };
       return;
     }
-    // ne réinterroge pas la source si la vue n'a presque pas bougé
-    if (dernierCentre && Math.hypot(lat - dernierCentre.lat, lon - dernierCentre.lon) * 111_000 < Math.max(250, alt * 0.12)) return;
+
+    // On reinterroge si la vue s'est deplacee OU si l'on a change d'echelon :
+    // zoomer sans bouger doit faire passer de « France » a « Occitanie » puis
+    // a « Frontignan », sinon le repere reste bloque sur l'echelle precedente.
+    const memeEchelon = dernierEchelon === ech.cle;
+    if (memeEchelon && dernierCentre
+      && Math.hypot(lat - dernierCentre.lat, lon - dernierCentre.lon) * 111_000 < Math.max(250, alt * 0.12)) return;
     if (enCours) return;
     enCours = true;
     const info = await lieuCentral(lat, lon, alt);
     enCours = false;
     if (!info) return;
     dernierCentre = { lat, lon };
+    dernierEchelon = ech.cle;
     nomEl.textContent = info.nom;
     sousEl.textContent = info.sous;
     metaEl.textContent = info.meta;

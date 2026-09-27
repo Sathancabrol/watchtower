@@ -82,6 +82,14 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
     aide: 'Passer l’application en plein écran',
     cheminAction: 'pleinEcran',
   },
+  {
+    id: 'dock-bas',
+    categorie: 'outils',
+    nom: 'Barre voix & lieux',
+    icone: '🎙',
+    aide: 'Rappeler la barre du bas : micro, recherche de lieux, préréglages visuels',
+    cheminAction: 'dockBas',
+  },
 ]);
 
 /**
@@ -106,6 +114,16 @@ export const ELEMENTS_MASQUES = Object.freeze([
     selecteur: '#wt-bascule-minicarte',
     raison: 'Interrupteur minicarte — repris comme bascule d’affichage',
     couvertPar: ['bascule:minicarte'],
+  },
+  {
+    selecteur: '#wt-volant',
+    raison: 'Œil radial — doublon de l’œil du logo, ses bascules sont dans Affichage',
+    couvertPar: ['bascule:minicarte'],
+  },
+  {
+    selecteur: '#command-dock',
+    raison: 'Barre du bas (lieux · voix · chat · préréglages) — rappelable depuis Outils',
+    couvertPar: ['action:dock-bas', 'dock:lieux', 'dock:chat', 'cible:control-panel'],
   },
 ]);
 
@@ -434,6 +452,15 @@ export function ouvrirEntree(entree, hub = globalThis.__godsEyeView) {
 export function lancerAction(entree, hub = globalThis.__godsEyeView) {
   const chemin = String(entree?.cheminAction || '');
   if (!chemin) return false;
+  if (chemin === 'dockBas') {
+    // La barre du bas est masquee, pas supprimee : on lui rend simplement sa
+    // visibilite. Micro, recherche de lieux et prereglages restent donc a un
+    // clic, et leurs ecouteurs n'ont jamais ete detaches.
+    const el = globalThis.document?.querySelector?.('#command-dock');
+    if (!el) return false;
+    el.classList?.toggle?.('wt-repris-par-volant');
+    return true;
+  }
   if (chemin === 'pleinEcran') {
     const doc = globalThis.document;
     if (!doc?.documentElement?.requestFullscreen) return false;
