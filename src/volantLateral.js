@@ -61,6 +61,55 @@ const DEPUIS_BARRE = Object.freeze({
 const CATEGORIE_BASCULE = 'affichage';
 
 /**
+ * Fonctions qui n'existaient QUE sous forme de bouton flottant sur l'écran.
+ * Elles doivent entrer dans le volant AVANT qu'on retire leur bouton, sinon
+ * on les perdrait. Chacune agit par `action`, pas en ouvrant un panneau.
+ */
+export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
+  {
+    id: 'carte-2d3d',
+    categorie: 'vues',
+    nom: 'Vue 2D / 3D',
+    icone: '🗺',
+    aide: 'Basculer entre la vue 3D avec relief et la vue 2D, plus légère',
+    cheminAction: 'carte2d.basculer',
+  },
+  {
+    id: 'plein-ecran',
+    categorie: 'modes',
+    nom: 'Plein écran',
+    icone: '⛶',
+    aide: 'Passer l’application en plein écran',
+    cheminAction: 'pleinEcran',
+  },
+]);
+
+/**
+ * Boutons flottants retirés de l'écran une fois le volant monté.
+ *
+ * `couvertPar` liste les clés du catalogue qui reprennent leurs fonctions :
+ * un test vérifie que chacune existe réellement. Tant qu'une fonction n'est
+ * pas couverte, son bouton NE DOIT PAS être masqué.
+ */
+export const ELEMENTS_MASQUES = Object.freeze([
+  {
+    selecteur: '#wt-barre',
+    raison: 'Barre de fonctions — intégralement reprise par le volant',
+    couvertPar: ['cible:wt-intel', 'dock:cadastre', 'dock:soleil', 'cible:control-panel'],
+  },
+  {
+    selecteur: '#wt-bascule2d',
+    raison: 'Bouton Vue 2D/3D — repris dans la catégorie Vues',
+    couvertPar: ['action:carte-2d3d'],
+  },
+  {
+    selecteur: '#wt-bascule-minicarte',
+    raison: 'Interrupteur minicarte — repris comme bascule d’affichage',
+    couvertPar: ['bascule:minicarte'],
+  },
+]);
+
+/**
  * Clé d'unicité d'une entrée : deux entrées qui ouvrent la même chose sont
  * la même fonction, quel que soit le registre d'origine.
  * @param {object} e
@@ -69,6 +118,7 @@ const CATEGORIE_BASCULE = 'affichage';
 export function cleEntree(e) {
   if (!e) return '';
   if (e.type === 'bascule') return `bascule:${e.id}`;
+  if (e.type === 'action') return `action:${e.id}`;
   if (e.dock) return `dock:${e.dock}`;
   if (e.cible) return `cible:${e.cible}`;
   return `nom:${String(e.nom || '').toLowerCase()}`;
@@ -150,6 +200,19 @@ export function construireCatalogue() {
     }
   }
 
+  // 4. Fonctions qui n'existaient que comme bouton flottant.
+  for (const e of ENTREES_SUPPLEMENTAIRES) {
+    poser(e.categorie, {
+      type: 'action',
+      id: e.id,
+      nom: e.nom,
+      icone: e.icone,
+      aide: e.aide,
+      cheminAction: e.cheminAction,
+      source: 'supplement',
+    });
+  }
+
   return CATEGORIES_VOLANT.map((c) => ({
     id: c.id,
     nom: c.nom,
@@ -183,14 +246,46 @@ export function filtrer(texte, catalogue = construireCatalogue()) {
 const CSS = `
 #wt-volant-lat {
   position: fixed; left: 0; top: 0; bottom: 0; z-index: 960;
-  width: 268px; display: flex; flex-direction: column;
+  width: var(--wt-vl-largeur, 268px); display: flex; flex-direction: column;
   background: linear-gradient(180deg, rgba(5,11,18,0.97), rgba(4,9,15,0.97));
   border-right: 1px solid rgba(0,212,255,0.28);
   font-family: var(--font-sans, system-ui, sans-serif); color: #e8eaed;
   transform: translateX(0); transition: transform .22s ease;
   box-shadow: 4px 0 24px rgba(0,0,0,0.45);
 }
-#wt-volant-lat.wt-vl-replie { transform: translateX(-268px); }
+#wt-volant-lat.wt-vl-replie { transform: translateX(calc(-1 * var(--wt-vl-largeur, 268px))); }
+/* MODE COMPACT : icônes seules, le volant se réduit à une colonne étroite. */
+#wt-volant-lat.wt-vl-compact { --wt-vl-largeur: 62px; }
+#wt-volant-lat.wt-vl-compact .vl-nom,
+#wt-volant-lat.wt-vl-compact .vl-compte,
+#wt-volant-lat.wt-vl-compact .vl-rech,
+#wt-volant-lat.wt-vl-compact .vl-pied,
+#wt-volant-lat.wt-vl-compact .vl-cat > summary span:nth-child(2),
+#wt-volant-lat.wt-vl-compact .vl-cat > summary .vl-n { display: none; }
+#wt-volant-lat.wt-vl-compact .vl-tete h2 { font-size: 0; }
+#wt-volant-lat.wt-vl-compact .vl-tete h2::after { content: '▤'; font-size: 14px; }
+#wt-volant-lat.wt-vl-compact .vl-tete { justify-content: center; padding: 10px 4px; }
+#wt-volant-lat.wt-vl-compact .vl-cat > summary { justify-content: center; padding: 8px 2px; }
+#wt-volant-lat.wt-vl-compact .vl-item { justify-content: center; padding: 6px 2px; }
+#wt-volant-lat.wt-vl-compact .vl-corps { padding: 0 4px 12px; }
+#wt-volant-lat.wt-vl-compact .vl-led { display: none; }
+#wt-volant-lat.wt-vl-compact .vl-item[aria-pressed="true"] {
+  background: rgba(0,212,255,0.28); border-color: #00d4ff;
+}
+/* POIGNÉE DE REDIMENSIONNEMENT — bord droit du volant. */
+#wt-volant-lat .vl-poignee {
+  position: absolute; top: 0; right: -3px; bottom: 0; width: 7px;
+  cursor: col-resize; z-index: 2;
+}
+#wt-volant-lat .vl-poignee:hover { background: rgba(0,212,255,0.3); }
+#wt-volant-lat .vl-reduire {
+  flex: none; width: 24px; height: 24px; cursor: pointer; border-radius: 5px;
+  color: #9fe9ff; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(0,212,255,0.28); font-size: 11px; line-height: 1;
+}
+#wt-volant-lat .vl-reduire:hover { background: rgba(0,212,255,0.22); }
+/* Boutons flottants repris par le volant : masqués, pas supprimés. */
+.wt-repris-par-volant { display: none !important; }
 #wt-volant-lat .vl-tete {
   display: flex; align-items: center; gap: 8px; padding: 10px 12px;
   border-bottom: 1px solid rgba(0,212,255,0.22); flex: none;
@@ -262,7 +357,7 @@ body.wt-volant-ouvert #wt-bascule2d,
 body.wt-volant-ouvert #wt-bascule-minicarte,
 body.wt-volant-ouvert #hud,
 body.wt-volant-ouvert #wt-panel {
-  left: 292px !important;
+  left: calc(var(--wt-vl-largeur, 268px) + 24px) !important;
   transition: left .22s ease;
 }
 /* Écran étroit : le volant se superpose au lieu de tout comprimer. */
@@ -276,7 +371,7 @@ body.wt-volant-ouvert #wt-panel {
 }
 /* Languette : elle reste visible même volant replié, sinon plus d'accès. */
 #wt-vl-languette {
-  position: fixed; left: 268px; top: 50%; transform: translateY(-50%);
+  position: fixed; left: var(--wt-vl-largeur, 268px); top: 50%; transform: translateY(-50%);
   z-index: 961; width: 26px; min-height: 92px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   background: rgba(5,11,18,0.95); color: #00d4ff;
@@ -291,6 +386,26 @@ body.wt-volant-ouvert #wt-panel {
 
 /** Clé de mémorisation de l'état replié / déployé. */
 export const CLE_REPLI = 'wt-volant-lateral-replie';
+/** Clé de mémorisation de la largeur choisie. */
+export const CLE_LARGEUR = 'wt-volant-lateral-largeur';
+/** Clé de mémorisation du mode compact. */
+export const CLE_COMPACT = 'wt-volant-lateral-compact';
+
+/** Bornes de redimensionnement du volant, en pixels. */
+export const LARGEUR_MIN = 150;
+export const LARGEUR_MAX = 460;
+export const LARGEUR_DEFAUT = 268;
+
+/**
+ * Contraint une largeur dans les bornes admises.
+ * @param {number} px
+ * @returns {number}
+ */
+export function largeurValide(px) {
+  const n = Number(px);
+  if (!Number.isFinite(n)) return LARGEUR_DEFAUT;
+  return Math.round(Math.min(LARGEUR_MAX, Math.max(LARGEUR_MIN, n)));
+}
 
 /**
  * Ouvre une entrée « ouvrir » en réutilisant le dock existant.
@@ -298,6 +413,7 @@ export const CLE_REPLI = 'wt-volant-lateral-replie';
  */
 export function ouvrirEntree(entree, hub = globalThis.__godsEyeView) {
   if (!entree) return false;
+  if (entree.type === 'action') return lancerAction(entree, hub);
   const dock = hub?.dock;
   if (entree.dock && dock?.ouvrir) return dock.ouvrir(entree.dock) !== false;
   if (entree.cible && dock?.ouvrirExistant) return dock.ouvrirExistant(entree.cible) !== false;
@@ -308,6 +424,57 @@ export function ouvrirEntree(entree, hub = globalThis.__godsEyeView) {
     return true;
   }
   return false;
+}
+
+/**
+ * Exécute une entrée « action » en résolvant son chemin dans le hub.
+ * `carte2d.basculer` → `hub.carte2d.basculer()`.
+ * @returns {boolean} vrai si la fonction a été trouvée et appelée
+ */
+export function lancerAction(entree, hub = globalThis.__godsEyeView) {
+  const chemin = String(entree?.cheminAction || '');
+  if (!chemin) return false;
+  if (chemin === 'pleinEcran') {
+    const doc = globalThis.document;
+    if (!doc?.documentElement?.requestFullscreen) return false;
+    if (doc.fullscreenElement) doc.exitFullscreen?.();
+    else doc.documentElement.requestFullscreen();
+    return true;
+  }
+  let courant = hub;
+  const morceaux = chemin.split('.');
+  for (const m of morceaux.slice(0, -1)) {
+    courant = courant?.[m];
+    if (!courant) return false;
+  }
+  const fn = courant?.[morceaux.at(-1)];
+  if (typeof fn !== 'function') return false;
+  try {
+    fn.call(courant);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Retire de l'écran les boutons flottants désormais repris par le volant.
+ * On MASQUE (display:none) : les nœuds survivent, donc les écouteurs posés
+ * ailleurs restent valides et rien ne devient inatteignable par code.
+ * @param {Document} doc
+ * @returns {number} nombre d'éléments effectivement masqués
+ */
+export function masquerBoutonsFlottants(doc = globalThis.document) {
+  if (!doc?.querySelectorAll) return 0;
+  let n = 0;
+  for (const m of ELEMENTS_MASQUES) {
+    for (const el of doc.querySelectorAll(m.selecteur)) {
+      el.classList?.add?.('wt-repris-par-volant');
+      el.setAttribute?.('data-wt-repris', m.raison);
+      n += 1;
+    }
+  }
+  return n;
 }
 
 /**
@@ -335,9 +502,11 @@ export function initVolantLateral(doc = globalThis.document, options = {}) {
   hote.id = 'wt-volant-lat';
   hote.setAttribute('aria-label', 'Volant — toutes les fonctions');
   hote.innerHTML = `
+    <div class="vl-poignee" data-vl="poignee" title="Glisser pour redimensionner"></div>
     <div class="vl-tete">
       <h2>VOLANT</h2>
       <span class="vl-compte">${total} fonctions</span>
+      <button type="button" class="vl-reduire" data-vl="compact" title="Réduire aux icônes seules">⇤</button>
     </div>
     <div class="vl-rech"><input type="search" placeholder="Rechercher une fonction…" data-vl="q"></div>
     <div class="vl-corps"></div>
@@ -448,6 +617,79 @@ export function initVolantLateral(doc = globalThis.document, options = {}) {
 
   languette.addEventListener('click', () => basculer());
 
+  // ── largeur : mémorisée, ajustable à la souris ──
+  const lire = (cle, repli) => {
+    try {
+      const st = options.stockage || (typeof localStorage !== 'undefined' ? localStorage : null);
+      const v = st?.getItem(cle);
+      return v === null || v === undefined ? repli : v;
+    } catch { return repli; }
+  };
+  const ecrire = (cle, v) => {
+    try {
+      const st = options.stockage || (typeof localStorage !== 'undefined' ? localStorage : null);
+      st?.setItem(cle, String(v));
+    } catch { /* mode privé */ }
+  };
+
+  let largeur = largeurValide(lire(CLE_LARGEUR, LARGEUR_DEFAUT));
+  let compact = lire(CLE_COMPACT, '0') === '1';
+
+  const poserLargeur = () => {
+    // En compact la largeur est imposée par la feuille de style.
+    hote.style.setProperty('--wt-vl-largeur', compact ? '62px' : `${largeur}px`);
+    doc.documentElement?.style?.setProperty?.('--wt-vl-largeur', compact ? '62px' : `${largeur}px`);
+    hote.classList[compact ? 'add' : 'remove']('wt-vl-compact');
+    const bouton = hote.querySelector('[data-vl="compact"]');
+    if (bouton) {
+      bouton.textContent = compact ? '⇥' : '⇤';
+      bouton.title = compact ? 'Revenir au volant complet' : 'Réduire aux icônes seules';
+    }
+  };
+
+  const definirLargeur = (px) => {
+    largeur = largeurValide(px);
+    ecrire(CLE_LARGEUR, largeur);
+    poserLargeur();
+    return largeur;
+  };
+
+  const basculerCompact = (force) => {
+    compact = typeof force === 'boolean' ? force : !compact;
+    ecrire(CLE_COMPACT, compact ? '1' : '0');
+    poserLargeur();
+    return compact;
+  };
+
+  hote.querySelector('[data-vl="compact"]')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    basculerCompact();
+  });
+
+  // glisser la poignée du bord droit
+  const poignee = hote.querySelector('[data-vl="poignee"]');
+  let glisse = null;
+  poignee?.addEventListener('mousedown', (ev) => {
+    ev.preventDefault();
+    glisse = { x: ev.clientX, depart: compact ? 62 : largeur };
+    doc.body.style.userSelect = 'none';
+  });
+  doc.addEventListener('mousemove', (ev) => {
+    if (!glisse) return;
+    const vise = glisse.depart + (ev.clientX - glisse.x);
+    // tirer vers la gauche sous le seuil bascule en mode compact
+    if (vise < LARGEUR_MIN - 20) { if (!compact) basculerCompact(true); return; }
+    if (compact) basculerCompact(false);
+    definirLargeur(vise);
+  });
+  doc.addEventListener('mouseup', () => {
+    if (!glisse) return;
+    glisse = null;
+    doc.body.style.userSelect = '';
+  });
+
+  poserLargeur();
+
   hote.querySelector('[data-vl="q"]')?.addEventListener('input', (e) => peindre(e.target.value));
   hote.addEventListener('click', (e) => {
     const a = e.target?.dataset?.vl;
@@ -465,10 +707,20 @@ export function initVolantLateral(doc = globalThis.document, options = {}) {
     setTimeout(() => peindre(hote.querySelector('[data-vl="q"]')?.value || ''), delai);
   }
 
+  // Les boutons flottants ne sont retirés qu'UNE FOIS le volant réellement
+  // monté : si le montage échoue, ils restent en place et rien n'est perdu.
+  const reprises = masquerBoutonsFlottants(doc);
+  for (const delai of [900, 2500]) setTimeout(() => masquerBoutonsFlottants(doc), delai);
+
   return {
     hote,
     languette,
     basculer,
+    definirLargeur,
+    basculerCompact,
+    largeur: () => (compact ? 62 : largeur),
+    estCompact: () => compact,
+    reprises,
     estReplie: () => replie,
     rafraichir: () => peindre(hote.querySelector('[data-vl="q"]')?.value || ''),
     catalogue: () => catalogue,

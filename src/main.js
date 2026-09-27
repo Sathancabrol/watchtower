@@ -410,7 +410,9 @@ async function init() {
       // avant que la scène soit prête. MapLibre n'est téléchargé qu'au premier
       // passage en 2D, donc rester en 3D ne coûte rien. Voir docs/CARTE-2D.md.
       try {
-        initCarte2D({ viewer, Cesium });
+        // exposé pour que le volant latéral puisse piloter la bascule 2D/3D
+        // une fois le bouton flottant retiré de l'écran.
+        window.__godsEyeView.carte2d = initCarte2D({ viewer, Cesium });
       } catch (err) {
         console.warn('[carte2d] bascule 2D indisponible', err);
       }
