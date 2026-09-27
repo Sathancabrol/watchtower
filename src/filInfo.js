@@ -26,7 +26,15 @@ import { sourceConnue } from './tracabilite.js';
 /** Catégories de l'INTEL qui ont un bandeau. */
 export const CATEGORIES_FIL = Object.freeze([
   'contexte', 'jumeau', 'communal', 'individuel', 'politique', 'economique', 'production', 'profil',
+  'reunion',
 ]);
+
+/**
+ * Catégories qui n'ont pas de dépêches propres et empruntent celles d'une
+ * autre vue. Le mode RÉUNION se tient sur un territoire : son bandeau est
+ * celui de la vue COMMUNALE plutôt qu'un bandeau vide.
+ */
+export const ALIAS_FIL = Object.freeze({ reunion: 'communal' });
 
 /** URL du flux presse GDELT (gratuit, sans clé). */
 export function urlGdelt(terme, { heures = 3, max = 6 } = {}) {
@@ -103,8 +111,9 @@ export function trierDepeches(liste = [], limite = 12) {
 
 /** Garde les dépêches d'une catégorie (le bandeau « contexte » prend tout). */
 export function filtrerParCategorie(liste = [], categorie = '') {
-  if (!categorie || categorie === 'contexte') return liste;
-  return liste.filter((d) => d.categorie === categorie);
+  const cat = ALIAS_FIL[categorie] || categorie;
+  if (!cat || cat === 'contexte') return liste;
+  return liste.filter((d) => d.categorie === cat);
 }
 
 /** Texte du bandeau défilant : « ic titre — détail · ic titre… ». */

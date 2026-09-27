@@ -13,6 +13,7 @@
  *   🗳 POLITIQUE    — gouvernance : élus, documents officiels, registres
  *   💼 ÉCONOMIQUE   — entreprises autour du point, effectifs, liens légaux
  *   🏭 PRODUCTION   — sites, réseaux, installations classées, risques
+ *   🏛 RÉUNION      — mode réunion : ordre du jour, notes, captation, présentation
  *   🧠 PROFIL       — profil utilisateur (l'existant)
  *
  * Règle : chaque donnée affichée est sourcée (registre `tracabilite.js`) et
@@ -24,6 +25,7 @@ import { htmlSources, liensVerification } from './tracabilite.js';
 import { resumeGeorisques, urlGeorisques } from './empreinte.js';
 import { EXECUTIF, JUMELAGES } from './data/territoire/gouvernance.js';
 import { ACCES_FLUVIAL, ACCES_MER, ACCES_TERRE, leveesPourMois } from './data/territoire/accesTerritoire.js';
+import { rendreReunion } from './reunionUI.js';
 
 /** Vues de l'INTEL (les deux premières et la dernière existent déjà). */
 export const VUES_INTEL = Object.freeze([
@@ -33,6 +35,7 @@ export const VUES_INTEL = Object.freeze([
   { cle: 'politique', ic: '🗳', nom: 'POLITIQUE', sous: 'élus · documents', existante: false },
   { cle: 'economique', ic: '💼', nom: 'ÉCONOMIQUE', sous: 'entreprises · emploi', existante: false },
   { cle: 'production', ic: '🏭', nom: 'PRODUCTION', sous: 'sites · réseaux · risques', existante: false },
+  { cle: 'reunion', ic: '🏛', nom: 'RÉUNION', sous: 'notes · présentation · captation', existante: false },
 ]);
 
 const CSS = `
@@ -386,6 +389,7 @@ export const RENDUS = Object.freeze({
   politique: rendrePolitique,
   economique: rendreEconomique,
   production: rendreProduction,
+  reunion: rendreReunion,
 });
 
 /**
