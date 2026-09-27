@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 
 import {
   CATEGORIES_VOLANT, cleEntree, construireCatalogue, toutesLesEntrees, filtrer, ouvrirEntree,
   ENTREES_SUPPLEMENTAIRES, ELEMENTS_MASQUES, lancerAction, masquerBoutonsFlottants,
   largeurValide, LARGEUR_MIN, LARGEUR_MAX, LARGEUR_DEFAUT,
+  ZONES_MASQUEES, decouvrirZone,
 } from './volantLateral.js';
 import { CATEGORIES } from './barreFonctions.js';
 import { SOMMAIRE_OPTION } from './ergonomieDock.js';
@@ -130,7 +132,8 @@ test('CHAQUE bouton masque est couvert par une entree reelle du volant', () => {
   const cles = new Set(toutesLesEntrees().map((e) => e.cle));
   for (const m of ELEMENTS_MASQUES) {
     assert.ok(m.raison, `${m.selecteur} masque sans justification`);
-    assert.ok(m.couvertPar.length, `${m.selecteur} masque sans couverture declaree`);
+    assert.ok(m.couvertPar.length || m.sansFonction === true,
+      `${m.selecteur} masque sans couverture declaree`);
     for (const cle of m.couvertPar) {
       assert.ok(cles.has(cle), `${m.selecteur} serait masque mais "${cle}" n existe pas dans le volant`);
     }
@@ -241,9 +244,66 @@ test('l action dock-bas rend sa visibilite a la barre du bas, sans la recreer', 
 test('aucun bouton masque ne l est sans etre couvert — garde-fou global', () => {
   const cles = new Set(toutesLesEntrees(construireCatalogue()).map((e) => e.cle));
   for (const m of ELEMENTS_MASQUES) {
-    assert.ok(m.couvertPar.length > 0, `${m.selecteur} masque sans contrepartie`);
+    assert.ok(m.couvertPar.length > 0 || m.sansFonction === true,
+      `${m.selecteur} masque sans contrepartie ni declaration sansFonction`);
     for (const c of m.couvertPar) {
       assert.ok(cles.has(c), `${m.selecteur} annonce ${c}, absent du catalogue`);
     }
+  }
+});
+
+test('ouvrir un panneau loge dans une zone masquee la rend visible d abord', () => {
+  // REGRESSION : CONTROL PANEL vit dans la barre du bas. Masquer la barre
+  // rendait l'entree du volant inoperante — elle ouvrait dans le vide.
+  const classes = new Set();
+  const dock = { id: 'command-dock' };
+  const panneau = { id: 'control-panel', closest: (s) => (s === '#command-dock' ? dock : null) };
+  const docAvant = globalThis.document;
+  globalThis.document = {
+    getElementById: (id) => (id === 'control-panel' ? panneau : null),
+    body: { classList: { add: (c) => classes.add(c), contains: (c) => classes.has(c) } },
+  };
+  try {
+    assert.equal(decouvrirZone('control-panel'), 'wt-dock-bas-visible');
+    assert.ok(classes.has('wt-dock-bas-visible'), 'la barre du bas doit redevenir visible');
+    assert.equal(decouvrirZone('inconnu'), '', 'un id absent ne leve aucun drapeau');
+  } finally {
+    globalThis.document = docAvant;
+  }
+});
+
+test('chaque zone masquee declare un drapeau et un hote reellement masque', () => {
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  for (const z of ZONES_MASQUEES) {
+    assert.ok(z.hote.startsWith('#'), `hote invalide : ${z.hote}`);
+    assert.ok(z.drapeau.startsWith('wt-'), `drapeau invalide : ${z.drapeau}`);
+    assert.ok(css.includes(`body.${z.drapeau}`), `${z.drapeau} n a pas de regle de rappel`);
+  }
+});
+
+test('l action clic rejoue le bouton d origine plutot que de le reimplementer', () => {
+  let clics = 0;
+  const bouton = { click: () => { clics += 1; } };
+  const docAvant = globalThis.document;
+  globalThis.document = { querySelector: (s) => (s === '#share-btn' ? bouton : null) };
+  try {
+    const partage = ENTREES_SUPPLEMENTAIRES.find((e) => e.id === 'partager');
+    assert.equal(lancerAction(partage, {}), true);
+    assert.equal(clics, 1, 'le gestionnaire d origine doit etre celui qui s execute');
+    const absent = { cheminAction: 'clic:#nexistepas' };
+    assert.equal(lancerAction(absent, {}), false, 'un bouton absent ne doit pas faire croire au succes');
+  } finally {
+    globalThis.document = docAvant;
+  }
+});
+
+test('chaque action drapeau possede sa regle de rappel dans la feuille', () => {
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  const drapeaux = ENTREES_SUPPLEMENTAIRES
+    .filter((e) => String(e.cheminAction).startsWith('drapeau:'))
+    .map((e) => e.cheminAction.slice('drapeau:'.length));
+  assert.ok(drapeaux.length >= 4, 'les pans masques doivent tous etre rappelables');
+  for (const d of drapeaux) {
+    assert.ok(css.includes(`body.${d}`), `${d} masque un pan sans moyen de le rappeler`);
   }
 });

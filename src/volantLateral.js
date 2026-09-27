@@ -88,7 +88,55 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
     nom: 'Barre voix & lieux',
     icone: '🎙',
     aide: 'Rappeler la barre du bas : micro, recherche de lieux, préréglages visuels',
-    cheminAction: 'dockBas',
+    cheminAction: 'drapeau:wt-dock-bas-visible',
+  },
+  {
+    id: 'couches-off',
+    categorie: 'donnees',
+    nom: 'Éteindre les calques',
+    icone: '🧹',
+    aide: 'Couper d’un coup toutes les couches de données affichées',
+    cheminAction: 'clic:#clear-selected-layers',
+  },
+  {
+    id: 'partager',
+    categorie: 'outils',
+    nom: 'Copier le lien de partage',
+    icone: '🔗',
+    aide: 'Copier un lien qui rouvre exactement cette vue',
+    cheminAction: 'clic:#share-btn',
+  },
+  {
+    id: 'globe-entier',
+    categorie: 'nav',
+    nom: 'Revenir au globe',
+    icone: '🌍',
+    aide: 'Replacer la caméra sur la Terre entière',
+    cheminAction: 'clic:#reset-globe-view',
+  },
+  {
+    id: 'rail-contexte',
+    categorie: 'donnees',
+    nom: 'Rail CONTEXT',
+    icone: '📰',
+    aide: 'Rappeler la colonne CONTEXT à droite (radio, dépêches, missions)',
+    cheminAction: 'drapeau:wt-rail-visible',
+  },
+  {
+    id: 'hud-coins',
+    categorie: 'affichage',
+    nom: 'HUD des coins',
+    icone: '📐',
+    aide: 'Coordonnées, MGRS, altitude et cap dans les quatre coins de l’écran',
+    cheminAction: 'drapeau:wt-hud-coins-visible',
+  },
+  {
+    id: 'cles-api',
+    categorie: 'outils',
+    nom: 'Clés d’API',
+    icone: '🔑',
+    aide: 'Panneau des clés facultatives — l’application marche sans',
+    cheminAction: 'drapeau:wt-cles-visible',
   },
 ]);
 
@@ -124,6 +172,37 @@ export const ELEMENTS_MASQUES = Object.freeze([
     selecteur: '#command-dock',
     raison: 'Barre du bas (lieux · voix · chat · préréglages) — rappelable depuis Outils',
     couvertPar: ['action:dock-bas', 'dock:lieux', 'dock:chat', 'cible:control-panel'],
+  },
+  {
+    selecteur: '#top-center-actions',
+    raison: 'Actions du haut — ses trois fonctions sont entrées une par une',
+    couvertPar: ['action:couches-off', 'action:partager', 'action:globe-entier'],
+  },
+  {
+    selecteur: '#right-context-rail',
+    raison: 'Colonne CONTEXT à droite — rappelable depuis Données',
+    couvertPar: ['action:rail-contexte'],
+  },
+  {
+    selecteur: '#intel-hud',
+    raison: 'HUD des quatre coins — rappelable depuis Affichage',
+    couvertPar: ['action:hud-coins'],
+  },
+  {
+    selecteur: '#key-setup-chip',
+    raison: 'Pastille des clés d’API — le panneau reste ouvrable depuis Outils',
+    couvertPar: ['action:cles-api'],
+  },
+  {
+    // Bandeaux d'information pure : ils n'ouvrent rien et ne commandent rien.
+    // Le style actif est deja lisible dans les prereglages visuels.
+    selecteur: '#style-indicator, #traffic-sync-chip, #cctv-sync-chip',
+    raison: 'Bandeaux d’état — aucune commande, rien à reprendre',
+    // Seul cas ou `couvertPar` a le droit d'etre vide : l'element n'offre
+    // AUCUNE action. Il faut le declarer explicitement, le garde-fou refuse
+    // un masquage silencieux.
+    sansFonction: true,
+    couvertPar: [],
   },
 ]);
 
@@ -429,9 +508,41 @@ export function largeurValide(px) {
  * Ouvre une entrée « ouvrir » en réutilisant le dock existant.
  * @returns {boolean} vrai si quelque chose a répondu
  */
+/**
+ * Zones de l'ecran masquees par la feuille de styles, et le drapeau qui les
+ * rend visibles. Ouvrir un panneau loge DANS l'une d'elles ne servirait a
+ * rien tant que le parent est masque : le volant leve le drapeau en meme
+ * temps. C'est le cas de CONTROL PANEL et de LOCATION, qui vivent dans la
+ * barre du bas.
+ */
+export const ZONES_MASQUEES = Object.freeze([
+  { hote: '#command-dock', drapeau: 'wt-dock-bas-visible' },
+  { hote: '#right-context-rail', drapeau: 'wt-rail-visible' },
+]);
+
+/**
+ * Leve le drapeau de la zone qui contient cet element, s'il y en a une.
+ * @param {string} cibleId
+ * @returns {string} le drapeau leve, ou '' si aucun n'etait necessaire
+ */
+export function decouvrirZone(cibleId, doc = globalThis.document) {
+  const el = doc?.getElementById?.(cibleId);
+  if (!el?.closest) return '';
+  for (const z of ZONES_MASQUEES) {
+    if (el.closest(z.hote)) {
+      doc.body?.classList?.add?.(z.drapeau);
+      return z.drapeau;
+    }
+  }
+  return '';
+}
+
 export function ouvrirEntree(entree, hub = globalThis.__godsEyeView) {
   if (!entree) return false;
   if (entree.type === 'action') return lancerAction(entree, hub);
+  // Un panneau loge dans une zone masquee doit d'abord redevenir visible,
+  // sinon le volant l'ouvrirait dans le vide.
+  if (entree.cible) decouvrirZone(entree.cible);
   const dock = hub?.dock;
   if (entree.dock && dock?.ouvrir) return dock.ouvrir(entree.dock) !== false;
   if (entree.cible && dock?.ouvrirExistant) return dock.ouvrirExistant(entree.cible) !== false;
@@ -452,13 +563,22 @@ export function ouvrirEntree(entree, hub = globalThis.__godsEyeView) {
 export function lancerAction(entree, hub = globalThis.__godsEyeView) {
   const chemin = String(entree?.cheminAction || '');
   if (!chemin) return false;
-  if (chemin === 'dockBas') {
-    // La barre du bas est masquee, pas supprimee : on lui rend simplement sa
-    // visibilite. Micro, recherche de lieux et prereglages restent donc a un
-    // clic, et leurs ecouteurs n'ont jamais ete detaches.
+  // « drapeau:<classe> » — rend sa visibilite a un pan de l'interface masque
+  // par la feuille de styles. L'element n'est jamais touche : on pose la
+  // classe sur <body>, donc aucun noeud n'est recree et aucun ecouteur perdu.
+  if (chemin.startsWith('drapeau:')) {
     const corps = globalThis.document?.body;
     if (!corps?.classList) return false;
-    corps.classList.toggle('wt-dock-bas-visible');
+    corps.classList.toggle(chemin.slice('drapeau:'.length));
+    return true;
+  }
+  // « clic:<selecteur> » — rejoue le clic du bouton d'origine, masque mais
+  // toujours dans la page. C'est SON gestionnaire qui s'execute : la fonction
+  // est donc exactement celle d'avant, pas une reimplementation.
+  if (chemin.startsWith('clic:')) {
+    const el = globalThis.document?.querySelector?.(chemin.slice('clic:'.length));
+    if (!el?.click) return false;
+    el.click();
     return true;
   }
   if (chemin === 'pleinEcran') {

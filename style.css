@@ -9563,7 +9563,14 @@ body.scene-playback-mode #key-setup {
 #command-dock,
 #wt-chat-dock,
 #gev-voice-control,
-#voice-console {
+#voice-console,
+#top-center-actions,
+#right-context-rail,
+#intel-hud,
+#key-setup-chip,
+#style-indicator,
+#traffic-sync-chip,
+#cctv-sync-chip {
   display: none !important;
 }
 
@@ -9578,8 +9585,22 @@ body.wt-dock-bas-visible #voice-console {
   display: revert !important;
 }
 
+/* Rappels a la demande, depuis le volant. Chaque pan masque a son entree ;
+   la classe est posee sur <body>, jamais sur l'element, pour qu'aucun noeud
+   ne soit touche. */
+body.wt-rail-visible #right-context-rail { display: revert !important; }
+body.wt-hud-coins-visible #intel-hud { display: revert !important; }
+body.wt-cles-visible #key-setup-chip { display: flex !important; }
+
 /* La classe posee par le volant reste valable pour tout element repris plus
    tard, sans avoir a toucher a cette feuille. */
 .wt-repris-par-volant {
   display: none !important;
 }
+
+/* GARDE-FOU — les panneaux CONTROL PANEL et LOCATION vivent DANS la barre du
+   bas. Les ouvrir depuis le volant ne servirait a rien tant que leur parent
+   est masque : le volant leve donc le drapeau en meme temps (voir
+   `ouvrirEntree`). Cette regle rend la barre visible sans rien deplacer. */
+body.wt-dock-bas-visible #control-panel,
+body.wt-dock-bas-visible #location-bar { display: revert !important; }
