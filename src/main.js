@@ -24,6 +24,7 @@ import { initBarreFonctions } from './barreFonctions.js';
 import { initSoleil } from './soleil.js';
 import { CLE_ETAT as CLE_BASCULES } from './data/volant/registreBascules.js';
 import { initLisibilite } from './lisibilite.js';
+import { initBasculeMinicarte } from './basculeMinicarte.js';
 import { initErgonomieDock } from './ergonomieDock.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
@@ -762,7 +763,7 @@ async function init() {
           { icone: '🧠', libelle: 'INTEL', cibleId: 'wt-intel', groupe: 'donnees', titre: '🧠 INTEL — tableau de bord expert' },
           { icone: '🎚', libelle: 'VISUEL+', cibleId: 'pp-toggles', groupe: 'vues', titre: '🎚 Réglages visuels' },
           { icone: '🎛', libelle: 'PARAMS', cibleId: 'param-slider-panel', groupe: 'outils', titre: '🎛 Curseurs de paramètres' },
-          { icone: '⚙', libelle: 'OUTILS', cibleId: 'control-panel', groupe: 'outils', titre: '⚙ Outils (calques, partage, globe, préréglages)' },
+          { icone: '⚙', libelle: 'OPTION', cibleId: 'control-panel', groupe: 'outils', titre: '⚙ OPTION — toutes les fonctions : paramètres, calques, vues, données' },
           { icone: '📌', libelle: 'ÉPINGLES', cibleId: 'wt-pins', groupe: 'vues', titre: '📌 Mes épingles' },
           { icone: '🗺', libelle: 'GLOBE', cibleId: 'wt-minimap', groupe: 'vues', titre: '🗺 Minicarte globe (boussole + matrice)' },
           { icone: '🛣', libelle: 'RUE', cibleId: 'wt-sv', groupe: 'vues', titre: '🛣 Street view — photos de rue libres' },
@@ -818,7 +819,8 @@ async function init() {
       proteger('lisibilité', () => initLisibilite());
       // Le bloc voix est injecte a l'execution : on rejoue le regroupement
       // quelques fois pour l'attraper quel que soit l'ordre de montage.
-      proteger('ergonomie dock', () => {
+      proteger('bascule minicarte', () => initBasculeMinicarte(document, { surMessage: (m) => window.__wtToast?.(m) }));
+    proteger('ergonomie dock', () => {
         initErgonomieDock();
         for (const d of [400, 1200, 2500]) setTimeout(() => {
           try { initErgonomieDock(); } catch { /* sans consequence */ }

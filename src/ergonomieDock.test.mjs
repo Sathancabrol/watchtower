@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   TITRE_OUTILS, A_RAPATRIER, renommerEnOutils, rapatrierBoutons, initErgonomieDock,
+  SOMMAIRE_OPTION, construireSommaire, ouvrirEntree,
 } from './ergonomieDock.js';
 
 // --- Faux DOM minimal, suffisant pour les deplacements -------------------
@@ -10,7 +11,11 @@ function faireDoc() {
   const mk = (id, tag = 'div') => {
     const el = {
       id, tagName: tag.toUpperCase(), children: [], parent: null, style: {},
-      attrs: {}, _text: '',
+      attrs: {}, _text: '', title: '', disabled: false, type: '', innerHTML: '',
+      listeners: {},
+      addEventListener(t, f) { (el.listeners[t] ||= []).push(f); },
+      cliquer() { for (const f of el.listeners.click || []) f(); },
+      classList: { add() {}, remove() {}, contains: () => false },
       appendChild(c) {
         if (c.parent) c.parent.children = c.parent.children.filter((x) => x !== c);
         c.parent = el; el.children.push(c); return c;
@@ -114,4 +119,103 @@ test('le bouton chat ouvre le dock chat', () => {
 test('ergonomieDock est bien branche dans main.js', () => {
   const src = fs.readFileSync(new URL('./main.js', import.meta.url), 'utf8');
   assert.ok(src.includes('initErgonomieDock'), 'sinon le regroupement ne s applique jamais');
+});
+
+test('le tiroir est renomme OPTION', () => {
+  assert.equal(TITRE_OUTILS, 'OPTION');
+});
+
+test('le sommaire OPTION couvre reglages, calques, vues, donnees et navigation', () => {
+  const noms = SOMMAIRE_OPTION.map((g) => g.groupe);
+  for (const attendu of ['Réglages', 'Calques', 'Vues', 'Données', 'Navigation']) {
+    assert.ok(noms.includes(attendu), `groupe manquant : ${attendu}`);
+  }
+  for (const g of SOMMAIRE_OPTION) {
+    assert.ok(g.entrees.length > 0, `groupe vide : ${g.groupe}`);
+    for (const e of g.entrees) {
+      assert.ok(e.ic && e.nom && e.info, `entree incomplete dans ${g.groupe}`);
+      assert.ok(e.cible || e.ancre, `${e.nom} ne pointe vers rien`);
+      assert.ok(!(e.cible && e.ancre), `${e.nom} ne peut pas viser les deux`);
+    }
+  }
+});
+
+test('les parametres et les calques figurent bien dans le sommaire', () => {
+  const toutes = SOMMAIRE_OPTION.flatMap((g) => g.entrees);
+  assert.ok(toutes.some((e) => e.cible === 'param-slider-panel'), 'parametres absents');
+  assert.ok(toutes.some((e) => e.ancre === 'cadastre'), 'cadastre absent');
+  assert.ok(toutes.some((e) => e.ancre === 'bati'), 'bati 3D absent');
+  assert.ok(toutes.some((e) => e.cible === 'wt-minimap'), 'minicarte absente');
+});
+
+test('aucun nom en double dans le sommaire', () => {
+  const vus = new Set();
+  for (const e of SOMMAIRE_OPTION.flatMap((g) => g.entrees)) {
+    assert.equal(vus.has(e.nom), false, `doublon : ${e.nom}`);
+    vus.add(e.nom);
+  }
+});
+
+test('ouvrirEntree passe par ouvrir pour une ancre et ouvrirExistant pour une cible', () => {
+  const appels = [];
+  const hub = {
+    dock: {
+      ouvrir: (id) => { appels.push(['ouvrir', id]); return true; },
+      ouvrirExistant: (id) => { appels.push(['existant', id]); return true; },
+    },
+  };
+  ouvrirEntree({ ancre: 'cadastre' }, hub);
+  ouvrirEntree({ cible: 'param-slider-panel' }, hub);
+  assert.deepEqual(appels, [['ouvrir', 'cadastre'], ['existant', 'param-slider-panel']]);
+  assert.equal(ouvrirEntree(null, hub), false);
+});
+
+/** Ramasse tous les boutons d'un sous-arbre du faux DOM. */
+function boutonsDe(noeud) {
+  const out = [];
+  const descendre = (n) => {
+    for (const c of n.children || []) {
+      if (c.tagName === 'BUTTON') out.push(c);
+      descendre(c);
+    }
+  };
+  descendre(noeud);
+  return out;
+}
+
+test('construireSommaire desactive les entrees dont la cible manque', () => {
+  const { doc, reg } = faireDoc();
+  reg.set('param-slider-panel', doc.createElement('div'));
+  const actives = construireSommaire(doc);
+  assert.ok(actives > 0);
+  const zone = doc.getElementById('wt-option-sommaire');
+  assert.ok(zone, 'la zone doit etre creee dans le popover');
+  const boutons = boutonsDe(zone);
+  assert.ok(boutons.length >= 15, `trop peu d entrees : ${boutons.length}`);
+  const params = boutons.find((b) => /Paramètres/.test(b.textContent));
+  assert.ok(params && !params.disabled, 'la cible presente doit rester active');
+  const pins = boutons.find((b) => /Épingles/.test(b.textContent));
+  assert.equal(pins.disabled, true, 'la cible absente doit etre desactivee');
+  assert.match(pins.title, /indisponible/);
+});
+
+test('les entrees ancrees restent actives meme sans element monte', () => {
+  const { doc } = faireDoc();
+  construireSommaire(doc);
+  const b = boutonsDe(doc.getElementById('wt-option-sommaire')).find((x) => /Cadastre/.test(x.textContent));
+  assert.ok(b);
+  assert.equal(b.disabled, false, 'une ancre du dock n a pas d element avant ouverture');
+});
+
+test('construireSommaire est idempotent', () => {
+  const { doc, popover } = faireDoc();
+  const a = construireSommaire(doc);
+  const b = construireSommaire(doc);
+  assert.equal(a, b, 'deux appels donnent le meme nombre d entrees');
+  const zones = popover.children.filter((c) => c.id === 'wt-option-sommaire');
+  assert.equal(zones.length, 1, 'une seule zone, pas une par appel');
+});
+
+test('sans popover le sommaire ne casse rien', () => {
+  assert.equal(construireSommaire({ querySelector: () => null }), 0);
 });

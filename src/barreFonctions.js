@@ -181,9 +181,9 @@ export const CATEGORIES = Object.freeze([
   // ici. Ne pas retirer sans leur donner un autre point d'entree.
   Object.freeze({
     nom: 'Outils', entrees: Object.freeze([
-      // Ces boutons ont migre dans le tiroir OUTILS (voir ergonomieDock.js) :
+      // Ces boutons ont migre dans le tiroir OPTION (voir ergonomieDock.js) :
       // on pointe la ou ils se trouvent desormais, sinon l entree ouvre du vide.
-      { icone: '⚙', info: 'Outils — calques, partage, globe', cible: 'control-panel' },
+      { icone: '⚙', info: 'OPTION — toutes les fonctions (paramètres, calques, vues)', cible: 'control-panel' },
       { icone: '🛣', info: 'Vue de rue', cible: 'wt-sv' },
       { icone: '🖼', info: 'Rechercher par photo', cible: 'wt-photo' },
       { icone: '👁', info: 'Panneau me localiser', cible: 'wt-panel' },

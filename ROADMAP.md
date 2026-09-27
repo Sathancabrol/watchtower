@@ -740,3 +740,37 @@ Plus ancien (itérations 6 → 9) :
   vérifiable.
 * **Traçabilité locale** : ce qui est personnel (journal, projets, épingles,
   placements chantier) reste dans le navigateur et se exporte en CSV.
+
+## 6. Itération 25 — OPTION, minicarte, réunion (2026-09-27)
+
+Suite des 7 chantiers. Ce qui a bougé :
+
+| Chantier | Demande | État | Fichier | Reste |
+| --- | --- | --- | --- | --- |
+| **A3** | 🗺 Tous les boutons → **un seul bouton** ouvrant les autres en pop-up | ✅ | `ergonomieDock.js` | — |
+| **A4** | 🗺 Interrupteur dédié de la minicarte, sous « Vue 3D » | ✅ | `basculeMinicarte.js` | — |
+| **A1** | ▚ MATRIX limité au cadastre et au bâti (pas de night-vision globale) | 🟡 | `minimap.js` | à cadrer |
+| **F** | 🧠 INTEL — mode réunion, graphe de connaissances, VI/VD | ✅ | `reunion*.js`, `grapheVue.js` | niveaux mondial/national/régional |
+| **B** | 🎛 Volant — 8 rayons sur ~23 ancres | 🟡 | `volant.js` | étendre |
+| **C** | 🔐 Connexions externes (YouTube, Twitch, Radio Garden) | 🟠 | — | non commencé |
+| **D** | 🎥 Multicam en mosaïque (esprit Bloomberg / QG) | 🟠 | — | non commencé |
+| **E** | 🏘 Vue communale sur **chaque** commune + animation cadastrale | 🟡 | `localisation.js` | généraliser |
+| **G** | 📶 Fil contexte modifiable et non envahissant | 🟡 | `filInfo.js` | ordre et filtres mémorisés |
+
+### Décisions de cette itération
+
+* **« OPTION » est un SOMMAIRE, pas un déménagement.** Le tiroir
+  `#control-panel` (ex-préréglages, puis OUTILS) est renommé **OPTION** et
+  reçoit un sommaire de **20 entrées** en 5 groupes : Réglages, Calques, Vues,
+  Données, Navigation. Ces entrées **ouvrent** les panneaux existants au lieu
+  de les déplacer. Raison : déplacer physiquement `#param-slider-panel` ou
+  `#pp-toggles` dans un tiroir fermé rendrait invisibles les boutons du dock
+  qui pointent vers eux — c'est exactement la perte de fonction que la
+  consigne « ne perd pas de feature » interdit.
+* **Une entrée dont la cible n'est pas montée est affichée grisée**, avec la
+  raison en infobulle, plutôt que de rester cliquable et de ne rien faire.
+* **La minicarte est masquée, jamais détruite** (`display:none` +
+  neutralisation des clics). L'entrée GLOBE du dock, le volant et le sommaire
+  OPTION continuent donc de fonctionner. L'état est mémorisé.
+* **Le chat est intégré DANS `#voice-console`** (dernier enfant) au lieu
+  d'être posé en dessous du dock.
