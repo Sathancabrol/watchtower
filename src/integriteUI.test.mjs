@@ -101,3 +101,25 @@ test('le relief sans cle a plusieurs miroirs et signale son absence', () => {
   assert.ok(/Relief 3D indisponible/.test(MSC),
     'un globe plat doit etre annonce, pas subi en silence');
 });
+
+test('les boutons flottants repris par le volant restent masques en CSS statique', () => {
+  // Le masquage etait pose en JS au montage du volant : s'il ne demarrait pas,
+  // les boutons revenaient a l'ecran. Il doit rester ecrit dans la feuille.
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  const bloc = css.slice(css.indexOf('ÉCRAN DÉBARRASSÉ'));
+  assert.ok(bloc.length > 0, 'le bloc de masquage a disparu de style.css');
+  for (const sel of ['#wt-barre', '#wt-bascule2d', '#wt-bascule-minicarte',
+    '#wt-volant', '#command-dock']) {
+    assert.ok(bloc.includes(sel), `${sel} n'est plus masque`);
+  }
+  assert.match(bloc, /display:\s*none\s*!important/, 'le masquage doit primer');
+  // ... et la barre du bas doit rester rappelable, sinon le micro est perdu.
+  assert.ok(bloc.includes('body.wt-dock-bas-visible #command-dock'),
+    'la barre du bas doit pouvoir revenir');
+});
+
+test('le dock hote n est jamais masque : il porte les panneaux', () => {
+  const css = readFileSync(new URL('../style.css', import.meta.url), 'utf8');
+  const bloc = css.slice(css.indexOf('ÉCRAN DÉBARRASSÉ'));
+  assert.ok(!/^#wt-dock,?$/m.test(bloc), '#wt-dock masque orphelinerait tous les panneaux');
+});

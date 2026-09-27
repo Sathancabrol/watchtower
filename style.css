@@ -9542,3 +9542,44 @@ body.scene-playback-mode #key-setup {
   margin: 13px 0 0; font-size: 11px; letter-spacing: .06em;
   color: rgba(111, 198, 232, 0.9); min-height: 1em;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ÉCRAN DÉBARRASSÉ — tout passe par le VOLANT (colonne de gauche).
+
+   Ces boutons flottaient sur la vue alors que leurs fonctions sont toutes
+   reprises, une par une, dans le volant. Le masquage etait pose par le volant
+   au montage : s'il ne demarrait pas, les boutons restaient. Il est donc
+   ecrit ICI, en CSS statique, pour etre applique quoi qu'il arrive.
+
+   MASQUE, PAS SUPPRIME : les noeuds restent dans la page, donc les ecouteurs
+   deja attaches et le code qui vise ces elements continuent de fonctionner.
+   Aucune fonction n'est perdue.
+   ═════════════════════════════════════════════════════════════════════════ */
+#wt-barre,
+#wt-bascule2d,
+#wt-bascule-minicarte,
+#wt-volant,
+#wt-volant-panneau,
+#command-dock,
+#wt-chat-dock,
+#gev-voice-control,
+#voice-console {
+  display: none !important;
+}
+
+/* Rappel a la demande : Volant > Outils > « Barre voix & lieux ». La barre du
+   bas revient entiere, micro et recherche de lieux compris. */
+body.wt-dock-bas-visible #command-dock {
+  display: flex !important;
+}
+body.wt-dock-bas-visible #wt-chat-dock,
+body.wt-dock-bas-visible #gev-voice-control,
+body.wt-dock-bas-visible #voice-console {
+  display: revert !important;
+}
+
+/* La classe posee par le volant reste valable pour tout element repris plus
+   tard, sans avoir a toucher a cette feuille. */
+.wt-repris-par-volant {
+  display: none !important;
+}

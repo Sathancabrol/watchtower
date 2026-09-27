@@ -219,17 +219,20 @@ test('la barre du bas est masquee mais reste rappelable', () => {
 });
 
 test('l action dock-bas rend sa visibilite a la barre du bas, sans la recreer', () => {
-  const dock = { classList: { valeurs: new Set(['wt-repris-par-volant']),
-    toggle(c) { if (this.valeurs.has(c)) this.valeurs.delete(c); else this.valeurs.add(c); },
-    contains(c) { return this.valeurs.has(c); } } };
+  // Le masquage est en CSS statique : on ne touche pas au noeud #command-dock,
+  // on pose un drapeau sur <body>. La barre n'est donc jamais recreee.
+  const valeurs = new Set();
+  const corps = { classList: {
+    toggle(c) { if (valeurs.has(c)) valeurs.delete(c); else valeurs.add(c); },
+    contains(c) { return valeurs.has(c); } } };
   const docAvant = globalThis.document;
-  globalThis.document = { querySelector: (s) => (s === '#command-dock' ? dock : null) };
+  globalThis.document = { body: corps };
   try {
     const entree = ENTREES_SUPPLEMENTAIRES.find((e) => e.id === 'dock-bas');
     assert.equal(lancerAction(entree, {}), true);
-    assert.equal(dock.classList.contains('wt-repris-par-volant'), false, 'la barre revient');
+    assert.equal(corps.classList.contains('wt-dock-bas-visible'), true, 'la barre revient');
     assert.equal(lancerAction(entree, {}), true);
-    assert.equal(dock.classList.contains('wt-repris-par-volant'), true, 'et repart');
+    assert.equal(corps.classList.contains('wt-dock-bas-visible'), false, 'et repart');
   } finally {
     globalThis.document = docAvant;
   }

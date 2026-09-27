@@ -456,9 +456,9 @@ export function lancerAction(entree, hub = globalThis.__godsEyeView) {
     // La barre du bas est masquee, pas supprimee : on lui rend simplement sa
     // visibilite. Micro, recherche de lieux et prereglages restent donc a un
     // clic, et leurs ecouteurs n'ont jamais ete detaches.
-    const el = globalThis.document?.querySelector?.('#command-dock');
-    if (!el) return false;
-    el.classList?.toggle?.('wt-repris-par-volant');
+    const corps = globalThis.document?.body;
+    if (!corps?.classList) return false;
+    corps.classList.toggle('wt-dock-bas-visible');
     return true;
   }
   if (chemin === 'pleinEcran') {
