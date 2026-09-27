@@ -70,6 +70,10 @@ export function creerReunion(champs = {}) {
     lieu: String(champs.lieu || '').trim(),
     date: champs.date || maintenant.slice(0, 16).replace('T', ' '),
     visio: String(champs.visio || '').trim(),
+    // Cadrage analytique de la réunion : ce qu'on fait varier (VI) et ce
+    // qu'on mesure (VD). Sert à ne pas sortir d'une réunion sans savoir
+    // sur quel levier on a agi ni à quoi on jugera le résultat.
+    variables: { independantes: [], dependantes: [] },
     statut: 'préparation',
     participants: [],
     ordreDuJour: [],
@@ -98,6 +102,87 @@ export function modifierEntete(reunion, champs = {}) {
   if (champs.statut !== undefined && STATUTS.includes(champs.statut)) reunion.statut = champs.statut;
   if (!reunion.titre) reunion.titre = 'Réunion sans titre';
   return touche(reunion);
+}
+
+// ── 🔬 VARIABLES INDÉPENDANTES / DÉPENDANTES ─────────────────────────────
+
+/** Garantit la présence du bloc `variables` sur les réunions anciennes. */
+function bloc(reunion) {
+  if (!reunion) return null;
+  if (!reunion.variables) reunion.variables = { independantes: [], dependantes: [] };
+  if (!Array.isArray(reunion.variables.independantes)) reunion.variables.independantes = [];
+  if (!Array.isArray(reunion.variables.dependantes)) reunion.variables.dependantes = [];
+  return reunion.variables;
+}
+
+/**
+ * Ajoute une variable au cadrage de la réunion.
+ * @param {object} reunion
+ * @param {'independante'|'dependante'} role VI = levier actionné, VD = effet mesuré
+ * @param {{nom:string, unite?:string, mesure?:string, cible?:string, cleNoeud?:string}} champs
+ */
+export function ajouterVariable(reunion, role, champs = {}) {
+  const v = bloc(reunion);
+  if (!v) return null;
+  if (role !== 'independante' && role !== 'dependante') return null;
+  const nom = String(champs.nom || '').trim();
+  if (!nom) return null;
+  const liste = role === 'independante' ? v.independantes : v.dependantes;
+  if (liste.some((x) => x.nom.toLowerCase() === nom.toLowerCase())) return null;
+  const n = champs.cleNoeud ? noeud(champs.cleNoeud) : null;
+  const item = {
+    id: id('var'),
+    role,
+    nom,
+    unite: String(champs.unite || '').trim(),
+    // VI : comment on l'actionne. VD : comment on la mesure.
+    mesure: String(champs.mesure || '').trim(),
+    cible: String(champs.cible || '').trim(),
+    cleNoeud: n ? n.cle : null,
+  };
+  liste.push(item);
+  touche(reunion);
+  return item;
+}
+
+/** Supprime une variable, quel que soit son rôle. */
+export function supprimerVariable(reunion, idVar) {
+  const v = bloc(reunion);
+  if (!v) return false;
+  let retire = false;
+  for (const cle of ['independantes', 'dependantes']) {
+    const avant = v[cle].length;
+    v[cle] = v[cle].filter((x) => x.id !== idVar);
+    if (v[cle].length !== avant) retire = true;
+  }
+  if (retire) touche(reunion);
+  return retire;
+}
+
+/** Toutes les variables, VI puis VD. */
+export function variables(reunion) {
+  const v = bloc(reunion);
+  return v ? [...v.independantes, ...v.dependantes] : [];
+}
+
+/**
+ * Contrôle de cohérence du cadrage : une réunion qui ne fait varier rien,
+ * ou qui ne mesure rien, ne pourra pas être évaluée.
+ * @returns {string[]} liste d'avertissements, vide si le cadrage tient
+ */
+export function controlerVariables(reunion) {
+  const v = bloc(reunion);
+  if (!v) return [];
+  const avis = [];
+  if (!v.independantes.length) avis.push("Aucune variable indépendante : la réunion ne dit pas sur quel levier elle agit.");
+  if (!v.dependantes.length) avis.push("Aucune variable dépendante : rien ne permettra de juger si la décision a produit un effet.");
+  for (const d of v.dependantes) {
+    if (!d.mesure) avis.push(`« ${d.nom} » est mesurée par… rien. Précisez l'indicateur et sa source.`);
+  }
+  for (const i of v.independantes) {
+    if (!i.mesure) avis.push(`« ${i.nom} » n'indique pas comment le levier est actionné.`);
+  }
+  return avis;
 }
 
 // ── 👥 PARTICIPANTS ──────────────────────────────────────────────────────
@@ -304,6 +389,16 @@ export function diapos(reunion) {
     participants: reunion.participants.map((p) => p.nom),
     points: reunion.ordreDuJour.map((p) => p.intitule),
   };
+  const v = reunion.variables || { independantes: [], dependantes: [] };
+  const cadrage = (v.independantes.length || v.dependantes.length)
+    ? [{
+      type: 'cadrage',
+      titre: 'Cadrage de la décision',
+      independantes: v.independantes,
+      dependantes: v.dependantes,
+      avis: controlerVariables(reunion),
+    }]
+    : [];
   const suite = reunion.ordreDuJour.map((p, i) => {
     const n = p.cleNoeud ? noeud(p.cleNoeud) : null;
     return {
@@ -318,7 +413,7 @@ export function diapos(reunion) {
       notes: reunion.notes.filter((x) => x.idPoint === p.id),
     };
   });
-  return [sommaire, ...suite];
+  return [sommaire, ...cadrage, ...suite];
 }
 
 /** Questions ouvertes proposées comme points d'ordre du jour. */
@@ -396,6 +491,29 @@ export function versMarkdown(reunion) {
   if (reunion.visio) L.push(`- **Visioconférence** : ${reunion.visio}`);
   L.push(`- **Statut** : ${reunion.statut}`);
   L.push(`- **Durée prévue** : ${dureePrevue(reunion)} min`, '');
+
+  const vv = reunion.variables || { independantes: [], dependantes: [] };
+  if (vv.independantes.length || vv.dependantes.length) {
+    L.push('## Cadrage — variables', '');
+    L.push('**Variables indépendantes** _(ce que la réunion fait varier)_', '');
+    if (!vv.independantes.length) L.push('_Aucune._', '');
+    for (const x of vv.independantes) {
+      L.push(`- **${x.nom}**${x.unite ? ` (${x.unite})` : ''}${x.mesure ? ` — levier : ${x.mesure}` : ''}${x.cible ? ` — cible : ${x.cible}` : ''}`);
+    }
+    L.push('');
+    L.push('**Variables dépendantes** _(ce qu\'on mesurera pour juger)_', '');
+    if (!vv.dependantes.length) L.push('_Aucune._', '');
+    for (const x of vv.dependantes) {
+      L.push(`- **${x.nom}**${x.unite ? ` (${x.unite})` : ''}${x.mesure ? ` — mesure : ${x.mesure}` : ''}${x.cible ? ` — cible : ${x.cible}` : ''}`);
+    }
+    L.push('');
+    const avis = controlerVariables(reunion);
+    if (avis.length) {
+      L.push('> ⚠️ Cadrage incomplet :', '');
+      for (const m of avis) L.push(`> - ${m}`);
+      L.push('');
+    }
+  }
 
   L.push('## Participants', '');
   if (!reunion.participants.length) L.push('_Aucun participant enregistré._', '');

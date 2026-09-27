@@ -18,10 +18,12 @@ import {
   ajouterPoint, supprimerPoint, deplacerPoint, modifierPoint, dureePrevue,
   ajouterNote, modifierNote, supprimerNote,
   ajouterEnregistrement, supprimerEnregistrement,
+  ajouterVariable, supprimerVariable, controlerVariables,
   diapos, pointsSuggeres, versMarkdown,
   listerReunions, sauvegarderReunion, chargerReunion, supprimerReunion,
 } from './reunion.js';
-import { NOEUDS, fiabilite } from './data/territoire/grapheThau.js';
+import { NOEUDS, fiabilite, CORRECTIONS } from './data/territoire/grapheThau.js';
+import { ouvrirGraphe } from './grapheVue.js';
 
 const ech = (s) => String(s ?? '').replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]));
 
@@ -173,6 +175,20 @@ export function ouvrirPresentation(reunion) {
         ${d.objectif ? `<p class="dp-obj">${ech(d.objectif)}</p>` : ''}
         ${d.participants.length ? `<h2 style="margin-top:32px">Participants</h2><ul>${d.participants.map((p) => `<li>${ech(p)}</li>`).join('')}</ul>` : ''}
         ${d.points.length ? `<h2 style="margin-top:32px">Ordre du jour</h2><ol>${d.points.map((p) => `<li>${ech(p)}</li>`).join('')}</ol>` : ''}`;
+    } else if (d.type === 'cadrage') {
+      const col = (titre, sous, liste, role) => `
+        <h2>${titre}</h2>
+        <p class="dp-obj" style="font-size:16px;opacity:.75">${sous}</p>
+        <ul>${liste.map((x) => `<li><b>${ech(x.nom)}</b>${x.unite ? ` (${ech(x.unite)})` : ''}
+          ${x.mesure ? `<br><span style="opacity:.7;font-size:.85em">${role} : ${ech(x.mesure)}</span>` : ''}
+          ${x.cible ? `<br><span style="opacity:.7;font-size:.85em">cible : ${ech(x.cible)}</span>` : ''}</li>`).join('')
+          || '<li style="opacity:.5">Aucune</li>'}</ul>`;
+      scene.innerHTML = `
+        <h1>${ech(d.titre)}</h1>
+        ${col('Variables indépendantes', 'Ce que nous faisons varier', d.independantes, 'levier')}
+        <div style="height:26px"></div>
+        ${col('Variables dépendantes', 'Ce que nous mesurerons pour juger', d.dependantes, 'mesure')}
+        ${d.avis.length ? `<p class="dp-obj dp-flou" style="margin-top:26px;font-size:16px">⚠️ ${d.avis.map(ech).join(' · ')}</p>` : ''}`;
     } else {
       const attrs = d.attributs.map((at) => {
         const marque = at.fiable ? '' : '<span class="dp-flou">~ </span>';
@@ -309,6 +325,8 @@ function peindreBarre(barre, redessiner) {
     return b;
   };
 
+  bouton('🕸 GRAPHE DE CONNAISSANCES', () => ouvrirGraphe());
+
   bouton('➕ NOUVELLE RÉUNION', () => {
     courante = creerReunion({ titre: `Réunion du ${new Date().toLocaleDateString('fr-FR')}` });
     persister(redessiner);
@@ -361,6 +379,17 @@ function peindre(zone, barre, redessiner) {
           </div>
           <div class="reu-aide">
             Tout est enregistré <b>dans ce navigateur uniquement</b> — rien n'est envoyé nulle part.
+          </div>
+          <div class="reu-carte" style="margin-top:10px;border-color:rgba(255,211,109,0.35)">
+            <h4 style="color:#ffd36d">⚠️ ${CORRECTIONS.length} CHIFFRES CORRIGÉS APRÈS VÉRIFICATION</h4>
+            ${CORRECTIONS.map((c) => `
+              <div style="margin-bottom:9px;font-size:11.5px;line-height:1.5">
+                <b>${c.sujet}</b><br>
+                <span style="color:#ff9c9c">document fourni : ${c.fourni}</span><br>
+                <span style="color:#6dffa8">vérifié : ${c.corrige}</span><br>
+                <span style="opacity:.65">${c.lecture}</span><br>
+                <span style="opacity:.5;font-size:10px">source : ${c.source}</span>
+              </div>`).join('')}
           </div>
           <div class="reu-alerte" style="margin-top:8px">
             ${f.aVerifier} des ${f.total} valeurs du graphe proviennent du document fourni et
@@ -416,10 +445,52 @@ function peindre(zone, barre, redessiner) {
     </div>`;
 
   const hote = zone.querySelector('#wt-reu');
+  hote.appendChild(carteVariables(r));
   hote.appendChild(carteOrdreDuJour(r));
   hote.appendChild(carteNotes(r));
   hote.appendChild(carteCaptation(r, cap, manques));
   brancher(hote, r, redessiner);
+}
+
+/**
+ * Carte « variables » : ce que la réunion fait varier (VI) et ce qu'elle
+ * mesurera pour juger (VD). Sans ce cadrage, une décision n'est pas évaluable.
+ */
+function carteVariables(r) {
+  const d = document.createElement('div');
+  d.className = 'reu-carte';
+  const v = r.variables || { independantes: [], dependantes: [] };
+  const avis = controlerVariables(r);
+  const bloc = (titre, role, liste, aide) => `
+    <div style="margin-top:8px">
+      <label style="font-size:8.5px;letter-spacing:1.4px;color:rgba(232,234,237,0.62)">${titre}</label>
+      <div class="reu-aide" style="margin:2px 0 6px">${aide}</div>
+      <ul class="reu-liste">
+        ${liste.map((x) => `
+          <li>
+            <span class="reu-eti">${role === 'independante' ? 'VI' : 'VD'}</span>
+            <span class="reu-corps"><b>${ech(x.nom)}</b>${x.unite ? ` <i style="opacity:.7">(${ech(x.unite)})</i>` : ''}
+            ${x.mesure ? `<br><span style="opacity:.75">${role === 'independante' ? 'levier' : 'mesure'} : ${ech(x.mesure)}</span>` : ''}
+            ${x.cible ? `<br><span style="opacity:.75">cible : ${ech(x.cible)}</span>` : ''}</span>
+            <button type="button" class="reu-danger" data-sup-var="${x.id}" title="Supprimer">✕</button>
+          </li>`).join('') || `<li class="reu-vide">Aucune.</li>`}
+      </ul>
+      <div class="reu-duo" style="margin-top:6px">
+        <input type="text" data-n="${role}-nom" placeholder="Nom de la variable">
+        <input type="text" data-n="${role}-unite" placeholder="Unité (ha, €, hab.…)">
+      </div>
+      <div class="reu-duo" style="margin-top:6px">
+        <input type="text" data-n="${role}-mesure" placeholder="${role === 'independante' ? 'Comment on l\'actionne' : 'Indicateur et source'}">
+        <input type="text" data-n="${role}-cible" placeholder="Cible visée">
+      </div>
+      <button type="button" data-a="add-${role}" style="margin-top:6px">➕ AJOUTER</button>
+    </div>`;
+  d.innerHTML = `
+    <h4>🔬 CADRAGE — VARIABLES</h4>
+    ${avis.length ? `<div class="reu-alerte">${avis.map((m) => `• ${ech(m)}`).join('<br>')}</div>` : ''}
+    ${bloc('VARIABLES INDÉPENDANTES', 'independante', v.independantes, 'Ce que la réunion <b>fait varier</b> : le levier sur lequel elle décide d\'agir.')}
+    ${bloc('VARIABLES DÉPENDANTES', 'dependante', v.dependantes, 'Ce qu\'on <b>mesurera</b> ensuite pour savoir si la décision a produit un effet.')}`;
+  return d;
 }
 
 /** Carte « ordre du jour » : points, réordonnancement, suggestions, fiches du graphe. */
@@ -564,6 +635,18 @@ function brancher(hote, r, redessiner) {
       persister(redessiner); return;
     }
     if (t.dataset.supPar) { supprimerParticipant(r, t.dataset.supPar); persister(redessiner); return; }
+
+    if (a === 'add-independante' || a === 'add-dependante') {
+      const role = a === 'add-independante' ? 'independante' : 'dependante';
+      ajouterVariable(r, role, {
+        nom: val(`${role}-nom`)?.value,
+        unite: val(`${role}-unite`)?.value,
+        mesure: val(`${role}-mesure`)?.value,
+        cible: val(`${role}-cible`)?.value,
+      });
+      persister(redessiner); return;
+    }
+    if (t.dataset.supVar) { supprimerVariable(r, t.dataset.supVar); persister(redessiner); return; }
 
     if (a === 'add-pt') {
       ajouterPoint(r, { intitule: val('pt-nom')?.value, minutes: val('pt-min')?.value });

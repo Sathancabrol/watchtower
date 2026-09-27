@@ -34,8 +34,9 @@ export const NOEUDS = Object.freeze([
     attributs: [
       a('Création', '2017 (fusion Thau Agglo + CC Nord bassin de Thau)', true, 'geo.api.gouv.fr EPCI 200066355'),
       a('Communes', '14', true, 'référentiel communal du dépôt'),
-      a('Population (2021)', '128 868 hab.'),
-      a('Superficie', '~310 km²'),
+      a('Population (2021)', '128 868 hab.', true, 'INSEE RP 2021, EPCI 200066355'),
+      a('Population (2023)', '131 216 hab.', true, 'INSEE RP 2023 / agglopole.fr'),
+      a('Superficie', '310,3 km²', true, 'INSEE / agglopole.fr'),
       a('Espaces naturels/agricoles', '80 %'),
       a('Siège', 'Frontignan', true, 'référentiel communal du dépôt'),
       a('Axes stratégiques 2026', 'Climat · Économie · Social'),
@@ -76,10 +77,11 @@ export const NOEUDS = Object.freeze([
       a('Population (2021)', '44 712 hab.'),
       a('Densité', '1 846,8 hab./km²'),
       a('Revenu médian', '19 960 €'),
-      a('Taux de pauvreté', '25 %'),
+      a('Taux de pauvreté', '25 %', true, 'INSEE RP/Filosofi 2021 (19,4 % dans l\'Hérault, 15 % en France)'),
       a('Chômage (15-64 ans)', '19,1 %'),
       a('Emplois sur place', '17 275 (45 % de l\'agglo)'),
       a('Établissements (2022)', '1 849'),
+      a('Repères 2023 (INSEE)', 'niveau de vie médian 22 740 €, pauvreté 26 %, 18 025 emplois, chômage 17,1 %', true, 'INSEE, comparateur de territoires, commune 34301'),
     ],
     tags: ['commune', 'port', 'culture', 'pauvreté', 'emploi'],
     liens: ['sam', 'port', 'histoire-1666', 'triangle'],
@@ -91,7 +93,8 @@ export const NOEUDS = Object.freeze([
     categorie: 'milieu',
     resume: "Cœur écologique et économique du territoire : conchyliculture, pêche, paysage, identité.",
     attributs: [
-      a('Production conchylicole (2021)', '~10 129 t d\'huîtres'),
+      a('Production conchylicole (2021)', '7 070 t d\'huîtres + 3 700 t de moules = 10 770 t de coquillages (bassin méditerranéen)', true, 'Chambre d\'agriculture Occitanie, Agriscopie 2023 — CORRIGE le graphe fourni, qui annonçait « 10 129 t d\'huîtres » : ce volume correspond à l\'ensemble des coquillages, pas aux seules huîtres'),
+      a('Poids de Thau', '90 % de la production conchylicole de Méditerranée française, 10 % de la production nationale', true, 'CRCM / Chambre d\'agriculture Occitanie'),
       a('Menaces', 'Pollution, ruissellement urbain, sécheresse, salinisation, pluies intenses'),
     ],
     tags: ['lagune', 'conchyliculture', 'eau', 'biodiversité', 'risque'],
@@ -172,8 +175,11 @@ export const NOEUDS = Object.freeze([
     categorie: 'economie',
     resume: "Filière entièrement dépendante de la qualité de l'eau et de la stabilité écologique de la lagune.",
     attributs: [
-      a('Production (2021)', '~10 129 t d\'huîtres'),
-      a('Vulnérabilités', 'Pollutions, ruissellements, fortes chaleurs, pluies intenses'),
+      a('Production (2021)', '7 070 t d\'huîtres et 3 700 t de moules sur le bassin méditerranéen', true, 'Chambre d\'agriculture Occitanie, Agriscopie 2023'),
+      a('Entreprises', '441 entreprises de production, dont 322 individuelles', true, 'Agriscopie 2023'),
+      a('Emploi et CA (Thau)', '656 salariés, 881 saisonniers, 41 M€ de chiffre d\'affaires', true, 'Agriscopie 2023'),
+      a('Tables exploitées', '2 782 tables et 181 filières', true, 'Agriscopie 2023'),
+      a('Vulnérabilités', 'Pollutions, ruissellements, fortes chaleurs, pluies intenses. Précédents : malaïgue de 2018, norovirus en décembre 2022 (-40 % de chiffre d\'affaires)', true, 'Sénat 2019 / Assemblée nationale, question n°678'),
     ],
     tags: ['aquaculture', 'huîtres', 'lagune', 'économie', 'environnement'],
     liens: ['etang-thau', 'risques'],
@@ -198,9 +204,11 @@ export const NOEUDS = Object.freeze([
     categorie: 'economie',
     resume: "Poids économique majeur mais saisonnier, avec une pression directe sur le logement, l'eau et les routes.",
     attributs: [
-      a('Fréquentation (2023)', '1,45 M de visiteurs'),
-      a('Nuitées françaises', '1,1 M'),
-      a('Retombées économiques', '~1,1 Md€'),
+      a('Touristes en séjour', '~1,5 M par an', true, 'Sète Agglopôle / office de tourisme Archipel de Thau'),
+      a('Visiteurs toutes catégories', '~14 M sur la destination, dont ~8 M d\'excursionnistes', true, 'Dossier de presse Archipel de Thau — NUANCE le graphe fourni : les « 1,45 M de visiteurs » sont les touristes en séjour, pas la fréquentation totale'),
+      a('Nuitées touristiques', '10 M, dont 71 % françaises et 29 % étrangères', true, 'Observatoire Archipel de Thau'),
+      a('Retombées économiques', '1,4 Md€ en 2024 (600 M€ touristes + 840 M€ excursionnistes) ; ~1 Md€ en 2022 ; 706 M€ en 2021', true, 'Observatoire Archipel de Thau / Midi Libre'),
+      a('Poids dans l\'emploi', '19 % de l\'emploi direct et indirect (1 emploi sur 5)', true, 'Office de tourisme Archipel de Thau'),
       a('Problèmes', 'Saisonnalité, pression sur le logement, saturation routière, consommation d\'eau, déchets'),
     ],
     tags: ['tourisme', 'saisonnalité', 'économie', 'logement'],
@@ -213,11 +221,13 @@ export const NOEUDS = Object.freeze([
     categorie: 'socio',
     resume: "Croissance portée uniquement par le solde migratoire : le solde naturel est négatif (vieillissement).",
     attributs: [
-      a('Population (2021)', '128 868 hab.'),
-      a('Évolution 2016-2021', '+4 399 hab.'),
-      a('Solde migratoire', '+0,5 %'),
-      a('Solde naturel', '-0,1 % (vieillissement)'),
-      a('Densité moyenne', '415,3 hab./km²'),
+      a('Population (2021)', '128 868 hab.', true, 'INSEE RP 2021, EPCI 200066355'),
+      a('Évolution 2015-2021', '+3 990 hab. (124 878 → 128 868)', true, 'INSEE RP 2021'),
+      a('Variation annuelle 2015-2021', '+0,5 % par an au total', true, 'INSEE RP 2021'),
+      a('Solde naturel', '-0,2 % par an', true, 'INSEE RP 2021 — CORRIGE le graphe fourni, qui indiquait -0,1 %'),
+      a('Solde migratoire', '+0,7 % par an', true, 'INSEE RP 2021 — CORRIGE le graphe fourni, qui indiquait +0,5 % (c\'est la variation TOTALE, pas le solde migratoire)'),
+      a('Densité moyenne', '415,3 hab./km²', true, 'INSEE : 128 868 / 310,3 km²'),
+      a('Vieillissement', '13,2 % de 75 ans ou plus en 2021, contre 10,8 % en 2010', true, 'INSEE RP 2021'),
     ],
     tags: ['démographie', 'population', 'vieillissement', 'migration'],
     liens: ['sam', 'logement', 'mobilites'],
@@ -475,18 +485,46 @@ export const QUESTIONS_OUVERTES = Object.freeze([
  * dépôt. On les EXPOSE au lieu de trancher en silence : la plupart sont des
  * millésimes différents, pas des erreurs.
  */
+export const CORRECTIONS = Object.freeze([
+  {
+    sujet: 'Soldes démographiques de l\'agglomération',
+    fourni: 'Solde migratoire +0,5 % · solde naturel -0,1 %',
+    corrige: 'Variation totale +0,5 %/an · solde naturel -0,2 % · solde migratoire +0,7 %',
+    source: 'INSEE, RP 2021, EPCI 200066355 (période 2015-2021)',
+    lecture: 'Le « +0,5 % » du document est la variation ANNUELLE TOTALE, pas le solde migratoire. Le vieillissement est donc deux fois plus marqué qu\'annoncé, et l\'attractivité migratoire nettement plus forte. À corriger avant toute projection démographique.',
+  },
+  {
+    sujet: 'Production conchylicole',
+    fourni: '~10 129 t d\'huîtres (2021)',
+    corrige: '7 070 t d\'huîtres + 3 700 t de moules = 10 770 t de coquillages (bassin méditerranéen, 2021)',
+    source: 'Chambre d\'agriculture Occitanie, Agriscopie 2023',
+    lecture: 'Le volume avancé correspond à l\'ensemble des coquillages, pas aux seules huîtres. Annoncer « 10 129 t d\'huîtres » surestime la filière ostréicole d\'environ 45 %.',
+  },
+  {
+    sujet: 'Fréquentation touristique',
+    fourni: '1,45 M de visiteurs (2023), retombées ~1,1 Md€',
+    corrige: '~1,5 M de touristes en séjour, mais ~14 M de visiteurs toutes catégories ; retombées 1,4 Md€ en 2024, ~1 Md€ en 2022',
+    source: 'Observatoire Archipel de Thau, dossier de presse et bilans de saison',
+    lecture: 'Confusion de périmètre : les 1,45 M sont les touristes en séjour. En incluant les excursionnistes, la destination accueille près de dix fois plus de monde — ce qui change tout au discours sur la saturation.',
+  },
+]);
+
+/**
+ * Écarts qui ne sont PAS des erreurs : millésimes différents entre le graphe
+ * fourni et les données déjà présentes dans le dépôt.
+ */
 export const ECARTS = Object.freeze([
   {
     sujet: 'Population de Frontignan',
     graphe: '23 808 hab. (RP 2021)',
     depot: '24 136 hab.',
-    lecture: 'Millésimes différents (RP 2021 vs référentiel du dépôt). Aucun n\'est faux ; préciser l\'année en réunion.',
+    lecture: 'Millésimes différents : 23 808 hab. au RP 2021, 24 136 au RP 2023. Les deux sont exacts ; préciser l\'année en réunion.',
   },
   {
     sujet: 'Population de Sète Agglopôle',
     graphe: '128 868 hab. (RP 2021)',
     depot: '≈131 000 hab.',
-    lecture: 'Même écart de millésime. Le territoire gagne ~4 400 hab. sur 2016-2021, l\'ordre de grandeur est cohérent.',
+    lecture: 'VÉRIFIÉ : 128 868 hab. au RP 2021 (INSEE) et 131 216 au RP 2023. Les deux chiffres sont bons, à des dates différentes.',
   },
   {
     sujet: 'Nombre de communes',

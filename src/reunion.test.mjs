@@ -7,6 +7,7 @@ import {
   ajouterPoint, modifierPoint, supprimerPoint, deplacerPoint, dureePrevue,
   ajouterNote, modifierNote, supprimerNote,
   ajouterEnregistrement, supprimerEnregistrement,
+  ajouterVariable, supprimerVariable, variables, controlerVariables,
   diapos, pointsSuggeres, versMarkdown,
   listerReunions, sauvegarderReunion, chargerReunion, supprimerReunion,
 } from './reunion.js';
@@ -114,13 +115,13 @@ test('les points suggeres viennent des questions ouvertes du graphe', () => {
 test('le compte rendu markdown signale les valeurs non recoupees', () => {
   const r = creerReunion({ titre: 'Conseil', objectif: 'Arbitrer' });
   ajouterParticipant(r, { nom: 'Näthan Cabrol', role: 'Rapporteur' });
-  ajouterPoint(r, { cleNoeud: 'tourisme' });
+  ajouterPoint(r, { cleNoeud: 'muscat' });
   ajouterNote(r, { texte: 'Relancer la DREAL', type: 'action' });
   const md = versMarkdown(r);
   assert.match(md, /^# Conseil/);
   assert.match(md, /Näthan Cabrol/);
   assert.match(md, /## Actions/);
-  assert.match(md, /~ 1,45 M de visiteurs/, 'valeur non recoupee prefixee par ~');
+  assert.match(md, /~ 1936/, 'valeur non recoupee prefixee par ~');
   assert.match(md, /à vérifier/);
 });
 
@@ -141,4 +142,49 @@ test('un stockage corrompu ne fait pas planter la lecture', () => {
   const s = faussStockage();
   s.setItem('wt-reunions-v1', '{ceci nest pas du json');
   assert.deepEqual(listerReunions(s), []);
+});
+
+test('les variables independantes et dependantes se declarent et se suppriment', () => {
+  const r = creerReunion();
+  const vi = ajouterVariable(r, 'independante', { nom: 'Budget recomposition', unite: 'M€', mesure: 'vote du conseil' });
+  const vd = ajouterVariable(r, 'dependante', { nom: 'Habitants exposés', unite: 'pers.', mesure: 'cartographie PPA' });
+  assert.equal(vi.role, 'independante');
+  assert.equal(vd.role, 'dependante');
+  assert.equal(variables(r).length, 2);
+  assert.equal(ajouterVariable(r, 'independante', { nom: 'budget recomposition' }), null, 'doublon refuse');
+  assert.equal(ajouterVariable(r, 'mediatrice', { nom: 'X' }), null, 'role inconnu refuse');
+  assert.equal(ajouterVariable(r, 'dependante', { nom: '  ' }), null, 'nom vide refuse');
+  assert.equal(supprimerVariable(r, vi.id), true);
+  assert.equal(supprimerVariable(r, vi.id), false);
+});
+
+test('le controle du cadrage signale ce qui manque', () => {
+  const r = creerReunion();
+  let avis = controlerVariables(r);
+  assert.equal(avis.length, 2, 'ni VI ni VD');
+  ajouterVariable(r, 'independante', { nom: 'Levier', mesure: 'deliberation' });
+  ajouterVariable(r, 'dependante', { nom: 'Effet' });
+  avis = controlerVariables(r);
+  assert.equal(avis.some((m) => /Effet/.test(m)), true, 'VD sans mesure signalee');
+  assert.equal(avis.some((m) => /indépendante/.test(m)), false, 'VI presente');
+});
+
+test('une reunion ancienne sans bloc variables ne fait pas planter', () => {
+  const r = creerReunion();
+  delete r.variables;
+  assert.deepEqual(variables(r), []);
+  assert.ok(ajouterVariable(r, 'independante', { nom: 'X' }));
+});
+
+test('le cadrage apparait dans les diapos et le compte rendu', () => {
+  const r = creerReunion({ titre: 'Arbitrage' });
+  ajouterVariable(r, 'independante', { nom: 'Enveloppe foncière', unite: 'ha', mesure: 'SCOT révisé' });
+  ajouterVariable(r, 'dependante', { nom: 'Artificialisation nette', unite: 'ha/an', mesure: 'observatoire ZAN' });
+  const d = diapos(r);
+  assert.equal(d[1].type, 'cadrage');
+  assert.equal(d[1].independantes.length, 1);
+  const md = versMarkdown(r);
+  assert.match(md, /Variables indépendantes/);
+  assert.match(md, /Artificialisation nette/);
+  assert.match(md, /observatoire ZAN/);
 });
