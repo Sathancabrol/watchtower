@@ -53,7 +53,7 @@ export const VUES = Object.freeze([
 
 const CSS = `
 #wt-vues-chip {
-  position: fixed; top: 112px; left: 50%; transform: translateX(-50%); z-index: 2660;
+  position: fixed; top: 112px; left: 50%; transform: translateX(-50%); z-index: var(--wt-z-cadre, 2000);
   padding: 7px 14px; border-radius: 10px; font-family: var(--font-mono, monospace);
   font-size: 9.5px; letter-spacing: 1px; color: #e8eaed; background: rgba(8,12,18,0.94);
   border: 1px solid #7dd3c8; max-width: 74vw; text-align: center; line-height: 1.6;

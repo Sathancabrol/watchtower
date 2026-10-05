@@ -25,19 +25,19 @@
  */
 
 import { CATEGORIES } from './barreFonctions.js';
+import {
+  CATEGORIES as CATEGORIES_TAXO, ABSORBES, categorieDe, nomDe, estAbsorbe,
+} from './data/volant/taxonomie.js';
 import { SOMMAIRE_OPTION } from './ergonomieDock.js';
 import { BASCULES_AFFICHAGE, basculer as inverser, normaliserEtat } from './data/volant/registreBascules.js';
 import { appliquerBascule, lireEtat, ecrireEtat } from './volant.js';
 
 /** Catégories du volant, dans l'ordre d'affichage. */
-export const CATEGORIES_VOLANT = Object.freeze([
-  { id: 'affichage', nom: 'Affichage', icone: '👁', aide: 'Allumer ou éteindre les couches de l’interface' },
-  { id: 'vues', nom: 'Vues', icone: '🗺', aide: 'Ce que montre l’écran' },
-  { id: 'donnees', nom: 'Données', icone: '📊', aide: 'Couches d’information et sources' },
-  { id: 'nav', nom: 'Navigation', icone: '🧭', aide: 'Se déplacer et retrouver des lieux' },
-  { id: 'modes', nom: 'Modes', icone: '🎛', aide: 'Changer de posture de travail' },
-  { id: 'outils', nom: 'Outils', icone: '🛠', aide: 'Réglages, partage, utilitaires' },
-]);
+/**
+ * Les categories du volant SONT la taxonomie : une seule definition, pour
+ * que le classement affiche et le classement teste ne puissent pas diverger.
+ */
+export const CATEGORIES_VOLANT = CATEGORIES_TAXO;
 
 /** Rattachement des groupes du sommaire OPTION aux catégories du volant. */
 const DEPUIS_OPTION = Object.freeze({
@@ -68,7 +68,6 @@ const CATEGORIE_BASCULE = 'affichage';
 export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   {
     id: 'carte-2d3d',
-    categorie: 'vues',
     nom: 'Vue 2D / 3D',
     icone: '🗺',
     aide: 'Basculer entre la vue 3D avec relief et la vue 2D, plus légère',
@@ -76,7 +75,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'plein-ecran',
-    categorie: 'modes',
     nom: 'Plein écran',
     icone: '⛶',
     aide: 'Passer l’application en plein écran',
@@ -84,7 +82,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'dock-bas',
-    categorie: 'outils',
     nom: 'Barre voix & lieux',
     icone: '🎙',
     aide: 'Rappeler la barre du bas : micro, recherche de lieux, préréglages visuels',
@@ -92,7 +89,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'couches-off',
-    categorie: 'donnees',
     nom: 'Éteindre les calques',
     icone: '🧹',
     aide: 'Couper d’un coup toutes les couches de données affichées',
@@ -100,7 +96,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'partager',
-    categorie: 'outils',
     nom: 'Copier le lien de partage',
     icone: '🔗',
     aide: 'Copier un lien qui rouvre exactement cette vue',
@@ -108,7 +103,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'globe-entier',
-    categorie: 'nav',
     nom: 'Revenir au globe',
     icone: '🌍',
     aide: 'Replacer la caméra sur la Terre entière',
@@ -116,7 +110,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'rail-contexte',
-    categorie: 'donnees',
     nom: 'Rail CONTEXT',
     icone: '📰',
     aide: 'Rappeler la colonne CONTEXT à droite (radio, dépêches, missions)',
@@ -124,7 +117,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'hud-coins',
-    categorie: 'affichage',
     nom: 'HUD des coins',
     icone: '📐',
     aide: 'Coordonnées, MGRS, altitude et cap dans les quatre coins de l’écran',
@@ -132,7 +124,6 @@ export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   },
   {
     id: 'cles-api',
-    categorie: 'outils',
     nom: 'Clés d’API',
     icone: '🔑',
     aide: 'Panneau des clés facultatives — l’application marche sans',
@@ -236,20 +227,39 @@ export function construireCatalogue() {
   const vues = new Map();
 
   /** Insère une entrée si elle est nouvelle, sinon complète l'existante. */
-  const poser = (categorie, entree) => {
+  // Sources des doublons absorbes, en attente de l'entree qui les remplace :
+  // l'ordre d'arrivee n'est pas garanti, on recolle a la fin.
+  const heritees = new Map();
+
+  const poser = (_categorieIgnoree, entree) => {
     const cle = cleEntree(entree);
     if (!cle) return;
+
+    // Doublon declare : on ne cree PAS de seconde ligne, on reporte sa
+    // provenance sur l'entree qui la remplace. Deux intitules pour une meme
+    // action, c'est ce qui rendait le volant penible a parcourir.
+    if (estAbsorbe(cle)) {
+      const vers = ABSORBES[cle];
+      const liste = heritees.get(vers) || [];
+      liste.push(entree.source);
+      heritees.set(vers, liste);
+      return;
+    }
+
     const deja = vues.get(cle);
     if (deja) {
       if (!deja.aide && entree.aide) deja.aide = entree.aide;
-      // un libellé lisible l'emporte sur un libellé technique
-      if (entree.nom && entree.nom.length > (deja.nom || '').length) deja.nom = entree.nom;
       if (!deja.sources.includes(entree.source)) deja.sources.push(entree.source);
       return;
     }
-    const complet = { ...entree, cle, sources: [entree.source] };
+    // Le nom vient de la taxonomie quand elle en impose un : les registres
+    // d'origine portent des intitules techniques heterogenes.
+    const complet = {
+      ...entree, cle, nom: nomDe(cle, entree.nom), sources: [entree.source],
+    };
     vues.set(cle, complet);
-    (parCategorie.get(categorie) || parCategorie.get('outils')).push(complet);
+    const dest = categorieDe(cle);
+    (parCategorie.get(dest) || parCategorie.get('reglages')).push(complet);
   };
 
   // 1. Interrupteurs d'affichage — ils PILOTENT, ils n'ouvrent pas.
@@ -299,7 +309,7 @@ export function construireCatalogue() {
 
   // 4. Fonctions qui n'existaient que comme bouton flottant.
   for (const e of ENTREES_SUPPLEMENTAIRES) {
-    poser(e.categorie, {
+    poser(null, {
       type: 'action',
       id: e.id,
       nom: e.nom,
@@ -308,6 +318,14 @@ export function construireCatalogue() {
       cheminAction: e.cheminAction,
       source: 'supplement',
     });
+  }
+
+  // Les provenances des doublons rejoignent l'entree qui les remplace : un
+  // audit « d'ou vient ce bouton ? » reste exact apres absorption.
+  for (const [vers, sources] of heritees) {
+    const cible = vues.get(vers);
+    if (!cible) continue;
+    for (const src of sources) if (!cible.sources.includes(src)) cible.sources.push(src);
   }
 
   return CATEGORIES_VOLANT.map((c) => ({
@@ -342,7 +360,7 @@ export function filtrer(texte, catalogue = construireCatalogue()) {
 
 const CSS = `
 #wt-volant-lat {
-  position: fixed; left: 0; top: 0; bottom: 0; z-index: 960;
+  position: fixed; left: 0; top: 0; bottom: 0; z-index: var(--wt-z-volant, 3200);
   width: var(--wt-vl-largeur, 268px); display: flex; flex-direction: column;
   background: linear-gradient(180deg, rgba(5,11,18,0.97), rgba(4,9,15,0.97));
   border-right: 1px solid rgba(0,212,255,0.28);
@@ -469,7 +487,7 @@ body.wt-volant-ouvert #wt-panel {
 /* Languette : elle reste visible même volant replié, sinon plus d'accès. */
 #wt-vl-languette {
   position: fixed; left: var(--wt-vl-largeur, 268px); top: 50%; transform: translateY(-50%);
-  z-index: 961; width: 26px; min-height: 92px; cursor: pointer;
+  z-index: calc(var(--wt-z-volant, 3200) + 1); width: 26px; min-height: 92px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   background: rgba(5,11,18,0.95); color: #00d4ff;
   border: 1px solid rgba(0,212,255,0.32); border-left: none;

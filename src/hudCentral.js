@@ -35,7 +35,7 @@ const IGNORES = new Set([
 const CSS = `
 .wt-hud-off { display: none !important; }
 #wt-hud-oeil {
-  position: static !important; z-index: 9998;
+  position: static !important; z-index: var(--wt-z-secours, 9000);
   display: inline-flex !important; visibility: visible !important;
   width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
   align-items: center; justify-content: center; font-size: 19px; line-height: 1;
@@ -55,7 +55,7 @@ body.ui-clean-view #title-bar h1 > *:not(#wt-hud-oeil) { opacity: 0 !important; 
 body.ui-clean-view #wt-hud-oeil { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
 
 #wt-hud-central {
-  position: fixed; left: 12px; top: 96px; z-index: 9990; width: min(360px, 94vw);
+  position: fixed; left: 12px; top: 96px; z-index: calc(var(--wt-z-secours, 9000) - 4); width: min(360px, 94vw);
   max-height: 74vh; display: flex; flex-direction: column;
   background: rgba(6,10,18,0.94); color: #e8eaed;
   border: 1px solid rgba(0,212,255,0.4); border-radius: 10px;
@@ -96,7 +96,7 @@ body.wt-hud-boot > *:not(#cesiumContainer):not(#world-overlay-root):not(#wt-hud-
 }
 body.wt-hud-boot #title-bar { opacity: .85; pointer-events: auto; }
 #wt-hud-indice {
-  position: fixed; top: 78px; left: 36px; z-index: 9997; display: none;
+  position: fixed; top: 78px; left: 36px; z-index: calc(var(--wt-z-secours, 9000) - 2); display: none;
   padding: 6px 9px; border-radius: 8px; font-family: var(--font-mono, monospace); font-size: 9px;
   background: rgba(0,212,255,0.14); border: 1px solid rgba(0,212,255,0.45); color: #bff0ff;
 }

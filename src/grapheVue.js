@@ -155,7 +155,7 @@ export function energie(noeuds) {
 
 const CSS = `
 #wt-graphe {
-  position: fixed; inset: 0; z-index: 4100; background: #05090e;
+  position: fixed; inset: 0; z-index: var(--wt-z-cadre, 2000); background: #05090e;
   display: flex; flex-direction: column; color: #e8eaed;
   font-family: var(--font-sans, system-ui, sans-serif);
 }

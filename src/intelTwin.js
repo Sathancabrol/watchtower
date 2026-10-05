@@ -23,7 +23,7 @@ import { rendreDeplacable } from './draggable.js';
 const PROFIL_KEY = 'watchtower.profil.v1';
 
 const CSS = `
-#wt-intel { position: fixed; inset: 0; z-index: 920; pointer-events: none; font-family: var(--font-mono, monospace); color: #e8eaed; }
+#wt-intel { position: fixed; inset: 0; z-index: var(--wt-z-cadre, 2000); pointer-events: none; font-family: var(--font-mono, monospace); color: #e8eaed; }
 #wt-intel > * { pointer-events: auto; }
 .wti-glass { background: linear-gradient(180deg, rgba(14,20,28,0.92), rgba(10,14,22,0.88)); border: 1px solid rgba(120,200,190,0.22); border-radius: 14px; backdrop-filter: blur(10px); box-shadow: 0 6px 24px rgba(0,0,0,0.4); }
 #wti-haut { position: absolute; top: 0; left: 0; right: 0; height: 56px; display: flex; align-items: stretch; padding: 6px 12px; background: linear-gradient(180deg, rgba(8,12,18,0.95), rgba(8,12,18,0.82)); border-bottom: 1px solid rgba(120,200,190,0.2); }
@@ -82,6 +82,25 @@ const CSS = `
 #wti-droit .btn { cursor: pointer; width: 100%; padding: 8px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 2px; border-radius: 8px; background: rgba(120,200,190,0.12); border: 1px solid #7dd3c8; color: #7dd3c8; margin-top: 4px; }
 #wti-analyser { position: absolute; top: 66px; left: 50%; transform: translateX(-50%); cursor: pointer; padding: 8px 16px; font-family: inherit; font-size: 9px; font-weight: 700; letter-spacing: 2px; color: #7dd3c8; border-radius: 9px; background: rgba(14,20,28,0.9); border: 1px solid rgba(120,200,190,0.4); }
 #wti-analyser:hover { background: rgba(120,200,190,0.12); }
+/* ── INTEL ET LE VOLANT ────────────────────────────────────────────────────
+   INTEL encadre l'ecran : bandeau haut, colonne gauche, colonne droite,
+   centre. Mais le volant occupe deja la bande de gauche et passe DEVANT
+   (c'est la surface de commande, elle ne doit jamais etre recouverte).
+   Resultat : la colonne gauche d'INTEL disparaissait sous le volant et la
+   vue semblait amputee.
+
+   INTEL se cale donc sur la largeur reelle du volant. Le cadre reste un
+   cadre, il commence simplement la ou le volant finit. */
+body.wt-volant-ouvert #wt-intel {
+  left: calc(var(--wt-vl-largeur, 268px) + 12px);
+}
+body.wt-volant-ouvert #wti-centre {
+  left: 268px;
+}
+/* Ecran etroit : le volant se superpose, INTEL reprend toute la largeur. */
+@media (max-width: 900px) {
+  body.wt-volant-ouvert #wt-intel { left: 0; }
+}
 #wt-intel .note { font-size: 7.5px; color: rgba(232,234,237,0.35); line-height: 1.5; margin-top: 8px; }
 @keyframes wti-blink { 50% { opacity: 0.3; } }
 #wt-intel .live-item { padding: 4px 7px; margin: 3px 0; border-radius: 7px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.025); }
@@ -90,7 +109,7 @@ const CSS = `
 #wt-intel .live-item.vert { border-color: rgba(67,209,122,0.4); background: rgba(67,209,122,0.05); }
 #wt-intel .live-item .hh { color: rgba(232,234,237,0.45); font-size: 8px; letter-spacing: 1px; }
 /* drill-down + rapport : fenêtres focus au-dessus de la carte */
-.wti-modal { position: fixed; inset: 0; z-index: 2600; display: flex; align-items: center; justify-content: center; background: rgba(4,7,12,0.6); pointer-events: auto; }
+.wti-modal { position: fixed; inset: 0; z-index: var(--wt-z-modale, 4000); display: flex; align-items: center; justify-content: center; background: rgba(4,7,12,0.6); pointer-events: auto; }
 .wti-modal .boite { width: min(560px, 94vw); max-height: 80vh; display: flex; flex-direction: column; padding: 16px 18px; }
 .wti-modal .tete { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; }
 .wti-modal .tete .ic { font-size: 20px; }
@@ -490,7 +509,7 @@ export function initIntelTwin(viewer) {
     if (!derniere) return;
     const { lat, lon } = derniere;
     const zone = document.createElement('div');
-    zone.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:2650;background:rgba(8,12,18,0.92);border:1px solid #7dd3c8;border-radius:10px;padding:8px 16px;font-family:var(--font-mono,monospace);font-size:9px;letter-spacing:1px;color:#e8eaed;';
+    zone.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:calc(var(--wt-z-cadre, 2000) + 20);background:rgba(8,12,18,0.92);border:1px solid #7dd3c8;border-radius:10px;padding:8px 16px;font-family:var(--font-mono,monospace);font-size:9px;letter-spacing:1px;color:#e8eaed;';
     zone.textContent = '🏙 Modélisation 3D des bâtiments par catégorie de civilisation…';
     document.body.appendChild(zone);
     try {
@@ -542,7 +561,7 @@ export function initIntelTwin(viewer) {
       }
       // légende flottante
       legende3D = document.createElement('div');
-      legende3D.style.cssText = 'position:fixed;top:120px;right:12px;z-index:2650;width:230px;background:rgba(8,12,18,0.94);border:1px solid rgba(125,211,200,0.4);border-radius:12px;padding:10px 12px;font-family:var(--font-mono,monospace);font-size:9px;color:#e8eaed;';
+      legende3D.style.cssText = 'position:fixed;top:120px;right:12px;z-index:calc(var(--wt-z-cadre, 2000) + 20);width:230px;background:rgba(8,12,18,0.94);border:1px solid rgba(125,211,200,0.4);border-radius:12px;padding:10px 12px;font-family:var(--font-mono,monospace);font-size:9px;color:#e8eaed;';
       legende3D.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
           <b style="letter-spacing:2px;color:#7dd3c8">🏙 CIVILISATION 3D</b>
@@ -566,7 +585,7 @@ export function initIntelTwin(viewer) {
           const catB = ent.properties.c3dCat.getValue();
           const colB = ent.properties.c3dCol.getValue();
           const fiche = document.createElement('div');
-          fiche.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2700;width:min(340px,90vw);background:rgba(8,12,18,0.97);border:1px solid ' + colB + ';border-radius:14px;padding:14px 16px;font-family:var(--font-mono,monospace);font-size:10px;color:#e8eaed;';
+          fiche.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:var(--wt-z-modale, 4000);width:min(340px,90vw);background:rgba(8,12,18,0.97);border:1px solid ' + colB + ';border-radius:14px;padding:14px 16px;font-family:var(--font-mono,monospace);font-size:10px;color:#e8eaed;';
           fiche.innerHTML = `
             <div style="font-size:11px;font-weight:800;letter-spacing:1px;margin-bottom:6px">🔎 ${nomB}</div>
             <div style="color:${colB};letter-spacing:2px;font-size:9px;margin-bottom:8px">CATÉGORIE : ${catB.toUpperCase()}</div>

@@ -10,6 +10,7 @@ import {
 } from './volantLateral.js';
 import { CATEGORIES } from './barreFonctions.js';
 import { SOMMAIRE_OPTION } from './ergonomieDock.js';
+import { ABSORBES, estAbsorbe, categorieDe } from './data/volant/taxonomie.js';
 import { BASCULES_AFFICHAGE } from './data/volant/registreBascules.js';
 
 test('les categories du volant sont completes et uniques', () => {
@@ -18,7 +19,7 @@ test('les categories du volant sont completes et uniques', () => {
   for (const c of CATEGORIES_VOLANT) {
     assert.ok(c.nom && c.icone && c.aide, `categorie incomplete : ${c.id}`);
   }
-  for (const attendu of ['affichage', 'vues', 'donnees', 'nav', 'modes', 'outils']) {
+  for (const attendu of ['carte', 'couches', 'aller', 'analyser', 'ecran', 'reglages']) {
     assert.ok(ids.includes(attendu), `categorie manquante : ${attendu}`);
   }
 });
@@ -31,27 +32,31 @@ test('les categories du volant sont completes et uniques', () => {
 
 test('AUCUNE bascule d affichage n est perdue', () => {
   const cles = new Set(toutesLesEntrees().map((e) => e.cle));
+  // Une cle absorbee reste JOIGNABLE : c est son remplacant qui l assure.
+  const joignable = (c) => cles.has(c) || (estAbsorbe(c) && cles.has(ABSORBES[c]));
   for (const b of BASCULES_AFFICHAGE) {
-    assert.ok(cles.has(`bascule:${b.id}`), `bascule absente du volant : ${b.id} (${b.libelle})`);
+    assert.ok(joignable(`bascule:${b.id}`), `bascule absente du volant : ${b.id} (${b.libelle})`);
   }
 });
 
 test('AUCUNE entree de la barre de fonctions n est perdue', () => {
   const cles = new Set(toutesLesEntrees().map((e) => e.cle));
+  const joignable = (c) => cles.has(c) || (estAbsorbe(c) && cles.has(ABSORBES[c]));
   for (const cat of CATEGORIES) {
     for (const e of cat.entrees) {
       const cle = e.dock ? `dock:${e.dock}` : `cible:${e.cible}`;
-      assert.ok(cles.has(cle), `entree absente du volant : ${cat.nom} / ${e.info} (${cle})`);
+      assert.ok(joignable(cle), `entree absente du volant : ${cat.nom} / ${e.info} (${cle})`);
     }
   }
 });
 
 test('AUCUNE entree du sommaire OPTION n est perdue', () => {
   const cles = new Set(toutesLesEntrees().map((e) => e.cle));
+  const joignable = (c) => cles.has(c) || (estAbsorbe(c) && cles.has(ABSORBES[c]));
   for (const g of SOMMAIRE_OPTION) {
     for (const e of g.entrees) {
       const cle = e.ancre ? `dock:${e.ancre}` : `cible:${e.cible}`;
-      assert.ok(cles.has(cle), `entree absente du volant : ${g.groupe} / ${e.nom} (${cle})`);
+      assert.ok(joignable(cle), `entree absente du volant : ${g.groupe} / ${e.nom} (${cle})`);
     }
   }
 });
@@ -145,7 +150,7 @@ test('les entrees supplementaires entrent bien dans le catalogue', () => {
   for (const e of ENTREES_SUPPLEMENTAIRES) {
     assert.ok(cles.has(`action:${e.id}`), `entree supplementaire absente : ${e.id}`);
     assert.ok(e.cheminAction, `${e.id} sans action`);
-    assert.ok(CATEGORIES_VOLANT.some((c) => c.id === e.categorie), `${e.id} : categorie inconnue`);
+    assert.ok(categorieDe(`action:${e.id}`), `${e.id} : non range dans la taxonomie`);
   }
 });
 

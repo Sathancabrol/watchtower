@@ -9604,3 +9604,20 @@ body.wt-cles-visible #key-setup-chip { display: flex !important; }
    `ouvrirEntree`). Cette regle rend la barre visible sans rien deplacer. */
 body.wt-dock-bas-visible #control-panel,
 body.wt-dock-bas-visible #location-bar { display: revert !important; }
+
+/* ═══ CALQUES — ordre d empilement unique. GENERE depuis
+   src/data/ui/calques.js : ne pas editer a la main, un test compare les deux.
+   Ecrire z-index: var(--wt-z-panneau) plutot qu un nombre nu. ═══ */
+:root {
+  --wt-z-globe: 0;
+  --wt-z-decor: 400;
+  --wt-z-ancre: 800;
+  --wt-z-panneau: 1200;
+  --wt-z-cadre: 2000;
+  --wt-z-fenetre: 2600;
+  --wt-z-volant: 3200;
+  --wt-z-modale: 4000;
+  --wt-z-survol: 5000;
+  --wt-z-alerte: 6000;
+  --wt-z-secours: 9000;
+}
