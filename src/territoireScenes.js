@@ -93,43 +93,102 @@ export function positionsQuartiers({ largeur = 740, hauteur = 470, marge = 62, e
 }
 
 /**
+ * LA COUCHE D'IMPORTS.
+ *
+ * `couche` est un objet `{ poi: [...], transformation: [...], imprevus: [...] }`
+ * produit par `data/importCsv.js` : des fiches importées qui viennent
+ * S'AJOUTER à la base d'amorçage sans jamais la modifier. La base reste la
+ * référence figée ; l'import est une couche qu'on peut retirer d'un geste.
+ */
+export function importerDans(couche, table, fiches) {
+  return { ...(couche || {}), [table]: [...((couche || {})[table] || []), ...(fiches || [])] };
+}
+
+/** Total d'imports d'une table. */
+export function compteImports(couche, table) {
+  return ((couche || {})[table] || []).length;
+}
+
+/** Table de base locale correspondant à une lentille. */
+const TABLE_DE_LENTILLE = Object.freeze({
+  commerce: 'poi', nature: 'poi', education: 'poi',
+  association: 'association', evenement: 'evenement',
+  reseau: 'reseau', chantier: 'transformation', urbanisme: 'transformation',
+});
+
+/**
+ * Les fiches importées d'une table qui concernent une commune.
+ * Trois cas, et ils sont distincts : la fiche nomme sa commune (INSEE ou nom),
+ * elle n'en nomme aucune alors qu'elle le devrait (base locale = Frontignan),
+ * ou c'est un IMPRÉVU sans commune — et un imprévu sans commune vaut pour tout
+ * le territoire, il n'appartient à personne en particulier.
+ */
+export function importsDeCommune(couche, insee, table) {
+  const cible = String(insee || '');
+  const nom = (commune(cible) || {}).nom;
+  const general = table === 'imprevus';
+  return ((couche || {})[table] || []).filter((f) => {
+    const code = String(f.code_insee || '');
+    if (code) return code === cible;
+    const declaree = String(f.commune || '');
+    if (declaree) {
+      return nom ? declaree.toLowerCase() === String(nom).toLowerCase() : false;
+    }
+    if (general) return true;
+    return cible === '34108';
+  });
+}
+
+/**
  * Fiches locales rattachées à une commune, par catégorie de lentille.
  * La base d'amorçage ne couvre QUE Frontignan : les autres communes renvoient
  * 0 — et le module écrit « à importer » plutôt que d'afficher un faux vide.
  */
-export function compterFichesLocales(insee, filtre) {
-  if (String(insee) !== '34108') return 0;
+export function compterFichesLocales(insee, filtre, couche) {
+  const table = TABLE_DE_LENTILLE[filtre] || 'poi';
+  const importees = importsDeCommune(couche, insee, table);
+  const surCategorie = (categorie) => importees.filter((f) => f.categorie === categorie).length;
+  if (String(insee) !== '34108') {
+    // La base d'amorçage ne couvre QUE Frontignan : pour une autre commune,
+    // seuls les imports comptent — et 0 veut dire « à importer ».
+    if (table === 'poi') return surCategorie(filtre === 'nature' ? 'nature' : filtre);
+    return importees.length;
+  }
   const pois = BASE_LOCALE.pois;
   switch (filtre) {
-    case 'commerce': return pois.filter((p) => p.categorie === 'commerce').length;
-    case 'association': return BASE_LOCALE.associations.length;
-    case 'evenement': return BASE_LOCALE.evenements.length;
-    case 'reseau': return BASE_LOCALE.reseaux.length;
-    case 'nature': return pois.filter((p) => p.categorie === 'nature').length;
-    case 'education': return pois.filter((p) => p.categorie === 'education').length;
-    case 'urbanisme': case 'chantier': return BASE_LOCALE.transformations.length;
-    default: return pois.length;
+    case 'commerce': return pois.filter((p) => p.categorie === 'commerce').length + surCategorie('commerce');
+    case 'nature': return pois.filter((p) => p.categorie === 'nature').length + surCategorie('nature');
+    case 'education': return pois.filter((p) => p.categorie === 'education').length + surCategorie('education');
+    case 'association': return BASE_LOCALE.associations.length + importees.length;
+    case 'evenement': return BASE_LOCALE.evenements.length + importees.length;
+    case 'reseau': return BASE_LOCALE.reseaux.length + importees.length;
+    case 'urbanisme': case 'chantier': return BASE_LOCALE.transformations.length + importees.length;
+    default: return pois.length + importees.length;
   }
 }
 
 /** Valeur d'une commune pour la lentille active (la métrique qui colore). */
-export function valeurLentille(c, lentilleId) {
+export function valeurLentille(c, lentilleId, couche) {
   const l = LENTILLES.find((x) => x.id === lentilleId);
   if (!l || !c) return null;
   if (l.metrique === 'population') return c.population || null;
   if (l.metrique === 'densite') return densite(c);
   if (l.metrique === 'risques') return (risquesCommune(c.insee) || []).length;
-  if (l.metrique === 'fiches') return compterFichesLocales(c.insee, l.filtre);
+  if (l.metrique === 'fiches') return compterFichesLocales(c.insee, l.filtre, couche);
+  if (l.metrique === 'imprevus') {
+    const contexte = contexteDeCommune(c.insee);
+    return imprevusPourTerrain({ contexte }).total + importsDeCommune(couche, c.insee, 'imprevus').length;
+  }
   return null;
 }
 
 /** Couleurs des 14 communes pour la lentille active (choroplèthe). */
-export function couleursCommunes(lentilleId) {
+export function couleursCommunes(lentilleId, couche) {
   if (lentilleId === 'territoire') return null;
-  const valeurs = COMMUNES.map((c) => valeurLentille(c, lentilleId)).filter((v) => Number.isFinite(v));
+  const valeurs = COMMUNES.map((c) => valeurLentille(c, lentilleId, couche)).filter((v) => Number.isFinite(v));
   if (!valeurs.length) return null;
   const { min, max } = bornes(valeurs);
-  return Object.fromEntries(COMMUNES.map((c) => [c.insee, couleurChoroplethe(valeurLentille(c, lentilleId), min, max)]));
+  return Object.fromEntries(COMMUNES.map((c) => [c.insee, couleurChoroplethe(valeurLentille(c, lentilleId, couche), min, max)]));
 }
 
 /**
@@ -275,7 +334,7 @@ export function nomContexte(id) {
 }
 
 /** Le modèle de l'inspecteur : ce que le panneau de droite affiche. */
-export function ficheTerritoire(insee, lentille = 'territoire') {
+export function ficheTerritoire(insee, lentille = 'territoire', couche) {
   const c = commune(insee);
   if (!c) {
     return {
@@ -306,6 +365,7 @@ export function ficheTerritoire(insee, lentille = 'territoire') {
       ['Conseil agglo', `${c.sieges} siège(s)`],
       ['Rôle', c.role],
       ['Quartiers', c.insee === '34108' ? String(QUARTIERS_FRONTIGNAN.length) : '—'],
+      ['Fiches importées', String(compteImports(couche, 'poi') + compteImports(couche, 'transformation') || '—')],
     ],
     note: 'Population de référence INSEE, superficie BANATIC/Wikipédia. Le détail quartier par quartier passe par les IRIS.',
     liens: liensCommune(c.insee),
@@ -318,11 +378,13 @@ export function ficheTerritoire(insee, lentille = 'territoire') {
   if (lentille === 'imprevus') {
     const contexte = contexteDeCommune(c.insee);
     const r = imprevusPourTerrain({ contexte });
+    const importes = importsDeCommune(couche, c.insee, 'imprevus');
     fiche.contexteImprevu = contexte;
     fiche.nomContexte = nomContexte(contexte);
-    fiche.imprevus = r.problemes.slice(0, 6);
+    fiche.imprevus = top(6, 'gravite', [...r.problemes, ...importes]);
     fiche.cascades = r.cascades.slice(0, 3);
-    fiche.note = `Contexte « ${nomContexte(contexte)} » : ${r.total} fiches d’imprévus correspondantes dans la base d’amorçage.`;
+    fiche.note = `Contexte « ${nomContexte(contexte)} » : ${r.total} fiches d’imprévus de la base d’amorçage`
+      + (importes.length ? ` + ${importes.length} importée(s) pour cette commune.` : '. Aucun imprévu importé pour cette commune.');
   }
   return fiche;
 }
@@ -340,7 +402,7 @@ export function filDuNiveau(niveau, selection) {
 }
 
 /** La frise temporelle : série réelle puis prolongation explicitement marquée. */
-export function friseTemporelle() {
+export function friseTemporelle(couche) {
   const debut = SERIE_FRONTIGNAN[0];
   const fin = SERIE_FRONTIGNAN[SERIE_FRONTIGNAN.length - 1];
   const pente = (fin.population - debut.population) / Math.max(1, fin.annee - debut.annee);
@@ -349,10 +411,22 @@ export function friseTemporelle() {
     fin: fin.annee,
     horizon: 2040,
     points: [...SERIE_FRONTIGNAN],
+    marqueurs: transformationsMarquees(couche),
     projection: (annee) => Math.round(fin.population + pente * (Number(annee) - fin.annee)),
     source: 'INSEE — populations légales (1968 → 2023)',
     avertissement: 'Au-delà de 2023 : simple prolongation de la tendance, PAS une prévision.',
+    noteProjets: 'Les projets ne s’affichent sur la frise que s’ils portent une date : aucune case n’est posée d’office.',
   };
+}
+
+/** L'année d'une opération, telle qu'elle est écrite dans sa fiche. */
+export function anneeDe(fiche) {
+  for (const cle of ['debut', 'fin']) {
+    const brut = String(fiche?.[cle] ?? '');
+    const m = brut.match(/\b(1[89]\d{2}|20\d{2})\b/);
+    if (m) return Number(m[1]);
+  }
+  return null;
 }
 
 const videChamp = (v) => v === null || v === undefined || v === ''
@@ -405,18 +479,23 @@ export function versCsvReseau(liste = []) {
 }
 
 /** Complétude des tables de la base locale (niveaux 1 → 5). */
-export function completudeBase() {
+export function completudeBase(couche) {
+  const tableImportee = (type) => [...(BASE_LOCALE[type] || []), ...((couche || {})[type] || [])];
   const tables = [
-    ['poi', BASE_LOCALE.pois], ['association', BASE_LOCALE.associations],
-    ['evenement', BASE_LOCALE.evenements], ['reseau', BASE_LOCALE.reseaux],
-    ['transformation', BASE_LOCALE.transformations], ['media', BASE_LOCALE.medias],
+    ['poi', BASE_LOCALE.pois], ['association', tableImportee('association')],
+    ['evenement', tableImportee('evenement')], ['reseau', BASE_LOCALE.reseaux],
+    ['transformation', tableImportee('transformation')], ['media', BASE_LOCALE.medias],
   ];
   return tables.map(([type, liste]) => {
-    const d = type === 'reseau' ? diagnosticReseau(liste) : diagnosticCollection(liste, type);
+    const complete = type === 'poi'
+      ? [...BASE_LOCALE.pois, ...((couche || {}).poi || [])]
+      : liste;
+    const d = type === 'reseau' ? diagnosticReseau(liste) : diagnosticCollection(complete, type);
     return {
       type,
       nom: type === 'reseau' ? 'Réseau technique' : (TYPES_ENTITE[type]?.nom || type),
-      total: liste.length,
+      total: complete.length,
+      importees: (couche || {})[type]?.length || 0,
       niveaux: d.niveaux,
       manquants: d.manquants.slice(0, 4),
     };
@@ -424,7 +503,7 @@ export function completudeBase() {
 }
 
 /** CSV d'une table de la base locale (en-tête = schéma). */
-export function csvTable(type) {
+export function csvTable(type, couche) {
   const map = {
     poi: BASE_LOCALE.pois,
     association: BASE_LOCALE.associations,
@@ -434,12 +513,20 @@ export function csvTable(type) {
     media: BASE_LOCALE.medias,
   };
   if (type === 'reseau') return versCsvReseau(map.reseau || []);
-  return versCsv(map[type] || [], type);
+  const importees = (couche || {})[type] || [];
+  return versCsv([...(map[type] || []), ...importees], type);
 }
 
-/** Les 12 chantiers/transformations les plus « lourds » à montrer dans la frise. */
-export function transformationsMarquees() {
-  return BASE_LOCALE.transformations.slice(0, 6);
+/**
+ * Les opérations à montrer — base d'amorçage PLUS imports —, les datées
+ * d'abord. Une opération sans date n'est jamais posée au hasard sur la frise.
+ */
+export function transformationsMarquees(couche, limite = 12) {
+  const toutes = [...BASE_LOCALE.transformations, ...((couche || {}).transformation || [])];
+  const avecAnnee = toutes.map((t) => ({ ...t, annee: anneeDe(t) }));
+  return avecAnnee
+    .sort((a, b) => (b.annee || 0) - (a.annee || 0) || String(a.id).localeCompare(String(b.id)))
+    .slice(0, limite);
 }
 
 /** Niveau de complétude lisible d'une fiche (utilisé par l'inspecteur). */
@@ -448,7 +535,9 @@ export function niveauLisible(fiche, type) {
 }
 
 /** Top des imprévus pour un contexte (raccourci utilisé par le panneau). */
-export function meilleursImprevus(contexte, n = 8) {
+export function meilleursImprevus(contexte, n = 8, couche) {
   const liste = imprevusPourTerrain({ contexte }).problemes;
+  const importes = (couche || {}).imprevus || [];
+  if (importes.length) return top(n, 'gravite', [...liste, ...importes]);
   return liste.length ? liste : top(n, 'gravite');
 }

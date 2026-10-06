@@ -37,6 +37,7 @@ export const CATEGORIES_POI = Object.freeze({
  * 3 (collaboratif / presse). `fiabilite` est une APPRÉCIATION, pas une mesure.
  */
 export const SOURCES = Object.freeze([
+  { id: 'src_import_utilisateur', titre: 'Fichier importé — transmis par un utilisateur', url: 'https://github.com/Sathancabrol/watchtower', type_source: 'import_utilisateur', editeur: 'non qualifié', licence: 'à préciser', fiabilite: 2, notes: 'Source par DÉFAUT de tout import : un fichier transmis n’est pas une preuve. Son origine précise (producteur, date) doit être saisie au fur et à mesure ; tant qu’elle ne l’est pas, les fiches restent « à vérifier » et la lentille le dit.' },
   { id: 'src_frontignan_officiel', titre: 'Ville de Frontignan la Peyrade — site officiel', url: 'https://www.frontignan.fr/', type_source: 'site_officiel', editeur: 'Ville de Frontignan', licence: 'non précisée', fiabilite: 5, notes: 'Équipements, écoles, agenda, urbanisme, vie associative.' },
   { id: 'src_frontignan_agenda', titre: 'Agenda culturel de Frontignan la Peyrade', url: 'https://www.frontignan.fr/', type_source: 'site_officiel', editeur: 'Ville de Frontignan', fiabilite: 4, notes: 'Source du calendrier des événements ; les fiches d’agenda se périment vite.' },
   { id: 'src_guide_associations', titre: 'Guide des associations (millésime municipal)', url: 'https://www.frontignan.fr/', type_source: 'site_officiel', editeur: 'Ville de Frontignan', fiabilite: 4, notes: 'Annuaire associatif : domaines, contacts, lieux de pratique. À importer par millésime.' },
@@ -140,10 +141,10 @@ export const RESEAUX = Object.freeze([
  * documenter (délibérations, DECP, presse).
  */
 export const TRANSFORMATIONS = Object.freeze([
-  { id: 'trf_pielles_requalification', type_transformation: 'rehabilitation', usage_avant: 'friche_industrielle', usage_apres: 'quartier_mixte', statut: 'en_projet', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
-  { id: 'trf_quais_canal', type_transformation: 'pietonnisation', usage_avant: 'quai_fonctionnel', usage_apres: 'promenade_amenagee', statut: 'realisee_ou_en_cours', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
-  { id: 'trf_ecoles_confort_ete', type_transformation: 'renovation', usage_avant: 'ecole_energivore', usage_apres: 'ecole_adaptee_climat', statut: 'en_projet', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
-  { id: 'trf_la_peyrade_renouvellement', type_transformation: 'rehabilitation', usage_avant: 'quartier_ancien', usage_apres: 'quartier_requalifie', statut: 'en_projet', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
+  { id: 'trf_pielles_requalification', nom: 'Requalification des Pielles',  type_transformation: 'rehabilitation', usage_avant: 'friche_industrielle', usage_apres: 'quartier_mixte', statut: 'en_projet', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
+  { id: 'trf_quais_canal', nom: 'Quais du canal du Rhône à Sète',  type_transformation: 'pietonnisation', usage_avant: 'quai_fonctionnel', usage_apres: 'promenade_amenagee', statut: 'realisee_ou_en_cours', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
+  { id: 'trf_ecoles_confort_ete', nom: 'Confort d’été des écoles',  type_transformation: 'renovation', usage_avant: 'ecole_energivore', usage_apres: 'ecole_adaptee_climat', statut: 'en_projet', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
+  { id: 'trf_la_peyrade_renouvellement', nom: 'Renouvellement urbain de La Peyrade',  type_transformation: 'rehabilitation', usage_avant: 'quartier_ancien', usage_apres: 'quartier_requalifie', statut: 'en_projet', confiance: 'à vérifier', source_id: 'src_frontignan_officiel' },
 ]);
 
 /**

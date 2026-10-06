@@ -35,9 +35,12 @@ import {
   nomNiveau, niveauAtteint, valider,
 } from './data/attributsTerritoire.js';
 import {
-  FOND, FORME, completudeBase, contexteDeCommune, csvTable, ficheTerritoire,
-  filDuNiveau, friseTemporelle, hexPath, nomContexte, sceneDe,
+  FOND, FORME, completudeBase, compteImports, contexteDeCommune, csvTable, ficheTerritoire,
+  filDuNiveau, friseTemporelle, hexPath, importerDans, nomContexte, sceneDe,
 } from './territoireScenes.js';
+import {
+  TYPES_IMPORT, importerCsv, importerImprevus, resumeImport,
+} from './data/importCsv.js';
 
 const ech = (s) => String(s ?? '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
 const nombre = (n) => (Number.isFinite(Number(n)) ? Number(n).toLocaleString('fr-FR') : '—');
@@ -83,6 +86,7 @@ const CSS = `
 #wt-territoire .legende { position: absolute; left: 8px; bottom: 6px; display: flex; gap: 8px; flex-wrap: wrap; font-size: 7.5px; color: rgba(232,234,237,0.6); }
 #wt-territoire .legende i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 3px; }
 #wt-territoire .t-actions { display: flex; gap: 4px; flex-wrap: wrap; padding: 0 10px 8px; }
+#wt-territoire.t-depot { outline: 2px dashed #00d4ff; outline-offset: -4px; }
 `;
 
 const h = () => (typeof window === 'undefined' ? {} : (window.__godsEyeView || {}));
@@ -131,7 +135,9 @@ export function initTerritoire(viewer, deps = {}) {
   const el = document.createElement('div');
   el.id = 'wt-territoire';
 
-  const etat = { niveau: 'epci', lentille: 'territoire', selection: '34108' };
+  // La base d'amorçage est figée ; ce que l'utilisateur importe vit dans une
+  // COUCHE séparée, qu'on peut retirer d'un geste et qui dit d'où elle vient.
+  const etat = { niveau: 'epci', lentille: 'territoire', selection: '34108', imports: {}, rapports: [] };
   const msg = (m) => { try { surMessage?.(m); } catch { /* bandeau absent */ } };
 
   el.innerHTML = `
@@ -185,6 +191,8 @@ export function initTerritoire(viewer, deps = {}) {
     { id: 'fiche', nom: '📄 FICHE DU LIEU' },
     { id: 'imprevus', nom: '🎲 IMPRÉVUS DU TERRAIN' },
     { id: 'csv', nom: '⬇ EXPORTER LA TABLE' },
+    { id: 'importer', nom: '📥 IMPORTER UN CSV' },
+    { id: 'vider', nom: '⌫ EFFACER LES IMPORTS' },
   ];
   for (const a of ACTIONS) {
     const b = document.createElement('button');
@@ -195,6 +203,19 @@ export function initTerritoire(viewer, deps = {}) {
     b.addEventListener('click', () => agir(a.id));
     zoneActions.appendChild(b);
   }
+
+  // Le champ de fichier reste caché : le bouton du bandeau l'ouvre. Le même
+  // chemin sert au glisser-déposer, pour ne pas avoir deux imports différents.
+  const champFichier = document.createElement('input');
+  champFichier.type = 'file';
+  champFichier.accept = '.csv,text/csv,text/plain';
+  champFichier.multiple = true;
+  champFichier.style.display = 'none';
+  champFichier.addEventListener('change', () => {
+    lireFichiers([...champFichier.files]);
+    champFichier.value = '';
+  });
+  el.appendChild(champFichier);
 
   for (const b of el.querySelectorAll('[data-nav]')) {
     b.addEventListener('click', () => {
@@ -254,6 +275,54 @@ export function initTerritoire(viewer, deps = {}) {
     return n;
   }
 
+  /** Range un texte de CSV dans la bonne table, et retient le rapport. */
+  function importerTexte(nom, texte) {
+    const contenu = String(texte ?? '');
+    const devine = importerCsv(contenu, { nom, maxLignes: 5000 }).type;
+    const rapport = devine === 'imprevus'
+      ? importerImprevus(contenu, { nom })
+      : importerCsv(contenu, { nom });
+    if (rapport.entites.length) {
+      const table = rapport.type === 'imprevus' ? 'imprevus' : rapport.type;
+      etat.imports = importerDans(etat.imports, table, rapport.entites);
+    }
+    etat.rapports = [...etat.rapports, rapport];
+    msg(`📥 ${resumeImport(rapport)}`);
+    return rapport;
+  }
+
+  /** Lit une liste de fichiers (bouton ou glisser-déposer), un rapport par fichier. */
+  function lireFichiers(fichiers) {
+    const liste = (fichiers || []).filter((f) => f && /csv|text|txt/i.test(`${f.type || ''} ${f.name || ''}`));
+    if (!liste.length) { msg('📥 Aucun fichier CSV reconnu.'); return Promise.resolve([]); }
+    return Promise.all(liste.map((f) => (typeof f.text === 'function'
+      ? f.text()
+      : new Promise((resoudre, rejeter) => {
+        const lecteur = new FileReader();
+        lecteur.onload = () => resoudre(String(lecteur.result || ''));
+        lecteur.onerror = () => rejeter(lecteur.error);
+        lecteur.readAsText(f, 'utf-8');
+      }))
+      .then((texte) => importerTexte(f.name, texte))
+      .catch((e) => {
+        const rapport = { nom: f.name, type: null, entites: [], rejets: [{ ligne: 0, motif: `lecture impossible : ${e?.message || e}` }], entetes: { reconnues: [], horsContrat: [], vides: [] }, manquants: [] };
+        etat.rapports = [...etat.rapports, rapport];
+        msg(`📥 ${f.name} : lecture impossible.`);
+        return rapport;
+      })))
+      .then((rapports) => { rendre(); return rapports; });
+  }
+
+  /** Le panneau accepte aussi un dépôt de fichiers : même chemin, même rapport. */
+  el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('t-depot'); });
+  el.addEventListener('dragleave', () => el.classList.remove('t-depot'));
+  el.addEventListener('drop', (e) => {
+    e.preventDefault();
+    el.classList.remove('t-depot');
+    const fichiers = e.dataTransfer?.files;
+    if (fichiers?.length) lireFichiers([...fichiers]);
+  });
+
   function agir(id) {
     if (id === 'voler') { voler(); return null; }
     if (id === 'calques') { activerCalques(); voler(); return null; }
@@ -270,6 +339,15 @@ export function initTerritoire(viewer, deps = {}) {
       msg('🎲 Imprévus : base TP filtrée par le contexte de terrain.');
       return null;
     }
+    if (id === 'importer') { champFichier.click(); return null; }
+    if (id === 'vider') {
+      const n = Object.values(etat.imports).reduce((s2, l) => s2 + l.length, 0);
+      etat.imports = {};
+      etat.rapports = [];
+      rendre();
+      msg(n ? `⌫ ${n} fiche(s) importée(s) retirée(s) — la base d’amorçage est intacte.` : '⌫ Aucun import à retirer.');
+      return null;
+    }
     if (id === 'csv') {
       const table = etat.lentille === 'reseaux' ? 'reseau' : etat.lentille === 'culture' ? 'evenement' : 'poi';
       const ok = telecharger(`watchtower_${table}.csv`, csvTable(table));
@@ -284,7 +362,7 @@ export function initTerritoire(viewer, deps = {}) {
     for (const b of el.querySelectorAll('[data-nav]')) b.classList.toggle('actif', b.dataset.nav === etat.niveau);
     crumb.textContent = filDuNiveau(etat.niveau, etat.selection);
 
-    const scene = sceneDe({ niveau: etat.niveau, lentille: etat.lentille, selection: etat.selection });
+    const scene = sceneDe({ niveau: etat.niveau, lentille: etat.lentille, selection: etat.selection, couche: etat.imports });
     svg.innerHTML = '';
     svg.appendChild(svgEl('rect', { x: 0, y: 0, width: 740, height: 470, fill: FOND }));
     for (const f of scene.formes) {
@@ -332,11 +410,40 @@ export function initTerritoire(viewer, deps = {}) {
 
     rendreInspecteur();
     rendreFrise();
-    etatLigne.textContent = `Niveau ${etat.niveau} · lentille ${etat.lentille} · sélection ${etat.selection} — le maillage hexagonal est une représentation aux échelles larges ; à partir de l’agglomération, ce sont les positions réelles.`;
+    const nbImports = Object.values(etat.imports).reduce((n, l) => n + l.length, 0);
+    etatLigne.textContent = `Niveau ${etat.niveau} · lentille ${etat.lentille} · sélection ${etat.selection}`
+      + (nbImports ? ` · ${nbImports} fiche(s) importée(s)` : '')
+      + ' — le maillage hexagonal est une représentation aux échelles larges ; à partir de l’agglomération, ce sont les positions réelles.';
+  }
+
+  /** Le rapport du dernier import : fichier, table, ce qui est entré, ce qui bloque. */
+  function blocRapports() {
+    if (!etat.rapports.length) return '';
+    const lignes = etat.rapports.slice(-4).reverse().map((r) => {
+      if (!r.type) {
+        return `<div class="t-li"><b>${ech(r.nom)}</b> — table non reconnue, rien n’a été importé.<br>`
+          + `<span style="opacity:.65">${ech((r.rejets[0] || {}).motif || '')}</span></div>`;
+      }
+      const manquants = (r.manquants || []).slice(0, 3)
+        .map((m) => `${ech(m.libelle || m.cle)} (${m.n})`).join(' · ');
+      const hors = (r.entetes.horsContrat || []).slice(0, 5).map((c) => ech(c)).join(', ');
+      return `<div class="t-li"><b>${ech(r.nom)}</b> → ${ech(r.type)}<br>`
+        + `<span style="opacity:.75">${r.entites.length} fiche(s) · ${r.valides} au niveau 1 · séparateur « ${ech(r.delimiteur)} »`
+        + (r.identifiantsFabriques ? ` · ${r.identifiantsFabriques} identifiant(s) fabriqué(s)` : '')
+        + (r.rejetees ? ` · ${r.rejetees} refusée(s)` : '')
+        + `</span><br>`
+        + (manquants ? `<span style="opacity:.65">il manque : ${manquants}</span><br>` : '')
+        + (hors ? `<span style="opacity:.65">sans colonne propre, conservées en json_details : ${hors}</span>` : '')
+        + (r.rejets.length ? `<span style="opacity:.65">refus : ${ech(r.rejets[0].motif)}</span>` : '')
+        + '</div>';
+    }).join('');
+    return `<div class="t-sous">IMPORTS — CE QUI EST ENTRÉ, CE QUI BLOQUE</div><div class="t-liste">${lignes}</div>`;
   }
 
   function rendreInspecteur() {
     const blocs = [];
+    const rapport = blocRapports();
+    if (rapport) blocs.push(rapport);
     if (etat.niveau === 'quartier') {
       const q = quartier(etat.selection);
       blocs.push(`<div class="t-titre">🧱 ${ech(q?.nom || 'Quartier')}</div>`);
@@ -348,7 +455,7 @@ export function initTerritoire(viewer, deps = {}) {
       blocs.push('<div class="t-sous">DESCENDRE EN 3D</div>');
       blocs.push('<div class="t-note">Le contour officiel d’un quartier est un IRIS (INSEE) ou un quartier de la ville. La descente se fait donc par les couches réelles : cadastre (parcelles IGN), bâti 3D (OSM), entités de la carte.</div>');
     } else {
-      const f = ficheTerritoire(etat.selection, etat.lentille);
+      const f = ficheTerritoire(etat.selection, etat.lentille, etat.imports);
       blocs.push(`<div class="t-titre">${ech(f.titre)}</div>`);
       blocs.push(`<div class="t-grille">${f.lignes.map(([k, v]) => `<span class="k">${ech(k)}</span><span class="v">${ech(v)}</span>`).join('')}</div>`);
       if (f.risques?.length) {
@@ -393,16 +500,20 @@ export function initTerritoire(viewer, deps = {}) {
       blocs.push('<div class="t-note">Chaque fiche porte son niveau de preuve : documenté (source institutionnelle), rapporté (profession), déduit (mécanisme connu). Aucune fréquence chiffrée n’est inventée.</div>');
     }
     if (etat.lentille === 'logement' || etat.lentille === 'economie' || etat.lentille === 'travaux') {
-      const c = completudeBase();
+      const c = completudeBase(etat.imports);
       blocs.push('<div class="t-sous">CE QUI EST REMPLI / CE QUI RESTE À IMPORTER</div>');
-      blocs.push(`<div class="t-liste">${c.map((t) => `<div class="t-li"><b>${ech(t.nom)}</b> — ${t.total} fiche(s) · niveaux ${Object.entries(t.niveaux).filter(([, n]) => n).map(([k, n]) => `${k}:${n}`).join(' ')}</div>`).join('')}</div>`);
-      blocs.push(`<div class="t-note">Dette de vérification : ${detteVerification()} fiche(s) marquée(s) « à vérifier ». Sources du registre : ${BASE_LOCALE.sources.length}. Aucune fiche inventée : le vide s’affiche comme vide.</div>`);
+      blocs.push(`<div class="t-liste">${c.map((t) => `<div class="t-li"><b>${ech(t.nom)}</b> — ${t.total} fiche(s)${t.importees ? ` (dont ${t.importees} importée(s))` : ''} · niveaux ${Object.entries(t.niveaux).filter(([, n]) => n).map(([k, n]) => `${k}:${n}`).join(' ')}</div>`).join('')}</div>`);
+      const importees = c.reduce((n, t) => n + (t.importees || 0), 0);
+      const noteImport = importees
+        ? ` Dont ${importees} fiche(s) venue(s) d’un import — elles restent « à vérifier » tant que leur origine n’est pas qualifiée.`
+        : '';
+      blocs.push(`<div class="t-note">Dette de vérification : ${detteVerification()} fiche(s) marquée(s) « à vérifier ». Sources du registre : ${BASE_LOCALE.sources.length}.${noteImport} Aucune fiche inventée : le vide s’affiche comme vide.</div>`);
     }
     inspecteur.innerHTML = blocs.join('');
   }
 
   function rendreFrise() {
-    const fr = friseTemporelle();
+    const fr = friseTemporelle(etat.imports);
     const L = 740; const Ht = 74;
     const maxP = Math.max(...fr.points.map((p) => p.population)) * 1.06;
     const minP = Math.min(...fr.points.map((p) => p.population)) * 0.9;
@@ -411,10 +522,17 @@ export function initTerritoire(viewer, deps = {}) {
     const pts = fr.points.map((p) => `${x(p.annee).toFixed(1)},${y(p.population).toFixed(1)}`);
     const dernier = fr.points[fr.points.length - 1];
     const proj = `${x(dernier.annee).toFixed(1)},${y(dernier.population).toFixed(1)} ${x(fr.horizon).toFixed(1)},${y(fr.projection(fr.horizon)).toFixed(1)}`;
-    const marqueurs = BASE_LOCALE.transformations.slice(0, 4).map((t, i) => {
-      const annee = 2024 + i * 4;
-      return `<text x="${x(annee).toFixed(1)}" y="${Ht - 3}" font-size="6.5" fill="rgba(227,178,74,.8)" text-anchor="middle">${ech(String(t.type_transformation || '').slice(0, 10))}</text>`;
-    }).join('');
+    // Les projets ne sont posés QUE là où leur date les met : aucune case
+    // n'est inventée pour « faire joli », et les sans-date le restent.
+    const marqueurs = (fr.marqueurs || [])
+      .filter((m) => Number.isFinite(m.annee))
+      .slice(0, 10)
+      .map((m) => {
+        const etiquette = String(m.nom || m.type_transformation || m.id || '').slice(0, 22);
+        return `<line x1="${x(m.annee).toFixed(1)}" y1="${Ht - 14}" x2="${x(m.annee).toFixed(1)}" y2="${Ht - 19}" stroke="rgba(227,178,74,.75)" stroke-width="1" />`
+          + `<text x="${x(m.annee).toFixed(1)}" y="${Ht - 2}" font-size="6.5" fill="rgba(227,178,74,.85)" text-anchor="middle">${ech(etiquette)}</text>`;
+      }).join('');
+    const sansDate = (fr.marqueurs || []).filter((m) => !Number.isFinite(m.annee)).length;
     frise.innerHTML = `
       <line x1="32" y1="${Ht - 14}" x2="${L - 12}" y2="${Ht - 14}" stroke="rgba(255,255,255,0.14)" stroke-width="1" />
       <polyline points="${pts.join(' ')}" fill="none" stroke="#7dd3c8" stroke-width="1.8" />
@@ -424,7 +542,8 @@ export function initTerritoire(viewer, deps = {}) {
       <text x="32" y="10" font-size="7.5" fill="rgba(232,234,237,.55)">POPULATION FRONTIGNAN — INSEE (1968 → 2023), puis prolongation de tendance</text>
       <text x="${L - 12}" y="10" font-size="7.5" fill="rgba(227,178,74,.85)" text-anchor="end">≈ ${nombre(fr.projection(2040))} hab. en 2040 (tendance, pas une prévision)</text>`;
     el.querySelector('#t-frise-gauche').textContent = `TEMPS — ${fr.debut}`;
-    el.querySelector('#t-frise-droite').textContent = `${fr.fin} → ${fr.horizon}`;
+    el.querySelector('#t-frise-droite').textContent = `${fr.fin} → ${fr.horizon}`
+      + (sansDate ? ` · ${sansDate} projet(s) sans date` : '');
   }
 
   rendre();
@@ -457,6 +576,14 @@ export function initTerritoire(viewer, deps = {}) {
     source,
     typesEntite: () => Object.keys(TYPES_ENTITE),
     contexteDe: (insee) => contexteDeCommune(insee),
+    importerTexte,
+    lireFichiers,
+    importer: () => champFichier.click(),
+    imports: () => ({ ...etat.imports }),
+    rapports: () => [...etat.rapports],
+    compteImports: (table) => compteImports(etat.imports, table),
+    effacerImports: () => agir('vider'),
+    typesImport: () => [...TYPES_IMPORT],
     repere: (id) => REPERES.find((r) => r.id === id) || null,
     densiteDe: (insee) => densite(commune(insee) || {}),
   };

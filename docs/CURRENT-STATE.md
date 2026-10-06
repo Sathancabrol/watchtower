@@ -2,6 +2,38 @@
 
 Updated: October 6, 2026
 
+> **2026-10-06 (suite) — IMPORT DE CSV : la porte d'entrée des fichiers**
+> (`src/data/importCsv.js`, bouton **📥 IMPORTER UN CSV** + glisser-déposer
+> dans le panneau TERRITOIRE). Un fichier réel entre dans le module sans
+> qu'on ait à écrire une ligne de code : le **type de table est deviné** sur
+> les colonnes, les **synonymes** ramènent le vocabulaire du terrain
+> (`latitude`, `date_debut`, `maitre_ouvrage`, `diametre`, `contexte`…) au
+> vocabulaire du schéma, et le **rapport dit tout** — colonnes reconnues,
+> colonnes sans colonne propre, lignes refusées ET POURQUOI, champs qui
+> bloquent la complétude, niveau atteint.
+>
+> Trois règles tenues : **rien n'est jeté** (une colonne sans colonne propre
+> part dans `json_details` et est nommée dans le rapport) ; **rien n'est
+> inventé** (`confiance` = « à vérifier », `source_id` = nouvelle source
+> `src_import_utilisateur` de fiabilité 2 — un fichier transmis n'est pas une
+> preuve) ; **rien n'est caché** (un identifiant absent est FABRIQUÉ, stable
+> et signalé, pour que re-importer mette à jour au lieu de dupliquer).
+> Seules deux dérivations sont autorisées, et elles sont tracées : le type
+> précis donne sa catégorie racine, un point donne sa géométrie.
+>
+> Les imports vivent dans une **couche** à part, jamais dans la base figée :
+> ils s'ajoutent aux compteurs, à la choroplèthe, à la frise et à la
+> complétude, et **⌫ EFFACER LES IMPORTS** les retire d'un geste. La fiche
+> CHANTIER gagne au passage son `nom`, son maître d'ouvrage, sa maîtrise
+> d'œuvre, son entreprise, son montant de marché et sa phase — et la frise
+> ne place plus les projets qu'à **leur vraie date** (les sans-date sont
+> comptés, pas devinés).
+>
+> Base d'imprévus : sa commune entre dans le contrat (`commune`,
+> `code_insee`) parce qu'un retour d'expérience d'agglomération est
+> territorial ; un imprévu sans commune vaut pour tout le territoire, un
+> imprévu situé ne compte que pour sa commune.
+
 > **2026-10-06 — TERRITOIRE : la carte stratégique** (`src/territoire.js` +
 > `src/territoireScenes.js`, montés depuis `main.js` dans le dock sous
 > `wt-dock-territoire`). Un seul panneau parcourt le territoire réel à sept

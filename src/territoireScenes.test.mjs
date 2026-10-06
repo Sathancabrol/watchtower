@@ -6,10 +6,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   FOND, FORME, compterFichesLocales, completudeBase, contexteDeCommune,
-  couleursCommunes, csvTable, diagnosticReseau, ficheTerritoire, filDuNiveau,
-  friseTemporelle, grilleHex, hexPath, meilleursImprevus, niveauLisible,
-  nomContexte, positionsCommunes, positionsQuartiers, sceneDe,
-  transformationsMarquees, valeurLentille, versCsvReseau,
+  anneeDe, compteImports, couleursCommunes, csvTable, diagnosticReseau, ficheTerritoire,
+  filDuNiveau, friseTemporelle, grilleHex, hexPath, importerDans, importsDeCommune,
+  meilleursImprevus, niveauLisible, nomContexte, positionsCommunes, positionsQuartiers,
+  sceneDe, transformationsMarquees, valeurLentille, versCsvReseau,
 } from './territoireScenes.js';
 import { BASE_LOCALE } from './data/frontignan.js';
 import { CHAMPS_RESEAU } from './data/attributsTerritoire.js';
@@ -303,4 +303,78 @@ test('un quartier inconnu s’annonce au lieu de s’inventer', () => {
   assert.match(texte, /QUARTIER À IMPORTER/);
   assert.match(texte, /trou visible/);
   assert.equal(scene.formes.filter((f) => f.forme === 'hex').length, 0);
+});
+
+test('la couche d’imports s’ajoute sans toucher à la base d’amorçage', () => {
+  const base = BASE_LOCALE.pois.length;
+  let couche = importerDans({}, 'poi', [
+    { id: 'poi_ecole_test', categorie: 'education', code_insee: '34108' },
+    { id: 'poi_marche_test', categorie: 'commerce', code_insee: '34108' },
+  ]);
+  assert.equal(BASE_LOCALE.pois.length, base, 'la base figée n’a pas bougé');
+  assert.equal(compteImports(couche, 'poi'), 2);
+  assert.equal(compteImports(couche, 'association'), 0);
+  assert.equal(compterFichesLocales('34108', 'education', couche), 3, 'base 2 + 1 importée');
+  assert.equal(compterFichesLocales('34108', 'commerce', couche), 3, 'base 2 + 1 importée');
+  assert.equal(compterFichesLocales('34108', 'association', couche), BASE_LOCALE.associations.length);
+
+  couche = importerDans(couche, 'poi', [{ id: 'poi_ecole_test', categorie: 'education', code_insee: '34108' }]);
+  assert.equal(compteImports(couche, 'poi'), 3, 'importerDans empile : la déduplication est le rôle de fusionnerParId');
+});
+
+test('un import profite à sa commune, et à elle seule', () => {
+  const couche = importerDans({}, 'poi', [
+    { id: 'poi_test_sete', categorie: 'commerce', code_insee: '34301' },
+  ]);
+  assert.equal(valeurLentille({ insee: '34301' }, 'economie', couche), 1);
+  assert.equal(valeurLentille({ insee: '34108' }, 'economie', couche), 2, 'Frontignan garde ses 2 commerces de base');
+  assert.equal(valeurLentille({ insee: '34157' }, 'economie', couche), 0);
+
+  const parNom = importerDans({}, 'poi', [{ id: 'poi_test_meze', categorie: 'commerce', commune: 'Mèze' }]);
+  assert.equal(valeurLentille({ insee: '34157' }, 'economie', parNom), 1, 'le nom de commune suffit');
+
+  assert.equal(importsDeCommune(couche, '34301', 'poi').length, 1);
+  assert.equal(importsDeCommune(couche, '34108', 'poi').length, 0);
+});
+
+test('un imprévu importé sans commune vaut pour tout le territoire', () => {
+  const couche = importerDans({}, 'imprevus', [
+    { id: 'IMP-A', probleme: 'DICT tardive', gravite: 'Forte', contexts: [] },
+    { id: 'IMP-B', probleme: 'Nappe haute', gravite: 'Forte', code_insee: '34108' },
+  ]);
+  assert.equal(importsDeCommune(couche, '34157', 'imprevus').length, 1, 'le général vaut aussi pour Mèze');
+  assert.equal(importsDeCommune(couche, '34108', 'imprevus').length, 2, 'Frontignan a le général ET le sien');
+  const liste = meilleursImprevus('lagune', 20, couche);
+  assert.ok(liste.some((i) => i.id === 'IMP-A'));
+});
+
+test('la frise ne place que les projets datés, et à leur année', () => {
+  const couche = importerDans({}, 'transformation', [
+    { id: 'trf_quais', nom: 'Quais du canal', debut: '2019', fin: '2021', maitre_ouvrage: 'Agglopôle' },
+    { id: 'trf_sans_date', nom: 'Projet sans date' },
+    { id: 'trf_ecoles', nom: 'Confort d’été', debut: 'été 2024' },
+  ]);
+  const fr = friseTemporelle(couche);
+  assert.equal(anneeDe({ debut: '2019' }), 2019);
+  assert.equal(anneeDe({ fin: 'décembre 2021' }), 2021);
+  assert.equal(anneeDe({ debut: 'bientôt' }), null);
+  assert.equal(anneeDe({}), null);
+  const datees = fr.marqueurs.filter((m) => Number.isFinite(m.annee));
+  assert.deepEqual(datees.map((m) => m.annee), [2024, 2019], 'du plus récent au plus ancien');
+  assert.equal(fr.marqueurs.filter((m) => !Number.isFinite(m.annee)).length, 1 + BASE_LOCALE.transformations.length, 'les sans-date ne sont pas posés au hasard');
+  assert.ok(fr.noteProjets.includes('date'));
+});
+
+test('la complétude et l’export suivent la couche importée', () => {
+  const couche = importerDans({}, 'poi', [{ id: 'poi_x', nom: 'X', categorie: 'commerce', code_insee: '34108' }]);
+  const poi = completudeBase(couche).find((t) => t.type === 'poi');
+  assert.equal(poi.total, BASE_LOCALE.pois.length + 1);
+  assert.equal(poi.importees, 1);
+  const autres = completudeBase(couche).filter((t) => t.type !== 'poi');
+  assert.ok(autres.every((t) => t.importees === 0));
+
+  const csv = csvTable('poi', couche);
+  assert.equal(csv.split('\n').length, BASE_LOCALE.pois.length + 2);
+  assert.ok(csv.includes('poi_x'));
+  assert.equal(csvTable('poi').split('\n').length, BASE_LOCALE.pois.length + 1, 'sans couche, rien de plus');
 });

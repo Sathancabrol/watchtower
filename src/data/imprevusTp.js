@@ -37,6 +37,10 @@ export const COLONNES = Object.freeze([
   'consequence', 'gravite', 'frequence', 'detection_avant', 'detection_pendant',
   'action_immediate', 'prevention', 'source', 'date', 'pays', 'type_source',
   'confiance', 'contextes',
+  // Un imprévu arrive quelque part : quand la base est remplie commune par
+  // commune (c'est le cas d'un retour d'expérience d'agglomération), sa
+  // commune est une colonne du contrat, pas une colonne en trop.
+  'commune', 'code_insee',
 ]);
 
 /** Phases du chantier, de la préparation à la remise en état. */
