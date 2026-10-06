@@ -48,6 +48,35 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
+## 🧩 CAP MODULE (06/10/2026) — WATCHTOWER dans l'app complète
+
+But final : **WATCHTOWER devient le volet géospatial de
+`proto-cognitorium`** (React 19, TypeScript, Vite 6, Tailwind 4). Le plan
+détaillé, les obstacles mesurés et l'ordre retenu sont dans
+**`docs/ARCHITECTURE-MODULE.md`**. Le point d'entrée d'un agent qui reprend
+le dépôt est **`AGENTS.md`**, à la racine.
+
+**La règle qui décide de l'ordre** : chaque étape doit payer deux fois — une
+fois tout de suite pour l'app autonome, une fois le jour de la fusion. Un
+refactor qui ne sert qu'à la fusion est refusé ; l'app est utilisée
+maintenant, et le bac à sable se réinitialise trop souvent pour qu'on
+engage un chantier invisible.
+
+| Ordre | Étape | Paye tout de suite | Paye à la fusion |
+|---|---|---|---|
+| 1 | Noyau de données publiable (`src/data/**`) | frontière données / affichage | **rattachement immédiat**, sans Cesium ni DOM |
+| 2 | `@layer watchtower` autour du CSS | fin des guerres de spécificité | cohabite avec Tailwind |
+| 3 | `monter(hôte, options)` | ordre de démarrage déterministe | le contrat d'intégration |
+| 4 | Manifeste de modules | togglable par construction | l'hôte choisit un sous-ensemble |
+| 5 | Budget de démarrage | démarrage rapide, hors ligne | un hôte refuse 8 Mo |
+| 6 | Chantiers G, A, E, F, D, C | les fonctionnalités attendues | — |
+| 7 | Hygiène (4 tests rouges, nom du paquet, POTES.md) | — | prêt à empaqueter |
+
+**Écarté** : réécriture TypeScript, passage à React, serveur, shadow DOM —
+justifications dans `docs/ARCHITECTURE-MODULE.md` §5.
+
+---
+
 ## 🧰 CATALOGUE D'OUTILS (06/10/2026) — la base de ce qu'on peut intégrer
 
 **Règle posée par l'utilisateur : rien ne s'intègre avant d'être passé par ce
