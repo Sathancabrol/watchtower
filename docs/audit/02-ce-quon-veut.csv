@@ -1,0 +1,16 @@
+Priorité;Chantier;Besoin exprimé;État aujourd'hui;Faisable en gratuit;Blocage;Coût si payant;Décision proposée
+1;G — Fil contexte;Modifiable (flux, ordre, filtres) et ne prend pas tout l'écran;Partiel;Oui;Aucun;—;À faire — pur front, aucune source externe
+1;E — Vue communale;Marche sur chaque commune + animation de tracé cadastral;Partiel;Oui;Aucun — IGN et cadastre sont gratuits et sans clé;—;À faire
+1;A1 — Minicarte MATRIX;Night-vision sur cadastre + bâtiments seulement;Non fait;Oui;Aucun;—;À faire — pur rendu
+1;A3 — Minicarte boutons;Un seul bouton ouvrant les autres en pop-up;Non fait;Oui;Aucun;—;À faire
+1;A4 — Minicarte cadre;Cadre à la taille et à la forme de la minicarte;Non fait;Oui;Aucun;—;À faire
+2;F — INTEL niveaux;Niveaux mondial / national / régional;Manquant;Oui;Aucun — GDELT, Wikidata, INSEE, Eurostat;—;À faire — sources déjà identifiées
+2;C — Connexions externes;YouTube, Twitch, Radio Garden : bouton ouvrir puis lecture dans l'app;Non fait;Partiellement;YouTube et Twitch interdisent la lecture hors lecteur officiel;Twitch API gratuite avec compte dev;Lecteur embarqué officiel, pas de réencapsulation
+2;D — Multicam;Mosaïque de vues, clic = plein cadre, esprit Bloomberg;Non fait;Oui;RTSP non lisible en navigateur — il faut du HLS;—;hls.js + sources HLS publiques ; RTSP hors périmètre navigateur
+3;B — Volant;Étendre au-delà de 8 rayons;FAIT — 42 fonctions rangées;Oui;Aucun;—;Terminé
+3;Base hors ligne;Mettre un maximum de données en base;En cours;Oui;Travail de curation, pas de coût;—;Continuer — priorité Thau Agglo
+3;POTES.md;Mode d'emploi pour les amis;Non fait;Oui;Aucun;—;À écrire
+4;Recon / OSINT technique;DNS, WHOIS, certificats, BGP, CVE;Non fait;Non en front pur;Le navigateur ne peut pas faire de DNS ni de WHOIS — il faut un serveur;Serveur ~5 €/mois;ÉCARTÉ — casse le modèle sans serveur ; sauf passage en app de bureau
+4;Sanctions / OFAC;Recherche personnes, organisations, navires;Non fait;Oui;Aucun — OpenSanctions publie des jeux en libre accès;API hébergée payante au-delà du gratuit;Jeu de données statique embarqué, pas l'API
+4;CCTV massif;Milliers de caméras publiques;Partiel;Oui;Catalogues publics à curer;—;Curation progressive, priorité Hérault
+5;Agent IA sur la carte;Canal de commande pour un agent;Non fait;Oui sans serveur;Nécessite une clé de modèle fournie par l'utilisateur;Clé LLM à la charge de chacun;Optionnel — jamais requis pour que l'app marche

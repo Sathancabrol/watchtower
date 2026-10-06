@@ -1,0 +1,14 @@
+Plateforme;Qui;Ce que c'est;Coût lecteur;Coût auteur;Compte;API sans clé;Couverture;Intérêt pour nous
+Open Research Europe (ORE);Commission européenne, puis CERN à partir de l'automne 2026;Plateforme d'édition en accès ouvert avec évaluation par les pairs ouverte;Gratuit;Gratuit (pris en charge);Seulement pour publier;Pas d'API publique documentée;Travaux financés par H2020 / Horizon Europe, puis 11 pays;C'EST LA PISTE DE L'UTILISATEUR — contenu atteignable par DOI, OpenAIRE et Europe PMC
+OpenAIRE;Union européenne;Agrégateur des dépôts européens, moissonne ORE;Gratuit;Sans objet;Non;Oui — api.openaire.eu et OAI-PMH;Toute la recherche financée sur fonds publics en Europe;DÉJÀ BRANCHÉ — c'est par là qu'on lit ORE
+Europe PMC;EMBL-EBI (Europe);40 M de notices biomédicales et sciences du vivant, texte intégral;Gratuit;Sans objet;Non;Oui — 10 req/s, aucune clé;Biologie, santé, environnement;À AJOUTER — meilleur que PubMed Central pour nous, et européen
+CORDIS;Commission européenne;Résultats des projets financés par l'UE;Gratuit;Sans objet;Non;Oui — jeux de données ouverts;Tous les projets des programmes-cadres;À AJOUTER — relie un sujet local à un projet européen
+JRC Publications Repository;Centre commun de recherche de l'UE;Publications scientifiques de la Commission;Gratuit;Sans objet;Non;OAI-PMH;Expertise scientifique de l'UE;À ÉVALUER
+data.europa.eu;Union européenne;Portail des données ouvertes européennes;Gratuit;Sans objet;Non;Oui;Données publiques des 27;À AJOUTER — pendant européen de data.gouv.fr
+Zenodo;CERN / OpenAIRE;Dépôt de données, rapports, annexes;Gratuit;Gratuit;Pour déposer;Oui;Tous domaines;DÉJÀ BRANCHÉ
+HAL;CNRS / CCSD (France);Archive ouverte nationale;Gratuit;Gratuit;Pour déposer;Oui;Recherche française;DÉJÀ BRANCHÉ — le plus utile pour Thau
+Unpaywall;Our Research (association);Dit si une version légale gratuite d'un DOI existe;Gratuit;Sans objet;Non — un courriel en paramètre;Oui;150 M de DOI;DÉJÀ BRANCHÉ
+OpenAlex;OurResearch;Catalogue ouvert de 250 M de travaux;Gratuit;Sans objet;Non — courriel conseillé;Oui;Mondial;DÉJÀ BRANCHÉ
+Crossref;Association d'éditeurs;Métadonnées de DOI;Gratuit;Sans objet;Non;Oui;160 M de DOI;À AJOUTER — résout un DOI en référence propre
+Semantic Scholar;Allen Institute;Recherche et graphe de citations;Gratuit;Sans objet;Clé gratuite conseillée;Oui, bridé sans clé;220 M;À ÉVALUER
+Scopus / Web of Science;Elsevier / Clarivate;Bases bibliométriques fermées;PAYANT (licence établissement);Sans objet;Oui;Non;Mondial;ÉCARTÉ — hors budget et inutile pour l'usage

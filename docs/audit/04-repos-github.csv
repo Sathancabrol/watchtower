@@ -1,0 +1,14 @@
+Repo;Étoiles (oct. 2026);Licence;Techno;Ce qu'il fait de mieux que nous;Récupérable chez nous;Comment;Verdict
+bilawalsidhu/gods-eye-view;48 100;MIT;JS + Cesium;C'est notre source amont;Sans objet;Suivre les évolutions;SUIVRE — parité déjà atteinte
+koala73/worldmonitor;87 900;à vérifier;TypeScript + MCP;Agrégation d'actualité géopolitique, serveur MCP;Idées seulement;Lire la taxonomie de ses couches;ÉTUDIER — vérifier la licence avant toute reprise
+simplifaisoul/osiris;~9 900;MIT;Next.js + MapLibre;Catalogue de 17 000 caméras publiques, 23 flux d'info en direct, chargement par fenêtre de vue;OUI — les catalogues, pas le code;Reprendre les listes de sources (MIT, attribution);PRENDRE — meilleure prise immédiate
+BigBodyCobain/Shadowbroker;à vérifier;à vérifier;Next.js + FastAPI + Python;60 flux, toolkit Recon serveur, canal agent HMAC;Idées + liste de sources;Le code est serveur, inutilisable tel quel;S'INSPIRER — déjà fait ce tour-ci
+AndrewCTF/velocity;94;à vérifier;React + Python + Cesium;MÊME MOTEUR QUE NOUS. Historique de positions rejouable, sans aucune clé;OUI — l'idée de rejeu;Rejouer l'historique local des entités;ÉTUDIER DE PRÈS — le plus proche techniquement
+ni5arga/sightline;566;à vérifier;TypeScript + Overpass;Moteur de recherche d'infrastructures sur données OSM;OUI — les requêtes Overpass;Reprendre ses gabarits de requêtes;PRENDRE — directement utile pour Thau
+cipher387/osintmap;233;à vérifier;CSS / données;614 services par pays : cadastres, registres, transports;OUI — le jeu de données;Extraire la ligne France;PRENDRE — enrichit la base hors ligne
+lockfale/OSINT-Framework;12 200;à vérifier;JSON;Arborescence de ~700 outils par type de donnée;OUI — la taxonomie;Comparer à notre taxonomie du volant;ÉTUDIER
+jivoi/awesome-osint;25 600;à vérifier;Markdown;Liste de référence;Idées;Repérage de sources;VEILLE
+unicodeveloper/globalthreatmap;1 800;à vérifier;TypeScript;Conflits, bases militaires, histoire des nations;Idées;Pour le niveau mondial d'INTEL;ÉTUDIER
+smicallef/spiderfoot;22 900;MIT;Python;200 modules de reconnaissance;NON;Serveur obligatoire;ÉCARTÉ — incompatible front pur
+intelowlproject/IntelOwl;4 500;AGPL;Python + Docker;150 analyseurs de menaces;NON;Serveur + licence AGPL contaminante;ÉCARTÉ
+sherlock-project/sherlock;76 700;MIT;Python;Recherche de pseudo sur 400 sites;NON;Serveur + enquête sur des personnes;ÉCARTÉ — hors sujet et hors éthique du projet

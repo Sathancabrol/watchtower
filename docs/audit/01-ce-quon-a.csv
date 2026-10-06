@@ -1,0 +1,38 @@
+Domaine;Couche / fonction;Source réellement branchée;Coût;Compte ou clé;Quota connu;Hors-ligne;Pertinence Thau;Confiance
+Fond de carte;Globe 3D + relief;Cesium ion (jeton par défaut);Gratuit;Jeton Cesium par défaut;Quota partagé du jeton public;Non;Haute;Haute
+Fond de carte;Tuiles 2D;OpenStreetMap + CARTO basemaps;Gratuit;Non;Usage raisonnable;Non;Haute;Haute
+Fond de carte;Imagerie satellite;ArcGIS Online World Imagery;Gratuit;Non;Usage raisonnable;Non;Haute;Moyenne
+Fond de carte;Imagerie quotidienne;NASA GIBS / Earthdata;Gratuit;Non;Aucun;Non;Moyenne;Haute
+Territoire;Communes INSEE;geo.api.gouv.fr;Gratuit;Non;Aucun;Partiel (base locale Thau);Haute;Haute
+Territoire;Adresses;api-adresse.data.gouv.fr (BAN);Gratuit;Non;50 req/s/IP;Non;Haute;Haute
+Territoire;Cadastre;cadastre.data.gouv.fr + apicarto.ign.fr;Gratuit;Non;Aucun;Non;Haute;Haute
+Territoire;Géoplateforme IGN;data.geopf.fr (WMTS/WFS);Gratuit;Non;Aucun depuis 2024;Non;Haute;Haute
+Territoire;Entités OSM;Overpass API;Gratuit;Non;Serveur public saturable;Non;Haute;Haute
+Territoire;Géocodage inverse;Nominatim + Photon;Gratuit;Non;1 req/s (Nominatim);Non;Haute;Haute
+Risques;Risques naturels et technos;georisques.gouv.fr;Gratuit;Non;Aucun;Non;Haute;Haute
+Risques;Qualité de l'eau;Hub'Eau (eaufrance);Gratuit;Non;Aucun;Non;Haute;Haute
+Risques;Séismes;USGS earthquake API;Gratuit;Non;Aucun;Non;Faible;Haute
+Risques;Feux actifs;NASA FIRMS;Gratuit;MAP_KEY gratuite;Par clé;Non;Moyenne;Haute
+Risques;Événements naturels;NASA EONET;Gratuit;Non;Aucun;Non;Faible;Haute
+Risques;Vigilance météo;Météo-France vigilance;Gratuit;Non;Aucun;Non;Haute;Moyenne
+Météo;Prévisions;Open-Meteo;Gratuit;Non;10 000 req/j non commercial;Non;Haute;Haute
+Météo;Pluie radar;RainViewer;Gratuit;Non;Usage raisonnable;Non;Haute;Moyenne
+Mobilité;Transports;transport.data.gouv.fr (GTFS);Gratuit;Non;Aucun;Possible (GTFS téléchargeable);Haute;Haute
+Mobilité;Vélos en libre-service;GBFS (Lyft, PBSC, etc.);Gratuit;Non;Aucun;Non;Moyenne;Haute
+Mobilité;Itinéraires;OSRM public + openrouteservice;Gratuit;ORS: clé gratuite;OSRM: usage démo;Non;Haute;Haute
+Mobilité;Avions;OpenSky Network;Gratuit;Compte recommandé;Fortement limité en anonyme;Non;Moyenne;Moyenne
+Mobilité;Navires;aisstream.io;Gratuit;Clé gratuite;Par clé;Non;Haute;Moyenne
+Économie;Entreprises;recherche-entreprises.api.gouv.fr + annuaire-entreprises;Gratuit;Non;Aucun;Non;Haute;Haute
+Économie;Annonces légales;BODACC via data.gouv;Gratuit;Non;Aucun;Non;Haute;Haute
+Économie;Marchés publics;BOAMP (opendatasoft);Gratuit;Non;Aucun;Non;Haute;Haute
+Information;Actualité mondiale;GDELT 2.0 DOC API;Gratuit;Non;Aucun;Non;Moyenne;Haute
+Information;Radio;radio-browser.info;Gratuit;Non;Aucun;Non;Moyenne;Haute
+Information;Connaissances;Wikidata + Wikipédia;Gratuit;Non;Usage raisonnable;Partiel;Haute;Haute
+Images;Photos de rue;Panoramax (IGN);Gratuit;Non;Aucun;Non;Haute;Haute
+Images;Photos de rue (alt.);Mapillary;Gratuit;Jeton gratuit;Par jeton;Non;Moyenne;Moyenne
+Documents;Texte intégral (NOUVEAU);15 sources légales — voir couche DOCS;Gratuit;Unpaywall: courriel;Variable;Non;Haute;Haute
+Espace;Lancements;thespacedevs;Gratuit;Non;15 req/h anonyme;Non;Faible;Moyenne
+Espace;Corps célestes;JPL SSD;Gratuit;Non;Aucun;Non;Faible;Moyenne
+Local;Base Thau embarquée;Modules src/data/territoire/;Gratuit;Non;Sans objet;OUI — 100%;Haute;Haute
+Local;Base géographique mondiale;src/data/geo/echelleVue.js;Gratuit;Non;Sans objet;OUI — 100%;Haute;Haute
+Local;Calcul solaire;src/data/soleil/calculSolaire.js;Gratuit;Non;Sans objet;OUI — 100%;Haute;Haute

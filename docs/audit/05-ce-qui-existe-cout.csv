@@ -1,0 +1,22 @@
+Source;Domaine;Coût;Compte;Clé;Quota gratuit;Licence données;Verdict
+OpenStreetMap / Overpass;Cartographie;Gratuit;Non;Non;Serveur public, usage raisonnable;ODbL;RETENU — déjà branché
+IGN Géoplateforme;Cartographie France;Gratuit;Non;Non;Aucun depuis 2024;Licence ouverte;RETENU — déjà branché
+data.gouv.fr;Données publiques FR;Gratuit;Non pour lire;Non;Aucun;Licence ouverte;RETENU
+data.europa.eu;Données publiques UE;Gratuit;Non;Non;Aucun;Licence ouverte;À AJOUTER
+INSEE API;Statistiques;Gratuit;Oui;Oui;Par compte;Licence ouverte;À ÉVALUER — la base locale couvre déjà Thau
+Légifrance API (PISTE);Droit;Gratuit;OUI — inscription PISTE;Oui;Par compte;Licence ouverte;À ÉVALUER — le site public suffit sans compte
+Europe PMC;Science du vivant;Gratuit;Non;Non;10 req/s;Variable par article;À AJOUTER
+Crossref;Métadonnées DOI;Gratuit;Non;Non;Usage poli avec courriel;CC0;À AJOUTER
+OpenSanctions;Sanctions;Gratuit en téléchargement;Non;Non;Jeux complets téléchargeables;CC-BY-NC pour certains;À AJOUTER en statique — API hébergée payante
+OpenSky Network;Avions;Gratuit;Compte conseillé;Non;Très bridé en anonyme;Usage non commercial;DÉJÀ BRANCHÉ — à fiabiliser avec compte
+NASA FIRMS;Feux;Gratuit;Oui;MAP_KEY;Par clé;Domaine public;DÉJÀ BRANCHÉ
+NVD (CVE);Vulnérabilités;Gratuit;Clé facultative;Facultative;5 req/30 s sans clé;Domaine public;SANS OBJET — pas de recon chez nous
+Shodan;Objets connectés;PAYANT;Oui;Oui;Quasi nul;Propriétaire;ÉCARTÉ — payant et hors périmètre
+Google Maps Platform;Cartes, Street View;PAYANT au-delà du crédit;Oui;Oui;Crédit mensuel;Propriétaire;ÉCARTÉ — le projet doit rester gratuit
+Mapbox;Cartes;Gratuit puis payant;Oui;Oui;50 000 chargements/mois;Propriétaire;ÉCARTÉ — MapLibre fait l'affaire
+Cesium ion;Tuiles 3D;Gratuit puis payant;Oui pour sa propre clé;Oui;5 Go, 50 Go/mois;Propriétaire;UTILISÉ avec le jeton par défaut — surveiller le quota
+Windy API;Météo;Gratuit puis payant;Oui;Oui;Limité;Propriétaire;ÉCARTÉ — Open-Meteo suffit
+Mapillary;Photos de rue;Gratuit;Oui;Jeton;Par jeton;CC-BY-SA;SECONDAIRE — Panoramax d'abord, sans clé
+Panoramax (IGN);Photos de rue;Gratuit;Non;Non;Aucun;Licence ouverte;RETENU — déjà branché
+Global Fishing Watch;Pêche;Gratuit;Oui;Oui;Par compte;CC-BY;À ÉVALUER — pertinent pour la lagune
+Copernicus / Sentinel;Imagerie satellite;Gratuit;Oui;Oui;Généreux;Licence Copernicus;À ÉVALUER — très pertinent pour Thau
