@@ -87,6 +87,47 @@ pures, testées, sans DOM et sans clé.
 Tests : **3 504** dont 3 499 passent (les 4 échecs sont les préexistants).
 Build ✓.
 
+### Itération 27 — les 4 tests rouges, et le fil qui se règle (06/10/2026) ✅
+
+**La suite passe entièrement pour la première fois : 3 525 / 3 525.**
+
+**Deux tests étaient périmés.** L'interface a été traduite en français et
+deux garde-fous épinglaient encore l'anglais : la tuile du premier lancement
+(« earthquakes ») et l'avertissement de vie privée de la radio. L'épinglage
+est reporté sur le texte français, l'intention conservée.
+
+**Deux étaient de vrais défauts livrés.** Trois fonds de carte français —
+**IGN ortho, plan IGN, relief OpenTopoMap** — avaient été ajoutés à
+`MAP_STACKS` sans être déclarés ailleurs, et personne ne l'avait vu parce que
+l'application les affiche correctement :
+
+* **aucun alias vocal** → `normalizeStackId` renvoyait `null` et le contrôleur
+  levait « Unknown map stack ». Trois fonds livrés, inatteignables à la voix.
+  Alias ajoutés, **en français aussi** : « photo aérienne », « plan IGN »,
+  « relief » ;
+* **absents de la classification des câbles sous-marins** → repli sur `BOTH`,
+  donc le double jeu de commandes que cette liste existe pour éviter.
+
+Le schéma d'outils vocaux est verrouillé par un hachage : **le verrou a
+attrapé ma propre correction**, et il a été réépinglé en documentant le
+motif, comme en août.
+
+**Chantier G — `src/data/fil/preferencesFil.js`** (nouveau, 22 tests). Le fil
+de contexte devient **réglable et mémorisé** : **10 flux** déclarés avec leur
+source et le fait d'aller ou non sur le réseau, allumage par flux, **ordre
+manuel**, 4 tris (importance · récent · source · manuel), limite, seuil de
+gravité, **mode hors ligne**. Il démarre **replié** et **sobre** (5 flux sur
+10) — il ne prend l'écran que si on le lui demande.
+
+Points durs traités : des préférences enregistrées par une version
+antérieure ne font jamais disparaître un flux ajouté depuis ; **tout
+éteindre est une intention respectée**, pas une erreur à corriger dans le dos
+de l'utilisateur ; un stockage qui refuse (navigation privée) ne fait pas
+tomber l'application ; une dépêche dont le flux est inconnu est **gardée**.
+
+**Reste à faire sur G** : le panneau de réglage et le bouton de dépliage dans
+l'interface. La couche de décision est prête et gelée par les tests.
+
 ### Suite proposée
 
 | Rang | Chantier | Ce qu'on prend dans le catalogue |
