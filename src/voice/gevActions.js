@@ -218,6 +218,28 @@ const STACK_ALIASES = new Map([
   ['road', 'osm'],
   ['roads', 'osm'],
   ['road map', 'osm'],
+  // B1 de nouveau : trois fonds ont ete ajoutes a MAP_STACKS sans alias, donc
+  // normalizeStackId renvoyait null et le controleur levait « Unknown map
+  // stack » — une commande vocale cassee pour un fond pourtant livre.
+  // L'interface est en francais : les formulations francaises comptent autant
+  // que les anglaises.
+  ['ign-ortho', 'ign-ortho'],
+  ['ign ortho', 'ign-ortho'],
+  ['ign', 'ign-ortho'],
+  ['photo aerienne', 'ign-ortho'],
+  ['photo aérienne', 'ign-ortho'],
+  ['ortho', 'ign-ortho'],
+  ['orthophoto', 'ign-ortho'],
+  ['ign-plan', 'ign-plan'],
+  ['ign plan', 'ign-plan'],
+  ['plan ign', 'ign-plan'],
+  ['plan', 'ign-plan'],
+  ['opentopo', 'opentopo'],
+  ['open topo', 'opentopo'],
+  ['opentopomap', 'opentopo'],
+  ['relief', 'opentopo'],
+  ['topo', 'opentopo'],
+  ['topographic', 'opentopo'],
 ]);
 
 /** Search order for track_entity across entity layer families. */

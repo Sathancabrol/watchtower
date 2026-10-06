@@ -234,7 +234,21 @@ test('Radio is nested inside Context with separate disclosure and power controls
   assert.match(html, /SNAPS TO AVAILABLE STATIONS/);
   assert.match(html, /class="radio-tuner-scale" aria-hidden="true"><\/div>/);
   assert.match(html, /DIRECTORY: RADIO BROWSER/);
-  assert.match(html, /Audio connects directly to the broadcaster/);
+  // L'avertissement de vie privee doit rester VISIBLE : le son part en direct
+  // vers la station, donc l'adresse IP de l'auditeur lui est exposee. Ce qui
+  // est epingle, c'est la presence de l'avertissement, pas sa langue —
+  // l'interface est passee en francais.
+  assert.match(html, /class="radio-privacy"/, 'l avertissement de vie privee doit exister');
+  assert.match(
+    html,
+    /directement [àa] la station|connects directly to the broadcaster/i,
+    'le texte doit dire que le son part en direct vers la station',
+  );
+  assert.match(
+    html,
+    /adresse IP est visible|IP address is visible/i,
+    'le texte doit dire que l adresse IP est exposee',
+  );
   assert.doesNotMatch(html, /radio-(?:favicon|visualizer|spectrum)/i);
   assert.match(css, /#radio-tuner-slider::-(?:webkit-slider-thumb|moz-range-thumb)/);
   assert.match(css, /\.radio-tuner\.is-static/);

@@ -209,7 +209,16 @@ export function createCableOverlayPublisher({
  * real `MAP_STACKS` so the omission is caught loudly.
  */
 const CABLE_GLOBE_STACK_IDS = Object.freeze(
-  new Set(['bing-aerial', 'bing-labels', 'esri-imagery', 'osm']),
+  new Set([
+    'bing-aerial', 'bing-labels', 'esri-imagery', 'osm',
+    // Les trois fonds francais ajoutes depuis : IGN ortho, plan IGN et le
+    // relief OpenTopoMap sont des couches d'imagerie raster posees sur le
+    // globe AFFICHE, exactement comme Bing et OSM — donc passe terrain. Ils
+    // avaient ete ajoutes a MAP_STACKS sans passer ici, et les cables
+    // retombaient sur BOTH : visibles, mais au prix du double jeu de
+    // commandes que cette liste existe precisement pour eviter.
+    'ign-ortho', 'ign-plan', 'opentopo',
+  ]),
 );
 
 /**

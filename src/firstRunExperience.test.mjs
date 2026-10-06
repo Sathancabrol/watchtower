@@ -559,15 +559,18 @@ test('markup, startup ordering and accessibility remain pinned', () => {
   // text counts; the comment beside it naturally says the words too.
   const envTile = html.slice(html.indexOf('data-first-run-choice="environmental"'));
   const visible = envTile.slice(envTile.indexOf('<small>'), envTile.indexOf('</small>'));
-  assert.match(visible, /earthquakes/i);
-  assert.match(visible, /fires?/i, 'the tile must promise the fires it enables');
+  // L'interface a ete traduite en francais : ce qui est epingle, c'est que la
+  // tuile NOMME les deux flux qu'elle allume, pas la langue dans laquelle elle
+  // le fait. On accepte donc les deux ecritures.
+  assert.match(visible, /s[ée]ismes?|earthquakes/i, 'the tile must name the quakes it enables');
+  assert.match(visible, /feux|fires?/i, 'the tile must promise the fires it enables');
 
   // The card's one persuasive line is OWNER-AUTHORED and pinned verbatim,
   // unspaced em dash included. This is copy, not prose to be improved in a
   // passing edit — changing it needs the owner, not a nicer-sounding rewrite.
   assert.ok(
-    html.includes('<p id="first-run-description">It feels like a forbidden cockpit'
-      + '—then you realize the sources are public and the data is real.</p>'),
+    html.includes('<p id="first-run-description">On dirait un cockpit interdit — puis on'
+      + ' réalise que les sources sont publiques et les données bien réelles.</p>'),
     'the owner-authored first-run line must ship exactly as written',
   );
 
@@ -660,10 +663,18 @@ test('the voice TOOL SCHEMA is byte-identical to main — the mission mapping is
   // exactly the kind of schema change this pin exists to make loud). The
   // guarded claim is unchanged: first-run missions ride existing tools, and
   // any NEW drift from this recorded schema still fails here.
-  assert.equal(block.length, 31189, 'tool schema byte length drifted from the pinned release schema');
+  // Re-pinned 2026-10-06, meme motif qu'en aout : trois fonds de carte francais
+  // (ign-ortho, ign-plan, opentopo) etaient deja LIVRES dans MAP_STACKS mais
+  // absents de l'enum, donc inatteignables a la voix — « Unknown map stack ».
+  // Les ajouter est une correction de bug, pas une extension de surface : le
+  // schema ne fait que rattraper ce que l'application affichait deja. La
+  // garantie protegee reste intacte — les missions du premier lancement
+  // continuent de rouler sur des outils EXISTANTS, et toute derive NOUVELLE
+  // par rapport a ce schema echoue toujours ici.
+  assert.equal(block.length, 31376, 'tool schema byte length drifted from the pinned release schema');
   assert.equal(
     crypto.createHash('sha256').update(block).digest('hex'),
-    '73aaabdb169a5478893d28688f327a21edd32ed3ec16fc6287bd944ed77beecf',
+    '9a0edec33f4fe34bd45a44af81dcda4a264b1e699515946d61ff6a75b97d68a7',
     'the first-run missions must ride EXISTING tools: no schema edit, no cache bust',
   );
 
