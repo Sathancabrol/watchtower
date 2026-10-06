@@ -48,6 +48,71 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
+## 🧰 CATALOGUE D'OUTILS (06/10/2026) — la base de ce qu'on peut intégrer
+
+**Règle posée par l'utilisateur : rien ne s'intègre avant d'être passé par ce
+catalogue.** Il recense, par catégorie, tout ce qui pourrait entrer dans
+WATCHTOWER — outils, sources, bibliothèques, formats, dépôts — avec pour
+chacun la licence, le coût (**payant / gratuit / gratuit avec compte**), la
+compatibilité avec notre contrainte *front-only*, le chantier de cette feuille
+de route auquel il se rattache, et un niveau de confiance.
+
+**Fichiers** — `docs/audit/AUDIT-watchtower-2026-10-06.xlsx` (6 onglets) et les
+CSV correspondants dans `docs/audit/`. Synthèse lisible :
+`docs/AUDIT-SOURCES-2026-10-06.md`.
+
+### Les 9 catégories
+
+| Catégorie | Entrées | Ce qu'elle couvre |
+|---|---|---|
+| Moteurs 3D et carto | 12 | Cesium, MapLibre, openglobus, cobe, PMTiles, iTowns |
+| Données géo | 10 | IGN, Copernicus, EMODnet, SHOM, BD TOPO, Corine |
+| OSINT sources | 21 | Vol, mer, caméras, énergie, réseau, actualité géolocalisée |
+| OSINT outils | 10 | Dépôts audités, et ceux explicitement écartés |
+| Imagerie et 3D | 10 | Gaussian splatting, 3D Tiles, CityJSON, C2PA |
+| Design et interface | 11 | Jetons, animation, graphiques, mosaïque, icônes, typo |
+| Science et documents | 11 | Open Research Europe, Europe PMC, CORDIS, HAL |
+| Information | 9 | Presse, Wikidata, Eurostat, associations, vie locale |
+| Technique | 8 | Hors ligne, Tauri, SQLite WASM, qualité |
+
+### Les trois critères qui décident
+
+1. **Front-only.** Un navigateur ne fait ni DNS, ni WHOIS, ni scan de port.
+   Tout ce qui exige un serveur est écarté par construction — c'est ce qui
+   permet à chacun de lancer l'app depuis son propre agent sans rien payer.
+2. **Gratuit, et de préférence sans clé.** Une clé par ami, c'est un ami qui
+   abandonne. Les sources sans inscription passent devant.
+3. **Rattaché à un chantier.** Un outil qui ne sert aucun des chantiers A à G
+   reste en veille, il n'entre pas.
+
+### Ce que le catalogue désigne comme prioritaire
+
+| Chantier | Ce qu'on prend | Pourquoi |
+|---|---|---|
+| **A4** minicarte | `cobe` (5 ko) | Un globe de minicarte sans recharger Cesium |
+| **D** multicam | `hls.js` + catalogue osiris + YouTube IFrame API | La seule voie licite et réaliste en navigateur |
+| **E** vue communale | BD TOPO, maplibre-gl-draw, Motion One | Le tracé cadastral animé, avec les hauteurs de bâti |
+| **F** INTEL | GDELT GEO, Eurostat, Banque mondiale | Les trois niveaux manquants : mondial, national, régional |
+| **G** fil contexte | Flux RSS locaux, RNA associations | Vie locale — consigne explicite |
+| **Docs** | Europe PMC, CORDIS, Crossref, data.europa.eu | Volet européen, tous sans clé |
+| **Hors ligne** | PMTiles, Protomaps, Service Worker, IndexedDB | La consigne de fond : répondre sans réseau |
+
+### Écarté, et pourquoi
+
+SpiderFoot, theHarvester, Amass, Sherlock, Maigret, IntelOwl : **serveur
+obligatoire**. Shodan, Censys, Maltego, Scopus, Google Maps, Mapbox, Windy :
+**payants**. Sherlock et Maigret sont en outre écartés pour une raison qui
+n'est pas technique — chercher une personne sur 400 ou 6 000 sites n'est pas
+ce que fait cette application.
+
+### Point de vigilance financier
+
+**Cesium ion** est le seul poste susceptible de devenir payant : nous
+utilisons le jeton par défaut, dont le quota est partagé. Prévoir que chaque
+ami renseigne son propre jeton gratuit.
+
+---
+
 ## ⭐ CAP FIXÉ (25/09/2026) — décisions d'architecture
 
 Arbitrages rendus après l'audit technique du 25/09/2026. Rapport intégral et

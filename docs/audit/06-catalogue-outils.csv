@@ -1,0 +1,103 @@
+ID;Catégorie;Sous-catégorie;Outil ou source;Type;Licence;Coût;Compte ou clé;Front-only;Chantier;Ce qu'on en tire;Statut;Priorité;Confiance
+MOT-01;Moteurs 3D et carto;Globe;CesiumJS;Bibliothèque;Apache-2.0;Gratuit;Non (le moteur);OUI;A;Notre moteur actuel;EN PLACE;—;Haute
+MOT-02;Moteurs 3D et carto;Globe;openglobus;Bibliothèque;Apache-2.0;Gratuit;Non;OUI;A;Alternative légère à Cesium, de la planète à l'abeille;À ÉTUDIER;Basse;Haute
+MOT-03;Moteurs 3D et carto;Carte 2D;MapLibre GL JS;Bibliothèque;BSD-3;Gratuit;Non;OUI;A2;Carte vectorielle 2D sans clé — déjà notre choix pour la bascule;EN PLACE;—;Haute
+MOT-04;Moteurs 3D et carto;Dessin;maplibre-gl-draw;Bibliothèque;à vérifier;Gratuit;Non;OUI;E;Dessin et édition de formes sur terrain 3D, 200 000 entités éditables;À PRENDRE;Haute;Moyenne
+MOT-05;Moteurs 3D et carto;Couches data;deck.gl;Bibliothèque;MIT;Gratuit;Non;OUI;D F;Rendu GPU de millions de points, heatmaps, arcs;À ÉTUDIER;Moyenne;Haute
+MOT-06;Moteurs 3D et carto;Analyse;kepler.gl;Application;MIT;Gratuit;Non;OUI;F;Idées d'interface pour l'analyse spatiale;S'INSPIRER;Basse;Haute
+MOT-07;Moteurs 3D et carto;Plateforme;TerriaJS;Framework;Apache-2.0;Gratuit;Non;OUI;F;Catalogue de dizaines de milliers de couches, Cesium + Leaflet;S'INSPIRER;Moyenne;Haute
+MOT-08;Moteurs 3D et carto;Globe léger;globe.gl / three-globe;Bibliothèque;MIT;Gratuit;Non;OUI;A;Minicarte en globe très léger, sans charger Cesium deux fois;À ÉTUDIER;Moyenne;Haute
+MOT-09;Moteurs 3D et carto;Globe minimal;cobe;Bibliothèque;MIT;Gratuit;Non;OUI;A4;Globe WebGL de 5 ko — candidat idéal pour la minicarte;À PRENDRE;Haute;Haute
+MOT-10;Moteurs 3D et carto;France;iTowns (IGN);Framework;MIT/CeCILL-B;Gratuit;Non;OUI;E;Framework 3D de l'IGN, pensé pour les données françaises;À ÉTUDIER;Moyenne;Haute
+MOT-11;Moteurs 3D et carto;Tuiles;PMTiles;Format;BSD;Gratuit;Non;OUI;Hors ligne;Un seul fichier de tuiles servi en statique — clé du mode hors ligne;À PRENDRE;Haute;Haute
+MOT-12;Moteurs 3D et carto;Tuiles;Protomaps;Jeu de tuiles;ODbL;Gratuit;Non;OUI;Hors ligne;Extrait OSM de l'Hérault embarquable, zéro appel réseau;À PRENDRE;Haute;Haute
+GEO-01;Données géo;Base;OpenStreetMap / Overpass;API;ODbL;Gratuit;Non;OUI;E F;Entités du terrain;EN PLACE;—;Haute
+GEO-02;Données géo;France;IGN Géoplateforme;API;Licence ouverte;Gratuit;Non;OUI;E;Cadastre, orthophotos, altimétrie;EN PLACE;—;Haute
+GEO-03;Données géo;Relief;IGN RGE ALTI;Jeu de données;Licence ouverte;Gratuit;Non;OUI;E;Relief fin de Thau en local;À PRENDRE;Moyenne;Haute
+GEO-04;Données géo;Bathymétrie;EMODnet Bathymetry;API;Licence ouverte;Gratuit;Non;OUI;E;Fond de la lagune et du golfe du Lion;À PRENDRE;Haute;Moyenne
+GEO-05;Données géo;Littoral;SHOM data.shom.fr;API;Mixte;Gratuit partiel;Compte pour certains;OUI;E;Marées, courants, trait de côte;À ÉVALUER;Moyenne;Moyenne
+GEO-06;Données géo;Satellite;Copernicus Data Space;API;Licence Copernicus;Gratuit;Compte;OUI;E;Sentinel-2 sur Thau, suivi des malaïgues;À PRENDRE;Haute;Haute
+GEO-07;Données géo;Isochrones;Valhalla / OpenRouteService;API;MIT / clé;Gratuit;ORS: clé gratuite;OUI;Aller;Temps de trajet réels autour de l'étang;À ÉVALUER;Moyenne;Haute
+GEO-08;Données géo;Occupation du sol;Corine Land Cover;Jeu de données;Licence ouverte;Gratuit;Non;OUI;E;Usage des sols, embarquable;À PRENDRE;Moyenne;Haute
+GEO-09;Données géo;Bâti;BD TOPO IGN;Jeu de données;Licence ouverte;Gratuit;Non;OUI;A1 E;Bâtiments avec hauteur — nourrit le traitement MATRIX;À PRENDRE;Haute;Haute
+GEO-10;Données géo;Adresses;BAN;API;Licence ouverte;Gratuit;Non;OUI;Aller;Géocodage;EN PLACE;—;Haute
+OSI-01;OSINT sources;Vol;OpenSky Network;API;Non commercial;Gratuit;Compte conseillé;OUI;Couches;Avions;EN PLACE;—;Moyenne
+OSI-02;OSINT sources;Mer;AISStream;API;Gratuit;Gratuit;Clé gratuite;OUI;Couches;Navires — très pertinent pour Sète;EN PLACE;—;Moyenne
+OSI-03;OSINT sources;Mer;Global Fishing Watch;API;CC-BY;Gratuit;Compte;OUI;Couches;Effort de pêche en Méditerranée;À ÉVALUER;Moyenne;Moyenne
+OSI-04;OSINT sources;Espace;N2YO / Celestrak TLE;API;Gratuit;Gratuit;N2YO: clé;OUI;Couches;Satellites — Celestrak sans clé est préférable;À MIGRER;Moyenne;Moyenne
+OSI-05;OSINT sources;Caméras;Catalogue osiris (17 000 CCTV);Jeu de données;MIT;Gratuit;Non;OUI;D;Mosaïque multicam — filtrer sur la France;À PRENDRE;Haute;Moyenne
+OSI-06;OSINT sources;Caméras;Flux HLS publics DIR / Vinci;Flux;Variable;Gratuit;Non;OUI;D;Caméras routières autour de Sète;À ÉVALUER;Moyenne;Faible
+OSI-07;OSINT sources;Sanctions;OpenSanctions;Jeu de données;CC-BY-NC partiel;Gratuit en téléchargement;Non;OUI;F;Export statique embarqué, pas l'API;À ÉVALUER;Basse;Haute
+OSI-08;OSINT sources;Actualité;GDELT 2.0;API;Gratuit;Gratuit;Non;OUI;F G;Niveau mondial d'INTEL;EN PLACE;—;Haute
+OSI-09;OSINT sources;Actualité;GDELT GEO 2.0;API;Gratuit;Gratuit;Non;OUI;F;Actualité géolocalisée en GeoJSON — directement posable sur le globe;À PRENDRE;Haute;Haute
+OSI-10;OSINT sources;Énergie;WRI Global Power Plant DB;Jeu de données;CC-BY;Gratuit;Non;OUI;Couches;35 000 centrales — couche infrastructure;À PRENDRE;Moyenne;Haute
+OSI-11;OSINT sources;Réseau;Submarine Cable Map;Jeu de données;Variable;Gratuit;Non;OUI;Couches;Câbles sous-marins;EN PLACE;—;Haute
+OSI-12;OSINT sources;Réseau;PeeringDB;API;CC-BY;Gratuit;Compte pour certains champs;OUI;Couches;Points d'échange et data centers;À ÉVALUER;Basse;Moyenne
+OSI-13;OSINT sources;Menaces;abuse.ch (URLhaus, Feodo);API;CC0;Gratuit;Clé gratuite depuis 2025;OUI;Couches;Infrastructure malveillante géolocalisée;À ÉVALUER;Basse;Moyenne
+OSI-14;OSINT sources;Spatial;NASA FIRMS;API;Domaine public;Gratuit;MAP_KEY;OUI;Couches;Feux actifs;EN PLACE;—;Haute
+OSI-15;OSINT sources;Radio;radio-browser.info;API;Gratuit;Gratuit;Non;OUI;C;Radios du monde;EN PLACE;—;Haute
+OSI-16;OSINT sources;Radio;Radio Garden;Site;Propriétaire;Gratuit;Non;NON (CORS);C;Ouverture en fenêtre, pas d'encapsulation;LIMITÉ;Basse;Moyenne
+OSI-17;OSINT sources;Vidéo;YouTube IFrame Player API;API;Propriétaire;Gratuit;Non;OUI;C D;Lecteur officiel embarqué — seule voie licite;À PRENDRE;Haute;Haute
+OSI-18;OSINT sources;Vidéo;Twitch Embed;API;Propriétaire;Gratuit;Compte dev pour l'API;OUI;C D;Lecteur embarqué;À ÉVALUER;Moyenne;Haute
+OSI-19;OSINT sources;Vidéo;hls.js;Bibliothèque;Apache-2.0;Gratuit;Non;OUI;D;Lecture HLS dans la mosaïque multicam;À PRENDRE;Haute;Haute
+OSI-20;OSINT sources;Annuaire;cipher387/osintmap (614 services);Jeu de données;à vérifier;Gratuit;Non;OUI;F;Registres et cadastres par pays — extraire la France;À PRENDRE;Moyenne;Moyenne
+OSI-21;OSINT sources;Annuaire;OSINT-BIBLE 2026 (450+ outils);Documentation;à vérifier;Gratuit;Non;Sans objet;Veille;Référence à jour, 35 sections;VEILLE;Basse;Moyenne
+OSI-22;OSINT outils;Requêtes;ni5arga/sightline;Dépôt;à vérifier;Gratuit;Non;OUI;E F;Gabarits de requêtes Overpass pour infrastructures;À PRENDRE;Haute;Moyenne
+OSI-23;OSINT outils;Rejeu;AndrewCTF/velocity;Dépôt;à vérifier;Gratuit;Non;Partiel;Couches;Historique de positions rejouable — même moteur Cesium;À ÉTUDIER;Haute;Moyenne
+OSI-24;OSINT outils;Tableau de bord;koala73/worldmonitor;Dépôt;à vérifier;Gratuit;Non;Partiel;F;Taxonomie des couches et agrégation de presse;À ÉTUDIER;Moyenne;Moyenne
+OSI-25;OSINT outils;Globe;kevtoe/worldview;Dépôt;à vérifier;Gratuit;Non;OUI;A F;CesiumJS + vols, satellites, séismes, trafic, CCTV;À ÉTUDIER;Moyenne;Moyenne
+OSI-26;OSINT outils;Globe;VrushankPatel/godseye;Dépôt;à vérifier;Gratuit;Non;OUI;A;Front-only comme nous, HUD tactique;À ÉTUDIER;Moyenne;Moyenne
+OSI-27;OSINT outils;Bureau;0xhav0c/ARGUS;Dépôt;à vérifier;Gratuit;Non;NON (Electron);D1;Electron + Cesium : la piste de l'app installable;À ÉTUDIER;Moyenne;Moyenne
+OSI-28;OSINT outils;Agent;gaopengbin/cesium-mcp;Dépôt;à vérifier;Gratuit;Non;OUI;Agent;Piloter notre globe Cesium en langage naturel via MCP;À ÉTUDIER;Moyenne;Moyenne
+OSI-29;OSINT outils;Recon;SpiderFoot / theHarvester / Amass;Outils;MIT / Apache;Gratuit;Non;NON — serveur;—;Incompatible navigateur;ÉCARTÉ;—;Haute
+OSI-30;OSINT outils;Personnes;Sherlock / Maigret / WhatsMyName;Outils;MIT;Gratuit;Non;NON — serveur;—;Enquête sur des personnes — hors éthique du projet;ÉCARTÉ;—;Haute
+OSI-31;OSINT outils;Payant;Shodan / Censys / Maltego;Service;Propriétaire;PAYANT;Oui;NON;—;Maltego 3 000 à 7 500 EUR/an, Shodan 49 USD puis abonnement;ÉCARTÉ;—;Haute
+IMG-01;Imagerie et 3D;Splatting;SuperSplat (PlayCanvas);Éditeur web;MIT;Gratuit;Non;OUI;3D;Nettoyer et publier un scan 3D dans le navigateur;À ÉTUDIER;Basse;Haute
+IMG-02;Imagerie et 3D;Splatting;Spark (World Labs);Bibliothèque;Open source;Gratuit;Non;OUI;3D;Rendu de splats sur Three.js, le plus actif en 2026;À ÉTUDIER;Basse;Haute
+IMG-03;Imagerie et 3D;Splatting;antimatter15/splat;Bibliothèque;MIT;Gratuit;Non;OUI;3D;Visionneuse WebGL minimale, peu de dépendances;À ÉTUDIER;Basse;Haute
+IMG-04;Imagerie et 3D;Reconstruction;OpenSplat / COLMAP / gsplat;Outils;AGPL / BSD;Gratuit;Non;NON — hors ligne;3D;Fabriquer un splat d'un quartier de Sète, puis l'embarquer;À ÉVALUER;Basse;Haute
+IMG-05;Imagerie et 3D;Format;3D Tiles;Standard OGC;Ouvert;Gratuit;Non;OUI;E;Bâti de Thau en 3D servi en statique;À PRENDRE;Moyenne;Haute
+IMG-06;Imagerie et 3D;Ville;CityJSON / CityGML;Standard;Ouvert;Gratuit;Non;OUI;E;Maquette urbaine normalisée;À ÉVALUER;Basse;Haute
+IMG-07;Imagerie et 3D;Photo de rue;Panoramax (IGN);API;Licence ouverte;Gratuit;Non;OUI;Vue de rue;Photos de rue françaises, sans clé;EN PLACE;—;Haute
+IMG-08;Imagerie et 3D;Provenance;C2PA / Content Credentials;Standard;Ouvert;Gratuit;Non;OUI;F;Vérifier l'authenticité d'une image — anti-deepfake;À ÉVALUER;Moyenne;Haute
+IMG-09;Imagerie et 3D;Archivage;SingleFile;Extension;AGPL;Gratuit;Non;Sans objet;F;Figer une page web comme preuve datée;VEILLE;Basse;Haute
+IMG-10;Imagerie et 3D;Métadonnées;ExifTool;Outil;Perl Artistic;Gratuit;Non;NON;—;Analyse de photo — hors navigateur;ÉCARTÉ;—;Haute
+UIX-01;Design et interface;Tokens;Design tokens maison;Méthode;—;Gratuit;Non;OUI;UI;Prolonger calques.js par des jetons de couleur et d'espacement;À FAIRE;Haute;Haute
+UIX-02;Design et interface;Animation;GSAP;Bibliothèque;Licence standard gratuite;Gratuit;Non;OUI;E;Animation du tracé cadastral;À ÉVALUER;Moyenne;Moyenne
+UIX-03;Design et interface;Animation;Motion One / Web Animations API;Bibliothèque;MIT / natif;Gratuit;Non;OUI;E;Alternative sans dépendance à GSAP;À PRENDRE;Haute;Haute
+UIX-04;Design et interface;Graphiques;uPlot;Bibliothèque;MIT;Gratuit;Non;OUI;F;Courbes très légères pour les cadrans communaux;À PRENDRE;Moyenne;Haute
+UIX-05;Design et interface;Graphiques;Observable Plot / D3;Bibliothèque;ISC / BSD;Gratuit;Non;OUI;F;Visualisations statistiques INSEE;À ÉVALUER;Moyenne;Haute
+UIX-06;Design et interface;Graphe;Cytoscape.js / Sigma.js;Bibliothèque;MIT;Gratuit;Non;OUI;F;Graphe d'entités du territoire;À ÉVALUER;Moyenne;Haute
+UIX-07;Design et interface;Mosaïque;Golden Layout / Dockview;Bibliothèque;MIT;Gratuit;Non;OUI;D;Fenêtrage façon Bloomberg pour la multicam;À ÉTUDIER;Moyenne;Moyenne
+UIX-08;Design et interface;HUD;nexora (template HUD tactique);Template;à vérifier;Gratuit;Non;OUI;UI;Références visuelles : séquence de démarrage, texte brouillé;S'INSPIRER;Basse;Faible
+UIX-09;Design et interface;Icônes;Lucide / Tabler Icons;Jeu d'icônes;MIT;Gratuit;Non;OUI;UI;Remplacer les emojis par un jeu cohérent;À ÉVALUER;Moyenne;Haute
+UIX-10;Design et interface;Typo;Inter / JetBrains Mono;Police;OFL;Gratuit;Non;OUI;UI;Lisibilité des chiffres — exigence récurrente;À PRENDRE;Moyenne;Haute
+UIX-11;Design et interface;Accessibilité;Contraste WCAG;Méthode;—;Gratuit;Non;OUI;UI;Les cases translucides doivent rester lisibles;À FAIRE;Moyenne;Haute
+SCI-01;Science et documents;Résolveur;Unpaywall;API;Gratuit;Gratuit;Courriel en paramètre;OUI;Docs;Dit si une version libre existe;EN PLACE;—;Haute
+SCI-02;Science et documents;Catalogue;OpenAlex;API;CC0;Gratuit;Courriel conseillé;OUI;Docs;250 M de travaux;EN PLACE;—;Haute
+SCI-03;Science et documents;Europe;Open Research Europe;Plateforme;CC-BY;Gratuit;Non;Indirect;Docs;Édition ouverte UE — lue via OpenAIRE et DOI;À RELIER;Haute;Haute
+SCI-04;Science et documents;Europe;Europe PMC;API;Variable;Gratuit;AUCUNE CLÉ;OUI;Docs;40 M de notices, 10 req/s;À PRENDRE;Haute;Haute
+SCI-05;Science et documents;Europe;CORDIS;Jeu de données;Licence ouverte;Gratuit;Non;OUI;Docs F;Projets financés par l'UE et leurs budgets;À PRENDRE;Haute;Haute
+SCI-06;Science et documents;Europe;data.europa.eu;API;Licence ouverte;Gratuit;Non;OUI;F;Données publiques des 27;À PRENDRE;Moyenne;Haute
+SCI-07;Science et documents;Métadonnées;Crossref;API;CC0;Gratuit;Non;OUI;Docs;DOI vers référence citable;À PRENDRE;Moyenne;Haute
+SCI-08;Science et documents;France;HAL;API;Variable;Gratuit;Non;OUI;Docs;Ifremer et universités de Montpellier sur Thau;EN PLACE;—;Haute
+SCI-09;Science et documents;France;theses.fr;API;Licence ouverte;Gratuit;Non;OUI;Docs;Thèses françaises;EN PLACE;—;Haute
+SCI-10;Science et documents;Patrimoine;Gallica (BnF);API SRU;Variable;Gratuit;Non;OUI;Histoire locale;Cartes et presse anciennes de Sète;EN PLACE;—;Haute
+SCI-11;Science et documents;Payant;Scopus / Web of Science;Base;Propriétaire;PAYANT;Licence établissement;NON;—;Hors budget et inutile ici;ÉCARTÉ;—;Haute
+INF-01;Information;Presse;Flux RSS locaux;Flux;Variable;Gratuit;Non;OUI (via proxy);G;Midi Libre, Occitanie Tribune — attention au CORS;À ÉVALUER;Haute;Moyenne
+INF-02;Information;Encyclopédie;Wikidata SPARQL;API;CC0;Gratuit;Non;OUI;F;Graphe d'entités du territoire;EN PLACE;—;Haute
+INF-03;Information;Statistiques;INSEE melodi;API;Licence ouverte;Gratuit;Compte;OUI;F;Séries statistiques communales;À ÉVALUER;Moyenne;Moyenne
+INF-04;Information;Statistiques;Eurostat;API;Licence ouverte;Gratuit;Non;OUI;F;Niveau régional et national comparé;À PRENDRE;Moyenne;Haute
+INF-05;Information;Statistiques;Banque mondiale;API;CC-BY;Gratuit;Non;OUI;F;Niveau mondial d'INTEL;À PRENDRE;Moyenne;Haute
+INF-06;Information;Droit;Légifrance via PISTE;API;Licence ouverte;Gratuit;COMPTE PISTE;OUI;F;Le site public suffit sans compte;À ÉVALUER;Basse;Moyenne
+INF-07;Information;Local;Délibérations des conseils municipaux;Documents;Public;Gratuit;Non;OUI;F;Vie locale — à verser dans la base Thau;À FAIRE;Haute;Haute
+INF-08;Information;Local;Annuaire des associations (RNA);Jeu de données;Licence ouverte;Gratuit;Non;OUI;F;Consigne explicite : associations, clubs, vie locale;À PRENDRE;Haute;Haute
+INF-09;Information;Local;Agendas culturels OpenAgenda;API;Licence ouverte;Gratuit;Clé gratuite;OUI;F;Événements autour de l'étang;À ÉVALUER;Moyenne;Moyenne
+TEC-01;Technique;Hors ligne;Service Worker + Cache API;Standard;Natif;Gratuit;Non;OUI;Hors ligne;Rendre l'app utilisable sans réseau;À PRENDRE;Haute;Haute
+TEC-02;Technique;Hors ligne;IndexedDB;Standard;Natif;Gratuit;Non;OUI;Hors ligne;Stocker les données du territoire côté navigateur;À PRENDRE;Haute;Haute
+TEC-03;Technique;Hors ligne;SQLite WASM;Bibliothèque;Domaine public;Gratuit;Non;OUI;Hors ligne;Base interrogeable embarquée;À ÉTUDIER;Moyenne;Haute
+TEC-04;Technique;Bureau;Tauri;Framework;MIT;Gratuit;Non;NON;D1;App installable légère — décision D1 de la feuille de route;À ÉTUDIER;Moyenne;Haute
+TEC-05;Technique;Bureau;Electron;Framework;MIT;Gratuit;Non;NON;D1;Plus lourd que Tauri, mais ARGUS prouve que ça marche avec Cesium;ALTERNATIVE;Basse;Haute
+TEC-06;Technique;Soleil;Calcul solaire local;Module maison;MIT;Gratuit;Non;OUI;SunCalc;Hauteur, azimut, ombres, lune — 100% local;EN PLACE;—;Haute
+TEC-07;Technique;Contournement;Proxy CORS;Service;Variable;Gratuit ou payant;Variable;NON;C G;Casserait le modèle sans serveur — à éviter;RISQUE;—;Haute
+TEC-08;Technique;Qualité;Tests Node natifs;Outil;Natif;Gratuit;Non;OUI;Qualité;3480 tests en place;EN PLACE;—;Haute
