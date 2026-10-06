@@ -46,6 +46,11 @@ const STACK_ALIASES = Object.freeze([
   { id: 'photoreal', words: ['photorealiste', 'photoréaliste', 'photoreal', '3d', 'google'] },
   { id: 'esri-imagery', words: ['satellite', 'imagerie', 'imagery', 'aerial'] },
   { id: 'osm', words: ['osm', 'routiere', 'routière', 'route', 'routes', 'road', 'roads', 'street', 'plan'] },
+  // WATCHTOWER — fonds français et relief. « plan » seul reste OSM : c'est le
+  // plan de rues ; « plan ign » et « ign » mènent au fond IGN.
+  { id: 'ign-ortho', words: ['ign', 'ortho', 'orthophoto', 'orthophotographie'] },
+  { id: 'ign-plan', words: ['planign', 'plan-ign'] },
+  { id: 'opentopo', words: ['relief', 'topo', 'topographique', 'opentopo', 'courbes'] },
 ]);
 
 /** Normalize a transcript: lowercase, strip accents-insensitive punctuation. */

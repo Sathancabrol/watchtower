@@ -1,6 +1,45 @@
 # God's Eye View Current State
 
-Updated: August 24, 2026
+Updated: October 6, 2026
+
+> **2026-10-06 — TERRITOIRE : la carte stratégique** (`src/territoire.js` +
+> `src/territoireScenes.js`, montés depuis `main.js` dans le dock sous
+> `wt-dock-territoire`). Un seul panneau parcourt le territoire réel à sept
+> échelles — FRANCE → OCCITANIE → HÉRAULT → SÈTE AGGLOPÔLE MÉDITERRANÉE
+> (14 communes) → Frontignan → quartier → parcelle / objet BTP. Le maillage
+> hexagonal est une REPRÉSENTATION aux échelles pays/région/département, et
+> le panneau l'écrit ; à partir de l'agglomération, la carte pose les VRAIES
+> positions projetées des 14 communes, et les quatre couches réelles
+> (cadastre IGN, bâti 3D OSM, entités de la carte, fiche lieu) sont à un
+> bouton. Douze lentilles recolorent la carte et changent l'inspecteur :
+> population, densité, urbanisme, économie, associations, culture, RÉSEAUX
+> (familles + check-list DT-DICT), risques (renvois Géorisques, aléas
+> explicitement `déduit`), environnement, chantiers, IMPRÉVUS (la base TP
+> filtrée par le contexte de terrain). La frise TEMPS trace la série INSEE
+> réelle 1968→2023 et étiquette la prolongation 2024→2040 comme une
+> tendance, pas une prévision.
+>
+> Ses données sont pures et testables sans navigateur :
+> `src/data/thauTerritoire.js` (hiérarchie, 14 communes, 11 quartiers de
+> Frontignan, repères, aléas, 12 lentilles), `src/data/attributsTerritoire.js`
+> (13 tables d'entités, 5 niveaux de complétude, classes de précision
+> DT-DICT, 10 familles de réseaux + check-list), `src/data/frontignan.js`
+> (registre de 20 sources + base d'amorçage, chaque fiche portant
+> `source_id` et `confiance`), `src/data/imprevusTp.js` (81 imprévus de
+> chantier TP par phases A→R, 12 cascades, 22 signaux faibles, 13 sources,
+> trois niveaux de preuve documenté / rapporté / déduit). 70 tests
+> unitaires ajoutés. **Aucune donnée inventée** : une commune sans
+> quartiers documentés affiche « à importer » au lieu d'emprunter ceux de
+> Frontignan.
+>
+> **Fonds IGN complétés** : `ign-ortho`, `ign-plan` et `opentopo` étaient
+> dans `MAP_STACKS` mais inatteignables — sans entrée `STACK_ALIASES`, sans
+> classification des lignes de câbles et sans valeur dans l'énumération
+> `set_map_stack`, ce que les deux tests en échec signalaient. Les trois sont
+> branchés (alias vocaux FR/EN, classement terrain, schéma re-épinglé à
+> `4a7091c5cf339092f2535a630f982f93e3e2629841f20b569a6b2d15b1400c10`). Ils
+> restent volontairement ABSENTS de la rangée de chips approuvée par le
+> propriétaire.
 
 > **2026-08-23 — first-run mission launcher** (`src/firstRunExperience.js`,
 > `#first-run-launcher`, styles at the tail of `style.css`). After startup
