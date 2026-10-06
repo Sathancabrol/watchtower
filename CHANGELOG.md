@@ -5,6 +5,27 @@ of current runtime behavior, see [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md
 
 ## [Unreleased]
 
+### Added
+
+- **Vue INTEL 📚 DOSSIER** — le classeur territorial consolidé, septième
+  lentille de l'INTEL : 13 fiches projets (statut, budget, financeurs,
+  calendrier, sources), 32 chiffres sourcés, 110 sources datées, 13 lacunes,
+  10 contradictions arbitrées, les 14 communes de l'agglo avec leurs
+  indicateurs, la focale 2030, les trois scénarios 2040 et le registre de
+  veille des sources publiques. Export **JSON** (contrat
+  `watchtower.intel@1.0.0`) et **CSV** depuis la vue.
+- **Bases territoriales générées** — `src/data/frontignanDossier.js` (dossier
+  d'analyse territoriale + vision 2026-2040) et `src/data/atlasThau.js` (atlas
+  du bassin de Thau : 79 nœuds, 167 liens) sont produites par deux extracteurs
+  reproductibles (`tools/extraire-dossier-frontignan.mjs`,
+  `tools/extraire-atlas-thau.mjs`) et vérifiables (`node --test`).
+- **Export inter-dépôts** — `tools/exporter-intel.mjs` écrit
+  `public/data/intel/watchtower-intel.json` et six CSV, servis par
+  l'application et lisibles par n'importe quel autre dépôt.
+- `docs/INTEL-BASE.md` (contenu de la base, régénération, contrat d'échange)
+  et `docs/REPOS-WATCHTOWER.md` (inventaire de tous les dépôts où vit un
+  Watchtower).
+
 ## [0.1.1] — 2026-09-01 — Installation and live-data fixes
 
 ### Changed

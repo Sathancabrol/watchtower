@@ -262,14 +262,23 @@ et sur quelle source.
 * **3ᵉ personne** : caméra en retrait, appareil **visible** (silhouette
   vectorielle), distance réglable `[` `]`.
 
-### 🧠 INTEL élargi : 6 vues expertes + bandeaux « fil »
+### 🧠 INTEL élargi : 7 vues expertes + bandeaux « fil »
 
 Dock **🧠 INTEL** : 🛰 **JUMEAU AR**, 🏛 **COMMUNAL**, 🏠 **INDIVIDUEL**,
-🗳 **POLITIQUE**, 💼 **ÉCONOMIQUE**, 🏭 **PRODUCTION** — en plus de CONTEXTE et
-PROFIL. Chaque vue a ses données (entreprises autour du point via
+🗳 **POLITIQUE**, 💼 **ÉCONOMIQUE**, 🏭 **PRODUCTION**, 📚 **DOSSIER** — en plus
+de CONTEXTE et PROFIL. Chaque vue a ses données (entreprises autour du point via
 `recherche-entreprises /near_point`, installations classées et sols pollués
 Géorisques, identité INSEE, presse GDELT), ses outils et son **mini-bandeau
 défilant** façon Bloomberg, où chaque dépêche est datée et cliquable.
+
+**📚 DOSSIER** est la vue qui ne va PAS sur le réseau : elle lit le classeur
+territorial consolidé — 13 fiches projets (statut, budget, financeurs,
+calendrier, liens), 32 chiffres avec leur source, 110 sources datées, 13 lacunes
+(dont l'angle mort n°1), 10 contradictions arbitrées, les 14 communes de Sète
+Agglopôle Méditerranée et leurs indicateurs, la focale 2030, les trois scénarios
+2040 et la veille des sources publiques. Deux boutons exportent la base :
+**⬇ JSON** (contrat `watchtower.intel@1.0.0`, prêt pour les autres dépôts) et
+**⬇ CSV**. Tout est dans **[docs/INTEL-BASE.md](./docs/INTEL-BASE.md)**.
 
 ### 📶 Chantier : SUIVI en direct, TRACKING
 

@@ -13,6 +13,9 @@
  *   🗳 POLITIQUE    — gouvernance : élus, documents officiels, registres
  *   💼 ÉCONOMIQUE   — entreprises autour du point, effectifs, liens légaux
  *   🏭 PRODUCTION   — sites, réseaux, installations classées, risques
+ *   📚 DOSSIER      — le classeur territorial consolidé (projets, chiffres,
+ *                     sources, lacunes, scénarios, veille officielle) : la
+ *                     seule vue qui ne va PAS sur le réseau — elle lit la base.
  *   🧠 PROFIL       — profil utilisateur (l'existant)
  *
  * Règle : chaque donnée affichée est sourcée (registre `tracabilite.js`) et
@@ -20,6 +23,7 @@
  */
 
 import { filComplet, filEconomie, filtrerParCategorie, tickerHtml } from './filInfo.js';
+import { depechesDossier, rendreDossier } from './intelDossierVue.js';
 import { htmlSources, liensVerification } from './tracabilite.js';
 import { resumeGeorisques, urlGeorisques } from './empreinte.js';
 
@@ -31,6 +35,7 @@ export const VUES_INTEL = Object.freeze([
   { cle: 'politique', ic: '🗳', nom: 'POLITIQUE', sous: 'élus · documents', existante: false },
   { cle: 'economique', ic: '💼', nom: 'ÉCONOMIQUE', sous: 'entreprises · emploi', existante: false },
   { cle: 'production', ic: '🏭', nom: 'PRODUCTION', sous: 'sites · réseaux · risques', existante: false },
+  { cle: 'dossier', ic: '📚', nom: 'DOSSIER', sous: 'projets · chiffres · lacunes', existante: false },
 ]);
 
 const CSS = `
@@ -311,6 +316,7 @@ export const RENDUS = Object.freeze({
   politique: rendrePolitique,
   economique: rendreEconomique,
   production: rendreProduction,
+  dossier: rendreDossier,
 });
 
 /**
@@ -415,7 +421,9 @@ export function initIntelVues(root, options = {}) {
     majLe = maintenant;
     const ctx = contexte();
     const r = await filComplet(ctx);
-    depeches = r.depeches;
+    // Le dossier territorial alimente le fil même sans réseau : ses dépêches
+    // sont locales, datées et sourcées (elles ne dépendent d'aucune API).
+    depeches = r.depeches.concat(depechesDossier());
     sources = r.sources;
     majBandeau(categorie);
     if (!depeches.length) surMessage?.('🎞 Fil d’informations indisponible (sources injoignables).');
