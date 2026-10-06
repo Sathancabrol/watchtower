@@ -18,6 +18,9 @@
  */
 
 import * as Cesium from 'cesium';
+import {
+  niveauSelonAltitude, indicateursDe, demandeLeReseau, repondSansReseau,
+} from './data/intel/niveaux.js';
 import { rendreDeplacable } from './draggable.js';
 
 const PROFIL_KEY = 'watchtower.profil.v1';
@@ -31,6 +34,14 @@ const CSS = `
 #wti-haut .marque .cerveau { width: 34px; height: 34px; border-radius: 50%; background: rgba(120,200,190,0.12); border: 1px solid rgba(120,200,190,0.4); display: flex; align-items: center; justify-content: center; font-size: 16px; }
 #wti-haut .marque .t1 { font-size: 12px; font-weight: 800; letter-spacing: 1px; }
 #wti-haut .marque .t2 { font-size: 8px; color: rgba(232,234,237,0.5); letter-spacing: 1px; }
+/* ECHELON COURANT — INTEL ne savait parler que du local ; il annonce
+   desormais a quelle echelle il repond, et s'il lui faut le reseau. */
+#wti-niveau { display: flex; flex-direction: column; justify-content: center; padding: 0 14px; border-left: 1px solid rgba(120,200,190,0.18); min-width: 190px; }
+#wti-niveau .n-ech { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #7dd3c8; }
+#wti-niveau .n-q { font-size: 7.5px; color: rgba(232,234,237,0.55); letter-spacing: 0.3px; line-height: 1.4; margin-top: 2px; }
+#wti-niveau .n-src { font-size: 7.5px; letter-spacing: 0.5px; margin-top: 3px; }
+#wti-niveau .n-src .hl { color: #7de8b0; }
+#wti-niveau .n-src .rs { color: #e8c46a; }
 #wti-haut .kpis { flex: 1; display: flex; align-items: stretch; justify-content: space-evenly; gap: 4px; }
 .wti-kpi { cursor: pointer; display: flex; flex-direction: column; justify-content: center; padding: 2px 12px; border-left: 1px solid rgba(255,255,255,0.07); min-width: 92px; background: none; border-top: none; border-right: none; border-bottom: none; color: inherit; font-family: inherit; text-align: left; }
 .wti-kpi:hover { background: rgba(120,200,190,0.07); }
@@ -179,6 +190,7 @@ export function initIntelTwin(viewer) {
         <div class="cerveau"><img src="/logo.svg" alt="WATCHTOWER" style="width:24px;height:24px" /></div>
         <div><div class="t1">WATCH<span style="color:#00d4ff">TOWER</span></div><div class="t2">POSTE DE COMMANDEMENT · JUMEAU NUMÉRIQUE</div></div>
       </div>
+      <div id="wti-niveau" title="Échelon auquel INTEL répond, et d’où viennent les réponses"></div>
       <div class="kpis"></div>
     </div>
     <button id="wti-analyser" type="button">⟳ ANALYSER LA VUE</button>
@@ -229,6 +241,43 @@ export function initIntelTwin(viewer) {
 
   // ═══════════ PROFIL — carte d'identité cognitive T0 ═══════════
   const vueProfil = root.querySelector('.vue-profil');
+  // ─── ÉCHELON COURANT ───────────────────────────────────────────────────
+  // Le defaut repare ici : depuis l'espace ou au-dessus d'un pays etranger,
+  // INTEL n'avait rien a dire, ce qui donnait l'impression d'une application
+  // qui ne marche qu'a Sete. Le bandeau annonce maintenant a quelle echelle
+  // il repond, ce qu'il sait dire a cette echelle, et — consigne explicite —
+  // s'il lui faut aller sur le reseau pour y parvenir.
+  const zoneNiveau = root.querySelector('#wti-niveau');
+  let dernierEchelon = '';
+
+  function rendreNiveau() {
+    if (!zoneNiveau) return;
+    let h = 0;
+    try { h = viewer.camera.positionCartographic.height; } catch { h = 0; }
+    const n = niveauSelonAltitude(h);
+    if (n.cle === dernierEchelon) return;   // ne rien redessiner pour rien
+    dernierEchelon = n.cle;
+
+    const total = indicateursDe(n.cle).length;
+    const locaux = repondSansReseau(n.cle).length;
+    const reseau = demandeLeReseau(n.cle);
+    // On DIT d'ou viennent les reponses, au lieu de laisser croire que tout
+    // est deja la. `locaux` vaut 0 des qu'on sort du bassin de Thau, et c'est
+    // une information utile, pas un echec.
+    const provenance = locaux > 0
+      ? `<span class="hl">${locaux}/${total} hors ligne</span>`
+      : '<span class="rs">rien en base ici</span>';
+    const appoint = reseau ? ' · <span class="rs">réseau requis</span>' : '';
+
+    zoneNiveau.innerHTML = `
+      <div class="n-ech">${n.titre}</div>
+      <div class="n-q">${n.question}</div>
+      <div class="n-src">${provenance}${appoint}</div>`;
+  }
+
+  rendreNiveau();
+  try { viewer.camera.changed.addEventListener(rendreNiveau); } catch { /* vue non prete */ }
+
   function rendreProfil() {
     const p = lireProfil();
     const rempli = ['nom', 'role', 'budget', 'capacite', 'trajetDom', 'trajetTrav', 'projets', 'cv']

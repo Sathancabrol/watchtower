@@ -1,5 +1,13 @@
 # 🧩 WATCHTOWER COMME MODULE — architecture et ordre d'implémentation
 
+> ⏸ **DIFFÉRÉ — décision de l'utilisateur, 06/10/2026.** *« ici on se
+> concentre sur watchtower, on cherche pas à le connecter à proto cog ».*
+> Le rattachement n'est **pas** à l'ordre du jour. Ce document reste comme
+> analyse de fond : les obstacles mesurés au §2 sont de vraies dettes, qui
+> gênent **aussi** l'application autonome. On les traitera pour elle-même, et
+> si la fusion revient un jour, le terrain sera prêt. **Ne pas lancer les
+> étapes 1 à 5 au nom de la fusion.**
+
 **06/10/2026.** Ce document répond à une seule question : *comment
 WATCHTOWER devient un morceau de l'application complète, sans cesser de
 fonctionner seul en attendant ?*

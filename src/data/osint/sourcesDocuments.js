@@ -23,26 +23,47 @@
 /**
  * Registre des sources, de la plus universelle a la plus specialisee.
  *
- *  · `portee` : 'mondial' | 'france' | 'local'
+ *  · `portee` : 'mondial' | 'europe' | 'france' | 'local'
  *  · `genre`  : ce qu'on y trouve
  *  · `parDoi` / `parTexte` : constructeurs d'URL, ou null si non pertinent
- *  · `api`    : point d'entree JSON sans cle, ou null
+ *  · `api`    : point d'entree JSON, ou null
+ *  · `cle`    : ce qu'il faut fournir pour interroger l'API. ABSENT = rien du
+ *               tout, et c'est le cas majoritaire. On le DECLARE au lieu de le
+ *               deviner : un test qui reniflait la chaine d'URL se trompait.
  *  · `note`   : ce que la source apporte VRAIMENT, pour choisir vite
  */
+/**
+ * Encode un DOI place DANS UN CHEMIN d'URL.
+ *
+ * Piege : `encodeURIComponent` transforme la barre oblique en %2F. Or un DOI
+ * en contient toujours une, qui separe le prefixe de l'editeur du suffixe de
+ * l'article. Unpaywall, OpenAlex et Crossref attendent cette barre telle
+ * quelle et renvoient 404 si elle est encodee. On encode donc tout le reste
+ * et on la restitue.
+ *
+ * @param {string} doi
+ * @returns {string}
+ */
+function encoderDoiChemin(doi) {
+  return encodeURIComponent(doi).replace(/%2F/gi, '/');
+}
+
 export const SOURCES_DOCUMENTS = Object.freeze([
   {
     id: 'unpaywall', nom: 'Unpaywall', portee: 'mondial', genre: 'article scientifique',
-    parDoi: (doi) => `https://api.unpaywall.org/v2/${encodeURIComponent(doi)}?email=`,
+    parDoi: (doi) => `https://api.unpaywall.org/v2/${encoderDoiChemin(doi)}?email=`,
     parTexte: null,
     api: 'https://api.unpaywall.org/v2/',
+    cle: 'courriel requis',
     note: 'Dit si une version gratuite et LEGALE du DOI existe, et ou. Le premier reflexe. '
       + 'Demande une adresse de courriel en parametre, pas de cle.',
   },
   {
     id: 'openalex', nom: 'OpenAlex', portee: 'mondial', genre: 'article, auteur, institution',
-    parDoi: (doi) => `https://api.openalex.org/works/doi:${encodeURIComponent(doi)}`,
+    parDoi: (doi) => `https://api.openalex.org/works/doi:${encoderDoiChemin(doi)}`,
     parTexte: (q) => `https://api.openalex.org/works?search=${encodeURIComponent(q)}`,
     api: 'https://api.openalex.org/',
+    cle: 'courriel conseille',
     note: 'Catalogue ouvert de 250 M de travaux, successeur de Microsoft Academic. '
       + 'Sans cle, et renvoie directement le lien en acces libre quand il existe.',
   },
@@ -106,6 +127,48 @@ export const SOURCES_DOCUMENTS = Object.freeze([
     parTexte: (q) => `https://zenodo.org/search?q=${encodeURIComponent(q)}`,
     api: null,
     note: 'Heberge les donnees et annexes que les revues ne publient pas.',
+  },
+  {
+    id: 'europepmc', nom: 'Europe PMC', portee: 'europe', genre: 'sciences du vivant, texte integral',
+    parDoi: (doi) => `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:%22${encodeURIComponent(doi)}%22&format=json&resultType=core`,
+    parTexte: (q) => `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(q)}&format=json&pageSize=25`,
+    api: 'https://www.ebi.ac.uk/europepmc/webservices/rest/search',
+    note: '40 millions de notices, texte integral quand il est libre, AUCUNE CLE et aucune '
+      + 'inscription — 10 requetes par seconde. Meilleur que PubMed Central pour nous, et europeen. '
+      + 'Couvre la conchyliculture, les malaigues et la qualite des eaux de Thau.',
+  },
+  {
+    id: 'crossref', nom: 'Crossref', portee: 'europe', genre: 'metadonnees de DOI',
+    parDoi: (doi) => `https://api.crossref.org/works/${encoderDoiChemin(doi)}`,
+    parTexte: (q) => `https://api.crossref.org/works?query=${encodeURIComponent(q)}&rows=25`,
+    api: 'https://api.crossref.org/works',
+    note: 'Transforme un DOI en reference propre et citable : titre, auteurs, revue, date, '
+      + 'licence. Ne donne pas le texte, mais dit exactement de quoi on parle. Sans cle.',
+  },
+  {
+    id: 'openresearcheurope', nom: 'Open Research Europe', portee: 'europe', genre: 'article finance par l’UE',
+    parDoi: null,
+    parTexte: (q) => `https://open-research-europe.ec.europa.eu/search?q=${encodeURIComponent(q)}`,
+    api: null,
+    note: 'Plateforme d’edition en acces ouvert de la Commission europeenne : gratuite a lire ET '
+      + 'a publier, relectures signees et publiees. Pas d’API publique documentee — son contenu '
+      + 'se recupere par DOI ou via OpenAIRE. Hebergement CERN et ouverture a 11 pays en 2026.',
+  },
+  {
+    id: 'cordis', nom: 'CORDIS', portee: 'europe', genre: 'projet de recherche finance par l’UE',
+    parDoi: null,
+    parTexte: (q) => `https://cordis.europa.eu/search?q=${encodeURIComponent(q)}`,
+    api: null,
+    note: 'Resultats, partenaires et budgets des projets des programmes-cadres. Relie un sujet '
+      + 'local a un projet europeen et au financement qui va avec. Sans cle.',
+  },
+  {
+    id: 'dataeuropa', nom: 'data.europa.eu', portee: 'europe', genre: 'jeu de donnees public europeen',
+    parDoi: null,
+    parTexte: (q) => `https://data.europa.eu/api/hub/search/search?q=${encodeURIComponent(q)}&limit=25`,
+    api: 'https://data.europa.eu/api/hub/search/search',
+    note: 'Le pendant europeen de data.gouv.fr : donnees publiques des 27 Etats membres. '
+      + 'Utile quand une donnee francaise manque mais existe au niveau europeen.',
   },
   {
     id: 'gallica', nom: 'Gallica', portee: 'france', genre: 'archive, presse ancienne, carte',
@@ -197,8 +260,13 @@ export function planDeRecherche(requete = {}) {
     return [...avecDoi, ...sansDoi];
   }
   const fr = SOURCES_DOCUMENTS.filter((s) => s.parTexte && s.portee === 'france');
-  const reste = SOURCES_DOCUMENTS.filter((s) => s.parTexte && s.portee !== 'france');
-  return [...fr, ...reste];
+  // L'Europe passe avant le mondial : le territoire servi est francais, et les
+  // sources europeennes sont gratuites, sans cle, et souvent plus proches du sujet.
+  const eu = SOURCES_DOCUMENTS.filter((s) => s.parTexte && s.portee === 'europe');
+  const reste = SOURCES_DOCUMENTS.filter(
+    (s) => s.parTexte && s.portee !== 'france' && s.portee !== 'europe',
+  );
+  return [...fr, ...eu, ...reste];
 }
 
 /**
@@ -226,4 +294,23 @@ export function urlPour(id, requete = {}) {
  */
 export function sourcesFrancaises() {
   return SOURCES_DOCUMENTS.filter((s) => s.portee === 'france');
+}
+
+/**
+ * Sources europeennes. Toutes gratuites et sans cle : c'est le volet ouvert
+ * par l'Union europeenne pour sortir la recherche publique des peages.
+ * @returns {object[]}
+ */
+export function sourcesEuropeennes() {
+  return SOURCES_DOCUMENTS.filter((s) => s.portee === 'europe');
+}
+
+/**
+ * Sources interrogeables SANS aucune cle ni inscription. C'est le critere qui
+ * compte vraiment ici : chaque ami lance l'application depuis son propre
+ * agent, et une cle a configurer est un ami qui abandonne.
+ * @returns {object[]}
+ */
+export function sourcesSansCle() {
+  return SOURCES_DOCUMENTS.filter((s) => s.api && !s.cle);
 }

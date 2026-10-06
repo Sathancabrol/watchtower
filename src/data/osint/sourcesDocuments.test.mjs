@@ -2,10 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   SOURCES_DOCUMENTS, normaliserDoi, extraireDoi, planDeRecherche, urlPour, sourcesFrancaises,
+  sourcesEuropeennes, sourcesSansCle,
 } from './sourcesDocuments.js';
 
 test('chaque source est utilisable : un nom, une portee, une note qui aide a choisir', () => {
-  const portees = new Set(['mondial', 'france', 'local']);
+  const portees = new Set(['mondial', 'europe', 'france', 'local']);
   for (const s of SOURCES_DOCUMENTS) {
     assert.ok(s.id && s.nom, 'source sans identite');
     assert.ok(portees.has(s.portee), `${s.id} : portee inconnue « ${s.portee} »`);
@@ -112,4 +113,63 @@ test('les sources francaises couvrent droit, recherche et donnees publiques', ()
   for (const attendu of ['hal', 'theses', 'legifrance', 'datagouv', 'gallica']) {
     assert.ok(ids.has(attendu), `source francaise manquante : ${attendu}`);
   }
+});
+
+test('la barre oblique d un DOI survit a l encodage dans un CHEMIN d URL', () => {
+  // Piege reel : encodeURIComponent transforme « / » en %2F, et Unpaywall,
+  // OpenAlex et Crossref repondent alors 404. Le DOI doit rester lisible.
+  const doi = '10.1016/j.marpolbul.2019.01.023';
+  for (const id of ['unpaywall', 'openalex', 'crossref']) {
+    const u = urlPour(id, { doi });
+    assert.ok(u.includes(doi), `${id} a casse le DOI : ${u}`);
+    assert.ok(!/%2F/i.test(u), `${id} a encode la barre oblique du chemin`);
+  }
+});
+
+test('dans un PARAMETRE de requete, en revanche, la barre oblique est encodee', () => {
+  // Meme DOI, place cette fois dans un « query », ou %2F est la bonne reponse.
+  const u = urlPour('europepmc', { doi: '10.1016/j.marpolbul.2019.01.023' });
+  assert.ok(/%2F/i.test(u), 'un parametre doit etre encode integralement');
+});
+
+test('le volet europeen est present et entierement gratuit', () => {
+  const eu = sourcesEuropeennes();
+  const ids = eu.map((s) => s.id);
+  for (const attendu of ['europepmc', 'crossref', 'openresearcheurope', 'cordis', 'dataeuropa']) {
+    assert.ok(ids.includes(attendu), `source europeenne manquante : ${attendu}`);
+  }
+  for (const s of eu) {
+    assert.ok(s.parTexte || s.parDoi, `${s.id} n est pas interrogeable`);
+  }
+});
+
+test('Europe PMC est interrogeable sans la moindre cle', () => {
+  const s = SOURCES_DOCUMENTS.find((x) => x.id === 'europepmc');
+  assert.ok(s.api && s.api.startsWith('https://'));
+  assert.ok(!/apikey|api_key|token|email=/i.test(s.api), 'Europe PMC ne demande rien');
+  assert.ok(sourcesSansCle().some((x) => x.id === 'europepmc'));
+});
+
+test('sourcesSansCle ne retient aucune source qui reclame un identifiant', () => {
+  for (const s of sourcesSansCle()) {
+    assert.ok(!s.cle, `${s.id} demande un identifiant`);
+  }
+  // Unpaywall exige une adresse de courriel : il ne doit PAS y figurer.
+  assert.ok(!sourcesSansCle().some((s) => s.id === 'unpaywall'));
+  // Le besoin de cle est DECLARE, jamais devine depuis l URL.
+  assert.equal(SOURCES_DOCUMENTS.find((s) => s.id === 'unpaywall').cle, 'courriel requis');
+});
+
+test('sans DOI, l ordre est France, puis Europe, puis le reste du monde', () => {
+  const plan = planDeRecherche({ texte: 'conchyliculture lagune' });
+  const rang = (portee) => plan.findIndex((s) => s.portee === portee);
+  const dernier = (portee) => plan.map((s) => s.portee === portee).lastIndexOf(true);
+  assert.ok(rang('europe') > dernier('france'), 'l Europe doit suivre la France');
+  assert.ok(rang('mondial') > dernier('europe'), 'le mondial doit suivre l Europe');
+});
+
+test('Open Research Europe est decrit honnetement : pas d API publique', () => {
+  const s = SOURCES_DOCUMENTS.find((x) => x.id === 'openresearcheurope');
+  assert.equal(s.api, null, 'affirmer une API qui n existe pas serait un mensonge utile a personne');
+  assert.ok(s.parTexte, 'la recherche sur le site reste possible');
 });

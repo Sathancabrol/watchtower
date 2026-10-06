@@ -9,8 +9,12 @@
 WATCHTOWER est une console de renseignement géospatial qui tourne
 **entièrement dans le navigateur** — globe Cesium, couches ouvertes, zéro
 serveur. Copie open-source de « God's Eye View » (MIT, Bilawal Sidhu),
-recentrée sur le **bassin de Thau** et destinée à devenir **un module de
-l'application `proto-cognitorium`**.
+recentrée sur le **bassin de Thau**, pour Näthan et ses amis.
+
+**Le rattachement à `proto-cognitorium` est DIFFÉRÉ** (décision du
+06/10/2026) : on travaille watchtower pour elle-même. L'analyse de fusion
+reste dans `docs/ARCHITECTURE-MODULE.md`, marquée différée — ne pas la
+relancer de sa propre initiative.
 
 ## Les 4 réflexes avant de toucher à quoi que ce soit
 
@@ -42,7 +46,8 @@ l'utilisateur.
 
 | Besoin | Fichier |
 |---|---|
-| Où on va, et dans quel ordre | **`docs/ARCHITECTURE-MODULE.md`** ← le plan |
+| Où on va, et dans quel ordre | **`ROADMAP.md`**, section CAP en haut |
+| Dette d'architecture mesurée (différé) | `docs/ARCHITECTURE-MODULE.md` |
 | Ce qu'on peut intégrer, et à quel prix | `docs/audit/` + `docs/AUDIT-SOURCES-2026-10-06.md` |
 | Les chantiers A à G et l'historique | `ROADMAP.md` |
 | L'empilement des calques | `src/data/ui/calques.js` |

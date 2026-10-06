@@ -48,32 +48,55 @@ réductibles, SUIVI direct, analyse de 25 sites gratuits.
 
 ---
 
-## 🧩 CAP MODULE (06/10/2026) — WATCHTOWER dans l'app complète
+## 🔭 CAP (06/10/2026) — WATCHTOWER pour elle-même
 
-But final : **WATCHTOWER devient le volet géospatial de
-`proto-cognitorium`** (React 19, TypeScript, Vite 6, Tailwind 4). Le plan
-détaillé, les obstacles mesurés et l'ordre retenu sont dans
-**`docs/ARCHITECTURE-MODULE.md`**. Le point d'entrée d'un agent qui reprend
-le dépôt est **`AGENTS.md`**, à la racine.
+**Décision de l'utilisateur : on se concentre sur watchtower.** Le
+rattachement à `proto-cognitorium` est **différé** — l'analyse reste
+consignée dans `docs/ARCHITECTURE-MODULE.md`, marquée comme telle, mais elle
+ne commande plus l'ordre des travaux.
 
-**La règle qui décide de l'ordre** : chaque étape doit payer deux fois — une
-fois tout de suite pour l'app autonome, une fois le jour de la fusion. Un
-refactor qui ne sert qu'à la fusion est refusé ; l'app est utilisée
-maintenant, et le bac à sable se réinitialise trop souvent pour qu'on
-engage un chantier invisible.
+Point d'entrée d'un agent qui reprend le dépôt : **`AGENTS.md`** à la racine.
 
-| Ordre | Étape | Paye tout de suite | Paye à la fusion |
-|---|---|---|---|
-| 1 | Noyau de données publiable (`src/data/**`) | frontière données / affichage | **rattachement immédiat**, sans Cesium ni DOM |
-| 2 | `@layer watchtower` autour du CSS | fin des guerres de spécificité | cohabite avec Tailwind |
-| 3 | `monter(hôte, options)` | ordre de démarrage déterministe | le contrat d'intégration |
-| 4 | Manifeste de modules | togglable par construction | l'hôte choisit un sous-ensemble |
-| 5 | Budget de démarrage | démarrage rapide, hors ligne | un hôte refuse 8 Mo |
-| 6 | Chantiers G, A, E, F, D, C | les fonctionnalités attendues | — |
-| 7 | Hygiène (4 tests rouges, nom du paquet, POTES.md) | — | prêt à empaqueter |
+### Itération 26 — le volet européen et les niveaux INTEL (06/10/2026) ✅
 
-**Écarté** : réécriture TypeScript, passage à React, serveur, shadow DOM —
-justifications dans `docs/ARCHITECTURE-MODULE.md` §5.
+Première itération tirée du catalogue d'outils. Deux couches de données
+pures, testées, sans DOM et sans clé.
+
+* **`src/data/osint/sourcesDocuments.js`** passe de 15 à **20 sources**, avec
+  une portée `europe` : **Europe PMC** (40 M de notices, aucune clé, 10 req/s),
+  **Crossref**, **Open Research Europe**, **CORDIS**, **data.europa.eu**.
+  L'ordre de recherche devient **France → Europe → monde**.
+* **Défaut trouvé et corrigé au passage** : `encodeURIComponent` transformait
+  la barre oblique d'un DOI en `%2F`, et **Unpaywall, OpenAlex et Crossref**
+  répondent 404 dans ce cas. Un DOI placé dans un *chemin* d'URL garde sa
+  barre ; dans un *paramètre*, il est encodé entièrement. Les deux cas sont
+  désormais gelés par un test.
+* **Le besoin de clé est déclaré, plus deviné.** Un test reniflait la chaîne
+  d'URL et se trompait ; chaque source porte maintenant un champ `cle`.
+* **`src/data/intel/niveaux.js`** (nouveau) — chantier **F**. Les sept
+  échelons d'`echelleVue.js` ont chacun un titre, une question et au moins
+  trois indicateurs, chacun avec sa source, son URL, sa confiance et le fait
+  de savoir s'il répond **hors ligne**. Les niveaux **mondial, national et
+  régional** qui manquaient sont là : GDELT, GDELT GEO, Banque mondiale,
+  REST Countries, Eurostat. **Aucun indicateur ne réclame de clé**, et un
+  test refuse qu'on en introduise un.
+* **`src/intelTwin.js`** — le bandeau annonce l'échelon courant, sa question,
+  combien d'indicateurs répondent **hors ligne**, et si le **réseau est
+  requis**. Ajout pur : rien n'a été retiré ni déplacé.
+
+Tests : **3 504** dont 3 499 passent (les 4 échecs sont les préexistants).
+Build ✓.
+
+### Suite proposée
+
+| Rang | Chantier | Ce qu'on prend dans le catalogue |
+|---|---|---|
+| 1 | **G** — fil de contexte modifiable | rien de neuf : pur front |
+| 2 | **A4 / A1 / A3** — minicarte | `cobe` (5 ko) au lieu d'un 2ᵉ contexte Cesium |
+| 3 | **E** — vue communale animée | BD TOPO, `maplibre-gl-draw`, Motion One |
+| 4 | **F** (suite) — brancher les niveaux sur les API | GDELT GEO, Eurostat, Banque mondiale |
+| 5 | **D** — multicam | `hls.js`, catalogue osiris |
+| 6 | Hors ligne | PMTiles, Protomaps, Service Worker |
 
 ---
 
