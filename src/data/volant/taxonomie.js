@@ -86,6 +86,7 @@ export const RANGEMENT = Object.freeze({
   'dock:vol': 'aller',
   'dock:systeme': 'aller',
   // ── ANALYSER : comprendre ──────────────────────────────────────────────
+  'dock:docs': 'analyser',
   'cible:wt-intel': 'analyser',
   'action:rail-contexte': 'analyser',
   'dock:cadrans': 'analyser',
@@ -141,6 +142,7 @@ export const RENOMMAGES = Object.freeze({
   'dock:cam': 'Caméras de rue',
   'dock:cadrans': 'Cadrans de la commune',
   'dock:histo': 'Histoire locale',
+  'dock:docs': 'Documents — texte intégral',
   'dock:hq': 'Quartier général',
   'dock:chat': 'Chat et commandes',
   'dock:entites': 'Entités mobiles',

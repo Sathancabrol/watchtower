@@ -26,6 +26,7 @@ import { CLE_ETAT as CLE_BASCULES } from './data/volant/registreBascules.js';
 import { initLisibilite } from './lisibilite.js';
 import { initBasculeMinicarte } from './basculeMinicarte.js';
 import { initVolantLateral } from './volantLateral.js';
+import { initRechercheDocs } from './rechercheDocs.js';
 import { initErgonomieDock } from './ergonomieDock.js';
 import { SceneDirector } from './scenes/director.js';
 import { initGevVoiceCommands } from './voice/gevRealtime.js';
@@ -825,6 +826,19 @@ async function init() {
       // VOLANT LATÉRAL : toutes les fonctions, à gauche, par catégories.
     // Monté APRÈS le dock et les panneaux pour que son catalogue voie ce qui
     // existe réellement (les entrées absentes s'affichent grisées).
+      // 📄 DOCUMENTS : couche OSINT de recherche de texte integral. Montee
+      // AVANT le volant pour que son entree ne soit pas grisee au demarrage.
+      proteger('recherche de documents', () => {
+        const docs = initRechercheDocs(document, { surMessage: (m) => window.__wtToast?.(m) });
+        if (!docs.element) return;
+        window.__godsEyeView.docs = docs;
+        window.__godsEyeView.dock?.ajouter?.({
+          id: 'docs', icone: '📄', libelle: 'DOCS', groupe: 'donnees',
+          titre: '📄 DOCUMENTS — RETROUVER UN TEXTE INTÉGRAL GRATUIT ET LÉGAL',
+          element: docs.element, cote: 'gauche',
+        });
+      });
+
     window.__godsEyeView.volantLateral = proteger('volant latéral',
       () => initVolantLateral(document, { surMessage: (m) => window.__wtToast?.(m) }));
     proteger('bascule minicarte', () => initBasculeMinicarte(document, { surMessage: (m) => window.__wtToast?.(m) }));

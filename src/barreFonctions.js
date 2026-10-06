@@ -156,6 +156,7 @@ export const CATEGORIES = Object.freeze([
       { icone: '🗺', info: 'Cadastre', dock: 'cadastre' },
       { icone: '✈', info: 'Entités mobiles', dock: 'entites' },
       { icone: '📡', info: 'Dispositifs', dock: 'dispositifs' },
+      { icone: '📄', info: 'Documents — texte intégral', dock: 'docs' },
     ]),
   }),
   Object.freeze({
