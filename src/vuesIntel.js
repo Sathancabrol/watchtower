@@ -44,7 +44,10 @@ export const VUES_INTEL = Object.freeze([
 
 const CSS = `
 #wti-fil {
-  position: absolute; top: 46px; left: 0; right: 0; z-index: 6;
+  /* L'en-tete #wti-haut fait 56px : se caler a 46 le faisait mordre dessus
+     de 10px. On se pose JUSTE en dessous, et les colonnes laterales partent
+     de 82px (voir intelTwin.js) pour laisser passer le fil. */
+  position: absolute; top: 56px; left: 0; right: 0; z-index: 6;
   display: flex; align-items: center; gap: 8px; padding: 3px 8px;
   background: linear-gradient(90deg, rgba(8,14,20,0.92), rgba(6,12,18,0.72));
   border-top: 1px solid rgba(0,212,255,0.22); border-bottom: 1px solid rgba(0,212,255,0.18);
@@ -431,7 +434,11 @@ export function initIntelVues(root, options = {}) {
   const reglage = document.createElement('div');
   reglage.id = 'wt-fil-reglage';
   reglage.hidden = true;
-  fil.appendChild(reglage);
+  // PIEGE : #wti-fil est positionne AVEC un z-index, il cree donc un contexte
+  // d'empilement. Un enfant a var(--wt-z-fenetre) y reste prisonnier et passe
+  // SOUS #wti-droit. Le panneau est donc pose sur la racine d'INTEL, au meme
+  // niveau que les colonnes, ou son z-index veut enfin dire quelque chose.
+  root.appendChild(reglage);
 
   const btnRegler = fil.querySelector('.fi-regler');
   const btnDeplier = fil.querySelector('.fi-deplier');

@@ -36,7 +36,11 @@ const CSS = `
 #wti-haut .marque .t2 { font-size: 8px; color: rgba(232,234,237,0.5); letter-spacing: 1px; }
 /* ECHELON COURANT — INTEL ne savait parler que du local ; il annonce
    desormais a quelle echelle il repond, et s'il lui faut le reseau. */
-#wti-niveau { display: flex; flex-direction: column; justify-content: center; padding: 0 14px; border-left: 1px solid rgba(120,200,190,0.18); min-width: 190px; }
+#wti-niveau { display: flex; flex-direction: column; justify-content: center; padding: 0 12px; border-left: 1px solid rgba(120,200,190,0.18); min-width: 0; max-width: 230px; overflow: hidden; }
+#wti-niveau .n-q { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* Ecran etroit : la question disparait avant de deformer l'en-tete. */
+@media (max-width: 1100px) { #wti-niveau .n-q { display: none; } }
+@media (max-width: 820px) { #wti-niveau { display: none; } }
 #wti-niveau .n-ech { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: #7dd3c8; }
 #wti-niveau .n-q { font-size: 7.5px; color: rgba(232,234,237,0.55); letter-spacing: 0.3px; line-height: 1.4; margin-top: 2px; }
 #wti-niveau .n-src { font-size: 7.5px; letter-spacing: 0.5px; margin-top: 3px; }
@@ -51,7 +55,9 @@ const CSS = `
 .wti-kpi .barre { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.09); margin-top: 3px; overflow: hidden; }
 .wti-kpi .barre i { display: block; height: 100%; border-radius: 2px; }
 .haut { color: #43d17a; } .plat { color: #e8c04a; } .bas { color: #f07a6a; }
-#wti-gauche { position: absolute; top: 66px; left: 12px; width: 240px; padding: 12px; }
+/* 0-56 en-tete · 56-78 fil de contexte · 82+ colonnes. Les colonnes
+   partaient de 66px, c'est-a-dire DANS le fil. */
+#wti-gauche { position: absolute; top: 82px; left: 12px; width: 240px; padding: 12px; }
 #wti-gauche .titre { font-size: 10px; letter-spacing: 2px; color: #7dd3c8; margin-bottom: 10px; display: flex; flex-direction: column; gap: 2px; }
 #wti-gauche .titre .commune { font-size: 11px; font-weight: 800; }
 #wti-gauche .titre .sous2 { font-size: 7.5px; letter-spacing: 3px; color: rgba(232,234,237,0.45); }
@@ -61,7 +67,7 @@ const CSS = `
 .wti-cat .niv { display: flex; gap: 7px; align-items: center; margin-top: 6px; font-size: 8px; color: rgba(232,234,237,0.55); }
 .wti-cat .niv .barre { flex: 1; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.09); overflow: hidden; }
 .wti-cat .niv .barre i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #37b7ab, #7de8b0); }
-#wti-droit { position: absolute; top: 66px; right: 12px; width: 310px; padding: 12px; max-height: calc(100vh - 200px); overflow-y: auto; }
+#wti-droit { position: absolute; top: 82px; right: 12px; width: 310px; padding: 12px; max-height: calc(100vh - 210px); overflow-y: auto; }
 /* Zone centrale : l'INTEL doit ENCADRER l'ecran (haut + gauche + centre +
    droite), pas se tasser dans une colonne laterale. Le centre reste en
    retrait des deux colonnes pour ne jamais les recouvrir. */
