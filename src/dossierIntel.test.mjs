@@ -4,12 +4,14 @@ import assert from 'node:assert/strict';
 
 import {
   CONTRAT, RAPPROCHEMENTS, cheminTerritoire, descendre, etatTerritoire, ficheCommune,
-  ficheProjet, indicateurSourcé, lacunesOuvertes, planDeBranchement, resumeIntel,
+  STATUTS_PREUVE, ficheProjet, indicateurSourcé, lacunesOuvertes, planDeBranchement,
+  registreClaims, resumeClaims, resumeIntel,
   scenariosCompare, statistiquesIntel, tousLesCsv, versCsv, versEntitesCore, versJson,
   verifierIntel, veille,
 } from './dossierIntel.js';
 import { PROJETS, SOURCES, VISION } from './data/frontignanDossier.js';
 import { COMMUNES } from './data/atlasThau.js';
+import { gabaritFiche, plusGrosFichiers, resumeChantier, statistiquesChantier, verifierChantier } from './data/dossierChantier.js';
 import { SOURCES_VEILLE } from './data/veilleOfficielle.js';
 
 test('les trois bases sont cohérentes et sans doublon', () => {
@@ -167,4 +169,48 @@ test('la vision conserve ses points d’étape', () => {
   assert.ok(VISION.points2030.length >= 6);
   assert.ok(VISION.fragilites.length >= 5);
   assert.ok(VISION.signaux.length >= 5);
+});
+
+// ───────────────────────── registre de preuves ─────────────────────────
+
+test('le registre de preuves classe chaque affirmation et rien d’autre', () => {
+  const r = registreClaims();
+  assert.ok(r.total >= 60, 'chiffres + projets + contradictions + lacunes');
+  const statuts = Object.keys(STATUTS_PREUVE);
+  for (const c of r.claims) {
+    assert.ok(statuts.includes(c.statut), 'statut inconnu : ' + c.statut);
+    assert.ok(c.assertion && c.assertion.length > 8, 'affirmation vide');
+    assert.ok(['chiffre', 'projet', 'contradiction', 'lacune'].includes(c.origine));
+  }
+  assert.equal(r.parStatut.inconnu, 13, 'les 13 lacunes sont publiées comme inconnues');
+  assert.equal(r.anglesMorts, 1);
+  assert.ok(r.arbitrages >= 8, 'chaque contradiction porte son arbitrage');
+  assert.ok(r.avecSource >= r.total / 3, 'une part substantielle porte une source');
+});
+
+test('une contradiction se publie avec son arbitrage, jamais sans', () => {
+  const r = registreClaims();
+  const contredits = r.claims.filter((c) => c.statut === 'contredit');
+  assert.ok(contredits.length >= 5);
+  assert.ok(contredits.every((c) => c.arbitrage), 'pas de contradiction sans traitement retenu');
+});
+
+test('le recoupement de sujet ne rapproche pas des sujets étrangers', () => {
+  const r = registreClaims();
+  const chiffresContredits = r.claims.filter((c) => c.origine === 'chiffre' && c.statut === 'contredit');
+  assert.equal(chiffresContredits.length, 0, 'les contradictions restent des entrées à part');
+  assert.match(resumeClaims(), /affirmations/);
+});
+
+test('les pièces d’un vrai dossier de chantier forment un gabarit', () => {
+  const s = statistiquesChantier();
+  assert.equal(s.fichiers, 220, 'l’inventaire réel');
+  assert.equal(s.piecesAttendues, 27);
+  assert.equal(s.couverturePct, 100, 'le dossier de référence est complet');
+  const gabarit = gabaritFiche();
+  assert.equal(gabarit.length, 6, 'six phases : consultation → réception + normes');
+  assert.ok(gabarit.every((g) => g.pieces.length > 0 && g.presentes === g.total));
+  assert.equal(verifierChantier().ok, true, verifierChantier().problemes.join(' | '));
+  assert.ok(plusGrosFichiers(3).every((f) => f.tailleMo > 0), 'fichiers triés par poids');
+  assert.match(resumeChantier(), /220 fichiers/);
 });

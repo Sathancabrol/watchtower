@@ -262,23 +262,34 @@ et sur quelle source.
 * **3ᵉ personne** : caméra en retrait, appareil **visible** (silhouette
   vectorielle), distance réglable `[` `]`.
 
-### 🧠 INTEL élargi : 7 vues expertes + bandeaux « fil »
+### 🧠 INTEL élargi : 8 vues expertes + bandeaux « fil »
 
 Dock **🧠 INTEL** : 🛰 **JUMEAU AR**, 🏛 **COMMUNAL**, 🏠 **INDIVIDUEL**,
-🗳 **POLITIQUE**, 💼 **ÉCONOMIQUE**, 🏭 **PRODUCTION**, 📚 **DOSSIER** — en plus
-de CONTEXTE et PROFIL. Chaque vue a ses données (entreprises autour du point via
+🗳 **POLITIQUE**, 💼 **ÉCONOMIQUE**, 🏭 **PRODUCTION**, 📚 **DOSSIER**,
+🔎 **TERRAIN** — en plus de CONTEXTE et PROFIL. Chaque vue a ses données (entreprises autour du point via
 `recherche-entreprises /near_point`, installations classées et sols pollués
 Géorisques, identité INSEE, presse GDELT), ses outils et son **mini-bandeau
 défilant** façon Bloomberg, où chaque dépêche est datée et cliquable.
+
+**🔎 TERRAIN** interroge **six sources officielles au point visé** : le zonage du
+PLU qui s'applique (Géoportail de l'urbanisme), la parcelle cadastrale (IGN), les
+prix réellement signés dans la commune (DVF, avec prix médian au m² calculé sur
+place), les marchés publics — avis en cours (BOAMP) et marchés attribués (DECP) —
+et les zonages naturels (Natura 2000, ZNIEFF). Quand une source ne répond pas,
+la vue donne **l'URL exacte qu'elle a appelée** au lieu d'inventer une réponse.
 
 **📚 DOSSIER** est la vue qui ne va PAS sur le réseau : elle lit le classeur
 territorial consolidé — 13 fiches projets (statut, budget, financeurs,
 calendrier, liens), 32 chiffres avec leur source, 110 sources datées, 13 lacunes
 (dont l'angle mort n°1), 10 contradictions arbitrées, les 14 communes de Sète
 Agglopôle Méditerranée et leurs indicateurs, la focale 2030, les trois scénarios
-2040 et la veille des sources publiques. Deux boutons exportent la base :
-**⬇ JSON** (contrat `watchtower.intel@1.0.0`, prêt pour les autres dépôts) et
-**⬇ CSV**. Tout est dans **[docs/INTEL-BASE.md](./docs/INTEL-BASE.md)**.
+2040 et la veille des sources publiques. Deux onglets de plus depuis le 07/10 :
+**🏗 CHANTIER** (le gabarit des 27 pièces d'un dossier de marché réel — DCE, actes,
+plans, DT/DICT, DOE — extrait de 220 fichiers réels) et **⚖️ PREUVES** (le registre
+des affirmations : 68 entrées classées établies, annoncées, estimées, à vérifier,
+non publiées, contredites ou inconnues — méthode Talbot). Deux boutons exportent la
+base : **⬇ JSON** (contrat `watchtower.intel@1.0.0`, prêt pour les autres dépôts)
+et **⬇ CSV**. Tout est dans **[docs/INTEL-BASE.md](./docs/INTEL-BASE.md)**.
 
 ### 📶 Chantier : SUIVI en direct, TRACKING
 

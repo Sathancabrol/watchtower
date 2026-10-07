@@ -7,6 +7,29 @@ of current runtime behavior, see [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md
 
 ### Added
 
+- **Vue INTEL 🔎 TERRAIN** — six sources officielles interrogées au point visé :
+  zonage du PLU (Géoportail de l'urbanisme), parcelle cadastrale (IGN), prix
+  réellement signés (DVF, avec médiane au m² calculée localement), marchés publics
+  (avis BOAMP en cours + marchés attribués DECP) et zonages naturels (Natura 2000,
+  ZNIEFF). Chaque bloc annonce sa source, sa licence et son état de vérification ;
+  en cas d'échec réseau, la vue donne l'URL exacte appelée au lieu d'inventer.
+- **`src/sourcesOfficielles.js`** — sept connecteurs officiels (URL + lecture de
+  réponse) entièrement purs et testés (20 tests) : GeoJSON d'urbanisme, cadastre,
+  nature, CSV DVF (avec découpage CSV respectant les guillemets), marchés BOAMP et
+  DECP. Garde-fou `nombreOuNull` : une valeur absente reste absente, elle ne devient
+  jamais `0` (contenance 0 m², montant 0 €).
+- **Onglet 🏗 CHANTIER** dans la vue DOSSIER — le gabarit des 27 pièces d'un dossier
+  de marché réel, en 6 phases (consultation, préparation, plans, exécution,
+  réception, normes), extrait de l'inventaire de 220 fichiers / 225 Mo
+  (`tools/extraire-dossier-chantier.mjs` → `src/data/dossierChantier.js`).
+- **Onglet ⚖️ PREUVES** — registre des affirmations de la base territoriale, classées
+  établies / annoncées / estimées / à vérifier / non publiées / contredites /
+  inconnues, avec l'arbitrage publié pour chaque contradiction (méthode de la
+  synthèse Talbot : ne rien présenter comme établi sans vérification).
+- **`docs/TRI-OUTILS-2026.md`** — les 51 outils « absents » du registre sont triés :
+  11 à installer (parce qu'ils servent une fonction existante), 16 plus tard,
+  6 à trancher, 6 écartés, 12 hors périmètre.
+
 - **Vue INTEL 📚 DOSSIER** — le classeur territorial consolidé, septième
   lentille de l'INTEL : 13 fiches projets (statut, budget, financeurs,
   calendrier, sources), 32 chiffres sourcés, 110 sources datées, 13 lacunes,

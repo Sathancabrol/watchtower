@@ -16,10 +16,14 @@
  */
 
 import {
-  CONTRAT, cheminTerritoire, chiffre, etatTerritoire, lacunesOuvertes, planDeBranchement,
-  resumeIntel, scenariosCompare, statistiquesIntel, tousLesCsv, versCsv, versJson,
-  verifierIntel,
+  CONTRAT, STATUTS_PREUVE, cheminTerritoire, chiffre, etatTerritoire, lacunesOuvertes,
+  planDeBranchement, registreClaims, resumeClaims, resumeIntel, scenariosCompare,
+  statistiquesIntel, tousLesCsv, versCsv, versJson, verifierIntel,
 } from './dossierIntel.js';
+import {
+  CATEGORIES_CHANTIER, FICHIERS_CHANTIER, COUVERTURE, gabaritFiche, plusGrosFichiers,
+  resumeChantier, statistiquesChantier,
+} from './data/dossierChantier.js';
 import { CHIFFRES, PROJETS, SOURCES, VISION } from './data/frontignanDossier.js';
 import { COMMUNES, INDICATEURS_COMMUNES, PROVENANCE_ATLAS } from './data/atlasThau.js';
 import { FAMILLES_VEILLE, SOURCES_VEILLE } from './data/veilleOfficielle.js';
@@ -37,6 +41,8 @@ export const ONGLETS_DOSSIER = Object.freeze([
   { cle: 'futur', ic: '🔮', nom: '2040', quoi: 'focale 2030 et trois scénarios' },
   { cle: 'veille', ic: '📡', nom: 'VEILLE', quoi: 'les sources à brancher' },
   { cle: 'sources', ic: '📚', nom: 'SOURCES', quoi: 'le registre du dossier' },
+  { cle: 'chantier', ic: '🏗', nom: 'CHANTIER', quoi: 'le gabarit de pièces d’un vrai chantier' },
+  { cle: 'claims', ic: '⚖️', nom: 'PREUVES', quoi: 'ce qui est établi, contredit ou inconnu' },
 ]);
 
 /** Le classeur d'ouverture : ce qu'on sait, et ce qu'on ne sait pas. */
@@ -143,6 +149,49 @@ function panneauSources() {
     (${ech(CONTRAT.destinations[0])}).</div>`;
 }
 
+/** 🏗 Le gabarit de pièces d'un dossier de chantier (220 fichiers réels). */
+function panneauChantier() {
+  const s = statistiquesChantier();
+  const gabarit = gabaritFiche();
+  return `<div class="v-grille">
+      <span class="k">INVENTAIRE</span><span class="v">${fr(s.fichiers)} fichiers · ${fr(s.poidsMo)} Mo · ${s.categories} catégories</span>
+      <span class="k">GABARIT</span><span class="v">${s.piecesPresentes}/${s.piecesAttendues} pièces du dossier de référence (${s.couverturePct} %)</span>
+    </div>
+    <div class="v-note">Un dossier de chantier public réel, pièce par pièce : c'est le gabarit de la
+    fiche CHANTIER de l'INTEL. Quand un chantier est décrit, ces 27 pièces disent ce qui doit exister —
+    et ce qui manque se voit tout de suite.</div>
+    ${gabarit.map((g) => `<div class="v-sous">${ech(g.phase.toUpperCase())} — ${g.presentes}/${g.total}</div>
+      <div class="v-liste">${g.pieces.map((p) => `<div class="li">${p.presente ? '✅' : '⬜'} <b>${ech(p.nom)}</b>${p.nombre ? ' <i>(' + p.nombre + ')' + '</i>' : ''}<br>
+        <span class="k">${ech(p.exemples.slice(0, 2).join(' · ') || 'aucun fichier correspondant')}</span></div>`).join('')}</div>`).join('')}
+    <div class="v-sous">CATÉGORIES DE L'INVENTAIRE</div>
+    <div class="v-grille">${CATEGORIES_CHANTIER.map((c) => `<span class="k">${ech(c.nom.slice(0, 40))}</span><span class="v">${c.fichiers} fichiers · ${String(c.tailleMo ?? '—').replace('.', ',')} Mo</span>`).join('')}</div>
+    <div class="v-sous">LES PLUS GROS FICHIERS (là où sont les plans)</div>
+    <div class="v-liste">${plusGrosFichiers(6).map((f) => `<div class="li">📄 ${ech(court(f.nom, 70))} — ${String(f.tailleMo).replace('.', ',')} Mo <span class="k">(${ech(f.categorie.slice(0, 26))})</span></div>`).join('')}</div>
+    <div class="v-note">${ech(resumeChantier())} — inventaire de fichiers, pas contrôle de conformité.</div>`;
+}
+
+/** ⚖️ Le registre de preuves : méthode Talbot appliquée à la base territoriale. */
+function panneauClaims() {
+  const r = registreClaims();
+  const parStatut = Object.entries(STATUTS_PREUVE)
+    .map(([cle, meta]) => ({ cle, ...meta, nombre: r.parStatut[cle] || 0 }))
+    .filter((x) => x.nombre > 0);
+  const contredits = r.claims.filter((c) => c.statut === 'contredit');
+  const inconnus = r.claims.filter((c) => c.statut === 'inconnu');
+  return `<div class="v-grille">${parStatut.map((x) => `<span class="k">${x.ic} ${x.nom}</span><span class="v"><b>${x.nombre}</b> — ${ech(x.quoi)}</span>`).join('')}
+      <span class="k">AVEC SOURCE</span><span class="v">${r.avecSource} sur ${r.total}</span>
+      <span class="k">SANS SOURCE</span><span class="v">${r.sansSource} (lacunes et budgets non publiés, assumés)</span>
+    </div>
+    <div class="v-note">${ech(resumeClaims())}. Principe repris de la synthèse Talbot :
+    <b>aucune affirmation n'est présentée comme établie si elle n'a pas été vérifiée</b> — et une
+    contradiction se publie avec son arbitrage, jamais en la supprimant.</div>
+    <div class="v-sous">AFFIRMATIONS CONTREDITES ET ARBITRAGE RETENU (${contredits.length})</div>
+    <div class="v-liste">${contredits.map((c) => `<div class="li">⚖️ <b>${ech(court(c.assertion, 170))}</b><br>
+      <span class="k">RETENU</span> ${ech(court(c.arbitrage || '—', 190))}</div>`).join('')}</div>
+    <div class="v-sous">CE QUE PERSONNE N'A PUBLIÉ (${inconnus.length})</div>
+    <div class="v-liste">${inconnus.map((c) => `<div class="li">🕳 ${ech(court(c.assertion, 170))}${c.angleMort ? ' <b>← angle mort n°1</b>' : ''}</div>`).join('')}</div>`;
+}
+
 const PANNEAUX = Object.freeze({
   projets: panneauProjets,
   chiffres: panneauChiffres,
@@ -151,6 +200,8 @@ const PANNEAUX = Object.freeze({
   futur: panneauFutur,
   veille: panneauVeille,
   sources: panneauSources,
+  chantier: panneauChantier,
+  claims: panneauClaims,
 });
 
 /** Déclenche le téléchargement d'un contenu déjà calculé (aucun réseau). */

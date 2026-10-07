@@ -170,9 +170,26 @@ Règles inscrites dans le contrat :
   (population d'agglo 129 982 / 131 033 / 131 216 / 132 851), les valeurs et
   l'arbitrage sont tous visibles.
 
-## 8. Vérifications automatiques
+## 8. Les deux ajouts du 07/10/2026
 
-`src/dossierIntel.test.mjs` (18 tests) contrôle, à chaque exécution de `npm test` :
+| Ajout | Fichier | Ce que ça donne |
+|---|---|---|
+| **Onglet 🏗 CHANTIER** | `src/data/dossierChantier.js` (généré par `tools/extraire-dossier-chantier.mjs`) | Le **gabarit des 27 pièces** d'un dossier de marché réel, en 6 phases (consultation, préparation, plans, exécution, réception, normes), extrait d'un inventaire de **220 fichiers / 225 Mo**. « Présente » veut dire qu'un fichier correspond — c'est un inventaire, pas un contrôle de conformité |
+| **Onglet ⚖️ PREUVES** | `registreClaims()` dans `src/dossierIntel.js` | **68 affirmations classées** : 30 établies ou annoncées, 10 contredites (chacune avec son arbitrage), 15 non publiées, 13 inconnues. Méthode de la synthèse Talbot : rien n'est présenté comme établi sans vérification |
+| **Vue 🔎 TERRAIN** | `src/sourcesOfficielles.js` + `src/intelTerrainVue.js` | **Sept connecteurs officiels** (PLU, cadastre, DVF, BOAMP, DECP, nature, commune) purs et testés, avec dégradation honnête : source injoignable ⇒ URL exacte affichée, jamais de réponse inventée |
+
+### Le garde-fou `nombreOuNull`
+
+La leçon la plus utile de cette session de code : en JavaScript, `Number(null)`,
+`Number('')` et `Number(' ')` valent tous **`0`**. Une contenance de parcelle ou un
+montant de marché non publié aurait donc pu s'afficher « 0 m² » ou « 0 € » — un
+mensonge silencieux. `nombreOuNull()` renvoie `null` (donc « non publié ») et laisse
+`0` n'être que ce qu'il est : un vrai zéro. Cinq tests couvrent ce cas.
+
+## 9. Vérifications automatiques
+
+`src/dossierIntel.test.mjs` (22 tests) et `src/sourcesOfficielles.test.mjs` (20 tests)
+contrôlent, à chaque exécution de `npm test` :
 
 - l'intégrité des trois bases (identifiants, liens de graphe, familles de sources,
   dates de vérification, URL en HTTPS, rapprochements valides) ;

@@ -456,6 +456,149 @@ export function verifierIntel() {
   };
 }
 
+// ───────────────────────── registre de preuves ─────────────────────────
+
+/**
+ * La méthode du dossier Talbot (« si tu ne sais pas, ne fais pas semblant »)
+ * appliquée à la base territoriale : chaque affirmation est classée selon ce
+ * qu'on peut en dire, jamais selon ce qu'on aimerait en dire.
+ *
+ * Statuts possibles, du plus solide au plus faible :
+ *   · `établi`      — fait publié par une source officielle (marqueur ✅) ;
+ *   · `annoncé`     — engagement public daté, à venir (📅) ;
+ *   · `estimation`  — projection assumée comme telle (🔮) ;
+ *   · `à vérifier`  — le dossier lui-même signale le doute (⚠️) ;
+ *   · `non publié`   — la valeur n'existe pas publiquement (❓) ;
+ *   · `contredit`   — deux sources se contredisent : l'arbitrage est publié ;
+ *   · `inconnu`     — personne n'a la donnée (lacune de l'annexe B).
+ */
+export const STATUTS_PREUVE = Object.freeze({
+  etabli: { nom: 'ÉTABLI', ic: '✅', quoi: 'publié par une source officielle' },
+  annonce: { nom: 'ANNONCÉ', ic: '📅', quoi: 'engagement public daté' },
+  estimation: { nom: 'ESTIMATION', ic: '🔮', quoi: 'projection assumée comme telle' },
+  aVerifier: { nom: 'À VÉRIFIER', ic: '⚠️', quoi: 'le dossier signale le doute' },
+  nonPublie: { nom: 'NON PUBLIÉ', ic: '❓', quoi: 'la valeur n’est pas publique' },
+  contredit: { nom: 'CONTREDIT', ic: '⚖️', quoi: 'sources divergentes, arbitrage publié' },
+  inconnu: { nom: 'INCONNU', ic: '🕳', quoi: 'personne n’a la donnée' },
+});
+
+const MOTS_VIDES = new Set(['dans', 'avec', 'pour', 'plus', 'sous', 'entre', 'cette', 'leurs', 'selon',
+  'des', 'les', 'une', 'aux', 'par', 'sur', 'est', 'sont', 'que', 'qui', 'son', 'ses', 'ou', 'et']);
+
+/** Les mots significatifs d'un libellé (trois lettres minimum, hors mots vides). */
+function motsSignificatifs(libelle) {
+  return [...new Set(String(libelle || '').toLowerCase().split(/[^a-zà-ÿ0-9]+/)
+    .filter((m) => m.length >= 3 && !MOTS_VIDES.has(m)))];
+}
+
+/**
+ * Deux libellés parlent-ils de la même chose ? Il faut AU MOINS DEUX mots en
+ * commun — un seul (« population », « budget ») rapprocherait des sujets
+ * étrangers l'un à l'autre, et faire dire à une source ce qu'elle ne dit pas
+ * serait exactement la faute que ce registre sert à éviter.
+ */
+function memeSujet(a, b) {
+  const cible = String(a || '').toLowerCase();
+  const communs = motsSignificatifs(b).filter((m) => cible.includes(m));
+  return communs.length >= 2;
+}
+
+/** Le statut d'un chiffre, d'après les marqueurs du dossier et les contradictions connues. */
+function statutChiffre(c) {
+  const m = c.marqueurs || [];
+  if (m.includes('❓')) return 'nonPublie';
+  if (m.includes('⚠️')) return 'aVerifier';
+  if (m.includes('🔮')) return 'estimation';
+  if (m.includes('📅')) return 'annonce';
+  return 'etabli';
+}
+
+/**
+ * Le registre complet : chiffres, projets, contradictions et lacunes, chacun
+ * avec son statut et sa source. Rien n'est reformulé — les libellés sont ceux
+ * de la base, seulement étiquetés.
+ */
+export function registreClaims() {
+  const claims = [];
+  let rang = 0;
+  const pousser = (c) => { rang += 1; claims.push({ id: 'claim-' + rang, ...c }); return claims[claims.length - 1]; };
+
+  for (const c of CHIFFRES) {
+    const statut = statutChiffre(c);
+    const touche = CONTRADICTIONS.find((k) => memeSujet(c.indicateur + ' ' + (c.domaine || ''), k.sujet));
+    pousser({
+      origine: 'chiffre',
+      assertion: c.indicateur + ' : ' + c.valeur + (c.evolution ? ' (' + c.evolution + ')' : ''),
+      statut: touche ? 'contredit' : statut,
+      statutSource: statut,
+      source: c.source || null,
+      liens: (c.liens || []).length,
+      arbitrage: touche ? touche.traitement : null,
+      section: c.section,
+    });
+  }
+
+  for (const k of CONTRADICTIONS) {
+    pousser({
+      origine: 'contradiction',
+      assertion: k.sujet + ' — ' + k.conflit,
+      statut: 'contredit',
+      source: null,
+      liens: 0,
+      arbitrage: k.traitement,
+      section: null,
+    });
+  }
+
+  for (const p of PROJETS) {
+    const publie = Boolean(p.budget) && !/❓/.test(p.budget || '');
+    pousser({
+      origine: 'projet',
+      assertion: p.titre + ' — budget : ' + (p.budget || 'non chiffré publiquement'),
+      statut: publie ? 'etabli' : 'nonPublie',
+      source: p.sources[0]?.libelle || null,
+      liens: p.sources.length,
+      arbitrage: null,
+      section: '7.' + p.numero,
+    });
+  }
+
+  for (const l of LACUNES) {
+    pousser({
+      origine: 'lacune',
+      assertion: l.texte,
+      statut: 'inconnu',
+      source: null,
+      liens: 0,
+      arbitrage: null,
+      angleMort: Boolean(l.angleMort),
+      section: 'annexe B',
+    });
+  }
+
+  const parStatut = {};
+  for (const c of claims) parStatut[c.statut] = (parStatut[c.statut] || 0) + 1;
+  const avecSource = claims.filter((c) => c.source || c.liens > 0).length;
+  return {
+    claims,
+    parStatut,
+    total: claims.length,
+    avecSource,
+    sansSource: claims.length - avecSource,
+    anglesMorts: claims.filter((c) => c.angleMort).length,
+    arbitrages: claims.filter((c) => c.arbitrage).length,
+  };
+}
+
+/** Ce que le registre de preuves dit de la base, en une ligne. */
+export function resumeClaims() {
+  const r = registreClaims();
+  const solides = (r.parStatut.etabli || 0) + (r.parStatut.annonce || 0);
+  return r.total + ' affirmations · ' + solides + ' établies ou annoncées · '
+    + (r.parStatut.contredit || 0) + ' contredites (arbitrées) · '
+    + (r.parStatut.inconnu || 0) + ' inconnues · ' + r.avecSource + ' avec source';
+}
+
 /** Une phrase de synthèse, pour le fil ou un en-tête. */
 export function resumeIntel() {
   const s = statistiquesIntel();
