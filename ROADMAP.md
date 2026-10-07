@@ -128,11 +128,38 @@ tomber l'application ; une dépêche dont le flux est inconnu est **gardée**.
 **Reste à faire sur G** : le panneau de réglage et le bouton de dépliage dans
 l'interface. La couche de décision est prête et gelée par les tests.
 
+### Itération 28 — le fil réglable, visible à l'écran (06/10/2026) ✅
+
+Le chantier **G est terminé**. La couche de décision de l'itération 27 est
+maintenant branchée et manipulable.
+
+* **`src/data/fil/panneauFil.js`** (nouveau, 18 tests) — le panneau en
+  **logique pure** : le balisage produit et l'effet de chaque clic. Les
+  actions sont des chaînes (`basculer:presse`, `tri:recent`), ce qui permet
+  de tester le comportement **sans navigateur** — il n'y en a pas dans le bac
+  à sable.
+* **`etiqueterFlux` / `fluxDeDepeche`** — les dépêches portaient une
+  `sourceCle` héritée d'avant ; on traduit plutôt que de renommer des dizaines
+  d'appels et d'en oublier un. Une dépêche non rattachée est **gardée**.
+* **`src/vuesIntel.js`** — deux boutons dans le fil : **⚙ régler** et
+  **⤢ déplier**. Le panneau se reconstruit à chaque changement, donc les clics
+  passent par **délégation** ; le réglage est enregistré à chaque action.
+* **`style.css`** — feuille **statique** (un masquage posé en JS ne tient pas
+  si le module ne démarre pas), `var(--wt-z-fenetre)`, et recadrage sous
+  760 px.
+* **Volant** — `Régler le fil` et `Déplier le fil` rangés dans **Analyser**,
+  via `clic:` sur les boutons d'origine : une seule logique d'ouverture, donc
+  un seul endroit où se tromper. Exigence transverse respectée.
+
+**L'état par défaut est replié et sobre** : le fil ne prend l'écran que par
+le bouton prévu pour ça.
+
+Tests : **3 547 / 3 547**. Build ✓.
+
 ### Suite proposée
 
 | Rang | Chantier | Ce qu'on prend dans le catalogue |
 |---|---|---|
-| 1 | **G** — fil de contexte modifiable | rien de neuf : pur front |
 | 2 | **A4 / A1 / A3** — minicarte | `cobe` (5 ko) au lieu d'un 2ᵉ contexte Cesium |
 | 3 | **E** — vue communale animée | BD TOPO, `maplibre-gl-draw`, Motion One |
 | 4 | **F** (suite) — brancher les niveaux sur les API | GDELT GEO, Eurostat, Banque mondiale |

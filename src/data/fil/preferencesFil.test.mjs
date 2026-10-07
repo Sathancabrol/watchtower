@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   FLUX_FIL, TRIS, CLE_PREFERENCES_FIL, preferencesParDefaut, normaliserPreferences,
   lirePreferences, ecrirePreferences, basculerFlux, deplacerFlux, fluxActifs,
-  demandeLeReseau, appliquerPreferences, resumePreferences,
+  demandeLeReseau, appliquerPreferences, resumePreferences, fluxDeDepeche, etiqueterFlux,
 } from './preferencesFil.js';
 
 /** Un faux stockage, pour tester sans navigateur. */
@@ -202,4 +202,41 @@ test('appliquerPreferences ne modifie pas la liste qu on lui donne', () => {
   const copie = DEPECHES.map((d) => ({ ...d }));
   appliquerPreferences(DEPECHES, preferencesParDefaut());
   assert.deepEqual(DEPECHES, copie);
+});
+
+test('une depeche existante est rattachee au bon flux', () => {
+  assert.equal(fluxDeDepeche({ sourceCle: 'gdelt' }), 'presse');
+  assert.equal(fluxDeDepeche({ sourceCle: 'usgs' }), 'seismes');
+  assert.equal(fluxDeDepeche({ sourceCle: 'open_meteo' }), 'meteo');
+  assert.equal(fluxDeDepeche({ sourceCle: 'entreprises' }), 'entreprises');
+  // La sourceCle est plus precise que la categorie : elle gagne.
+  assert.equal(fluxDeDepeche({ sourceCle: 'usgs', categorie: 'communal' }), 'seismes');
+  // A defaut de source connue, la categorie depanne.
+  assert.equal(fluxDeDepeche({ categorie: 'communal' }), 'communal');
+});
+
+test('une depeche qu on ne sait pas rattacher n est pas perdue', () => {
+  assert.equal(fluxDeDepeche({ sourceCle: 'inconnue' }), '');
+  assert.equal(fluxDeDepeche(null), '');
+  const r = appliquerPreferences(etiqueterFlux([{ sourceCle: 'inconnue', titre: 'x', gravite: 1 }]),
+    preferencesParDefaut());
+  assert.equal(r.length, 1, 'une info non etiquetee doit s afficher, pas disparaitre');
+});
+
+test('etiqueter ne modifie pas les depeches d origine', () => {
+  const o = [{ sourceCle: 'gdelt', titre: 'a' }];
+  const copie = JSON.parse(JSON.stringify(o));
+  const r = etiqueterFlux(o);
+  assert.equal(r[0].flux, 'presse');
+  assert.deepEqual(o, copie);
+});
+
+test('etiqueter puis regler : eteindre la presse fait taire GDELT', () => {
+  const brut = [
+    { sourceCle: 'gdelt', titre: 'article', gravite: 2, quand: 2 },
+    { sourceCle: 'usgs', titre: 'secousse', gravite: 3, quand: 1 },
+  ];
+  const sansPresse = basculerFlux(preferencesParDefaut(), 'presse');
+  const r = appliquerPreferences(etiqueterFlux(brut), sansPresse);
+  assert.deepEqual(r.map((d) => d.titre), ['secousse']);
 });

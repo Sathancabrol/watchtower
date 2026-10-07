@@ -261,3 +261,51 @@ export function resumePreferences(prefs) {
   const reseau = demandeLeReseau(p) ? ' · réseau requis' : ' · hors ligne';
   return `${actifs.length} flux sur ${FLUX_FIL.length} · ${p.limite} dépêches max${reseau}`;
 }
+
+/**
+ * Rattache une depeche existante a l'un des flux reglables.
+ *
+ * Les depeches portent une `sourceCle` (« gdelt », « usgs »…) et une
+ * `categorie`, heritees d'avant ce module. Plutot que de rebaptiser des
+ * dizaines d'appels — et de risquer d'en oublier un, donc de perdre des
+ * depeches — on traduit ici. La `sourceCle` est plus precise, elle gagne.
+ *
+ * Une depeche qu'on ne sait pas rattacher garde `''` : `appliquerPreferences`
+ * la laisse alors passer, parce qu'une information non etiquetee doit
+ * s'afficher plutot que disparaitre.
+ *
+ * @param {object} d
+ * @returns {string} identifiant de flux, ou ''
+ */
+export function fluxDeDepeche(d) {
+  if (!d) return '';
+  if (PAR_ID.has(d.flux)) return d.flux;
+  const parSource = {
+    gdelt: 'presse',
+    usgs: 'seismes',
+    open_meteo: 'meteo',
+    georisques: 'alertes',
+    meteofrance: 'alertes',
+    entreprises: 'entreprises',
+    boamp: 'marches',
+    radio_browser: 'radio',
+    insee: 'communal',
+    wikidata: 'communal',
+    hal: 'documents',
+  }[d.sourceCle];
+  if (parSource) return parSource;
+  const parCategorie = { communal: 'communal', reunion: 'communal', economique: 'entreprises' };
+  return parCategorie[d.categorie] || '';
+}
+
+/**
+ * Etiquette une liste de depeches avant de lui appliquer le reglage. A
+ * utiliser systematiquement en amont d'`appliquerPreferences`.
+ * @param {object[]} liste
+ * @returns {object[]} de NOUVELLES depeches, les originales sont intactes
+ */
+export function etiqueterFlux(liste = []) {
+  return (Array.isArray(liste) ? liste : [])
+    .filter(Boolean)
+    .map((d) => ({ ...d, flux: fluxDeDepeche(d) }));
+}

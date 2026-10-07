@@ -67,6 +67,22 @@ const CATEGORIE_BASCULE = 'affichage';
  */
 export const ENTREES_SUPPLEMENTAIRES = Object.freeze([
   {
+    id: 'fil-reglage',
+    nom: 'Régler le fil',
+    icone: '⚙',
+    aide: 'Choisir les flux du fil de contexte, leur ordre et leur volume',
+    // On rejoue le clic du bouton d'origine plutot que de reimplementer
+    // l'ouverture : une seule logique, donc un seul endroit ou se tromper.
+    cheminAction: 'clic:#wti-fil .fi-regler',
+  },
+  {
+    id: 'fil-deplier',
+    nom: 'Déplier le fil',
+    icone: '⤢',
+    aide: 'Étendre le fil de contexte sur plusieurs lignes, ou le replier',
+    cheminAction: 'clic:#wti-fil .fi-deplier',
+  },
+  {
     id: 'carte-2d3d',
     nom: 'Vue 2D / 3D',
     icone: '🗺',

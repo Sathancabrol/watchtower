@@ -92,6 +92,8 @@ export const RANGEMENT = Object.freeze({
   'dock:cadrans': 'analyser',
   'dock:histo': 'analyser',
   'bascule:fil-info': 'analyser',
+  'action:fil-reglage': 'analyser',
+  'action:fil-deplier': 'analyser',
   'cible:wt-sv': 'analyser',
   'cible:wt-photo': 'analyser',
   'dock:chat': 'analyser',

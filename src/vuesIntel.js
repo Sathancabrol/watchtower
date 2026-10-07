@@ -21,6 +21,10 @@
  */
 
 import { filComplet, filEconomie, filtrerParCategorie, tickerHtml } from './filInfo.js';
+import {
+  lirePreferences, ecrirePreferences, appliquerPreferences, etiqueterFlux,
+} from './data/fil/preferencesFil.js';
+import { htmlPanneauFil, appliquerAction, libelleDepliage } from './data/fil/panneauFil.js';
 import { htmlSources, liensVerification } from './tracabilite.js';
 import { resumeGeorisques, urlGeorisques } from './empreinte.js';
 import { EXECUTIF, JUMELAGES } from './data/territoire/gouvernance.js';
@@ -410,10 +414,85 @@ export function initIntelVues(root, options = {}) {
   fil.innerHTML = `
     <span class="fi-titre">FIL — CONTEXTE</span>
     <span class="fi-piste"><span class="fi-rouleau"><span class="fi-vide">⏳ collecte des dépêches…</span></span></span>
-    <span class="fi-src"></span>`;
+    <span class="fi-src"></span>
+    <button type="button" class="fi-btn fi-deplier" aria-expanded="false">⤢</button>
+    <button type="button" class="fi-btn fi-regler" aria-expanded="false" aria-controls="wt-fil-reglage" title="Régler le fil">⚙</button>`;
   const haut = root.querySelector('#wti-haut');
   if (haut?.parentNode) haut.parentNode.insertBefore(fil, haut.nextSibling);
   else root.appendChild(fil);
+
+  // ── ⚙ RÉGLAGE DU FIL (chantier G) ──
+  // Deux reproches etaient faits au fil : il n'etait pas modifiable, et il
+  // prenait tout l'ecran. Le reglage vit ici ; la decision, elle, est dans
+  // `data/fil/` et testee sans navigateur.
+  const stockage = (() => { try { return window.localStorage; } catch { return null; } })();
+  let prefsFil = lirePreferences(stockage);
+
+  const reglage = document.createElement('div');
+  reglage.id = 'wt-fil-reglage';
+  reglage.hidden = true;
+  fil.appendChild(reglage);
+
+  const btnRegler = fil.querySelector('.fi-regler');
+  const btnDeplier = fil.querySelector('.fi-deplier');
+
+  function majDepliage() {
+    // Le fil ne s'etend QUE sur ce bouton — c'est la consigne.
+    fil.classList.toggle('est-deplie', prefsFil.deplie);
+    btnDeplier.textContent = prefsFil.deplie ? '⤡' : '⤢';
+    btnDeplier.title = libelleDepliage(prefsFil);
+    btnDeplier.setAttribute('aria-label', libelleDepliage(prefsFil));
+    btnDeplier.setAttribute('aria-expanded', String(prefsFil.deplie));
+  }
+
+  function enregistrer() {
+    ecrirePreferences(stockage, prefsFil);
+  }
+
+  function rendreReglage() {
+    if (reglage.hidden) return;
+    reglage.innerHTML = htmlPanneauFil(prefsFil);
+  }
+
+  function ouvrirReglage(ouvert) {
+    reglage.hidden = !ouvert;
+    btnRegler.setAttribute('aria-expanded', String(ouvert));
+    btnRegler.classList.toggle('est-actif', ouvert);
+    if (ouvert) rendreReglage();
+  }
+
+  btnRegler.addEventListener('click', () => ouvrirReglage(reglage.hidden));
+  btnDeplier.addEventListener('click', () => {
+    prefsFil = appliquerAction(prefsFil, 'deplier');
+    enregistrer();
+    majDepliage();
+    rendreReglage();
+  });
+
+  // Delegation : le panneau est reconstruit a chaque changement, donc aucun
+  // ecouteur ne doit etre attache a ses boutons individuellement.
+  reglage.addEventListener('click', (ev) => {
+    const bouton = ev.target.closest('[data-rf-action]');
+    if (!bouton || bouton.disabled) return;
+    const action = bouton.dataset.rfAction;
+    if (action === 'fermer') { ouvrirReglage(false); return; }
+    prefsFil = appliquerAction(prefsFil, action);
+    enregistrer();
+    majDepliage();
+    rendreReglage();
+    majBandeau(categorie);
+  });
+
+  reglage.addEventListener('input', (ev) => {
+    const champ = ev.target.closest('[data-rf-champ]');
+    if (!champ) return;
+    prefsFil = appliquerAction(prefsFil, `${champ.dataset.rfChamp}:${champ.value}`);
+    enregistrer();
+    rendreReglage();
+    majBandeau(categorie);
+  });
+
+  majDepliage();
 
   const rouleau = fil.querySelector('.fi-rouleau');
   const titreFil = fil.querySelector('.fi-titre');
@@ -488,7 +567,13 @@ export function initIntelVues(root, options = {}) {
     categorie = cat || 'contexte';
     const v = VUES_INTEL.find((x) => x.cle === categorie);
     titreFil.textContent = `FIL — ${v ? v.nom : (categorie === 'profil' ? 'PROFIL' : 'CONTEXTE')}`;
-    rouleau.innerHTML = tickerHtml(filtrerParCategorie(depeches, categorie));
+    // Le reglage s'applique APRES le filtre de categorie : la vue choisit de
+    // quoi on parle, le reglage choisit ce qu'on en montre.
+    const retenues = appliquerPreferences(
+      etiqueterFlux(filtrerParCategorie(depeches, categorie)),
+      prefsFil,
+    );
+    rouleau.innerHTML = tickerHtml(retenues);
     zoneSrc.innerHTML = htmlSources(sources);
   }
 
