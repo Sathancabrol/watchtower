@@ -1,0 +1,25 @@
+id;nom;famille;etat;url;api;verifie_le
+insee-dossier-complet;INSEE — Dossier complet d’une commune;population;cité;https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108;;2026-10-07
+insee-base-dossier-complet;INSEE — Base du dossier complet (fichier national);population;identifie;https://www.insee.fr/fr/statistiques/5359146;;2026-10-07
+insee-donnees-locales;INSEE — Données locales (portail);population;identifie;https://www.insee.fr/fr/information/3544265;;2026-10-07
+gpu-api;Géoportail de l’urbanisme — API et WFS;urbanisme;identifie;https://www.geoportail-urbanisme.gouv.fr/api/;https://wxs-gpu.mongeoportail.ign.fr/externe/{cle}/wfs;2026-10-07
+apicarto;API Carto (IGN) — cadastre, urbanisme, nature;urbanisme;cité;https://apicarto.ign.fr/api/doc/;https://apicarto.ign.fr/api/cadastre | /api/gpu | /api/nature;2026-10-07
+dvf;DVF — Demandes de valeurs foncières;urbanisme;identifie;https://app.dvf.etalab.gouv.fr;;2026-10-07
+georisques-api;Géorisques — API v1 (BRGM/Ministère);risques;cité;https://www.data.gouv.fr/dataservices/api-georisques;https://georisques.gouv.fr/api/v1/;2026-10-07
+ppri-ddtm34;DDTM 34 — Règlement PPRI du bassin de Thau;risques;identifie;https://www.herault.gouv.fr/Politiques-publiques/Risques-naturels-et-technologiques/Prevention-des-risques-naturels/PPRI-de-l-Herault;;2026-09-08
+mrae-occitanie;MRAe Occitanie — avis environnementaux;risques;cité;https://www.mrae.developpement-durable.gouv.fr/IMG/pdf/2025ao18.pdf;;2026-10-07
+cerema-trait-de-cote;Cerema — Indicateur national trait de côte & zones basses;risques;identifie;https://www.cerema.fr/fr/actualites/evaluation-enjeux-exposes-au-recul-du-trait-cote-court-moyen;;2026-10-07
+recherche-entreprises;API Recherche d’entreprises (DINUM);entreprises;cité;https://annuaire-entreprises.data.gouv.fr/donnees/api-entreprises;https://recherche-entreprises.api.gouv.fr;2026-10-07
+bodacc;BODACC — annonces civiles et commerciales (DILA);entreprises;cité;https://www.bodacc.fr/;https://boamp-datadila.opendatasoft.com/api/explore/v2.0/catalog/datasets;2026-09-08
+boamp-api;BOAMP — Bulletin officiel des annonces de marchés publics (API);marches;identifie;https://www.data.gouv.fr/dataservices/api-bulletin-officiel-des-annonces-des-marches-publics-boamp;https://boamp-datadila.opendatasoft.com/api/explore/v2.0;2026-10-07
+decp;DECP — Données essentielles de la commande publique;marches;identifie;https://www.data.gouv.fr/datasets/api-decp;https://www.data.economie.gouv.fr/explore/dataset/decp-2022-marches-valides/api/;2026-10-07
+sncf-liO;Région Occitanie — liO Train (données voyageurs);mobilite;humain;https://www.laregion.fr/liO-Train;;2026-09-08
+inpn;INPN — Inventaire national du patrimoine naturel;environnement;identifie;https://inpn.mnhn.fr/accueil/index;https://apicarto.ign.fr/api/nature (relais IGN);2026-10-07
+reseaux-canalisations;Guichet unique des réseaux (INERIS) — DT/DICT;chantier;identifie;https://www.reseaux-et-canalisations.gouv.fr/;;2026-10-07
+pappers-societe;Pappers / société.com — comptes et dirigeants;entreprises;cité;https://www.pappers.fr/;;2026-09-08
+frontignan-site;Ville de Frontignan la Peyrade — site officiel;local;cité;https://www.frontignan.fr/;;2026-09-08
+agglopole;Sète Agglopôle Méditerranée — site officiel;local;cité;https://www.agglopole.fr/;;2026-09-08
+smbt;SMBT — Syndicat mixte du bassin de Thau;local;cité;https://www.smbt.fr/;;2026-09-08
+thau-infos;Thau Infos — comptes rendus de conseils;presse;cité;https://thau-infos.fr/;;2026-09-08
+gdelt;GDELT — flux de presse mondial (filtrable en français);presse;cité;https://api.gdeltproject.org/api/v2/doc/doc;https://api.gdeltproject.org/api/v2/doc/doc?query=…&mode=artlist&format=json;2026-09-08
+midi-libre;Midi Libre — édition de Sète et du bassin de Thau;presse;cité;https://www.midilibre.fr/;;2026-09-08

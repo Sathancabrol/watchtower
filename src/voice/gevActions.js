@@ -218,6 +218,25 @@ const STACK_ALIASES = new Map([
   ['road', 'osm'],
   ['roads', 'osm'],
   ['road map', 'osm'],
+  // WATCHTOWER — fonds français et relief : les trois basemaps ajoutés au
+  // contrôleur doivent chacun se résoudre par leur propre identifiant, sinon
+  // la commande vocale lève « Unknown map stack » sur un fond livré.
+  ['ign-ortho', 'ign-ortho'],
+  ['ign ortho', 'ign-ortho'],
+  ['ign', 'ign-ortho'],
+  ['ortho', 'ign-ortho'],
+  ['orthophoto', 'ign-ortho'],
+  ['orthophotographie', 'ign-ortho'],
+  ['ign-plan', 'ign-plan'],
+  ['ign plan', 'ign-plan'],
+  ['plan ign', 'ign-plan'],
+  ['planign', 'ign-plan'],
+  ['opentopo', 'opentopo'],
+  ['open topo', 'opentopo'],
+  ['relief', 'opentopo'],
+  ['topo', 'opentopo'],
+  ['topographique', 'opentopo'],
+  ['courbes de niveau', 'opentopo'],
 ]);
 
 /** Search order for track_entity across entity layer families. */

@@ -56,6 +56,7 @@ import { initEntites } from './entites.js';
 import { initMobiglas } from './mobiglas.js';
 import { initCadrans } from './cadrans.js';
 import { initIntelVues } from './vuesIntel.js';
+import { initTerritoire } from './territoire.js';
 import { initUrgenceMode } from './urgenceMode.js';
 import { initPalais } from './palais.js';
 import { initVeille } from './veille.js';
@@ -702,6 +703,23 @@ async function init() {
         surMessage: (m) => window.__wtToast?.(m),
       });
       window.__godsEyeView.intelVues = intelVues;
+      // 🗺 TERRITOIRE / STRATEGIC VIEW : la carte stratégique branchée sur les
+      // données réelles — France → Occitanie → Hérault → Sète Agglopôle (14
+      // communes) → Frontignan → quartier → parcelle. Le maillage hexagonal
+      // n'est qu'une REPRÉSENTATION aux échelles larges ; à partir de
+      // l'agglomération ce sont les vraies positions, et la lentille RÉSEAUX
+      // porte la check-list DT-DICT. La lentille IMPRÉVUS branche la base TP
+      // filtrée par le contexte de terrain (littoral, lagune, massif, urbain…).
+      const territoire = proteger('territoire', () => initTerritoire(viewer, {
+        fiche: (lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat),
+        surMessage: (m) => window.__wtToast?.(m),
+      }));
+      window.__godsEyeView.territoire = territoire;
+      window.__godsEyeView.dock?.ajouter?.({
+        id: 'territoire', icone: '🗺', libelle: 'TERRITOIRE', groupe: 'vues',
+        titre: '🗺 TERRITOIRE — CARTE STRATÉGIQUE (FRANCE → THAU → FRONTIGNAN)',
+        element: elDe(territoire), cote: 'gauche',
+      });
       // 📌 ÉPINGLES : bouton visible en bas à gauche → clic carte = épingle.
       const pins = initPins(viewer, {
         fiche: (lon, lat) => window.__godsEyeView.fiche?.ouvrir(lon, lat),

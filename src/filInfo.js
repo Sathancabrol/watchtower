@@ -25,7 +25,7 @@ import { sourceConnue } from './tracabilite.js';
 
 /** Catégories de l'INTEL qui ont un bandeau. */
 export const CATEGORIES_FIL = Object.freeze([
-  'contexte', 'jumeau', 'communal', 'individuel', 'politique', 'economique', 'production', 'profil',
+  'contexte', 'jumeau', 'communal', 'individuel', 'politique', 'economique', 'production', 'dossier', 'terrain', 'profil',
 ]);
 
 /** URL du flux presse GDELT (gratuit, sans clé). */
