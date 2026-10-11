@@ -1,3 +1,5 @@
+> **Continuité de travail IA :** lire aussi [`AGENT_HANDOFF.md`](AGENT_HANDOFF.md) avant de reprendre une tâche; mettre à jour son état et son journal à la fin. Les règles spécifiques de ce dépôt dans [`AGENTS.md`](AGENTS.md) restent prioritaires.
+
 <div align="center">
 
 # 🗼 WATCHTOWER
