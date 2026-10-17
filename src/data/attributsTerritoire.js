@@ -700,8 +700,12 @@ export function versCsv(entites = [], type) {
   if (!cols.length) return '';
   const cellule = (v) => {
     if (v === null || v === undefined) return '';
-    const t = typeof v === 'object' ? JSON.stringify(v) : String(v);
-    return /[";\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+    const texte = typeof v === 'object' ? JSON.stringify(v) : String(v);
+    // Les tableurs peuvent exécuter des formules présentes dans un CSV importé.
+    // Protéger uniquement les valeurs textuelles : les nombres négatifs restent numériques.
+    const protege = typeof v === 'string' && /^[\s\uFEFF]*[=+\-@]/.test(texte)
+      ? `'${texte}` : texte;
+    return /[";\r\n]/.test(protege) ? `"${protege.replace(/"/g, '""')}"` : protege;
   };
   const lignes = [cols.join(';')];
   for (const e of entites) lignes.push(cols.map((c) => cellule((e || {})[c])).join(';'));
