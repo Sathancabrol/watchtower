@@ -229,3 +229,20 @@ test('le guide associatif dit ce qu’un millésime laisse toujours à vérifier
   assert.ok(GUIDE_ASSOCIATIONS.a_verifier_toujours.length > 0);
   assert.match(GUIDE_ASSOCIATIONS.conseil, /millésime/i);
 });
+
+test('versCsv neutralise les formules de tableur sans altérer les nombres', () => {
+  const resultat = versCsv([
+    { id: 'dangereux', nom: '=HYPERLINK("https://example.org","clic")' },
+    { id: 'prefixe', nom: '  +SUM(1,2)' },
+    { id: 'arobase', nom: '@IMPORT()' },
+    { id: 'titre', nom: '-association' },
+    { id: 'normal', nom: 'Jouteurs du canal' },
+  ], 'association');
+  assert.match(resultat, /"'=HYPERLINK\(""https:\/\/example\.org"",""clic""\)"/);
+  assert.ok(resultat.includes("'  +SUM(1,2)"));
+  assert.ok(resultat.includes("'@IMPORT()"));
+  assert.ok(resultat.includes("'-association"));
+  assert.ok(resultat.includes('Jouteurs du canal'));
+  const numerique = versCsv([{ id: 'n1', budget_eur: -123 }], 'transformation');
+  assert.ok(numerique.includes('-123'), 'le nombre négatif ne doit pas être converti en texte');
+});
