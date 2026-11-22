@@ -6,6 +6,12 @@
 
 </div>
 
+### Mémoire externe des agents — Watchtower
+
+Pour reprendre l'architecture et le suivi sans repartir de zéro : [hub des agents](docs/agent-memory/01-HUB-SUIVI-AGENTS.md), [carte mentale Obsidian](docs/agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md), [inventaire complet GitHub](docs/agent-memory/02-INVENTAIRE-GITHUB-COMPLET.md), [capacités et divergences](docs/agent-memory/03-CAPACITES-ARCHITECTURE-DIVERGENCES.md), [CI et reprise](docs/agent-memory/04-VALIDATION-CI-REPRISE.md). Ces documents distinguent code présent, projet, tests historiques et état d'exécution réel. La documentation n'active aucun service ni fusion de branche.
+
+
+
 **Écran de démarrage** avec deux boutons :
 
 - **MODE GRATUIT** — démarre immédiatement, **zéro clé API**, aucun blocage possible.
