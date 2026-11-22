@@ -1,0 +1,387 @@
+---
+title: "Monorepo — branches Watchtower/Olympus/CRONOS et modules adjacents — lot A"
+created: 2026-11-22
+tags: [watchtower, branches, git, monorepo, olympus, cronos]
+---
+
+# Monorepo — lot A : huit branches d'intérêt prioritaire
+
+Comparaison GitHub Tree au `monorepo/main` (1806 fichiers), relevé le 22/11/2026. Détail ciblé, **non exhaustif des fonctions du code** ; chaque commit SHA permet de reconstituer l'arbre complet. Les différences de fichiers ne prouvent pas les intégrations runtime.
+
+### feat/olympus-mobile-preview-20261113
+
+SHA: `ae97b364cd1b26be3b2923e22fcf3864d6fdc555` ; fichiers 1856 ; ajoutés 50 ; modifiés 0 ; supprimés 0 vs `monorepo/main`. Changements ciblés : 50 ajouts et 0 modifications.
+
+Répertoires touchés : `projects/olympus-studio` (49), `.github` (1).
+
+Chemins utiles repérés (échantillon) :
+- [`.github/workflows/olympus-studio-ci.yml`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/.github/workflows/olympus-studio-ci.yml)
+- [`projects/olympus-studio/.gitignore`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/.gitignore)
+- [`projects/olympus-studio/LANCER_MOBILE.bat`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/LANCER_MOBILE.bat)
+- [`projects/olympus-studio/LANCER_OLYMPUS.bat`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/LANCER_OLYMPUS.bat)
+- [`projects/olympus-studio/README.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/README.md)
+- [`projects/olympus-studio/docs/ARCHITECTURE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/ARCHITECTURE.md)
+- [`projects/olympus-studio/docs/AUTONOMOUS_BACKLOG.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/AUTONOMOUS_BACKLOG.md)
+- [`projects/olympus-studio/docs/CONTRACTS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/CONTRACTS.md)
+- [`projects/olympus-studio/docs/EDIT_AUDIO.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/EDIT_AUDIO.md)
+- [`projects/olympus-studio/docs/EDIT_TRIM.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/EDIT_TRIM.md)
+- [`projects/olympus-studio/docs/HANDOFF.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/HANDOFF.md)
+- [`projects/olympus-studio/docs/MOBILE_ACCESS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/MOBILE_ACCESS.md)
+- [`projects/olympus-studio/docs/NEEDS_USER.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/NEEDS_USER.md)
+- [`projects/olympus-studio/docs/OBS_REMOTE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/OBS_REMOTE.md)
+- [`projects/olympus-studio/docs/ROADMAP.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/ROADMAP.md)
+- [`projects/olympus-studio/docs/SESSION_PLAN.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/SESSION_PLAN.md)
+- [`projects/olympus-studio/docs/STATUS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/STATUS.md)
+- [`projects/olympus-studio/docs/WORK_ESTIMATES.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/docs/WORK_ESTIMATES.md)
+- [`projects/olympus-studio/index.html`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/index.html)
+- [`projects/olympus-studio/package.json`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/package.json)
+- [`projects/olympus-studio/research/COMPARATIF.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/research/COMPARATIF.md)
+- [`projects/olympus-studio/research/OUTILS_ET_SKILLS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/research/OUTILS_ET_SKILLS.md)
+- [`projects/olympus-studio/scripts/mobile-preview.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/scripts/mobile-preview.mjs)
+- [`projects/olympus-studio/scripts/shared-camera-relay.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/scripts/shared-camera-relay.mjs)
+- [`projects/olympus-studio/server.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/server.mjs)
+- [`projects/olympus-studio/src/app.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/app.js)
+- [`projects/olympus-studio/src/camera-pool.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/camera-pool.js)
+- [`projects/olympus-studio/src/edit-audio.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/edit-audio.js)
+- [`projects/olympus-studio/src/media-store.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/media-store.js)
+- [`projects/olympus-studio/src/meeting-utils.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/meeting-utils.js)
+- [`projects/olympus-studio/src/obs-client.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/obs-client.js)
+- [`projects/olympus-studio/src/obs-panel.css`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/obs-panel.css)
+- [`projects/olympus-studio/src/obs-panel.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/obs-panel.js)
+- [`projects/olympus-studio/src/shared-camera.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/shared-camera.js)
+- [`projects/olympus-studio/src/storyboard.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/storyboard.js)
+- [`projects/olympus-studio/src/style.css`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/style.css)
+- [`projects/olympus-studio/src/v03-migration.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/v03-migration.js)
+- [`projects/olympus-studio/src/video-duration.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/video-duration.js)
+- [`projects/olympus-studio/tests/browser_media_smoke.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/browser_media_smoke.py)
+- [`projects/olympus-studio/tests/camera-pool.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/camera-pool.test.mjs)
+- [`projects/olympus-studio/tests/edit-audio.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/edit-audio.test.mjs)
+- [`projects/olympus-studio/tests/media-store.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/media-store.test.mjs)
+- [`projects/olympus-studio/tests/meeting-utils.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/meeting-utils.test.mjs)
+- [`projects/olympus-studio/tests/mobile-preview.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/mobile-preview.test.mjs)
+- [`projects/olympus-studio/tests/obs-client.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/obs-client.test.mjs)
+- [`projects/olympus-studio/tests/shared-camera.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/shared-camera.test.mjs)
+- [`projects/olympus-studio/tests/smoke.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/smoke.test.mjs)
+- [`projects/olympus-studio/tests/storyboard.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/storyboard.test.mjs)
+- [`projects/olympus-studio/tests/v03-migration.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/v03-migration.test.mjs)
+- [`projects/olympus-studio/tests/video-duration.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/video-duration.test.mjs)
+
+### feat/olympus-studio-20261112
+
+SHA: `4c54385253fe63e380b9cbe0408e090d0298f334` ; fichiers 1928 ; ajoutés 122 ; modifiés 0 ; supprimés 0 vs `monorepo/main`. Changements ciblés : 122 ajouts et 0 modifications.
+
+Répertoires touchés : `projects/olympus-studio` (121), `.github` (1).
+
+Chemins utiles repérés (échantillon) :
+- [`.github/workflows/olympus-studio-ci.yml`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/.github/workflows/olympus-studio-ci.yml)
+- [`projects/olympus-studio/.gitignore`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/.gitignore)
+- [`projects/olympus-studio/LANCER_OLYMPUS.bat`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/LANCER_OLYMPUS.bat)
+- [`projects/olympus-studio/README.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/README.md)
+- [`projects/olympus-studio/docs/ADR-0001-edit-interchange.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/ADR-0001-edit-interchange.md)
+- [`projects/olympus-studio/docs/ALPHA_2026-11-18.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/ALPHA_2026-11-18.md)
+- [`projects/olympus-studio/docs/ALPHA_RECETTE_20261118.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/ALPHA_RECETTE_20261118.md)
+- [`projects/olympus-studio/docs/ALPHA_RELEASE_CHECKLIST.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/ALPHA_RELEASE_CHECKLIST.md)
+- [`projects/olympus-studio/docs/ARCHITECTURE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/ARCHITECTURE.md)
+- [`projects/olympus-studio/docs/AUTONOMOUS_BACKLOG.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/AUTONOMOUS_BACKLOG.md)
+- [`projects/olympus-studio/docs/CHECKPOINT_20261116_22H.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/CHECKPOINT_20261116_22H.md)
+- [`projects/olympus-studio/docs/CI_AV_INCIDENT_20261118.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/CI_AV_INCIDENT_20261118.md)
+- [`projects/olympus-studio/docs/CONTRACTS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/CONTRACTS.md)
+- [`projects/olympus-studio/docs/EDIT_AUDIO.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/EDIT_AUDIO.md)
+- [`projects/olympus-studio/docs/EDIT_AV_FALLBACK.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/EDIT_AV_FALLBACK.md)
+- [`projects/olympus-studio/docs/EDIT_FFMPEG_BRIDGE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/EDIT_FFMPEG_BRIDGE.md)
+- [`projects/olympus-studio/docs/EDIT_FFMPEG_FALLBACK.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/EDIT_FFMPEG_FALLBACK.md)
+- [`projects/olympus-studio/docs/EDIT_TRIM.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/EDIT_TRIM.md)
+- [`projects/olympus-studio/docs/HANDOFF.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/HANDOFF.md)
+- [`projects/olympus-studio/docs/INTEGRATION_MATRIX.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/INTEGRATION_MATRIX.md)
+- [`projects/olympus-studio/docs/INTEGRATION_MATRIX_12.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/INTEGRATION_MATRIX_12.md)
+- [`projects/olympus-studio/docs/INTEGRATION_MATRIX_ALPHA.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/INTEGRATION_MATRIX_ALPHA.md)
+- [`projects/olympus-studio/docs/NEEDS_USER.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/NEEDS_USER.md)
+- [`projects/olympus-studio/docs/OBS_REMOTE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/OBS_REMOTE.md)
+- [`projects/olympus-studio/docs/ROADMAP.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/ROADMAP.md)
+- [`projects/olympus-studio/docs/SESSION_PLAN.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/SESSION_PLAN.md)
+- [`projects/olympus-studio/docs/STATUS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/STATUS.md)
+- [`projects/olympus-studio/docs/WORK_ESTIMATES.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/docs/WORK_ESTIMATES.md)
+- [`projects/olympus-studio/index.html`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/index.html)
+- [`projects/olympus-studio/package.json`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/package.json)
+- [`projects/olympus-studio/research/COMPARATIF.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/research/COMPARATIF.md)
+- [`projects/olympus-studio/research/OUTILS_ET_SKILLS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/research/OUTILS_ET_SKILLS.md)
+- [`projects/olympus-studio/scripts/render-edit-audio.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/scripts/render-edit-audio.mjs)
+- [`projects/olympus-studio/scripts/render-edit-av.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/scripts/render-edit-av.mjs)
+- [`projects/olympus-studio/scripts/render-edit-frames.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/scripts/render-edit-frames.mjs)
+- [`projects/olympus-studio/scripts/render-edit-sequence-av.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/scripts/render-edit-sequence-av.mjs)
+- [`projects/olympus-studio/server.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/server.mjs)
+- [`projects/olympus-studio/src/app.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/app.js)
+- [`projects/olympus-studio/src/comfy-output.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/comfy-output.js)
+- [`projects/olympus-studio/src/edit-audio.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-audio.js)
+- [`projects/olympus-studio/src/edit-ffmpeg-plan.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-ffmpeg-plan.js)
+- [`projects/olympus-studio/src/edit-frame-plan.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-frame-plan.js)
+- [`projects/olympus-studio/src/edit-frame-renderer.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-frame-renderer.js)
+- [`projects/olympus-studio/src/edit-history.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-history.js)
+- [`projects/olympus-studio/src/edit-interchange-assets.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-interchange-assets.js)
+- [`projects/olympus-studio/src/edit-interchange.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/edit-interchange.js)
+- [`projects/olympus-studio/src/editor-export.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/editor-export.js)
+- [`projects/olympus-studio/src/integration-registry.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/integration-registry.js)
+- [`projects/olympus-studio/src/media-store.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/media-store.js)
+- [`projects/olympus-studio/src/meeting-utils.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/meeting-utils.js)
+- [`projects/olympus-studio/src/obs-client.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/obs-client.js)
+- [`projects/olympus-studio/src/obs-panel.css`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/obs-panel.css)
+- [`projects/olympus-studio/src/obs-panel.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/obs-panel.js)
+- [`projects/olympus-studio/src/png-directory-sink.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/png-directory-sink.js)
+- [`projects/olympus-studio/src/storyboard.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/storyboard.js)
+- [`projects/olympus-studio/src/studio-event-bus.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/studio-event-bus.js)
+- [`projects/olympus-studio/src/studio-events.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/studio-events.js)
+- [`projects/olympus-studio/src/style.css`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/style.css)
+- [`projects/olympus-studio/src/v03-migration.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/v03-migration.js)
+- [`projects/olympus-studio/src/video-duration.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/video-duration.js)
+- [`projects/olympus-studio/src/xr-adapter.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/xr-adapter.js)
+- [`projects/olympus-studio/tests/alpha-launch.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/alpha-launch.test.mjs)
+- [`projects/olympus-studio/tests/alpha_package_smoke.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/alpha_package_smoke.py)
+- [`projects/olympus-studio/tests/browser_av_fixture.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_av_fixture.py)
+- [`projects/olympus-studio/tests/browser_comfy_import_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_comfy_import_e2e.py)
+- [`projects/olympus-studio/tests/browser_edit_export_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_edit_export_e2e.py)
+- [`projects/olympus-studio/tests/browser_edit_manifest_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_edit_manifest_e2e.py)
+- [`projects/olympus-studio/tests/browser_edit_png_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_edit_png_e2e.py)
+- [`projects/olympus-studio/tests/browser_edit_separate_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_edit_separate_e2e.py)
+- [`projects/olympus-studio/tests/browser_indexeddb_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_indexeddb_e2e.py)
+- [`projects/olympus-studio/tests/browser_media_smoke.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_media_smoke.py)
+- [`projects/olympus-studio/tests/browser_recorder_error_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_recorder_error_e2e.py)
+- [`projects/olympus-studio/tests/browser_xr_event_e2e.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/browser_xr_event_e2e.py)
+- [`projects/olympus-studio/tests/check-av.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/check-av.test.mjs)
+- [`projects/olympus-studio/tests/comfy-output-http.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/comfy-output-http.test.mjs)
+- [`projects/olympus-studio/tests/comfy-output.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/comfy-output.test.mjs)
+- [`projects/olympus-studio/tests/control-integrations.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/control-integrations.test.mjs)
+- [`projects/olympus-studio/tests/edit-audio.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-audio.test.mjs)
+- [`projects/olympus-studio/tests/edit-canvas-capture.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-canvas-capture.test.mjs)
+- [`projects/olympus-studio/tests/edit-export-async-guards.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-export-async-guards.test.mjs)
+- [`projects/olympus-studio/tests/edit-export-preparation.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-export-preparation.test.mjs)
+- [`projects/olympus-studio/tests/edit-ffmpeg-guide-contract.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-ffmpeg-guide-contract.test.mjs)
+- [`projects/olympus-studio/tests/edit-ffmpeg-plan-integration.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-ffmpeg-plan-integration.test.mjs)
+- [`projects/olympus-studio/tests/edit-ffmpeg-plan.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-ffmpeg-plan.test.mjs)
+- [`projects/olympus-studio/tests/edit-ffmpeg-silent-real.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-ffmpeg-silent-real.test.mjs)
+- [`projects/olympus-studio/tests/edit-frame-plan.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-frame-plan.test.mjs)
+- [`projects/olympus-studio/tests/edit-frame-renderer.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-frame-renderer.test.mjs)
+- [`projects/olympus-studio/tests/edit-history.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-history.test.mjs)
+- [`projects/olympus-studio/tests/edit-interchange-assets.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-interchange-assets.test.mjs)
+- [`projects/olympus-studio/tests/edit-interchange-ui.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-interchange-ui.test.mjs)
+- [`projects/olympus-studio/tests/edit-interchange.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-interchange.test.mjs)
+- [`projects/olympus-studio/tests/edit-png-ui.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/edit-png-ui.test.mjs)
+- [`projects/olympus-studio/tests/editor-export.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/editor-export.test.mjs)
+- [`projects/olympus-studio/tests/ffmpeg_mux_fallback_test.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/ffmpeg_mux_fallback_test.py)
+- [`projects/olympus-studio/tests/integration-registry.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/integration-registry.test.mjs)
+- [`projects/olympus-studio/tests/media-store.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/media-store.test.mjs)
+- [`projects/olympus-studio/tests/meeting-utils.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/meeting-utils.test.mjs)
+- [`projects/olympus-studio/tests/obs-client.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/obs-client.test.mjs)
+- [`projects/olympus-studio/tests/png-directory-sink.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/png-directory-sink.test.mjs)
+- [`projects/olympus-studio/tests/portable-snapshot-order.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/tests/portable-snapshot-order.test.mjs)
+
+### feat/olympus-fleet-247-20261113
+
+SHA: `8a9eed8aff95452db42d744a42a10fd64ed5c6b3` ; fichiers 1857 ; ajoutés 51 ; modifiés 0 ; supprimés 0 vs `monorepo/main`. Changements ciblés : 51 ajouts et 0 modifications.
+
+Répertoires touchés : `projects/olympus-studio` (50), `.github` (1).
+
+Chemins utiles repérés (échantillon) :
+- [`.github/workflows/olympus-studio-ci.yml`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/.github/workflows/olympus-studio-ci.yml)
+- [`projects/olympus-studio/.gitignore`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/.gitignore)
+- [`projects/olympus-studio/LANCER_MOBILE.bat`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/LANCER_MOBILE.bat)
+- [`projects/olympus-studio/LANCER_OLYMPUS.bat`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/LANCER_OLYMPUS.bat)
+- [`projects/olympus-studio/README.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/README.md)
+- [`projects/olympus-studio/docs/ARCHITECTURE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/ARCHITECTURE.md)
+- [`projects/olympus-studio/docs/AUTONOMOUS_BACKLOG.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/AUTONOMOUS_BACKLOG.md)
+- [`projects/olympus-studio/docs/CONTRACTS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/CONTRACTS.md)
+- [`projects/olympus-studio/docs/EDIT_AUDIO.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/EDIT_AUDIO.md)
+- [`projects/olympus-studio/docs/EDIT_TRIM.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/EDIT_TRIM.md)
+- [`projects/olympus-studio/docs/FLEET_247.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/FLEET_247.md)
+- [`projects/olympus-studio/docs/HANDOFF.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/HANDOFF.md)
+- [`projects/olympus-studio/docs/MOBILE_ACCESS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/MOBILE_ACCESS.md)
+- [`projects/olympus-studio/docs/NEEDS_USER.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/NEEDS_USER.md)
+- [`projects/olympus-studio/docs/OBS_REMOTE.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/OBS_REMOTE.md)
+- [`projects/olympus-studio/docs/ROADMAP.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/ROADMAP.md)
+- [`projects/olympus-studio/docs/SESSION_PLAN.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/SESSION_PLAN.md)
+- [`projects/olympus-studio/docs/STATUS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/STATUS.md)
+- [`projects/olympus-studio/docs/WORK_ESTIMATES.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/docs/WORK_ESTIMATES.md)
+- [`projects/olympus-studio/index.html`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/index.html)
+- [`projects/olympus-studio/package.json`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/package.json)
+- [`projects/olympus-studio/research/COMPARATIF.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/research/COMPARATIF.md)
+- [`projects/olympus-studio/research/OUTILS_ET_SKILLS.md`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/research/OUTILS_ET_SKILLS.md)
+- [`projects/olympus-studio/scripts/mobile-preview.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/scripts/mobile-preview.mjs)
+- [`projects/olympus-studio/scripts/shared-camera-relay.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/scripts/shared-camera-relay.mjs)
+- [`projects/olympus-studio/server.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/server.mjs)
+- [`projects/olympus-studio/src/app.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/app.js)
+- [`projects/olympus-studio/src/camera-pool.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/camera-pool.js)
+- [`projects/olympus-studio/src/edit-audio.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/edit-audio.js)
+- [`projects/olympus-studio/src/media-store.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/media-store.js)
+- [`projects/olympus-studio/src/meeting-utils.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/meeting-utils.js)
+- [`projects/olympus-studio/src/obs-client.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/obs-client.js)
+- [`projects/olympus-studio/src/obs-panel.css`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/obs-panel.css)
+- [`projects/olympus-studio/src/obs-panel.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/obs-panel.js)
+- [`projects/olympus-studio/src/shared-camera.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/shared-camera.js)
+- [`projects/olympus-studio/src/storyboard.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/storyboard.js)
+- [`projects/olympus-studio/src/style.css`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/style.css)
+- [`projects/olympus-studio/src/v03-migration.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/v03-migration.js)
+- [`projects/olympus-studio/src/video-duration.js`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/src/video-duration.js)
+- [`projects/olympus-studio/tests/browser_media_smoke.py`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/browser_media_smoke.py)
+- [`projects/olympus-studio/tests/camera-pool.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/camera-pool.test.mjs)
+- [`projects/olympus-studio/tests/edit-audio.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/edit-audio.test.mjs)
+- [`projects/olympus-studio/tests/media-store.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/media-store.test.mjs)
+- [`projects/olympus-studio/tests/meeting-utils.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/meeting-utils.test.mjs)
+- [`projects/olympus-studio/tests/mobile-preview.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/mobile-preview.test.mjs)
+- [`projects/olympus-studio/tests/obs-client.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/obs-client.test.mjs)
+- [`projects/olympus-studio/tests/shared-camera.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/shared-camera.test.mjs)
+- [`projects/olympus-studio/tests/smoke.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/smoke.test.mjs)
+- [`projects/olympus-studio/tests/storyboard.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/storyboard.test.mjs)
+- [`projects/olympus-studio/tests/v03-migration.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/v03-migration.test.mjs)
+- [`projects/olympus-studio/tests/video-duration.test.mjs`](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-fleet-247-20261113/projects/olympus-studio/tests/video-duration.test.mjs)
+
+### fix/hermes-autonomy-rescue-20261114
+
+SHA: `c1a164b16c12ed31ad3bd361e725b3b96dd85ad0` ; fichiers 1811 ; ajoutés 5 ; modifiés 0 ; supprimés 0 vs `monorepo/main`. Changements ciblés : 5 ajouts et 0 modifications.
+
+Répertoires touchés : `ops` (5).
+
+Chemins utiles repérés (échantillon) :
+- [`ops/hermes-continuity/AGENTS.md`](https://github.com/Sathancabrol/monorepo/blob/fix/hermes-autonomy-rescue-20261114/ops/hermes-continuity/AGENTS.md)
+- [`ops/hermes-continuity/DIAGNOSTIC_POWERSHELL.ps1`](https://github.com/Sathancabrol/monorepo/blob/fix/hermes-autonomy-rescue-20261114/ops/hermes-continuity/DIAGNOSTIC_POWERSHELL.ps1)
+- [`ops/hermes-continuity/INVENTORY_MODELS.md`](https://github.com/Sathancabrol/monorepo/blob/fix/hermes-autonomy-rescue-20261114/ops/hermes-continuity/INVENTORY_MODELS.md)
+- [`ops/hermes-continuity/README.md`](https://github.com/Sathancabrol/monorepo/blob/fix/hermes-autonomy-rescue-20261114/ops/hermes-continuity/README.md)
+- [`ops/hermes-continuity/STATE.md`](https://github.com/Sathancabrol/monorepo/blob/fix/hermes-autonomy-rescue-20261114/ops/hermes-continuity/STATE.md)
+
+### feat/chronos-fleet-free-fallback-20261113
+
+SHA: `b2333fc46696ec1ee3a583dd71cbb9dcc2c684ef` ; fichiers 1812 ; ajoutés 6 ; modifiés 0 ; supprimés 0 vs `monorepo/main`. Changements ciblés : 6 ajouts et 0 modifications.
+
+Répertoires touchés : `scripts` (6).
+
+Chemins utiles repérés (échantillon) :
+- [`scripts/chronos-fleet/README.md`](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/README.md)
+- [`scripts/chronos-fleet/diagnostic.ps1`](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/diagnostic.ps1)
+- [`scripts/chronos-fleet/fleet.json`](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/fleet.json)
+- [`scripts/chronos-fleet/fleet_router.py`](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/fleet_router.py)
+- [`scripts/chronos-fleet/termux-serve.sh`](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/termux-serve.sh)
+- [`scripts/chronos-fleet/test_fleet_router.py`](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/test_fleet_router.py)
+
+### arena/01a08385-monorepo
+
+SHA: `058cdd67dccd32cf5e5f5624af8ce43099ecdb7c` ; fichiers 1666 ; ajoutés 87 ; modifiés 6 ; supprimés 227 vs `monorepo/main`. Changements ciblés : 86 ajouts et 0 modifications.
+
+Répertoires touchés : `nexus_os` (85), `app` (2), `docs` (1), `requirements-dev.txt` (1), `.gitignore` (1), `MANIFEST.json` (1), `README.md` (1), `data` (1).
+
+Chemins utiles repérés (échantillon) :
+- [`docs/CAPACITES-2026-10-07.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/docs/CAPACITES-2026-10-07.md)
+- [`nexus_os/README.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/README.md)
+- [`nexus_os/__init__.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/__init__.py)
+- [`nexus_os/__main__.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/__main__.py)
+- [`nexus_os/agents.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents.py)
+- [`nexus_os/agents/analyst.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/analyst.json)
+- [`nexus_os/agents/architect.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/architect.json)
+- [`nexus_os/agents/archivist.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/archivist.json)
+- [`nexus_os/agents/builder.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/builder.json)
+- [`nexus_os/agents/coach.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/coach.json)
+- [`nexus_os/agents/coder.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/coder.json)
+- [`nexus_os/agents/designer.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/designer.json)
+- [`nexus_os/agents/devops.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/devops.json)
+- [`nexus_os/agents/geo.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/geo.json)
+- [`nexus_os/agents/jurist.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/jurist.json)
+- [`nexus_os/agents/orchestrator.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/orchestrator.json)
+- [`nexus_os/agents/osint.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/osint.json)
+- [`nexus_os/agents/pilot.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/pilot.json)
+- [`nexus_os/agents/pm.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/pm.json)
+- [`nexus_os/agents/promptsmith.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/promptsmith.json)
+- [`nexus_os/agents/qa.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/qa.json)
+- [`nexus_os/agents/researcher.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/researcher.json)
+- [`nexus_os/agents/reviewer.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/reviewer.json)
+- [`nexus_os/agents/teacher.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/teacher.json)
+- [`nexus_os/agents/translator.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/translator.json)
+- [`nexus_os/agents/videomaker.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/videomaker.json)
+- [`nexus_os/agents/writer.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/agents/writer.json)
+- [`nexus_os/app.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/app.py)
+- [`nexus_os/config.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/config.py)
+- [`nexus_os/context.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/context.py)
+- [`nexus_os/creator.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/creator.py)
+- [`nexus_os/db.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/db.py)
+- [`nexus_os/evals.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/evals.py)
+- [`nexus_os/harness.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/harness.py)
+- [`nexus_os/instincts.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/instincts.py)
+- [`nexus_os/llm.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/llm.py)
+- [`nexus_os/mcp.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/mcp.py)
+- [`nexus_os/mcp_demo.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/mcp_demo.py)
+- [`nexus_os/memory.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/memory.py)
+- [`nexus_os/plugins.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/plugins.py)
+- [`nexus_os/providers.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/providers.py)
+- [`nexus_os/runtime.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/runtime.py)
+- [`nexus_os/skills.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills.py)
+- [`nexus_os/skills/adhd-output/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/adhd-output/SKILL.md)
+- [`nexus_os/skills/agent-design/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/agent-design/SKILL.md)
+- [`nexus_os/skills/agent-reach/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/agent-reach/SKILL.md)
+- [`nexus_os/skills/browser-automation/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/browser-automation/SKILL.md)
+- [`nexus_os/skills/code-implementation/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/code-implementation/SKILL.md)
+- [`nexus_os/skills/code-review/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/code-review/SKILL.md)
+- [`nexus_os/skills/context-compression/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/context-compression/SKILL.md)
+- [`nexus_os/skills/data-analysis/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/data-analysis/SKILL.md)
+- [`nexus_os/skills/design-impeccable/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/design-impeccable/SKILL.md)
+- [`nexus_os/skills/devops-deploy/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/devops-deploy/SKILL.md)
+- [`nexus_os/skills/diagram-design/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/diagram-design/SKILL.md)
+- [`nexus_os/skills/geospatial-analysis/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/geospatial-analysis/SKILL.md)
+- [`nexus_os/skills/html-composition/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/html-composition/SKILL.md)
+- [`nexus_os/skills/legal-clauses/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/legal-clauses/SKILL.md)
+- [`nexus_os/skills/marketing-copy/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/marketing-copy/SKILL.md)
+- [`nexus_os/skills/mcp-integration/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/mcp-integration/SKILL.md)
+- [`nexus_os/skills/memory-and-improve/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/memory-and-improve/SKILL.md)
+- [`nexus_os/skills/osint-recon/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/osint-recon/SKILL.md)
+- [`nexus_os/skills/pedagogy/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/pedagogy/SKILL.md)
+- [`nexus_os/skills/plugin-authoring/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/plugin-authoring/SKILL.md)
+- [`nexus_os/skills/prompt-engineering/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/prompt-engineering/SKILL.md)
+- [`nexus_os/skills/qa-e2e/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/qa-e2e/SKILL.md)
+- [`nexus_os/skills/research-first/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/research-first/SKILL.md)
+- [`nexus_os/skills/security-review/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/security-review/SKILL.md)
+- [`nexus_os/skills/seo-content/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/seo-content/SKILL.md)
+- [`nexus_os/skills/test-and-verify/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/test-and-verify/SKILL.md)
+- [`nexus_os/skills/translation/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/translation/SKILL.md)
+- [`nexus_os/skills/ux-heuristics/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/ux-heuristics/SKILL.md)
+- [`nexus_os/skills/vectorless-rag/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/vectorless-rag/SKILL.md)
+- [`nexus_os/skills/video-storyboard/SKILL.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/skills/video-storyboard/SKILL.md)
+- [`nexus_os/static/os.css`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/static/os.css)
+- [`nexus_os/static/os.js`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/static/os.js)
+- [`nexus_os/tasks.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tasks.py)
+- [`nexus_os/templates/os.html`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/templates/os.html)
+- [`nexus_os/tests/conftest.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/conftest.py)
+- [`nexus_os/tests/test_app.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_app.py)
+- [`nexus_os/tests/test_core.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_core.py)
+- [`nexus_os/tests/test_extensions.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_extensions.py)
+- [`nexus_os/tests/test_integration_monorepo.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_integration_monorepo.py)
+- [`nexus_os/tests/test_mcp.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_mcp.py)
+- [`nexus_os/tests/test_options.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_options.py)
+- [`nexus_os/tests/test_runtime.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tests/test_runtime.py)
+- [`nexus_os/tools.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08385-monorepo/nexus_os/tools.py)
+
+### feat/final-interface-skeleton-2026-10-07
+
+SHA: `bf0c264c4c786befe5c7debd050c34f119e8b2d0` ; fichiers 1810 ; ajoutés 5 ; modifiés 2 ; supprimés 1 vs `monorepo/main`. Changements ciblés : 1 ajouts et 0 modifications.
+
+Répertoires touchés : `app` (5), `data` (1), `docs` (1).
+
+Chemins utiles repérés (échantillon) :
+- [`docs/AUDIT-INTEGRATION-INTERFACE-FINALE-2026-10-07.md`](https://github.com/Sathancabrol/monorepo/blob/feat/final-interface-skeleton-2026-10-07/docs/AUDIT-INTEGRATION-INTERFACE-FINALE-2026-10-07.md)
+
+### arena/01a08203-monorepo
+
+SHA: `73fb7bb6db4b3b8cc554556437f983bc8adaedf7` ; fichiers 1598 ; ajoutés 19 ; modifiés 3 ; supprimés 227 vs `monorepo/main`. Changements ciblés : 19 ajouts et 3 modifications.
+
+Répertoires touchés : `projects/frontignan` (22).
+
+Chemins utiles repérés (échantillon) :
+- [`projects/frontignan/atlas/css/atlas.css`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/atlas/css/atlas.css)
+- [`projects/frontignan/atlas/data/atlas.json`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/atlas/data/atlas.json)
+- [`projects/frontignan/atlas/data/communes-thau.csv`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/atlas/data/communes-thau.csv)
+- [`projects/frontignan/atlas/index.html`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/atlas/index.html)
+- [`projects/frontignan/atlas/js/atlas.js`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/atlas/js/atlas.js)
+- [`projects/frontignan/atlas/js/charts.js`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/atlas/js/charts.js)
+- [`projects/frontignan/scripts/atlas_data.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/scripts/atlas_data.py)
+- [`projects/frontignan/scripts/atlas_graph.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/scripts/atlas_graph.py)
+- [`projects/frontignan/scripts/build_atlas.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/scripts/build_atlas.py)
+- [`projects/frontignan/README.md`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/README.md)
+- [`projects/frontignan/index.html`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/index.html)
+- [`projects/frontignan/scripts/make_deck.py`](https://github.com/Sathancabrol/monorepo/blob/arena/01a08203-monorepo/projects/frontignan/scripts/make_deck.py)
+
+
+[Retour au hub](01-HUB-SUIVI-AGENTS.md).
