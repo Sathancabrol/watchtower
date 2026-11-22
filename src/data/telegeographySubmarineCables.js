@@ -209,7 +209,14 @@ export function createCableOverlayPublisher({
  * real `MAP_STACKS` so the omission is caught loudly.
  */
 const CABLE_GLOBE_STACK_IDS = Object.freeze(
-  new Set(['bing-aerial', 'bing-labels', 'esri-imagery', 'osm']),
+  new Set([
+    'bing-aerial', 'bing-labels', 'esri-imagery', 'osm',
+    // WATCHTOWER — fonds raster affichés sur le globe : les trois basemaps
+    // ajoutés doivent classer les lignes contre le terrain, sinon le test
+    // « every live basemap is reachable » les signale (et les câbles
+    // disparaîtraient sous eux).
+    'ign-ortho', 'ign-plan', 'opentopo',
+  ]),
 );
 
 /**

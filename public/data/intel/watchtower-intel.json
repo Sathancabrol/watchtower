@@ -1,0 +1,5293 @@
+{
+ "contrat": "watchtower.intel",
+ "version": "1.0.0",
+ "genere_le": "2026-10-07",
+ "provenance": {
+  "dossier": {
+   "rapport": "rapport-frontignan-analyse-territoriale.md",
+   "vision": "vision-frontignan-2026-2040.md",
+   "empreinte": "aaeeee00ab994e4e",
+   "document": "Rapport d’analyse territoriale multimodal — Frontignan la Peyrade (34110, Hérault, Occitanie)",
+   "date": "2026-09-08",
+   "methode": "Sources croisées et datées ; marqueurs ✅ engagé / 📅 annoncé / 🔮 tendance / ⚠️ incertain ; estimations propres distinguées des prévisions officielles.",
+   "avertissement": "Les jugements stratégiques (SWOT, recommandations) sont ceux de l’auteur du rapport ; la base les cite, elle ne les valide pas."
+  },
+  "atlas": {
+   "titre": "Atlas interactif — Frontignan la Peyrade",
+   "sousTitre": "Acteurs, données et futurs du bassin de Thau (2026 → 2040)",
+   "genereLe": "2026-09-08 17:46 UTC",
+   "methode": "Données INSEE (RP2023, Filosofi 2023, Flores 2024, état civil 2025) recalculées ici ; documents budgétaires et délibérations ; presse locale datée ; estimations d'analyste explicitement signalées.",
+   "echelles": [
+    "Frontignan",
+    "La ville",
+    "L'agglo de Thau",
+    "Les environs",
+    "La France"
+   ],
+   "atlas": "atlas.json",
+   "communes": "communes-thau.csv",
+   "empreinte": "64a26d1b09b02135",
+   "peuplementTotal": 131216,
+   "avertissement": "Les faits de l’atlas sont repris tels quels, avec leurs sources quand elles existent. Les estimations d’analyste y sont signalées comme telles par l’atlas ; elles ne sont pas des données officielles."
+  },
+  "veille": "Registre des sources publiques — voir veilleOfficielle.js"
+ },
+ "territoires": {
+  "commune": {
+   "nom": "Frontignan",
+   "pop": 24136,
+   "part_agglo": 18.39,
+   "surf_km2": 40.01,
+   "dens": 760.9,
+   "tvam": 1,
+   "sn": -0.1,
+   "sm": 1.1,
+   "nat": 7.2,
+   "mort": 11.3,
+   "nvm": 24580,
+   "pauv": 17,
+   "tcho": 14,
+   "tact": 75.3,
+   "emp": 6556,
+   "emp_100hab": 27.2,
+   "etab": 671,
+   "etab_1000hab": 27.8,
+   "rs": 20.6,
+   "vac": 2.9,
+   "prop": 61.6,
+   "logts_men": 1.3,
+   "men": 11183,
+   "code": "34108",
+   "rangPopulation": 2
+  },
+  "agglo": {
+   "nom": "Sète Agglopôle Méditerranée",
+   "communes": 14,
+   "population": 131216
+  },
+  "chemin": [
+   {
+    "niveau": 0,
+    "nom": "FRANCE",
+    "cle": "france",
+    "sait": "8 sources nationales listées"
+   },
+   {
+    "niveau": 1,
+    "nom": "OCCITANIE",
+    "cle": "occitanie",
+    "sait": "6 nœuds d’environnement régional et littoral"
+   },
+   {
+    "niveau": 2,
+    "nom": "HÉRAULT",
+    "cle": "herault",
+    "sait": "7ᵉ ville de l’Hérault, risques industriels et littoraux documentés"
+   },
+   {
+    "niveau": 3,
+    "nom": "THAU",
+    "cle": "thau",
+    "sait": "14 communes · 8 nœuds à l’échelle de l’agglo"
+   },
+   {
+    "niveau": 4,
+    "nom": "FRONTIGNAN",
+    "cle": "frontignan",
+    "sait": "24 136 hab. · 78 nœuds connus"
+   }
+  ]
+ },
+ "entites": {
+  "lieux": [
+   {
+    "id": "commune:34301",
+    "type": "commune",
+    "nom": "Sète",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 45337,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34108",
+    "type": "commune",
+    "nom": "Frontignan",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 24136,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34157",
+    "type": "commune",
+    "nom": "Mèze",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 12669,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34150",
+    "type": "commune",
+    "nom": "Marseillan",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 8414,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34023",
+    "type": "commune",
+    "nom": "Balaruc-les-Bains",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 7139,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34213",
+    "type": "commune",
+    "nom": "Poussan",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 6797,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34113",
+    "type": "commune",
+    "nom": "Gigean",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 6639,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34341",
+    "type": "commune",
+    "nom": "Villeveyrac",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 3972,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34333",
+    "type": "commune",
+    "nom": "Vic-la-Gardiole",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 3428,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34159",
+    "type": "commune",
+    "nom": "Mireval",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 3301,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34165",
+    "type": "commune",
+    "nom": "Montbazin",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 2877,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34024",
+    "type": "commune",
+    "nom": "Balaruc-le-Vieux",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 2737,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34143",
+    "type": "commune",
+    "nom": "Loupian",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 2169,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "commune:34039",
+    "type": "commune",
+    "nom": "Bouzigues",
+    "niveau": "commune",
+    "parent": "epci:200027167",
+    "population": 1601,
+    "sources": [
+     {
+      "libelle": "INSEE — populations légales 2023 (recalcul agglo)",
+      "url": "atlas.json"
+     }
+    ]
+   },
+   {
+    "id": "atlas:frontignan",
+    "type": "territoire",
+    "nom": "Frontignan la Peyrade",
+    "niveau": "Frontignan",
+    "parent": null,
+    "population": null,
+    "texte": "Ville littorale de 24 136 habitants (2023) entre Sète (7 km) et Montpellier (21 km), au pied de la Gardiole et entre étangs, canal et lido. 2ᵉ commune et siège de Sète Agglopôle Méditerranée, elle entame en 2026 le plus grand cycle de transformation urbaine depuis les années 1970 : 11 ha de friche dépolluée restitués, une gare nouvelle actée, un label Action cœur de Ville et la présidence de l'agglo.",
+    "faits": [
+     {
+      "cle": "Population 2023",
+      "valeur": "24 136 hab."
+     },
+     {
+      "cle": "Densité",
+      "valeur": "760,9 hab./km²"
+     },
+     {
+      "cle": "Superficie",
+      "valeur": "40,0 km²"
+     },
+     {
+      "cle": "Niveau de vie médian",
+      "valeur": "24 580 €/UC"
+     },
+     {
+      "cle": "Taux de pauvreté",
+      "valeur": "17,0 %"
+     },
+     {
+      "cle": "Chômage 15-64 ans",
+      "valeur": "14,0 %"
+     },
+     {
+      "cle": "Emplois sur place",
+      "valeur": "6 556"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE — Comparateur de territoires",
+      "url": "https://www.insee.fr/fr/statistiques/1405599?geo=COM-34108",
+      "date": "27/08/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:identite",
+    "type": "ressource",
+    "nom": "Identité & mémoire",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Quatre couches de mémoire structurent l'image de la ville : le muscat (AOP 1936, 90 ans en 2026), le sel (salins fermés en 1968, devenus espace naturel de 149 ha), le pétrole (raffinerie Mobil fermée en 1986) et le roman noir (FIRN depuis 1998). Un capital symbolique riche mais éclaté, encore peu traduit en stratégie d'expérience.",
+    "faits": [
+     {
+      "cle": "AOP Muscat",
+      "valeur": "1936 — 1ʳᵉ appellation muscat de France"
+     },
+     {
+      "cle": "Salins",
+      "valeur": "149 ha, fermés en 1968"
+     },
+     {
+      "cle": "Raffinerie",
+      "valeur": "1904-1986, 11 ha restitués en 2026"
+     },
+     {
+      "cle": "FIRN",
+      "valeur": "29ᵉ édition en 2026"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Ville de Frontignan — dossier Muscat 90 ans",
+      "url": "https://www.frontignan.fr/flp-mag-51-le-dossier-muscat-90-ans-dappellation-celebres/",
+      "date": "06/07/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:demographie",
+    "type": "data",
+    "nom": "Démographie",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "La ville a retrouvé une croissance (+1,0 %/an entre 2017 et 2023) après dix ans de stagnation, mais elle vieillit : 25,3 % de 65 ans et plus, un solde naturel devenu négatif (−0,1 %/an) et 9,4 ‰ de natalité contre 10,5 ‰ de mortalité.",
+    "faits": [
+     {
+      "cle": "1968 → 2023",
+      "valeur": "11 141 → 24 136 hab."
+     },
+     {
+      "cle": "Variation 2017-2023",
+      "valeur": "+1,0 %/an"
+     },
+     {
+      "cle": "65 ans et +",
+      "valeur": "25,3 %"
+     },
+     {
+      "cle": "Moins de 15 ans",
+      "valeur": "14,8 %"
+     },
+     {
+      "cle": "Ménages",
+      "valeur": "11 183"
+     },
+     {
+      "cle": "Taille moyenne des ménages",
+      "valeur": "2,1"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE — RP2023",
+      "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+      "date": "27/08/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:ages",
+    "type": "data",
+    "nom": "Pyramide des âges",
+    "niveau": "La ville",
+    "parent": "atlas:demographie",
+    "population": null,
+    "texte": "En onze ans, la structure par âge bascule : les moins de 15 ans perdent 1,6 point, les 65-79 ans en gagnent 3,3 et les 80 ans et plus 1,7. Les 55 ans et plus représentent désormais 40,4 % de la population.",
+    "faits": [
+     {
+      "cle": "65-79 ans",
+      "valeur": "17,4 % (14,1 % en 2012)"
+     },
+     {
+      "cle": "80 ans et +",
+      "valeur": "7,9 %"
+     },
+     {
+      "cle": "Personnes seules 65-79 ans",
+      "valeur": "28,1 %"
+     },
+     {
+      "cle": "Familles monoparentales",
+      "valeur": "16,8 %"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE — RP2023",
+      "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+      "date": "27/08/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:revenus",
+    "type": "data",
+    "nom": "Revenus & pauvreté",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Le niveau de vie médian frontignanais (24 580 €) est proche de la moyenne du bassin (24 500 €) et de l'Hérault (24 280 €), mais reste 5,2 % sous la France métropolitaine (25 920 €). Le taux de pauvreté de 17 % est supérieur à la moyenne nationale (15,9 %) tout en étant nettement inférieur à Sète (26 %).",
+    "faits": [
+     {
+      "cle": "Niveau de vie médian",
+      "valeur": "24 580 €/UC"
+     },
+     {
+      "cle": "Écart à la France",
+      "valeur": "−1 340 € (−5,2 %)"
+     },
+     {
+      "cle": "Taux de pauvreté",
+      "valeur": "17,0 %"
+     },
+     {
+      "cle": "Rang dans l'agglo",
+      "valeur": "9ᵉ / 13 pour le niveau de vie"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE — Filosofi 2023",
+      "url": "https://www.insee.fr/fr/statistiques/1405599?geo=COM-34108",
+      "date": "27/08/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:emploi",
+    "type": "data",
+    "nom": "Emploi & navettes",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "6 556 emplois au lieu de travail pour 9 565 actifs occupés : la ville n'offre qu'un emploi pour 1,5 actif résident. 67 % des actifs travaillent hors de la commune, dont l'essentiel vers Sète et Montpellier, et 80 % s'y rendent en voiture.",
+    "faits": [
+     {
+      "cle": "Emplois au lieu de travail",
+      "valeur": "6 556"
+     },
+     {
+      "cle": "Taux de chômage 15-64",
+      "valeur": "14,0 %"
+     },
+     {
+      "cle": "Chômage des 15-24 ans",
+      "valeur": "28,9 %"
+     },
+     {
+      "cle": "Actifs travaillant hors commune",
+      "valeur": "67 %"
+     },
+     {
+      "cle": "Part voiture",
+      "valeur": "80 %"
+     },
+     {
+      "cle": "Part transports en commun",
+      "valeur": "7,1 %"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE — RP2023",
+      "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+      "date": "27/08/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:economie",
+    "type": "ressource",
+    "nom": "Tissu économique",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Économie résidentielle et publique (39,9 % des emplois en administration, enseignement, santé, action sociale) avec un socle industriel rare pour une ville littorale de cette taille (16,4 % des emplois), concentré sur la Z.A. de La Peyrade (15,4 ha, 55 entreprises).",
+    "faits": [
+     {
+      "cle": "Établissements actifs",
+      "valeur": "2 263"
+     },
+     {
+      "cle": "Postes salariés",
+      "valeur": "6 311"
+     },
+     {
+      "cle": "Sphère présentielle",
+      "valeur": "67 %"
+     },
+     {
+      "cle": "Établissements de 50 salariés et +",
+      "valeur": "18"
+     },
+     {
+      "cle": "Créations",
+      "valeur": "≈ 470/an"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE — Flores 2024",
+      "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+      "date": "27/08/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:budget",
+    "type": "data",
+    "nom": "Budget & finances",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Des comptes sains mais contraints : une fiscalité déjà élevée (1 011 €/hab. contre 793 € pour la strate) qui interdit de financer l'investissement par l'impôt, une épargne nette en reconstruction (1,4 M€ en 2025) et un investissement par habitant contenu (270 € contre 438 €).",
+    "faits": [
+     {
+      "cle": "Budget 2026 (BP+BS+reports)",
+      "valeur": "64,9 M€"
+     },
+     {
+      "cle": "Dette/hab. 2024",
+      "valeur": "995 € (strate : 986 €)"
+     },
+     {
+      "cle": "Capacité de désendettement",
+      "valeur": "7,5 ans (strate : 5,5)"
+     },
+     {
+      "cle": "Investissement/hab.",
+      "valeur": "270 € (strate : 438)"
+     },
+     {
+      "cle": "Épargne nette 2025",
+      "valeur": "≈ 1,4 M€"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Décomptes publics — comptes 2024",
+      "url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+      "date": "2025"
+     }
+    ]
+   },
+   {
+    "id": "atlas:gouvernance",
+    "type": "acteur",
+    "nom": "Gouvernance municipale",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Michel Arrouy (PS) est réélu dès le 1ᵉʳ tour le 15 mars 2026 avec 51,16 % et 27 sièges sur 35, en remportant les 19 bureaux de vote. Mais le RN atteint 35,87 % et l'abstention 38,1 % : une société clivée que tout dispositif participatif doit prendre au sérieux.",
+    "faits": [
+     {
+      "cle": "Maire",
+      "valeur": "Michel Arrouy (PS), 2ᵉ mandat"
+     },
+     {
+      "cle": "Majorité",
+      "valeur": "27 sièges / 35"
+     },
+     {
+      "cle": "Opposition",
+      "valeur": "RN 6 · DVD 2"
+     },
+     {
+      "cle": "Abstention",
+      "valeur": "38,1 %"
+     },
+     {
+      "cle": "Prochaine échéance",
+      "valeur": "municipales 2032"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Midi Libre — résultats 2026",
+      "url": "https://www.midilibre.fr/2026/03/15/resultats-des-municipales-2026-a-frontignan-le-maire-sortant-michel-arrouy-fait-le-grand-chelem-et-conserve-son-poste-13274171.php",
+      "date": "15/03/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:participation",
+    "type": "acteur",
+    "nom": "Démocratie participative",
+    "niveau": "La ville",
+    "parent": "atlas:gouvernance",
+    "population": null,
+    "texte": "La ville dispose déjà d'une infrastructure participative : Maison des projets et de la Citoyenneté (2021), six comités habitants (2022), budget participatif de 50 000 €/an, concertations réglementaires et « ateliers du territoire ». Elle est sous-outillée en méthodes de design.",
+    "faits": [
+     {
+      "cle": "Maison des projets",
+      "valeur": "ouverte en septembre 2021"
+     },
+     {
+      "cle": "Comités habitants",
+      "valeur": "6 (ex-11 conseils de quartier)"
+     },
+     {
+      "cle": "Budget participatif",
+      "valeur": "50 000 €/an"
+     },
+     {
+      "cle": "Contrat de ville",
+      "valeur": "Quartiers 2030 (2024-2030)"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Ville de Frontignan — concertation citoyenne",
+      "url": "https://www.frontignan.fr/la-concertation-citoyenne-est-lancee/",
+      "date": "28/09/2021"
+     }
+    ]
+   },
+   {
+    "id": "atlas:q-centre",
+    "type": "territoire",
+    "nom": "Frontignan-centre",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Le centre historique concentre l'ORU (≈ 15 M€ sur 10 ans), les commerces (vacance ≈ 4 %), le marché et le stationnement gratuit. Il est en travaux depuis 2023 et le restera jusqu'en 2029+, ce qui use commerçants et riverains.",
+    "faits": [
+     {
+      "cle": "Vacance commerciale",
+      "valeur": "≈ 4 % (moyenne strate ≈ 12 %)"
+     },
+     {
+      "cle": "Commerces",
+      "valeur": "≈ 180"
+     },
+     {
+      "cle": "ORU",
+      "valeur": "≈ 15 M€ / 10 ans"
+     },
+     {
+      "cle": "Label",
+      "valeur": "Action cœur de Ville (mars 2025)"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:q-peyrade",
+    "type": "territoire",
+    "nom": "La Peyrade",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Quartier nord de la ville, adossé au canal du Rhône à Sète et à la zone d'activité (15,4 ha, 55 entreprises). Il porte la mémoire industrielle, les deux sites Seveso seuil haut et la mobilisation habitante la plus vive (Mas de Chave).",
+    "faits": [
+     {
+      "cle": "Z.A. de La Peyrade",
+      "valeur": "15,4 ha · 55 entreprises"
+     },
+     {
+      "cle": "Hexis",
+      "valeur": "≈ 194 salariés"
+     },
+     {
+      "cle": "Sites Seveso seuil haut",
+      "valeur": "2 (GDH, SCORI) + PPRT"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:q-plage",
+    "type": "territoire",
+    "nom": "Frontignan-Plage",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "La station balnéaire concentre le port de plaisance, le lido de 7 km et l'essentiel des ≈ 3 000 résidences secondaires (20,6 % du parc). C'est aussi le secteur le plus exposé : le PPA de 2024 prévoit explicitement un « scénario de recomposition spatiale de Frontignan-Plage ».",
+    "faits": [
+     {
+      "cle": "Lido",
+      "valeur": "7 km (canal de Sète → Aresquiers)"
+     },
+     {
+      "cle": "Résidences secondaires",
+      "valeur": "20,6 % du parc communal"
+     },
+     {
+      "cle": "Campings",
+      "valeur": "6 (508 emplacements)"
+     },
+     {
+      "cle": "Hôtels",
+      "valeur": "3 (130 chambres)"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:q-hierles",
+    "type": "territoire",
+    "nom": "Les Hierles",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Quartier retenu pour le centre aquatique intercommunal (marchés lancés au budget agglo 2026) et concerné par l'étude de renaturation de la friche Lafarge.",
+    "faits": [
+     {
+      "cle": "Centre aquatique",
+      "valeur": "études 2025 (100 k€), marchés 2026"
+     },
+     {
+      "cle": "Horizon",
+      "valeur": "2028-2030"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:q-qpv",
+    "type": "territoire",
+    "nom": "QPV Deux Pins & centre",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Quartiers prioritaires élargis en 2024 (Deux Pins, puis Calmette et Anatole-France au centre). Crédits d'intervention annuels et appels à projets — un levier de financement pour des dispositifs de design social.",
+    "faits": [
+     {
+      "cle": "Périmètre",
+      "valeur": "Deux Pins + centre (Calmette, Anatole-France)"
+     },
+     {
+      "cle": "Cadre",
+      "valeur": "Quartiers 2030, 2024-2030"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:friche-mobil",
+    "type": "projet",
+    "nom": "Friche ExxonMobil",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Le projet du siècle frontignanais : 11 hectares en cœur de ville, dépollués de 2022 à 2026 selon le principe pollueur-payeur et restitués à la Ville le 27 mai 2026. Les études d'usages rendent leurs résultats fin 2026 ; l'arrêté de récolement n'autorise pour l'instant qu'un usage industriel.",
+    "faits": [
+     {
+      "cle": "Surface",
+      "valeur": "11 ha"
+     },
+     {
+      "cle": "Restitution",
+      "valeur": "27 mai 2026"
+     },
+     {
+      "cle": "Dépollution",
+      "valeur": "2022-2026, pollueur-payeur"
+     },
+     {
+      "cle": "Ambition",
+      "valeur": "emplois non délocalisables + quartier de gare"
+     },
+     {
+      "cle": "Premiers usages",
+      "valeur": "≈ 2030"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Rapport d'analyse territoriale §7.2",
+      "url": "rapport-frontignan-analyse-territoriale.md",
+      "date": "08/09/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:pem-gare",
+    "type": "projet",
+    "nom": "Gare nouvelle & PEM",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Déplacement de la gare et création d'un pôle d'échanges multimodal sur la friche Mobil, chiffré à 25 M€ (Région 40 % plafonnés à 10 M€, agglo 20 %, État, Ville). Livré avant la bascule LGV de 2034, le PEM est conçu pour un monde de « trains du quotidien ».",
+    "faits": [
+     {
+      "cle": "Coût",
+      "valeur": "25 M€"
+     },
+     {
+      "cle": "Financement",
+      "valeur": "Région ≤ 10 M€ · agglo 20 % · État · Ville"
+     },
+     {
+      "cle": "Horizon",
+      "valeur": "2028-2029"
+     },
+     {
+      "cle": "Ligne",
+      "valeur": "Montpellier-Sète, axe TER le plus fréquenté d'Occitanie"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Vision 2026-2040 §1.3",
+      "url": "vision-frontignan-2026-2040.md",
+      "date": "08/09/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:oru",
+    "type": "projet",
+    "nom": "ORU Cœur de Ville",
+    "niveau": "La ville",
+    "parent": "atlas:q-centre",
+    "population": null,
+    "texte": "Opération de renouvellement urbain matricielle : requalification des espaces publics, habitat, commerces. Le label Action cœur de Ville obtenu en mars 2025 apporte ingénierie ANCT et accès renforcé aux dispositifs (Fonds vert, DSIL).",
+    "faits": [
+     {
+      "cle": "Enveloppe",
+      "valeur": "≈ 15 M€ / 10 ans"
+     },
+     {
+      "cle": "Label ACV",
+      "valeur": "mars 2025, convention juin 2025"
+     },
+     {
+      "cle": "Maîtrise d'œuvre espaces publics",
+      "valeur": "Humbert & David"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:port",
+    "type": "projet",
+    "nom": "Port de plaisance",
+    "niveau": "La ville",
+    "parent": "atlas:q-plage",
+    "population": null,
+    "texte": "Restructuration lancée à l'hiver 2025-2026 : avant-port et promenade Rive Est d'abord, puis bassins, pontons et espace des petits métiers de la pêche. Le port est excédentaire (607 505 € d'excédent d'exploitation 2025) : une ressource, pas une charge.",
+    "faits": [
+     {
+      "cle": "Budget",
+      "valeur": "≈ 4,5 M€"
+     },
+     {
+      "cle": "Capacité",
+      "valeur": "603 → 750 anneaux (plafond SCoT 880)"
+     },
+     {
+      "cle": "Excédent 2025",
+      "valeur": "607 505 €"
+     },
+     {
+      "cle": "Calendrier",
+      "valeur": "2026-2029"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:mas-de-chave",
+    "type": "projet",
+    "nom": "Mas de Chave",
+    "niveau": "La ville",
+    "parent": "atlas:q-peyrade",
+    "population": null,
+    "texte": "Seule zone AU « fermée » du PLU. Programme initial de 336 logements, revu à ≈ 400 puis « ramené à la baisse » après la reprise de concertation votée le 15 juillet 2026. L'enquête publique annoncée pour 2026 est fragilisée.",
+    "faits": [
+     {
+      "cle": "Programme",
+      "valeur": "≈ 400 logements + parc urbain > 2 ha"
+     },
+     {
+      "cle": "Statut",
+      "valeur": "déclaration de projet / DPMEC"
+     },
+     {
+      "cle": "Concertation",
+      "valeur": "reprise le 15 juillet 2026"
+     },
+     {
+      "cle": "Maîtrise d'œuvre",
+      "valeur": "Urban Projects"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:le-quai",
+    "type": "projet",
+    "nom": "Pôle culturel Le Quai",
+    "niveau": "La ville",
+    "parent": "atlas:q-centre",
+    "population": null,
+    "texte": "Reconversion des chais Botta en pôle culturel : cinéma de trois salles (2,6 M€ pour l'espace cinéma, exploité en DSP par un groupement incluant Véo Cinémas), librairie, école de cinéma. Livré avec ≈ 18 mois de retard.",
+    "faits": [
+     {
+      "cle": "Ouverture",
+      "valeur": "décembre 2025"
+     },
+     {
+      "cle": "Espace cinéma",
+      "valeur": "2,6 M€ · 2 108 m²"
+     },
+     {
+      "cle": "Salle Maison Mathieu",
+      "valeur": "≈ 150 places, 220 k€ au BP 2025"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:zae-barnier",
+    "type": "projet",
+    "nom": "ZAE du Barnier",
+    "niveau": "La ville",
+    "parent": "atlas:q-peyrade",
+    "population": null,
+    "texte": "Requalification de zone d'activité portée par la SPL Bassin de Thau : le levier d'emplois locaux le plus rapide du portefeuille de projets.",
+    "faits": [
+     {
+      "cle": "Budget",
+      "valeur": "2,7 M€"
+     },
+     {
+      "cle": "Maître d'ouvrage",
+      "valeur": "SPL Bassin de Thau"
+     },
+     {
+      "cle": "Livraison",
+      "valeur": "juin 2027"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:lido",
+    "type": "risque",
+    "nom": "Lido & trait de côte",
+    "niveau": "La ville",
+    "parent": "atlas:q-plage",
+    "population": null,
+    "texte": "Frontignan fait partie des 31 communes maritimes inscrites au décret « recul du trait de côte » (31 juillet 2023) : elle doit produire des cartes d'exposition à 30 et 100 ans, finançables jusqu'à 80 % par le Fonds vert. Les protections du lido sont explicitement considérées comme temporaires.",
+    "faits": [
+     {
+      "cle": "Linéaire",
+      "valeur": "7 km"
+     },
+     {
+      "cle": "Programme de défense",
+      "valeur": "≈ 13,5 M€ HT (estimation AVP 2012)"
+     },
+     {
+      "cle": "Cartes réglementaires",
+      "valeur": "30 et 100 ans, attendues 2026-2027"
+     },
+     {
+      "cle": "Fonds vert",
+      "valeur": "jusqu'à 80 %"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:submersion",
+    "type": "risque",
+    "nom": "Submersion marine",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Frontignan concentre ≈ 33 % des dommages estimés du bassin à aléa décennal (Q10 : 343,5 M€) et ≈ 26 % à aléa centennal (Q100 : 970,9 M€). L'A9 devient impraticable dès Q10 et 19 % du linéaire d'infrastructures est impacté. Le PPRI retient une PHE centennale de 2,00 m.",
+    "faits": [
+     {
+      "cle": "Part des dommages Q10",
+      "valeur": "≈ 33 %"
+     },
+     {
+      "cle": "Part des dommages Q100",
+      "valeur": "≈ 26 %"
+     },
+     {
+      "cle": "PHE de référence",
+      "valeur": "2,00 m"
+     },
+     {
+      "cle": "Événements",
+      "valeur": "nov. 2014, oct. 2019"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "SMBT — fiche risques du SCoT",
+      "url": "https://www.smbt.fr/storage/2020/04/3.1.9-ANNEXE-EIE-Fiche-Risques-SCOT-BASIN-DE-THAU-ARRET-15-10-24.pdf",
+      "date": "15/10/2024"
+     }
+    ]
+   },
+   {
+    "id": "atlas:canicule",
+    "type": "risque",
+    "nom": "Chaleur & sécheresse",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Les projections TRACC de Météo-France donnent +2,2 °C en 2050 pour l'Occitanie (+2,5 °C en été dans l'Hérault), une multiplication par ~6 des jours à plus de 35 °C, des nuits tropicales passant de 5 à 24 par an et un risque de feu multiplié par 2,5. Vigilances orange répétées durant l'été 2026.",
+    "faits": [
+     {
+      "cle": "2050",
+      "valeur": "+2,2 °C (Occitanie)"
+     },
+     {
+      "cle": "Jours > 35 °C",
+      "valeur": "1,3 → 7,7 / an"
+     },
+     {
+      "cle": "Nuits tropicales",
+      "valeur": "5 → 24 / an"
+     },
+     {
+      "cle": "Feux",
+      "valeur": "× 2,5"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Météo-France — TRACC Occitanie",
+      "url": "https://meteofrance.com/changement-climatique/quel-climat-futur-en-occitanie",
+      "date": "13/05/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:seveso",
+    "type": "risque",
+    "nom": "Risque industriel",
+    "niveau": "La ville",
+    "parent": "atlas:q-peyrade",
+    "population": null,
+    "texte": "GDH (dépôt d'hydrocarbures) et SCORI (traitement de déchets) imposent un plan de prévention des risques technologiques qui contraint l'urbanisme de La Peyrade — et pèse sur l'image de la ville.",
+    "faits": [
+     {
+      "cle": "Sites Seveso seuil haut",
+      "valeur": "2"
+     },
+     {
+      "cle": "Outil",
+      "valeur": "PPRT"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:sam",
+    "type": "territoire",
+    "nom": "Sète Agglopôle Méditerranée",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Née en 2017 de la fusion de Thau Agglo et de la CCNBT, la 2ᵉ agglomération de l'Hérault a son siège à Frontignan. Depuis mai 2025, elle est présidée par le Frontignanais Loïc Linares (réélu le 31 mars 2026) : un rééquilibrage historique face à la ville-centre sétoise.",
+    "faits": [
+     {
+      "cle": "Communes",
+      "valeur": "14"
+     },
+     {
+      "cle": "Population 2023",
+      "valeur": "131 216 hab."
+     },
+     {
+      "cle": "Superficie",
+      "valeur": "310 km²"
+     },
+     {
+      "cle": "Budget 2026",
+      "valeur": "242 M€ dont 68 M€ d'investissement"
+     },
+     {
+      "cle": "Dette fin 2025",
+      "valeur": "99,7 M€"
+     },
+     {
+      "cle": "Épargne brute",
+      "valeur": "18,4 %"
+     },
+     {
+      "cle": "Désendettement",
+      "valeur": "6,3 ans"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Sète Agglopôle — budget 2026",
+      "url": "https://www.agglopole.fr/le-budget-2026-de-l-agglopole-a-ete-vote/",
+      "date": "05/03/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:thau",
+    "type": "ressource",
+    "nom": "Lagune de Thau",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "La lagune est à la fois le capital naturel, économique et symbolique du bassin. Elle est aussi son point de fragilité : suspension sanitaire de 28 jours fin décembre 2025 (norovirus après fortes pluies), mortalités récurrentes, 120 M€ investis en dix ans dans l'assainissement.",
+    "faits": [
+     {
+      "cle": "Surface",
+      "valeur": "7 500 ha"
+     },
+     {
+      "cle": "Emplois de filière",
+      "valeur": "≈ 4 000 sur le bassin"
+     },
+     {
+      "cle": "Assainissement",
+      "valeur": "120 M€ en 10 ans"
+     },
+     {
+      "cle": "Plan 2026",
+      "valeur": "+2,1 M€ fonctionnement, +5,3 M€ investissement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:sete",
+    "type": "commune",
+    "nom": "Sète",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Ville-centre du bassin, port de commerce et de pêche, capitale culturelle (MIAM, di Rosa). Elle concentre 34,6 % de la population de l'agglo et 44,8 % de ses emplois, mais affiche le taux de pauvreté le plus élevé du bassin (26 %) et le niveau de vie le plus bas (22 740 €).",
+    "faits": [
+     {
+      "cle": "Population",
+      "valeur": "45 337 hab."
+     },
+     {
+      "cle": "Emplois",
+      "valeur": "18 025"
+     },
+     {
+      "cle": "Pauvreté",
+      "valeur": "26 %"
+     },
+     {
+      "cle": "Niveau de vie médian",
+      "valeur": "22 740 €"
+     },
+     {
+      "cle": "Densité",
+      "valeur": "1 872,7 hab./km²"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:communes-thau",
+    "type": "commune",
+    "nom": "Les 12 autres communes",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Le bassin est très hétérogène : densités de 107 à 1 873 hab./km², niveaux de vie de 22 740 à 29 610 €, taux de résidences secondaires de 1,7 % (Gigean) à 59,7 % (Marseillan). Les villages du nord (Poussan, Gigean, Montbazin, Villeveyrac) sont des communes de report résidentiel ; les rives de l'étang (Bouzigues, Loupian, Mèze) vivent de la conchyliculture.",
+    "faits": [
+     {
+      "cle": "Communes",
+      "valeur": "14 au total"
+     },
+     {
+      "cle": "Étendue des densités",
+      "valeur": "107 → 1 873 hab./km²"
+     },
+     {
+      "cle": "Étendue des niveaux de vie",
+      "valeur": "22 740 → 29 610 €"
+     },
+     {
+      "cle": "Croissance la plus forte",
+      "valeur": "Poussan +2,2 %/an"
+     },
+     {
+      "cle": "Seules communes en recul",
+      "valeur": "Bouzigues, Montbazin"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:scot",
+    "type": "politique",
+    "nom": "SCoT du bassin de Thau",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Porté par le SMBT, le SCoT révisé traduit localement le ZAN : accueil ramené à +12 000 / +16 400 habitants à l'horizon 2043-2045 (contre +40 500 à 2030 dans la version précédente), −54 % d'artificialisation, ≈ 1 000 logements/an, priorité au renouvellement urbain et aux friches.",
+    "faits": [
+     {
+      "cle": "Horizon",
+      "valeur": "2043-2045"
+     },
+     {
+      "cle": "Accueil démographique",
+      "valeur": "+12 000 à +16 400 hab."
+     },
+     {
+      "cle": "Artificialisation",
+      "valeur": "−54 % vs SCoT précédent"
+     },
+     {
+      "cle": "Production de logements",
+      "valeur": "≈ 1 000/an"
+     },
+     {
+      "cle": "Friches à remobiliser",
+      "valeur": "≈ 30 ha sur le bassin"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "SMBT — révision du SCoT",
+      "url": "https://www.smbt.fr/blog/2026/02/06/revision-du-scot-du-bassin-de-thau/",
+      "date": "06/02/2026"
+     }
+    ]
+   },
+   {
+    "id": "atlas:ppa",
+    "type": "politique",
+    "nom": "PPA « recomposition spatiale »",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Projet partenarial d'aménagement signé en mai 2024 entre l'agglo, l'État (Fonds vert), la Banque des Territoires, l'EPF Occitanie, la Région et le Département. Quatre axes : cartes du recul du trait de côte à 30/100 ans, plan-guide du triangle Sète-Balaruc-Frontignan, scénario de recomposition de Frontignan-Plage, association des habitants.",
+    "faits": [
+     {
+      "cle": "Signature",
+      "valeur": "mai 2024"
+     },
+     {
+      "cle": "Budget d'études",
+      "valeur": "700 k€ HT"
+     },
+     {
+      "cle": "Partenaires",
+      "valeur": "État, agglo, Banque des Territoires, EPF, Région, Département"
+     },
+     {
+      "cle": "Statut",
+      "valeur": "l'un des premiers PPA « trait de côte » de France"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "Dossier de presse PPA",
+      "url": "https://www.agglopole.fr/storage/2024/06/Dossier-de-Presse-du-Projet-Partenarial-dAmenagement.pdf",
+      "date": "2024"
+     }
+    ]
+   },
+   {
+    "id": "atlas:mobilites-agglo",
+    "type": "projet",
+    "nom": "Mobilités du bassin",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Phase 1 du TCSP RD2 et nouveau réseau bus en service le 5 janvier 2026 (ligne express électrique Sète-Frontignan). Les sections sur Frontignan, Balaruc-les-Bains et Balaruc-le-Vieux, estimées à ≈ 30 M€, sont attendues entre 2027 et 2030. PDU agglo 2020-2030 : ≈ 154 M€ programmés.",
+    "faits": [
+     {
+      "cle": "TCSP phase 1",
+      "valeur": "en service le 05/01/2026"
+     },
+     {
+      "cle": "Requalification RD2",
+      "valeur": "12 M€"
+     },
+     {
+      "cle": "Sections à venir",
+      "valeur": "≈ 30 M€"
+     },
+     {
+      "cle": "Bus électriques",
+      "valeur": "3 + 3 (1,65 M€ en 2026)"
+     },
+     {
+      "cle": "Réseau",
+      "valeur": "SAMobilité — Keolis, DSP 2022-2030"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:centre-aquatique",
+    "type": "projet",
+    "nom": "Centre aquatique intercommunal",
+    "niveau": "L'agglo de Thau",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Équipement intercommunal localisé à Frontignan : études en 2025 (100 k€), lancement des marchés au budget agglo 2026, horizon de mise en service 2028-2030. Coût public non encore publié.",
+    "faits": [
+     {
+      "cle": "Localisation",
+      "valeur": "Frontignan, quartier des Hierles"
+     },
+     {
+      "cle": "Études",
+      "valeur": "100 k€ en 2025"
+     },
+     {
+      "cle": "Horizon",
+      "valeur": "2028-2030"
+     },
+     {
+      "cle": "Coût",
+      "valeur": "non publié ❓"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:herault",
+    "type": "territoire",
+    "nom": "Hérault",
+    "niveau": "Les environs",
+    "parent": "atlas:sam",
+    "population": null,
+    "texte": "Département le plus dynamique du littoral occitan (+1,2 %/an), mais aussi l'un des plus pauvres (21 %). Il atteindrait 1 430 000 habitants en 2050 (+245 000), dont 60 % des gains captés par le Montpelliérain.",
+    "faits": [
+     {
+      "cle": "Population 2023",
+      "valeur": "1 230 289 hab."
+     },
+     {
+      "cle": "Croissance",
+      "valeur": "+1,2 %/an"
+     },
+     {
+      "cle": "Pauvreté",
+      "valeur": "21,0 %"
+     },
+     {
+      "cle": "Projection 2050",
+      "valeur": "1 430 000 hab."
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:montpellier",
+    "type": "territoire",
+    "nom": "Montpellier Méditerranée Métropole",
+    "niveau": "Les environs",
+    "parent": "atlas:herault",
+    "population": null,
+    "texte": "La métropole voisine croît quatre fois plus vite que la France et capterait 60 % des gains démographiques du département d'ici 2050. Elle est à la fois le marché d'emploi des navetteurs frontignanais, la source de pression foncière et le débouché culturel du territoire.",
+    "faits": [
+     {
+      "cle": "Population",
+      "valeur": "522 542 hab."
+     },
+     {
+      "cle": "Croissance",
+      "valeur": "+1,7 %/an"
+     },
+     {
+      "cle": "Emplois",
+      "valeur": "257 597"
+     },
+     {
+      "cle": "Distance",
+      "valeur": "21 km · ligne TER la plus fréquentée d'Occitanie"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:occitanie",
+    "type": "territoire",
+    "nom": "Occitanie",
+    "niveau": "Les environs",
+    "parent": "atlas:herault",
+    "population": null,
+    "texte": "Région parmi les plus attractives de France (+0,8 %/an, quasi exclusivement migratoire). D'ici 2050 : +640 000 habitants, +570 000 ménages, un besoin estimé à 29 000 logements/an et une bascule des personnes seules en tête des types de ménages dès 2035.",
+    "faits": [
+     {
+      "cle": "Population 2023",
+      "valeur": "6 124 653 hab."
+     },
+     {
+      "cle": "Croissance",
+      "valeur": "+0,8 %/an (dont +0,9 migratoire)"
+     },
+     {
+      "cle": "Horizon 2050",
+      "valeur": "+640 000 hab., +570 000 ménages"
+     },
+     {
+      "cle": "Besoin de logements",
+      "valeur": "29 000/an"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE Analyses Occitanie n°115",
+      "url": "https://www.insee.fr/fr/statistiques/8568012",
+      "date": "15/05/2025"
+     }
+    ]
+   },
+   {
+    "id": "atlas:thau-2050",
+    "type": "futur",
+    "nom": "Bassin de Thau 2050",
+    "niveau": "Les environs",
+    "parent": "atlas:occitanie",
+    "population": null,
+    "texte": "Le territoire « Étang de Thau » atteindrait seulement ≈ 127 000 habitants en 2050 selon l'INSEE, soit une quasi-stagnation. Autrement dit : la croissance frontignanaise récente se fait en captant des flux, pas en créant de la démographie — une position réversible.",
+    "faits": [
+     {
+      "cle": "Croissance projetée",
+      "valeur": "+0,05 %/an"
+     },
+     {
+      "cle": "Population 2050",
+      "valeur": "≈ 127 000 hab."
+     },
+     {
+      "cle": "Comparaison",
+      "valeur": "Hérault +0,8 %/an, Montpelliérain +60 % des gains"
+     }
+    ],
+    "sources": [
+     {
+      "libelle": "INSEE Analyses — 170 000 ménages de plus dans l'Hérault",
+      "url": "https://www.insee.fr/fr/statistiques/8283176",
+      "date": "14/11/2024"
+     }
+    ]
+   },
+   {
+    "id": "atlas:lgv",
+    "type": "projet",
+    "nom": "LGV Montpellier-Perpignan",
+    "niveau": "Les environs",
+    "parent": "atlas:occitanie",
+    "population": null,
+    "texte": "La ligne nouvelle rebat les cartes ferroviaires du littoral : à partir de 2034, Sète et Frontignan seront « orphelines de la plupart des TGV », la compensation devant venir des TER (SERM : amplitude 5 h-23 h, jusqu'à un train toutes les 10 minutes aux heures de pointe). Phase 2 : DUP ≈ 2030, service ≈ 2040.",
+    "faits": [
+     {
+      "cle": "Appel d'offres phase 1",
+      "valeur": "≈ 1,5 Md€, fin 2026"
+     },
+     {
+      "cle": "Travaux",
+      "valeur": "2029"
+     },
+     {
+      "cle": "Mise en service phase 1",
+      "valeur": "2034"
+     },
+     {
+      "cle": "Phase 2",
+      "valeur": "≈ 2040"
+     },
+     {
+      "cle": "Compensations LGV pour l'agglo",
+      "valeur": "10-15 M€"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:climat-2050",
+    "type": "risque",
+    "nom": "Climat littoral 2050",
+    "niveau": "Les environs",
+    "parent": "atlas:occitanie",
+    "population": null,
+    "texte": "Le littoral occitan est sous contrainte croissante mais à vitesse connue : c'est ce qui rend la planification possible. La mer monte de +24 cm en 2050 et de +62 à +81 cm en 2100, tandis que le PPRI retient déjà une PHE centennale de 2,00 m.",
+    "faits": [
+     {
+      "cle": "Mer 2050",
+      "valeur": "+24 cm"
+     },
+     {
+      "cle": "Mer 2100",
+      "valeur": "+62 à +81 cm"
+     },
+     {
+      "cle": "Été héraultais 2050",
+      "valeur": "+2,5 °C"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:france",
+    "type": "territoire",
+    "nom": "France",
+    "niveau": "La France",
+    "parent": "atlas:occitanie",
+    "population": null,
+    "texte": "Le dernier palier ne sert pas de décor : il fixe les règles (ZAN, trait de côte, loi 3DS), les guichets (ACV, Fonds vert, DSIL, FCTVA) et la contrainte budgétaire des collectivités. C'est là que se décide ce qu'une ville de 24 000 habitants peut financer.",
+    "faits": [
+     {
+      "cle": "Population métropolitaine",
+      "valeur": "66 165 815 hab."
+     },
+     {
+      "cle": "Croissance",
+      "valeur": "+0,4 %/an"
+     },
+     {
+      "cle": "Niveau de vie médian",
+      "valeur": "25 920 €"
+     },
+     {
+      "cle": "Pauvreté",
+      "valeur": "15,9 %"
+     },
+     {
+      "cle": "Chômage 15-64",
+      "valeur": "11,0 %"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:zan",
+    "type": "politique",
+    "nom": "ZAN & loi Climat",
+    "niveau": "La France",
+    "parent": "atlas:france",
+    "population": null,
+    "texte": "La loi Climat et résilience du 22 août 2021 impose de réduire de moitié la consommation d'espaces naturels, agricoles et forestiers entre 2021 et 2031, puis d'atteindre le zéro artificialisation nette en 2050. Frontignan, qui a déjà « consommé » ses friches, part avec une avance stratégique.",
+    "faits": [
+     {
+      "cle": "Loi",
+      "valeur": "22 août 2021"
+     },
+     {
+      "cle": "Décrets",
+      "valeur": "28 novembre 2023"
+     },
+     {
+      "cle": "Palier 2031",
+      "valeur": "−50 %"
+     },
+     {
+      "cle": "Cible",
+      "valeur": "ZAN 2050"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:trait-de-cote",
+    "type": "politique",
+    "nom": "Dispositif recul du trait de côte",
+    "niveau": "La France",
+    "parent": "atlas:france",
+    "population": null,
+    "texte": "Frontignan fait partie des communes maritimes tenues de cartographier leur exposition à 30 et 100 ans, aux côtés de Sète, Marseillan, Villeneuve-lès-Maguelone ou Mauguio. Ces cartes deviendront un front d'urbanisme — et un sujet politique majeur pour la station balnéaire.",
+    "faits": [
+     {
+      "cle": "Décret-liste",
+      "valeur": "31 juillet 2023"
+     },
+     {
+      "cle": "Horizons",
+      "valeur": "30 et 100 ans"
+     },
+     {
+      "cle": "Financement",
+      "valeur": "Fonds vert jusqu'à 80 %"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:acv",
+    "type": "politique",
+    "nom": "Action cœur de Ville",
+    "niveau": "La France",
+    "parent": "atlas:france",
+    "population": null,
+    "texte": "Programme national de revitalisation : ingénierie ANCT, accès facilité aux financements, phase 2 élargie aux entrées de ville et quartiers de gare. Frontignan est la 5ᵉ ville héraultaise labellisée ; plus de 200 M€ ont déjà été mobilisés par l'ACV dans le département.",
+    "faits": [
+     {
+      "cle": "Label",
+      "valeur": "mars 2025, convention juin 2025"
+     },
+     {
+      "cle": "Phase 2",
+      "valeur": "entrées de ville & quartiers de gare"
+     },
+     {
+      "cle": "Effet levier dans l'Hérault",
+      "valeur": "> 200 M€"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:finances-nat",
+    "type": "politique",
+    "nom": "Contraction des financements",
+    "niveau": "La France",
+    "parent": "atlas:france",
+    "population": null,
+    "texte": "L'ère de la rareté maîtrisée : le Fonds vert passe de 2,5 Md€ (2024) à 1,15 Md€ (2025) puis 834 M€ (2026), le taux de FCTVA baisse de 16,4 % à 14,85 %, les taux d'intérêt montent (+27,6 % de charge d'intérêts pour l'agglo en 2025). Les financements existent mais se gagnent dossier par dossier.",
+    "faits": [
+     {
+      "cle": "Fonds vert 2026",
+      "valeur": "834 M€ (−67 % en 2 ans)"
+     },
+     {
+      "cle": "FCTVA",
+      "valeur": "16,4 % → 14,85 %"
+     },
+     {
+      "cle": "Intérêts agglo 2025",
+      "valeur": "+27,6 %"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:focus-2030",
+    "type": "futur",
+    "nom": "Focus 2030",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "2030 est la première date où le mandat 2026-2032 sera jugé sur pièces : PEM livré et desservi, programmation de la friche validée et financée, +300 à +600 emplois locaux, qualité de l'eau de Thau en amélioration, trajectoire démographique tenue sans gentrification du centre.",
+    "faits": [
+     {
+      "cle": "Population 2030",
+      "valeur": "≈ 25 000 hab. (estimation)"
+     },
+     {
+      "cle": "Emplois visés",
+      "valeur": "+300 à +600"
+     },
+     {
+      "cle": "Jalons visibles",
+      "valeur": "PEM, centre aquatique, port, premiers usages de la friche"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:scenarios-2040",
+    "type": "futur",
+    "nom": "Trois scénarios 2040",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "S1 « Thau tranquille » : stagnation, friche sous-aménagée, ville-dortoir vieillissante. S2 « Couronne métropolitaine » : débordement montpelliérain, spéculation, gentrification. S3 « Pôle de la transition » ★ : friche + PEM + identité produisent +500 à +1 000 emplois. Les probabilités affichées sont une lecture d'analyste, pas une prévision.",
+    "faits": [
+     {
+      "cle": "S1",
+      "valeur": "24-25 000 hab., 65+ > 30 %"
+     },
+     {
+      "cle": "S2",
+      "valeur": "> 27 000 hab., 25-30 % de résidences secondaires"
+     },
+     {
+      "cle": "S3 ★",
+      "valeur": "≈ 26 000 hab., +500 à +1 000 emplois"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:trajectoire",
+    "type": "futur",
+    "nom": "Trajectoire 2026-2040",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Trois blocs : 2026-2030 « tout se joue maintenant » (friche, PEM, port, centre aquatique, SCoT/PLU), 2030-2034 « le temps des preuves » (municipales 2032, LGV 2034), 2034-2040 « la maturité » (recomposition de la plage, désaisonnalisation, services au vieillissement).",
+    "faits": [],
+    "sources": []
+   },
+   {
+    "id": "atlas:swot",
+    "type": "data",
+    "nom": "SWOT",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Forces : muscat, littoral, position bipolaire, poids intercommunal, finances maîtrisées, 11 ha dépollués, faible vacance commerciale, culture, équipe réélue. Faiblesses : chômage et pauvreté, vieillissement, dépendance automobile, risques majeurs, pression fiscale, offre hôtelière, image industrielle, fracture civique, offre de soins.",
+    "faits": [],
+    "sources": []
+   },
+   {
+    "id": "atlas:acteurs",
+    "type": "acteur",
+    "nom": "Cartographie des acteurs",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "Trois familles : institutionnels (co-construction obligatoire), acteurs économiques (alliances gagnant-gagnant) et société civile (écoute et preuve). Le point singulier de Frontignan est la superposition ville/agglo : les mêmes personnes décident aux deux échelles.",
+    "faits": [],
+    "sources": []
+   },
+   {
+    "id": "atlas:recos",
+    "type": "data",
+    "nom": "Recommandations design",
+    "niveau": "La ville",
+    "parent": "atlas:frontignan",
+    "population": null,
+    "texte": "R1 plateforme d'identité et signalétique · R2 concertation outillée friche & Mas de Chave · R3 design du pôle gare · R4 « bien vivre les chantiers » · R5 stratégie muscat 90→100 ans · R6 design du risque · R7 revitalisation commerciale · R8 écoconception des espaces publics · R9 montée en gamme de la plage · R10 observatoire du territoire.",
+    "faits": [],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-arrouy",
+    "type": "acteur",
+    "nom": "Michel Arrouy",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Maire (PS), réélu au 1ᵉʳ tour en 2026. Levier détenu : décision politique, agenda, budget. Posture recommandée : commanditaire — arbitre final.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "25"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Co-construire"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-linares",
+    "type": "acteur",
+    "nom": "Loïc Linares",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Président de Sète Agglopôle, élu frontignanais. Levier détenu : budget agglo 242 m€, compétences mobilités/eau/déchets. Posture recommandée : allié structurel — clé de l'échelle intercommunale.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Agglo"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "20"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Co-construire"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-adjoints",
+    "type": "acteur",
+    "nom": "Adjoints & conseillers délégués",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Cadre de vie, culture, urbanisme, participation, risques, finances. Levier détenu : portefeuilles thématiques, relais terrain. Posture recommandée : co-constructeurs quotidiens de la mission.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "20"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Co-construire"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-services",
+    "type": "acteur",
+    "nom": "Services municipaux (≈ 700 agents)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "DGS, urbanisme, technique, culture, communication. Levier détenu : maîtrise d'ouvrage, données, continuité. Posture recommandée : alliés indispensables — attention à la charge.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "16"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Co-construire"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-opposition",
+    "type": "acteur",
+    "nom": "Opposition (RN 6 élus, DVD 2)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "35,9 % des voix au 1ᵉʳ tour 2026. Levier détenu : tribune, représentation d'un électorat massif. Posture recommandée : à ne pas ignorer : la concertation doit être inattaquable.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "8"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-etat",
+    "type": "acteur",
+    "nom": "État / Préfecture de l'Hérault",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "ACV, PPRI, PPRT, ZAN, Fonds vert, DSIL. Levier détenu : réglementation et subventions. Posture recommandée : cadre contraignant + guichet — dossiers à documenter.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "National"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "15"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Tenir informés"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-region",
+    "type": "acteur",
+    "nom": "Région Occitanie",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Gare/PEM (≤ 10 M€), TER, Plan Littoral 21, friches. Levier détenu : financement du pem et de la desserte. Posture recommandée : décideur du calendrier ferroviaire — à sécuriser.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Région"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "20"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Co-construire"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-departement",
+    "type": "acteur",
+    "nom": "Département de l'Hérault",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "RD2, chemin de halage, collèges, social. Levier détenu : voirie départementale, action sociale. Posture recommandée : partenaire d'aménagement de proximité.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Département"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "9"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Surveiller"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-smbt",
+    "type": "acteur",
+    "nom": "SMBT — Syndicat mixte du bassin de Thau",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "SCoT, SAGE, gestion de la lagune. Levier détenu : règles d'urbanisme opposables. Posture recommandée : cadre juridique du littoral — à mobiliser en amont.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Bassin"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "16"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Co-construire"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-anct",
+    "type": "acteur",
+    "nom": "ANCT",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Action cœur de Ville, ingénierie territoriale. Levier détenu : ingénierie, cofinancement d'études. Posture recommandée : levier d'expertise sous-utilisé.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "National"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "6"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Surveiller"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-sncf",
+    "type": "acteur",
+    "nom": "SNCF Réseau / SNCF Gares & Connexions",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Maîtrise d'ouvrage ferroviaire du PEM. Levier détenu : emprise et calendrier ferroviaires. Posture recommandée : contrainte technique majeure du projet gare.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "National"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "12"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Tenir informés"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-bdt",
+    "type": "acteur",
+    "nom": "Banque des Territoires / EPF Occitanie",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "PPA recomposition spatiale, portage foncier. Levier détenu : ingénierie financière, foncier. Posture recommandée : partenaires du temps long littoral.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Institutionnel"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "National"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "9"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Surveiller"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-cave",
+    "type": "acteur",
+    "nom": "Cave coopérative Frontignan Muscat",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "≈ 80 % de l'AOP, 1904, ≈ 9 M€ de CA. Levier détenu : patrimoine, marque, foncier viticole. Posture recommandée : pivot de la stratégie œnotouristique.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "12"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-vignerons",
+    "type": "acteur",
+    "nom": "8 vignerons indépendants",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "≈ 800 ha d'AOP avec Vic-la-Gardiole. Levier détenu : paysage, récit, accueil. Posture recommandée : alliés d'un parcours muscat.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "8"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-hexis",
+    "type": "acteur",
+    "nom": "Hexis & industriels de La Peyrade",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "≈ 194 salariés (Hexis), 55 entreprises en ZA. Levier détenu : emploi productif, taxe économique. Posture recommandée : à associer à la programmation de la friche.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "9"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Surveiller"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-seveso",
+    "type": "acteur",
+    "nom": "GDH & SCORI (Seveso seuil haut)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Dépôt d'hydrocarbures, traitement de déchets. Levier détenu : pprt — servitudes d'urbanisme. Posture recommandée : contrainte foncière et enjeu d'image.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "6"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Surveiller"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-conchyliculteurs",
+    "type": "acteur",
+    "nom": "Conchyliculteurs & pêcheurs de Thau",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "≈ 4 000 emplois de filière sur le bassin. Levier détenu : identité, économie bleue, alerte sanitaire. Posture recommandée : baromètre de la santé du territoire.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Bassin"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "15"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-commercants",
+    "type": "acteur",
+    "nom": "Commerçants du centre-ville",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "≈ 180 commerces, vacance ≈ 4 %. Levier détenu : vitalité perçue du cœur de ville. Posture recommandée : fatigue des chantiers — quick wins nécessaires.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "10"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-tourisme",
+    "type": "acteur",
+    "nom": "Office de tourisme intercommunal « Archipel de Thau »",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Présidé par K. Gouvernayre (Frontignan). Levier détenu : promotion, données de fréquentation. Posture recommandée : canal de la désaisonnalisation.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Agglo"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "12"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-promoteurs",
+    "type": "acteur",
+    "nom": "Promoteurs & aménageurs",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Mas de Chave, Pielles, opérations privées. Levier détenu : capacité à produire du logement. Posture recommandée : à encadrer par la qualité et la mixité.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Économique"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "12"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-comites",
+    "type": "acteur",
+    "nom": "6 comités habitants & budget participatif",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "50 000 €/an, Maison des projets (2021). Levier détenu : légitimité d'usage, veille de terrain. Posture recommandée : infrastructure participative existante à outiller.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "8"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-assos",
+    "type": "acteur",
+    "nom": "Associations (FIRN, joutes, patrimoine, environnement)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "FIRN depuis 1998, 29ᵉ édition en 2026. Levier détenu : capital culturel et bénévole. Posture recommandée : producteurs de récit local.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "8"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-qpv",
+    "type": "acteur",
+    "nom": "Habitants des QPV (Deux Pins, centre)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Contrat de ville Quartiers 2030 (2024-2030). Levier détenu : expérience vécue des services publics. Posture recommandée : public prioritaire — inclusion à construire.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "1/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "5"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-seniors",
+    "type": "acteur",
+    "nom": "Seniors (25,3 % de 65 ans et +)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "28,1 % des 65-79 ans vivent seuls. Levier détenu : temps, mémoire, usage quotidien. Posture recommandée : cible n°1 du confort urbain (chaleur, marche, santé).",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "10"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-jeunes",
+    "type": "acteur",
+    "nom": "Jeunes 15-24 ans (10,3 %)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Chômage des 15-24 ans : 28,9 %. Levier détenu : usages numériques, avenir du territoire. Posture recommandée : grand absent des dispositifs classiques.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "1/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "4/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "4"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-navetteurs",
+    "type": "acteur",
+    "nom": "Navetteurs (67 % des actifs)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "80 % en voiture, double bassin Sète/Montpellier. Levier détenu : masse critique du pem. Posture recommandée : utilisateurs finaux du projet gare.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Bassin"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "1/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "5"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-riverains",
+    "type": "acteur",
+    "nom": "Riverains de La Peyrade & des chantiers",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Mobilisés sur Mas de Chave (2025-2026). Levier détenu : capacité de blocage / contentieux. Posture recommandée : co-conception obligatoire, sinon recours.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Commune"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "2/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "5/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "10"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Écouter activement"
+     }
+    ],
+    "sources": []
+   },
+   {
+    "id": "atlas:a-presse",
+    "type": "acteur",
+    "nom": "Presse locale (Midi Libre, Hérault Tribune, Plurielle)",
+    "niveau": "Acteurs",
+    "parent": "atlas:acteurs",
+    "population": null,
+    "texte": "Fabrique de l'opinion territoriale. Levier détenu : mise à l'agenda, récit public. Posture recommandée : relais des preuves visibles.",
+    "faits": [
+     {
+      "cle": "Famille",
+      "valeur": "Société civile"
+     },
+     {
+      "cle": "Échelle",
+      "valeur": "Bassin"
+     },
+     {
+      "cle": "Influence",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Intérêt",
+      "valeur": "3/5"
+     },
+     {
+      "cle": "Priorité (I×I)",
+      "valeur": "9"
+     },
+     {
+      "cle": "Quadrant",
+      "valeur": "Surveiller"
+     }
+    ],
+    "sources": []
+   }
+  ],
+  "projets": [
+   {
+    "id": "watchtower:projet-7-1",
+    "nom": "Requalification du cœur de ville (ORU « Cœur de Ville ») — le projet matriciel",
+    "nature": "Opération de renouvellement urbain / opération « Cœur de Ville » de Frontignan (à distinguer du label national ACV, acquis en 2025)",
+    "statut": "En cours (travaux depuis 2023 jusqu'à 2025+ ; rue Saint-Paul livrée, puis quai Voltaire, puis 5 phases cœur de ville 2024-mi-2025)",
+    "budget": "15 M€ sur 10 ans (chiffre officiel Ville) ; un article de presse (2022) évoquait « 35 M€ d'investissement sur dix ans » pour l'ensemble du programme cœur de ville — périmètres vraisemblablement différents ❓",
+    "financeurs": "Ville + partenaires (agglo, État via ACV depuis 2025, FCTVA) — clé de répartition non publiée",
+    "calendrier": "Concertation riverains 2021-2022 → chantiers 2023-2025 (rue Saint-Paul ; places Jean-Jaurès, Hôtel de Ville, Combettes, Vieille-Poste, marché ; rues Boucarié, Pesquier, Anthérieu, Porte-de-Montpellier, Andrans, Baumelle, Clastre Vieille ; rue du Port) → suite de programme après 2025",
+    "maitrise_oeuvre": "Agence Humbert & David (paysagistes urbanistes) : plan-guide centre-ville (11 ha), maîtrise d'œuvre espaces publics, passerelle piétonne sur le canal ; Eva Terliska, Mireia Maso, Sylvain Jacquemet (passagersdesvilles.fr) ✅",
+    "lieu_id": "atlas:oru",
+    "sources": [
+     {
+      "libelle": "frontignan.fr — Opération Cœur de Ville",
+      "url": "https://www.frontignan.fr/mon-quotidien/cadre-de-vie/coeur-de-ville/"
+     },
+     {
+      "libelle": "frontignan.fr, 16/10/2024",
+      "url": "https://www.frontignan.fr/le-centre-ville-au-coeur-dimportants-chantiers/"
+     },
+     {
+      "libelle": "actu.fr, 30/10/2023",
+      "url": "https://actu.fr/occitanie/frontignan_34108/pres-de-montpellier-frontignan-la-peyrade-le-vaste-espace-culturel-sortira-de-terre-en-2025_60263910.html"
+     }
+    ],
+    "lacunes": [
+     "budget non publié"
+    ]
+   },
+   {
+    "id": "watchtower:projet-7-2",
+    "nom": "Reconversion de la friche ExxonMobil (ex-raffinerie Mobil) — le projet du siècle frontignanais",
+    "nature": "Réhabilitation et reconversion de la friche de l'ancienne raffinerie Mobil/Esso (11 ha, bord de canal, à proximité immédiate du cœur de ville et des premières habitations)",
+    "statut": "Dépollution achevée et site restitué à la Ville le 27 mai 2026 (propriété communale) ; programmation urbaine à définir ; usage actuel autorisé : industriel ou équivalent (arrêté de récolement) — études complémentaires en cours pour ouvrir d'autres usages (résultats attendus fin 2026)",
+    "budget": "Coût de la dépollution à la charge de l'industriel (Esso, repris par North Atlantic Energies, groupe pétrolier canadien) : 170 000 m³ de terres excavées, dont la moitié réutilisée sur site ; coût exact non publié ❓. Coût de l'aménagement futur : non chiffré",
+    "financeurs": "Pollueur-payeur pour la dépollution (Esso/North Atlantic via Antea Group et Séché Eco Services) ; Ville propriétaire ; aménagement futur : à instruire (État via ACV — la dépollution accélérée a été citée parmi les bénéfices du label ; agglo ; Région ; FCTVA ; France 2030 pour l'attractivité économique)",
+    "calendrier": "Raffinerie 1904-1986 → remise en état 1990s → découverte de pollutions (hydrocarbures, métaux lourds) en 2003 → chantier août 2022 → mars 2026 (+ 3 mois de démantèlement) → restitution 27 mai 2026 → prises de possession et études 2026-2027 → aménagements à partir de ≈ 2028",
+    "maitrise_oeuvre": "Dépollution : Antea Group + Séché Eco Services (pour North Atlantic) ; maîtrise d'ouvrage urbaine à venir ❓",
+    "lieu_id": "atlas:friche-mobil",
+    "sources": [
+     {
+      "libelle": "Midi Libre, 27/05/2026",
+      "url": "https://www.midilibre.fr/2026/05/27/friche-mobil-de-frontignan-un-nouveau-quartier-va-emerger-sur-lancien-site-petrolier-13390607.php"
+     },
+     {
+      "libelle": "Hérault Tribune, 27/05/2026",
+      "url": "https://echo-des-tribunes.com/herault-tribune/articles/apres-40-ans-de-friche-petroliere-lancien-site-exxonmobil-depollue"
+     },
+     {
+      "libelle": "Hérault Tribune, 06/01/2026",
+      "url": "https://echo-des-tribunes.com/herault-tribune/articles/frontignan-la-depollution-du-site-exxon-mobil-entre-dans-sa-phase-finale"
+     },
+     {
+      "libelle": "La Marseillaise, 29/01/2026",
+      "url": "https://www.lamarseillaise.fr/environnement/le-chantier-de-rehabilitation-de-la-mobil-a-frontignan-touche-a-sa-fin-LI19557862"
+     }
+    ],
+    "lacunes": [
+     "budget non publié"
+    ]
+   },
+   {
+    "id": "watchtower:projet-7-3",
+    "nom": "Nouvelle gare & pôle d'échanges multimodal (PEM)",
+    "nature": "Déplacement de la gare de Frontignan et création d'un pôle d'échanges multimodal (PEM) sur la friche Mobil — annoncé par Carole Delga (présidente de Région) et Michel Arrouy le 8 juin 2023",
+    "statut": "Acté et en études opérationnelles (lancées fin 2023) ; livraison souhaitée en 2028 (horizon répété « 2028-2029 » par les élus en 2025-2026) ; 660 k€ inscrits au BP communal 2025 pour la Ville",
+    "budget": "25 M€ (revu à la baisse depuis une première estimation à 41 M€, le déplacement d'aiguillage prévu initialement ayant été rendu caduc) ; études de faisabilité 2017-2023 : 1 M€ (Région 345,7 k€ ; Ville 258,8 k€ ; Département 258,8 k€ ; agglo 258,8 k€ ; État 31,7 k€ ; SNCF 17 k€)",
+    "financeurs": "Région Occitanie : 40 % dans la limite de 10 M€ ; agglo : 20 % ; État engagé (confirmation du préfet en 2023) ; Ville ; SNCF",
+    "calendrier": null,
+    "maitrise_oeuvre": null,
+    "lieu_id": "atlas:pem-gare",
+    "sources": [
+     {
+      "libelle": "laregion.fr, 13/06/2023",
+      "url": "https://www.laregion.fr/Mobilites-Pole-d-echanges-multimodal-de-Frontignan-une-nouvelle-gare-plus-moderne-et"
+     },
+     {
+      "libelle": "frontignan.fr, 06/10/2023",
+      "url": "https://www.frontignan.fr/une-nouvelle-gare-sncf-et-un-pole-dechanges-multimodal-a-frontignan-la-peyrade-en-2028/"
+     },
+     {
+      "libelle": "Hérault Tribune, 10/06/2023",
+      "url": "https://www.herault-tribune.com/articles/frontignan-carole-delga-annonce-la-creation-dune-nouvelle-gare/"
+     },
+     {
+      "libelle": "thau-infos, 07/02/2025",
+      "url": "https://thau-infos.fr/index.php/commune/frontignan/206617-conseil-municipal-seance-du-jeudi-6-fevrier-2025"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-4",
+    "nom": "Pôle culturel des chais Botta — « Le Quai » : livré, en rodage",
+    "nature": "Pôle culturel des anciens chais Botta (1898) : cinéma « Le Quai des Lumières », brasserie, librairie, agora/espace loisirs jeunesse, école de cinéma documentaire (ouverte à partir de janvier-février 2026)",
+    "statut": "Livré — cinéma ouvert le 19 décembre 2025 (4 salles, 545 fauteuils : 286/150/68/44, 16 places PMR) ; brasserie ouverte ; librairie et école de cinéma en ouverture progressive début 2026 ; l'ancien cinéma mono-écran (149 fauteuils, dernière séance fin avril 2025) reconverti en salle de conférences/spectacle",
+    "budget": "Aménagement de l'espace cinéma : 2,6 M€ (2 108 m² sur 2 700 m² de bâti) ; budget global du pôle non publié (prév. 2022 : chantier démarré déc. 2022, livraison T1 2024 — glissement de ~18 mois)",
+    "financeurs": "Ville (maître d'ouvrage) ; exploitation cinema : groupement d'exploitants locaux dont Véo Cinémas (DSP, opérateur des cinémas de Sète) ; subventions non publiées ❓",
+    "calendrier": "Réunions publiques 2022 → travaux déc. 2022 → ouverture déc. 2025 → montée en charge 2026",
+    "maitrise_oeuvre": "Non communiqué ❓",
+    "lieu_id": "atlas:le-quai",
+    "sources": [
+     {
+      "libelle": "Boxoffice Pro, 22/12/2025",
+      "url": "https://www.boxofficepro.fr/arrivee-en-quai-des-lumieres-a-frontignan/"
+     },
+     {
+      "libelle": "Midi Libre, 18/11/2022",
+      "url": "https://www.midilibre.fr/2022/11/18/frontignan-le-chantier-de-construction-du-futur-miniplexe-va-bientot-demarrer-10811619.php"
+     },
+     {
+      "libelle": "actu.fr, 28/03/2022",
+      "url": "https://actu.fr/occitanie/frontignan_34108/pres-de-montpellier-frontignan-la-peyrade-un-pole-culturel-a-l-horizon-2024_49726681.html"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-5",
+    "nom": "Requalification du quai Voltaire & passerelle",
+    "nature": "Requalification du quai Voltaire en promenade apaisée + œuvre d'Hervé di Rosa + passerelle sur le canal vers le parking paysager (150 places, ancienne raffinerie)",
+    "statut": "Livré (promenade apaisée achevée 2024 ; travaux cyclables/espaces verts septembre 2025)",
+    "budget": "Volet 2025 : 1,5 M€ (piste cyclable, 1 300 m² d'espaces verts, plantations) ; montant total du programme non publié",
+    "financeurs": "Ville, agglo (compétence voirie durcie ?), Département (chemin de halage) ❓",
+    "calendrier": "2024 (mue du quai) → sept. 2025 (compléments cyclables/paysagers)",
+    "maitrise_oeuvre": "Humbert & David (espaces publics) ✅",
+    "lieu_id": "commune:34108",
+    "sources": [
+     {
+      "libelle": "Le Moniteur, 30/05/2025",
+      "url": "https://www.lemoniteur.fr/article/herault-des-projets-d-amenagement-urbain-a-frontignan-en-2025.2346651"
+     },
+     {
+      "libelle": "frontignan.fr, 16/10/2024",
+      "url": "https://www.frontignan.fr/le-centre-ville-au-coeur-dimportants-chantiers/"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-6",
+    "nom": "Label Action cœur de Ville & ORU : la boîte à outils",
+    "nature": null,
+    "statut": null,
+    "budget": null,
+    "financeurs": null,
+    "calendrier": null,
+    "maitrise_oeuvre": null,
+    "lieu_id": "commune:34108",
+    "sources": [
+     {
+      "libelle": "France Bleu, 24/03/2025",
+      "url": "https://www.francebleu.fr/emissions/l-info-d-ici-ici-herault/frontignan-rejoint-le-dispositif-action-coeur-de-ville-pour-redynamiser-son-centre-ville-et-accelerer-les-travaux-7860422"
+     },
+     {
+      "libelle": "ANCT",
+      "url": "https://anct.gouv.fr/programmes-dispositifs/action-coeur-de-ville"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-7",
+    "nom": "Restructuration du port de plaisance (2026-2029)",
+    "nature": "Restructuration et modernisation du port de plaisance (créé 1982, régie communale à autonomie financière depuis 1996)",
+    "statut": "Chantier lancé à l'hiver 2025-2026 (installation de chantier oct.-déc. 2025) ; travaux sur ≈ 3 ans",
+    "budget": "≈ 4,5 M€ (4 527 811 € HT au projet 2019 ; ≈ 4,5 M€ confirmé 2026)",
+    "financeurs": "Régie Frontignan Plaisance (SPIC) + Ville ; Plan Littoral 21 (éligibilité revendiquée) ; ❓ clé de répartition",
+    "calendrier": "Enquête publique déc. 2019-janv. 2020 → concerts usagers automne 2025 → travaux 2026-2029 (avant-port d'abord : ~50 postes escale/professionnels + promenade piétonne Rive Est ; puis bassins, pontons, espace petits métiers de la pêche)",
+    "maitrise_oeuvre": null,
+    "lieu_id": "atlas:port",
+    "sources": [
+     {
+      "libelle": "Hérault Tribune, 02/01/2026",
+      "url": "https://echo-des-tribunes.com/herault-tribune/articles/frontignan-lancement-des-travaux-du-port-de-plaisance"
+     },
+     {
+      "libelle": "dossier d'enquête publique 2019, frontignan.fr",
+      "url": "https://www.frontignan.fr/contenus/uploads/2019/12/EP-Port-de-plaisance-Frontignan-Note-de-pre%CC%81sentation.pdf"
+     },
+     {
+      "libelle": "page enquête",
+      "url": "https://www.frontignan.fr/ma-ville/democratie-participative/enquetes-publiques/modernisation-port-plaisance/"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-8",
+    "nom": "Littoral & plages : protection du lido et station",
+    "nature": "(a) Opération de protection et de mise en valeur du lido (7 km, du canal de Sète aux Aresquiers) ; (b) requalification des artères de Frontignan-Plage ; (c) dispositif « recul du trait de côte » (loi Climat)",
+    "statut": "(a) Travaux de défense réalisés par tranches dans les années 2010 (épis, rechargements, cordon d'arrière-plage — programme chiffré 13,5 M€ HT en AVP 2012 ; état 2026 à vérifier) ; (b) en cours par étapes (restructuration des artères, stationnement, mobilités douces — PLU) ; (c) Frontignan engagée (cartes d'exposition 30/100 ans à produire, Fonds vert)",
+    "budget": "(a) ≈ 13,5 M€ HT (tranches 1+2, estimation 2012) — données à actualiser ❓ ; (b)(c) non chiffrés",
+    "financeurs": "(a) État, Région, agglo/SMN (Syndicat mixte du littoral) ; (c) Fonds vert jusqu'à 80 %",
+    "calendrier": "Continu — pas de jalon public consolidé ❓",
+    "maitrise_oeuvre": null,
+    "lieu_id": "atlas:lido",
+    "sources": [
+     {
+      "libelle": "DREAL Occitanie, résumé non technique 2013",
+      "url": "https://www.herault.gouv.fr/content/download/11197/66862/file/E-1711870R5-RNT-Op"
+     },
+     {
+      "libelle": "PLU/PADD",
+      "url": "https://www.registre-dematerialise.fr/5080/download/component/67063/projet-d-ame-nagement-et-de-de-veloppement-durables-padd-mis-au-de-bat-du-conseil-municipal-du-19-juin-2024.pdf"
+     }
+    ],
+    "lacunes": [
+     "budget non publié"
+    ]
+   },
+   {
+    "id": "watchtower:projet-7-9",
+    "nom": "Habitat / ZAC / éco-quartiers : Mas de Chave et Pielles",
+    "nature": "(a) Écoquartier des Pielles (livré/connecté au cœur de ville par le boulevard des Républicains espagnols) ; (b) Aménagement du secteur Mas de Chave (seule zone AU « fermée » du PLU)",
+    "statut": "(a) livré/en fin de programme ❓ ; (b) en instruction : déclaration de projet emportant mise en compatibilité du PLU (DPMEC) — concertation publique sept. 2025, reprise de concertation votée le 15 juillet 2026 (programme revu à la baisse), enquête publique annoncée pour 2026 puis fragilisée par la reprise",
+    "budget": "Programme initial : 336 logements (dont une part significative de locatif social et d'accession sociale), parc urbain > 2 ha, parking, aménagements doux ; enveloppe financière non publiée",
+    "financeurs": "Ville + aménageur (à confirmer) ; promoteurs/ bailleurs ; agglo (habitat) ❓",
+    "calendrier": "Enquête publique ≠ 2026-2027 selon issue de la concertation ; premiers chantiers au plus tôt 2028 ❓",
+    "maitrise_oeuvre": "Urban Projects (cabinet montpelliérain) pour la DPMEC ✅",
+    "lieu_id": "atlas:mas-de-chave",
+    "sources": [
+     {
+      "libelle": "Le Moniteur, 30/05/2025",
+      "url": "https://www.lemoniteur.fr/article/herault-des-projets-d-amenagement-urbain-a-frontignan-en-2025.2346651"
+     },
+     {
+      "libelle": "frontignan.fr, 08/09/2025",
+      "url": "https://www.frontignan.fr/concertation-publique-pour-lamenagement-du-secteur-mas-de-chave/"
+     },
+     {
+      "libelle": "Midi Libre, 20/09/2025",
+      "url": "https://www.midilibre.fr/2025/09/20/les-habitants-de-la-peyrade-font-entendre-leur-voix-au-sujet-du-projet-durbanisation-du-mas-de-chave-a-frontignan-12939269.php"
+     },
+     {
+      "libelle": "montpellierimmo9, 23/07/2026",
+      "url": "https://www.montpellierimmo9.com/actualites/urbanisme-architecture/projet-mas-de-chave-frontignan"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-10",
+    "nom": "Équipements publics : culture, sport, éducation, santé",
+    "nature": null,
+    "statut": null,
+    "budget": null,
+    "financeurs": null,
+    "calendrier": null,
+    "maitrise_oeuvre": null,
+    "lieu_id": "commune:34108",
+    "sources": [
+     {
+      "libelle": "Midi Libre, 04/04/2024",
+      "url": "https://www.midilibre.fr/2024/04/04/il-ny-aura-pas-daugmentation-des-impots-de-la-part-de-frontignan-11869429.php"
+     },
+     {
+      "libelle": "Le Moniteur, 30/05/2025",
+      "url": "https://www.lemoniteur.fr/article/herault-des-projets-d-amenagement-urbain-a-frontignan-en-2025.2346651"
+     },
+     {
+      "libelle": "frontignan.fr",
+      "url": "https://www.frontignan.fr/"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-11",
+    "nom": "Transition écologique et énergétique",
+    "nature": null,
+    "statut": null,
+    "budget": null,
+    "financeurs": null,
+    "calendrier": null,
+    "maitrise_oeuvre": null,
+    "lieu_id": "commune:34108",
+    "sources": [],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-12",
+    "nom": "Planification : PLU, SCoT, entrées de ville, ZAN",
+    "nature": null,
+    "statut": null,
+    "budget": null,
+    "financeurs": null,
+    "calendrier": null,
+    "maitrise_oeuvre": null,
+    "lieu_id": "commune:34108",
+    "sources": [
+     {
+      "libelle": "PLU/PADD 2024",
+      "url": "https://www.registre-dematerialise.fr/5080/download/component/67063/projet-d-ame-nagement-et-de-de-veloppement-durables-padd-mis-au-de-bat-du-conseil-municipal-du-19-juin-2024.pdf"
+     },
+     {
+      "libelle": "frontignan.fr PLU",
+      "url": "https://www.frontignan.fr/mon-quotidien/urbanisme/plu-plan-local-durbanisme/"
+     },
+     {
+      "libelle": "Hérault Tribune, 2024",
+      "url": "https://echo-des-tribunes.com/herault-tribune/articles/frontignan-la-peyrade-politique-de-la-ville-2024-appel-a-projets"
+     }
+    ],
+    "lacunes": []
+   },
+   {
+    "id": "watchtower:projet-7-13",
+    "nom": "Compléments : friche Lafarge, eaux pluviales, budget participatif",
+    "nature": null,
+    "statut": null,
+    "budget": null,
+    "financeurs": null,
+    "calendrier": null,
+    "maitrise_oeuvre": null,
+    "lieu_id": "commune:34108",
+    "sources": [
+     {
+      "libelle": "Midi Libre, 11/01/2025",
+      "url": "https://www.midilibre.fr/2025/01/11/voeux-a-la-population-le-maire-de-frontignan-michel-arrouy-predit-une-annee-importante-pour-sa-ville-12437220.php"
+     },
+     {
+      "libelle": "Midi Libre, 27/05/2026",
+      "url": "https://www.midilibre.fr/2026/05/27/friche-mobil-de-frontignan-un-nouveau-quartier-va-emerger-sur-lancien-site-petrolier-13390607.php"
+     },
+     {
+      "libelle": "agglopole.fr, 18/03/2025",
+      "url": "https://www.agglopole.fr/bassin-de-retention-les-travaux-demarrent-a-frontignan/"
+     },
+     {
+      "libelle": "thau-infos, 07/02/2025",
+      "url": "https://thau-infos.fr/index.php/commune/frontignan/206617-conseil-municipal-seance-du-jeudi-6-fevrier-2025"
+     }
+    ],
+    "lacunes": []
+   }
+  ],
+  "indicateurs": [
+   {
+    "zone": "commune:34108",
+    "indicateur": "Population",
+    "valeur": "6 124 653 hab. (1ᵉʳ janv. 2023) ; ≈ 6,25 M fin 2025",
+    "unite": null,
+    "evolution": "1 230 289 hab. (2023) ; ≈ 1,26 M au 1ᵉʳ janv. 2026",
+    "periode": "4.1 Dy",
+    "source_url": "https://www.midilibre.fr/2025/12/18/6-124-653-habitants-en-occitanie-pourquoi-la-population-continue-daugmenter-alors-quil-y-a-plus-de-deces-que-de-naissances-13118532.php",
+    "source_libelle": "INSEE via Midi Libre, 18/12/2025, France 3, 19/12/2025, ici.fr, 02/04/2026, Le Journal Toulousain, 18/12/2025. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Croissance annuelle 2017-2023",
+    "valeur": "+0,8 %/an (×2 vs France hors Mayotte) ; 3ᵉ région métropolitaine la plus dynamique",
+    "unite": null,
+    "evolution": "+1,2 %/an — 2ᵉ département le plus dynamique de France métropolitaine (avec la Haute-Garonne)",
+    "periode": "4.1 Dy",
+    "source_url": "https://www.midilibre.fr/2025/12/18/6-124-653-habitants-en-occitanie-pourquoi-la-population-continue-daugmenter-alors-quil-y-a-plus-de-deces-que-de-naissances-13118532.php",
+    "source_libelle": "INSEE via Midi Libre, 18/12/2025, France 3, 19/12/2025, ici.fr, 02/04/2026, Le Journal Toulousain, 18/12/2025. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Moteur",
+    "valeur": "Croissance exclusivement migratoire (solde naturel régional négatif)",
+    "unite": null,
+    "evolution": "+15 000 arrivants/an (étudiants, retraités, actifs) ; solde naturel passé négatif (−1 100 en 2025 : 10 800 naissances vs 11 900 décès)",
+    "periode": "4.1 Dy",
+    "source_url": "https://www.midilibre.fr/2025/12/18/6-124-653-habitants-en-occitanie-pourquoi-la-population-continue-daugmenter-alors-quil-y-a-plus-de-deces-que-de-naissances-13118532.php",
+    "source_libelle": "INSEE via Midi Libre, 18/12/2025, France 3, 19/12/2025, ici.fr, 02/04/2026, Le Journal Toulousain, 18/12/2025. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Pôles",
+    "valeur": "Toulouse 514 819 hab. (+1,2 %/an) ; Montpellier 310 240 hab. (+1,4 %/an, croissance record parmi les grandes villes)",
+    "unite": null,
+    "evolution": "Montpellier, Béziers, Sète ; littoral sous pression",
+    "periode": "4.1 Dy",
+    "source_url": "https://www.midilibre.fr/2025/12/18/6-124-653-habitants-en-occitanie-pourquoi-la-population-continue-daugmenter-alors-quil-y-a-plus-de-deces-que-de-naissances-13118532.php",
+    "source_libelle": "INSEE via Midi Libre, 18/12/2025, France 3, 19/12/2025, ici.fr, 02/04/2026, Le Journal Toulousain, 18/12/2025. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Population municipale",
+    "valeur": "24 136 hab. (INSEE, pop. légale 2023)",
+    "unite": null,
+    "evolution": "+6,04 % vs 2017 ; 7ᵉ ville de l'Hérault ; densité 761 hab./km²",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Trajectoire longue",
+    "valeur": "11 141 (1968) → 19 145 (1999) → 23 068 (2007) → 22 762 (2017) → 24 136 (2023)",
+    "unite": null,
+    "evolution": "Forte croissance 1960-2007, stagnation 2007-2017, reprise depuis",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Moteurs 2017-2023",
+    "valeur": "solde migratoire +1,1 %/an, solde naturel −0,1 %/an",
+    "unite": null,
+    "evolution": "Attractivité résidentielle, pas de moteur naturel",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Âge",
+    "valeur": "âge médian ≈ 45 ans ; 65 ans et + : 25,3 % (17,4 % de 65-79 + 7,9 % de 80 ans et +) ; < 15 ans : 14,8 %",
+    "unite": null,
+    "evolution": "Vieillissement net (65+ = 20,3 % en 2012)",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Ménages",
+    "valeur": "11 146 résidences principales ; familles monoparentales 16,8 % ; personnes seules en hausse (28,1 % des 65-79 ans)",
+    "unite": null,
+    "evolution": "Taille moyenne 2,1 ; solitude âgée à anticiper",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Formation",
+    "valeur": "diplômés du supérieur : 26,3 % des 15+ (19 % en 2012) ; sans diplôme : 20,7 %",
+    "unite": null,
+    "evolution": "Montée en qualification, base populaire persistante",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Revenus (Filosofi 2023)",
+    "valeur": "niveau de vie médian 24 580 €/uc (France métrop. : 24 330 € en 2022) ; taux de pauvreté 16,5 %",
+    "unite": null,
+    "evolution": "Revenus proches de la moyenne nationale, pauvreté au-dessus",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Électorat",
+    "valeur": "19 089 inscrits (municipales 2026) ; abstention 38,1 %",
+    "unite": null,
+    "evolution": "—",
+    "periode": "6.2 Dé",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet COM-34108, éd. 27/08/2026. ✅ sauf mentions contraires.",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Établissements actifs",
+    "valeur": "2 263 (dont 671 employeurs, 2 076 unités légales)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.1 Pa",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet, Flores 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Emplois salariés localisés",
+    "valeur": "6 311 postes (hors défense, particuliers employeurs)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.1 Pa",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet, Flores 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Répartition des emplois",
+    "valeur": "Admin. publique, enseignement, santé, action sociale 39,9 % (dont 1 290 postes ≥ 100 salariés) ; commerce/transports/services 37,3 % ; industrie 16,4 % (1 035 postes, dont 366 postes ≥ 100 salariés) ; construction 4,6 % ; agriculture/pêche 1,8 %",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.1 Pa",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet, Flores 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Sphères",
+    "valeur": "présentielle 67 % des emplois / productive 33 %",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.1 Pa",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet, Flores 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Créations d'établissements",
+    "valeur": "≈ 470/an (2024) ; taux de création ≈ 15 % (villesavivre.fr)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.1 Pa",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet, Flores 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Grandes unités",
+    "valeur": "18 établissements de 50 salariés et +, dont 3 de 100+ dans l'industrie",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.1 Pa",
+    "source_url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "source_libelle": "INSEE, dossier complet, Flores 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Capacité hôtelière",
+    "valeur": "3 hôtels, 130 chambres (2× deux étoiles + 1 non classé) — offre très limitée (1/01/2026)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.4 To",
+    "source_url": "https://www.frontignan-tourisme.com/",
+    "source_libelle": "INSEE (TOU T1-T3, 2026) ✅ ; frontignan-tourisme.com ; frontignan.fr — Office de tourisme centre ✅ ; agglo ❓.",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Campings",
+    "valeur": "6 campings, 508 emplacements, dont 1 cinq étoiles (240 empl.) et 1 quatre étoiles — cœur de l'offre (1/01/2026)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.4 To",
+    "source_url": "https://www.frontignan-tourisme.com/",
+    "source_libelle": "INSEE (TOU T1-T3, 2026) ✅ ; frontignan-tourisme.com ; frontignan.fr — Office de tourisme centre ✅ ; agglo ❓.",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Autres hébergements",
+    "valeur": "1 résidence de tourisme (28 lits) ; ≈ 3 000 résidences secondaires (20,6 % du parc de logements !)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.4 To",
+    "source_url": "https://www.frontignan-tourisme.com/",
+    "source_libelle": "INSEE (TOU T1-T3, 2026) ✅ ; frontignan-tourisme.com ; frontignan.fr — Office de tourisme centre ✅ ; agglo ❓.",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Fréquentation",
+    "valeur": "Station classée ; l'agglo revendique ≈ 1,5 M de touristes/an sur le territoire (2018, à confirmer) ; frontignanais : pas de chiffre public ❓",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.4 To",
+    "source_url": "https://www.frontignan-tourisme.com/",
+    "source_libelle": "INSEE (TOU T1-T3, 2026) ✅ ; frontignan-tourisme.com ; frontignan.fr — Office de tourisme centre ✅ ; agglo ❓.",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Saisonnalité",
+    "valeur": "Très marquée (estivale) ; office de tourisme intercommunal « Archipel de Thau » (présidée par K. Gouvernayre) ; bureaux Frontignan-centre (toute l'année) et Frontignan-Plage (saisonnier)",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.4 To",
+    "source_url": "https://www.frontignan-tourisme.com/",
+    "source_libelle": "INSEE (TOU T1-T3, 2026) ✅ ; frontignan-tourisme.com ; frontignan.fr — Office de tourisme centre ✅ ; agglo ❓.",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Atouts produits",
+    "valeur": "plages des Aresquiers, sentier des anciens salins (flamants), œnotourisme muscat (90 ans AOP en 2026), tourisme fluvial (halte plaisance en projet), FIRN, joutes, patrimoine",
+    "unite": null,
+    "evolution": null,
+    "periode": "8.4 To",
+    "source_url": "https://www.frontignan-tourisme.com/",
+    "source_libelle": "INSEE (TOU T1-T3, 2026) ✅ ; frontignan-tourisme.com ; frontignan.fr — Office de tourisme centre ✅ ; agglo ❓.",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Dette par habitant (fin 2024)",
+    "valeur": "995 € (≈ 23,9 M€ ; stock ≈ 21 M€ selon CM janv. 2026 ❓)",
+    "unite": null,
+    "evolution": "986 €",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅",
+     "❓"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Annuité de la dette",
+    "valeur": "≈ 3,0 M€ (126 €/hab.)",
+    "unite": null,
+    "evolution": "≈ 3,9 M€",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Capacité de désendettement",
+    "valeur": "7,5 ans",
+    "unite": null,
+    "evolution": "5,5 ans",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Impôts locaux par habitant",
+    "valeur": "1 011 €",
+    "unite": null,
+    "evolution": "793 €",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Charges de personnel/hab.",
+    "valeur": "946 €",
+    "unite": null,
+    "evolution": "849 €",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Investissement/hab.",
+    "valeur": "270 €",
+    "unite": null,
+    "evolution": "438 €",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Pression fiscale (indice)",
+    "valeur": "188",
+    "unite": null,
+    "evolution": "128",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   },
+   {
+    "zone": "commune:34108",
+    "indicateur": "Rigidité structurelle",
+    "valeur": "66 %",
+    "unite": null,
+    "evolution": "56 %",
+    "periode": "9.2 St",
+    "source_url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "source_libelle": "Décomptes publics (comptes 2024) ; Journal du Net — dette 2024. ✅",
+    "fiabilite": [
+     "✅"
+    ]
+   }
+  ],
+  "sources": [
+   {
+    "id": "dossier:src-1",
+    "libelle": "frontignan.fr — Élus de la majorité",
+    "url": "https://www.frontignan.fr/ma-ville/elus/elus-de-la-majorite/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-2",
+    "libelle": "frontignan.fr — Élus de l'opposition",
+    "url": "https://www.frontignan.fr/ma-ville/elus/elus-de-l-opposition/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-3",
+    "libelle": "frontignan.fr — Accueil",
+    "url": "https://www.frontignan.fr/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-4",
+    "libelle": "frontignan.fr — Opération Cœur de Ville",
+    "url": "https://www.frontignan.fr/mon-quotidien/cadre-de-vie/coeur-de-ville/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-5",
+    "libelle": "frontignan.fr — Concertation Mas de Chave",
+    "url": "https://www.frontignan.fr/concertation-publique-pour-lamenagement-du-secteur-mas-de-chave/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-6",
+    "libelle": "frontignan.fr — PLU",
+    "url": "https://www.frontignan.fr/mon-quotidien/urbanisme/plu-plan-local-durbanisme/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-7",
+    "libelle": "frontignan.fr — Conseil municipal 2022 (budget)",
+    "url": "https://www.frontignan.fr/budgets-impots-citoyennete-et-cadre-de-vie-a-lordre-du-jour-du-conseil-municipal/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-8",
+    "libelle": "frontignan.fr — Orientations budgétaires",
+    "url": "https://www.frontignan.fr/conseil-municipal-de-frontignan-la-peyrade-des-orientations-budgetaires-realistes-et-ambitieuses/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-9",
+    "libelle": "frontignan.fr — Dossier enquête publique port",
+    "url": "https://www.frontignan.fr/contenus/uploads/2019/12/EP-Port-de-plaisance-Frontignan-Note-de-pre%CC%81sentation.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-10",
+    "libelle": "frontignan.fr — PCS 2025",
+    "url": "https://www.frontignan.fr/contenus/uploads/2025/03/PCS-Frontignan-2025-2.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-11",
+    "libelle": "frontignan.fr — Fête du muscat / FLP Mag #51",
+    "url": "https://www.frontignan.fr/flp-mag-51-le-dossier-muscat-90-ans-dappellation-celebres/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-12",
+    "libelle": "frontignan.fr — Le Frontignan, 1ʳᵉ appellation muscat",
+    "url": "https://www.frontignan.fr/le-frontignan-1ere-appellation-muscat-de-france/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-13",
+    "libelle": "frontignan.fr — FIRN 29ᵉ édition",
+    "url": "https://www.frontignan.fr/evenement/29e-festival-international-du-roman-noir/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-14",
+    "libelle": "frontignan.fr — Office de tourisme centre",
+    "url": "https://www.frontignan.fr/service/office-de-tourisme-centre/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-15",
+    "libelle": "INSEE — Dossier complet COM-34108",
+    "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-16",
+    "libelle": "INSEE — Comparateur de territoires",
+    "url": "https://www.insee.fr/fr/statistiques/1405599?geo=COM-34108",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-17",
+    "libelle": "INSEE Flash — saison touristique été 2024 Occitanie",
+    "url": "https://www.insee.fr/fr/statistiques/8289418",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-18",
+    "libelle": "agglopole.fr — Linares réélu",
+    "url": "https://www.agglopole.fr/loic-linares-reelu-president-de-sete-agglopole-mediterranee/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-19",
+    "libelle": "agglopole.fr — Synthèse budget 2025",
+    "url": "https://www.agglopole.fr/wp-content/uploads/2025/04/Synthese-du-budget-2025-de-Sete-agglopole-mediterranee.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-20",
+    "libelle": "agglopole.fr — Le budget 2026 voté",
+    "url": "https://www.agglopole.fr/le-budget-2026-de-l-agglopole-a-ete-vote/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-21",
+    "libelle": "agglopole.fr — Dossier de presse PPA",
+    "url": "https://www.agglopole.fr/storage/2024/06/Dossier-de-Presse-du-Projet-Partenarial-dAmenagement.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-22",
+    "libelle": "MRAe Occitanie — avis 2025AO18",
+    "url": "https://www.mrae.developpement-durable.gouv.fr/IMG/pdf/2025ao18.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-23",
+    "libelle": "Guide juridique PPA trait de côte",
+    "url": "https://recul-du-trait-de-cote-guide-juridique.fr/projet-partenarial-d-amenagement",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-24",
+    "libelle": "laregion.fr — PEM de Frontignan",
+    "url": "https://www.laregion.fr/Mobilites-Pole-d-echanges-multimodal-de-Frontignan-une-nouvelle-gare-plus-moderne-et",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-25",
+    "libelle": "frontignan.fr — Nouvelle gare et PEM en 2028",
+    "url": "https://www.frontignan.fr/une-nouvelle-gare-sncf-et-un-pole-dechanges-multimodal-a-frontignan-la-peyrade-en-2028/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-26",
+    "libelle": "frontignan.fr — CM du 6 février 2025 (BP 2025)",
+    "url": "https://www.frontignan.fr/conseil-municipal-compte-rendu-de-la-seance-du-jeudi-6-fevrier/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-27",
+    "libelle": "frontignan.fr — CM du 4 juin 2026",
+    "url": "https://www.frontignan.fr/budget-amenagement-du-territoire-commerce-et-jeunesse-ce-quil-faut-retenir-du-conseil-municipal-du-4-juin/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-28",
+    "libelle": "frontignan.fr — Transformation Maison Mathieu",
+    "url": "https://www.frontignan.fr/transformation-de-la-maison-mathieu-la-ville-de-frontignan-la-peyrade-met-en-vente-le-materiel-du-cinemistral/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-29",
+    "libelle": "frontignan.fr — La concertation citoyenne est lancée",
+    "url": "https://www.frontignan.fr/la-concertation-citoyenne-est-lancee/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-30",
+    "libelle": "agglopole.fr — Bassin de rétention Claude Bernard",
+    "url": "https://www.agglopole.fr/bassin-de-retention-les-travaux-demarrent-a-frontignan/",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-31",
+    "libelle": "ANCT — Action cœur de ville",
+    "url": "https://anct.gouv.fr/programmes-dispositifs/action-coeur-de-ville",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-32",
+    "libelle": "Sénat — réponse ministérielle PVD",
+    "url": "https://www.senat.fr/questions/base/2026/qSEQ260107308.html",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-33",
+    "libelle": "ecologie.gouv.fr — décrets ZAN",
+    "url": "https://www.ecologie.gouv.fr/presse/communique-presse-zero-artificialisation-nette-publication-decrets-dapplication",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-34",
+    "libelle": "budget.gouv.fr — PLF (Fonds vert)",
+    "url": "https://www.budget.gouv.fr/documentation/file-download/28166",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-35",
+    "libelle": "charente-maritime.gouv.fr — Fonds vert 2025",
+    "url": "https://www.charente-maritime.gouv.fr/Actions-de-l-Etat/Relations-avec-les-collectivites-locales/Les-dotations-de-l-Etat-aux-collectivites-locales/Subventions/Fonds-vert-2025",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-36",
+    "libelle": "senat.fr — PLF 2025/2026 France 2030",
+    "url": "https://www.senat.fr/rap/l24-144-317/l24-144-317_mono.html",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-37",
+    "libelle": "préfecture Occitanie — Plan Littoral 21 / risques littoraux",
+    "url": "https://www.prefectures-regions.gouv.fr/occitanie/layout/set/print/Region-et-institutions/L-action-de-l-Etat/Mer-et-littoral/Le-plan-littoral-212/Risques-littoraux",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-38",
+    "libelle": "préfecture Occitanie — 13 projets touristiques",
+    "url": "https://www.prefectures-regions.gouv.fr/occitanie/Actualites/L-Etat-et-la-Region-accompagnent-13-projets-touristiques-durables-sur-le-littoral-d-Occitanie",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-39",
+    "libelle": "laregion.fr — Plan Littoral 21",
+    "url": "https://www.laregion.fr/Du-concret-pour-le-Plan-Littoral-21",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-40",
+    "libelle": "DDTM 34 — Règlement PPRI Frontignan",
+    "url": "http://piece-jointe-carto.developpement-durable.gouv.fr/DEPT034A/ZonagePPRI/FRONTIGNAN/Reglement_FRONTIGNAN.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-41",
+    "libelle": "herault.gouv.fr — dossier ICPE Hexis",
+    "url": "https://www.herault.gouv.fr/content/download/17437/133995/file/HEXIS",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-42",
+    "libelle": "herault.gouv.fr — lido de Frontignan (2013)",
+    "url": "https://www.herault.gouv.fr/content/download/11197/66862/file/E-1711870R5-RNT-Op",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-43",
+    "libelle": "SMBT — fiche risques SCoT",
+    "url": "https://www.smbt.fr/storage/2020/04/3.1.9-ANNEXE-EIE-Fiche-Risques-SCOT-BASIN-DE-THAU-ARRET-15-10-24.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-44",
+    "libelle": "Registre dématérialisé — PADD PLU Frontignan",
+    "url": "https://www.registre-dematerialise.fr/5080/download/component/67063/projet-d-ame-nagement-et-de-de-veloppement-durables-padd-mis-au-de-bat-du-conseil-municipal-du-19-juin-2024.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-45",
+    "libelle": "sete.fr — note de synthèse BP 2025",
+    "url": "https://www.sete.fr/app/uploads/2025/03/note-de-synthese-BP-2025.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-46",
+    "libelle": "rhone-mediterranee.eaufrance.fr — PGRI",
+    "url": "https://www.rhone-mediterranee.eaufrance.fr/sites/sierm/files/content/2022-07/202207_PGRI_vol2_littoral_languedoc.pdf",
+    "date": "08/09/2026",
+    "type": "officielle",
+    "famille": "A.1",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-47",
+    "libelle": "Budget de la Ville de Frontignan : rigueur, épargne et investissements",
+    "url": "https://www.midilibre.fr/2026/06/06/budget-de-la-ville-de-frontignan-rigueur-epargne-et-investissements-au-rendez-vous-13403954.php",
+    "date": "06/06/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-48",
+    "libelle": "Friche Mobil : un nouveau quartier va émerger",
+    "url": "https://www.midilibre.fr/2026/05/27/friche-mobil-de-frontignan-un-nouveau-quartier-va-emerger-sur-lancien-site-petrolier-13390607.php",
+    "date": "27/05/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-49",
+    "libelle": "Après 40 ans de friche pétrolière, l'ancien site ExxonMobil dépollué",
+    "url": "https://echo-des-tribunes.com/herault-tribune/articles/apres-40-ans-de-friche-petroliere-lancien-site-exxonmobil-depollue",
+    "date": "27/05/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-50",
+    "libelle": "L'eau, ressource économique de Frontignan",
+    "url": "https://www.midilibre.fr/2026/04/25/leau-a-represente-pour-frontignan-une-ressource-economique-importante-toute-une-histoire-a-decouvrir-13341763.php",
+    "date": "25/04/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-51",
+    "libelle": "Linares bascule dans « le mandat du changement d'ère »",
+    "url": "https://www.midilibre.fr/2026/04/23/forages-a-issanka-lgv-travail-avec-herve-marques-projet-de-territoire-le-president-de-sete-agglo-loic-linares-bascule-dans-le-mandat-du-changement-13338771.php",
+    "date": "23/04/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-52",
+    "libelle": "Mas de Chave : projet revu à la baisse",
+    "url": "https://www.montpellierimmo9.com/actualites/urbanisme-architecture/projet-mas-de-chave-frontignan",
+    "date": "23/07/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-53",
+    "libelle": "Budget 2026 & 41ᵉ conseil municipal",
+    "url": "https://actudirect24.fr/frontignan-budget-taxes-elus/",
+    "date": "15/01/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-54",
+    "libelle": "Dépollution ExxonMobil : phase finale",
+    "url": "https://echo-des-tribunes.com/herault-tribune/articles/frontignan-la-depollution-du-site-exxon-mobil-entre-dans-sa-phase-finale",
+    "date": "06/01/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-55",
+    "libelle": "Lancement des travaux du port de plaisance",
+    "url": "https://echo-des-tribunes.com/herault-tribune/articles/frontignan-lancement-des-travaux-du-port-de-plaisance",
+    "date": "02/01/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-56",
+    "libelle": "Le chantier de réhabilitation de la Mobil touche à sa fin",
+    "url": "https://www.lamarseillaise.fr/environnement/le-chantier-de-rehabilitation-de-la-mobil-a-frontignan-touche-a-sa-fin-LI19557862",
+    "date": "29/01/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-57",
+    "libelle": "Des projets d'aménagement urbain à Frontignan en 2025",
+    "url": "https://www.lemoniteur.fr/article/herault-des-projets-d-amenagement-urbain-a-frontignan-en-2025.2346651",
+    "date": "30/05/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-58",
+    "libelle": "Arrivée en Quai des Lumières à Frontignan",
+    "url": "https://www.boxofficepro.fr/arrivee-en-quai-des-lumieres-a-frontignan/",
+    "date": "22/12/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-59",
+    "libelle": "LGV : 2 000 citoyens aux consultations",
+    "url": "https://www.lindependant.fr/2026/07/07/lgv-montpellier-perpignan-2-000-citoyens-aux-consultations-publiques-gares-nouvelles-connues-a-lautomne-et-un-jalon-decisif-pose-13456959.php",
+    "date": "07/07/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-60",
+    "libelle": "LGV : quand les travaux vont-ils démarrer ?",
+    "url": "https://www.ladepeche.fr/2026/05/08/lgv-montpellier-perpignan-quand-est-ce-que-vont-demarrer-les-travaux-des-elus-et-habitants-sopposent-au-trace-13360891.php",
+    "date": "08/05/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-61",
+    "libelle": "LGV : une nouvelle concertation",
+    "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-roussillon/lgv-montpellier-perpignan-une-nouvelle-concertation-17-ans-apres-car-le-territoire-a-change-8528419",
+    "date": "08/04/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-62",
+    "libelle": "SAM : reconduction de Loïc Linarès",
+    "url": "https://plurielle.info/sete-agglopole-mediterranee-reconduction-de-loic-linares/",
+    "date": "01/04/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-63",
+    "libelle": "Sète Agglopôle : Linares réélu, qui sont ses adjoints ?",
+    "url": "https://infoccitanie.fr/sete-agglopole-loic-linares-reelu-president-qui-sont-ses-adjoints/",
+    "date": "01/04/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-64",
+    "libelle": "Municipales 2026 : Michel Arrouy fait le grand chelem",
+    "url": "https://www.midilibre.fr/2026/03/15/resultats-des-municipales-2026-a-frontignan-le-maire-sortant-michel-arrouy-fait-le-grand-chelem-et-conserve-son-poste-13274171.php",
+    "date": "15/03/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-65",
+    "libelle": "Carole Delga annonce la création d'une nouvelle gare (PEM 25 M€)",
+    "url": "https://www.herault-tribune.com/articles/frontignan-carole-delga-annonce-la-creation-dune-nouvelle-gare/",
+    "date": "10/06/2023",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-66",
+    "libelle": "Vœux : « 2025 sera une année qui couronne les projets » (Lafarge, Hierles)",
+    "url": "https://www.midilibre.fr/2025/01/11/voeux-a-la-population-le-maire-de-frontignan-michel-arrouy-predit-une-annee-importante-pour-sa-ville-12437220.php",
+    "date": "11/01/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-67",
+    "libelle": "Conseil municipal : un budget de 56 M€ voté, taxe foncière stable",
+    "url": "https://www.midilibre.fr/2025/02/11/conseil-municipal-un-budget-de-56-meur-vote-et-une-taxe-fonciere-qui-ne-bouge-pas-a-frontignan-12504266.php",
+    "date": "11/02/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-68",
+    "libelle": "Conseil municipal du 6 février 2025 (BP 2025 détaillé)",
+    "url": "https://thau-infos.fr/index.php/commune/frontignan/206617-conseil-municipal-seance-du-jeudi-6-fevrier-2025",
+    "date": "07/02/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-69",
+    "libelle": "Budget primitif 2025 de 56,2 M€ voté",
+    "url": "https://www.herault-tribune.com/articles/frontignan-le-budget-primitif-2025-de-562-millions-deuros-vote-au-conseil-municipal/",
+    "date": "07/02/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-70",
+    "libelle": "Une bonne saison touristique dans l'Hérault (47 M nuitées, 1,7 Md€)",
+    "url": "https://www.midilibre.fr/2025/11/06/une-bonne-saison-touristique-dans-lherault-mais-des-visiteurs-qui-depensent-moins-13035569.php",
+    "date": "06/11/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-71",
+    "libelle": "Bilan 2025 : dans l'Hérault, le tourisme reste une locomotive",
+    "url": "https://actu.fr/societe/bilan-2025-dans-l-herault-le-tourisme-reste-une-locomotive-malgre-une-petite-baisse_63401808.html",
+    "date": "07/11/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-72",
+    "libelle": "L'ancien cinéma de Frontignan met en vente son mobilier (Cinémistral → Maison Mathieu)",
+    "url": "https://www.francebleu.fr/occitanie/herault-34/frontignan/fauteuils-rouges-ecran-enceintes-lunettes-3d-l-ancien-cinema-de-frontignan-met-en-vente-son-mobilier-2907943",
+    "date": "17/11/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-73",
+    "libelle": "Sète : le préfet de région évoque le PPA « recul du trait de côte » (Fonds vert)",
+    "url": "https://www.midilibre.fr/2023/04/05/sete-le-prefet-de-region-en-visite-pour-parler-de-lavenir-du-littoral-mediterraneen-11113763.php",
+    "date": "05/04/2023",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-74",
+    "libelle": "Sète aménage ses friches pour rester vertueuse (PPA, SCoT, ZAC)",
+    "url": "https://www.sa-equipement.fr/sete-amenage-ses-friches-pour-rester-vertueuse/",
+    "date": "07/03/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-75",
+    "libelle": "PPA : un record de contractualisation en 2023 (Sète parmi les PPA trait de côte)",
+    "url": "https://www.banquedesterritoires.fr/projet-partenarial-damenagement-un-record-de-contractualisation-en-2023",
+    "date": "25/07/2024",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-76",
+    "libelle": "Comment Arrouy a conservé son siège",
+    "url": "https://www.midilibre.fr/2026/03/16/municipales-2026-a-frontignan-comment-michel-arrouy-que-lon-disait-menace-a-t-il-fait-pour-conserver-son-siege-des-le-premier-tour-13275263.php",
+    "date": "16/03/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-77",
+    "libelle": "Résultats municipales 2026 Frontignan",
+    "url": "https://www.20minutes.fr/elections/resultats/herault/frontignan-34110",
+    "date": null,
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-78",
+    "libelle": "Élections municipales 2026 Frontignan",
+    "url": "https://www.lejournaltoulousain.fr/elections-municipales-2026/frontignan/",
+    "date": "18/03/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-79",
+    "libelle": "L'Hérault attire : +15 000 arrivants/an",
+    "url": "https://www.ici.fr/occitanie/herault-34/moins-de-naissances-plus-d-habitants-pourquoi-l-herault-attire-t-il-autant-4984538",
+    "date": "02/04/2026",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-80",
+    "libelle": "6 124 653 habitants en Occitanie",
+    "url": "https://www.midilibre.fr/2025/12/18/6-124-653-habitants-en-occitanie-pourquoi-la-population-continue-daugmenter-alors-quil-y-a-plus-de-deces-que-de-naissances-13118532.php",
+    "date": "18/12/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-81",
+    "libelle": "Recensement INSEE : Occitanie",
+    "url": "https://france3-regions.franceinfo.fr/occitanie/herault/montpellier/encore-plus-d-habitants-a-montpellier-les-pyrenees-orientales-et-le-gard-toujours-dynamiques-ce-que-revele-le-dernier-recensement-de-l-insee-3269339.html",
+    "date": "19/12/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-82",
+    "libelle": "Frontignan rejoint Action cœur de Ville",
+    "url": "https://www.francebleu.fr/emissions/l-info-d-ici-ici-herault/frontignan-rejoint-le-dispositif-action-coeur-de-ville-pour-redynamiser-son-centre-ville-et-accelerer-les-travaux-7860422",
+    "date": "24/03/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-83",
+    "libelle": "Le futur pôle culturel va métamorphoser le centre-ville",
+    "url": "https://www.radiofrance.fr/francebleu/podcasts/l-invite-du-7-8/invite-le-maire-de-frontignan-le-futur-pole-culturel-va-metamorphoser-le-centre-ville-1286954",
+    "date": "02/11/2023",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-84",
+    "libelle": "Hervé Marquès, nouveau maire de Sète",
+    "url": "https://france3-regions.franceinfo.fr/occitanie/herault/sete/enfant-des-hlm-ancien-adjoint-au-sport-qui-est-le-nouveau-maire-de-sete-herve-marques-3152597.html",
+    "date": "13/05/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-85",
+    "libelle": "La présidence de SAM passe à gauche",
+    "url": "https://plurielle.info/la-presidence-de-sete-agglopole-mediterrannee-passe-a-gauche/",
+    "date": "14/05/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-86",
+    "libelle": "Pas d'augmentation des impôts 2024",
+    "url": "https://www.midilibre.fr/2024/04/04/il-ny-aura-pas-daugmentation-des-impots-de-la-part-de-frontignan-11869429.php",
+    "date": "04/04/2024",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-87",
+    "libelle": "Le maire et son équipe « debouts » (ROB 2025)",
+    "url": "https://www.midilibre.fr/2024/12/07/le-maire-michel-arrouy-et-son-equipe-debouts-pour-donner-de-lespoir-a-leurs-concitoyens-de-frontignan-12373514.php",
+    "date": "07/12/2024",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-88",
+    "libelle": "Bilan FIRN 26ᵉ édition",
+    "url": "https://www.midilibre.fr/2023/07/04/quel-est-le-bilan-de-la-26e-edition-du-firn-frontignan-11302541.php",
+    "date": "04/07/2023",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-89",
+    "libelle": "Le vaste espace culturel sortira de terre",
+    "url": "https://actu.fr/occitanie/frontignan_34108/pres-de-montpellier-frontignan-la-peyrade-le-vaste-espace-culturel-sortira-de-terre-en-2025_60263910.html",
+    "date": "30/10/2023",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-90",
+    "libelle": "Un pôle culturel à l'horizon 2024",
+    "url": "https://actu.fr/occitanie/frontignan_34108/pres-de-montpellier-frontignan-la-peyrade-un-pole-culturel-a-l-horizon-2024_49726681.html",
+    "date": "28/03/2022",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-91",
+    "libelle": "Le chantier du miniplexe va bientôt démarrer",
+    "url": "https://www.midilibre.fr/2022/11/18/frontignan-le-chantier-de-construction-du-futur-miniplexe-va-bientot-demarrer-10811619.php",
+    "date": "18/11/2022",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-92",
+    "libelle": "Mas de Chave : les habitants de la Peyrade",
+    "url": "https://www.midilibre.fr/2025/09/20/les-habitants-de-la-peyrade-font-entendre-leur-voix-au-sujet-du-projet-durbanisation-du-mas-de-chave-a-frontignan-12939269.php",
+    "date": "20/09/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-93",
+    "libelle": "Le centre-ville au cœur d'importants chantiers",
+    "url": "https://www.frontignan.fr/le-centre-ville-au-coeur-dimportants-chantiers/",
+    "date": "16/10/2024",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-94",
+    "libelle": "Tourisme : Occitanie 2ᵉ région préférée des Français",
+    "url": "https://www.lejournaltoulousain.fr/occitanie/actualites-occitanie/tourisme-occitanie-preferee-francais-vacances-aout-336076/",
+    "date": "15/09/2025",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-95",
+    "libelle": "SAM, un territoire à fort potentiel",
+    "url": "https://www.latribune.fr/economie/collectivites/2018-11-12/sete-agglopole-mediterranee-un-territoire-a-fort-potentiel-797141.html",
+    "date": "12/11/2018",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-96",
+    "libelle": "Esso lance la réhabilitation de l'ex-raffinerie",
+    "url": "https://www.lejournaldesentreprises.com/breve/esso-lance-la-rehabilitation-de-lex-raffinerie-de-frontignan-2049326",
+    "date": "16/11/2022",
+    "type": "presse",
+    "famille": "A.2",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-97",
+    "libelle": "Décomptes publics — Frontignan",
+    "url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-98",
+    "libelle": "Journal du Net — budget Frontignan",
+    "url": "https://journaldunet.com/management/ville/frontignan/ville-34108/budget",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-99",
+    "libelle": "Pappers — Frontignan Muscat SCA",
+    "url": "https://www.pappers.fr/entreprise/frontignan-muscat-775998230",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-100",
+    "libelle": "societe.com — Frontignan Muscat",
+    "url": "https://www.societe.com/societe/frontignan-muscat-775998230.html",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-101",
+    "libelle": "Wikipédia — Frontignan",
+    "url": "https://fr.wikipedia.org/wiki/Frontignan",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-102",
+    "libelle": "Wikipédia — Sète Agglopôle Méditerranée",
+    "url": "https://fr.wikipedia.org/wiki/Communaut%C3%A9_d'agglom%C3%A9ration_du_Bassin_de_Thau",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-103",
+    "libelle": "Wikipédia — Risque industriel dans l'Hérault",
+    "url": "https://fr.wikipedia.org/wiki/Risque_industriel_dans_l'H%C3%A9rault",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-104",
+    "libelle": "transbus.org — SAMobilité",
+    "url": "https://www.transbus.org/reseaux/34200.html",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-105",
+    "libelle": "passagersdesvilles.fr — Frontignan",
+    "url": "https://passagersdesvilles.fr/projet/frontignan/",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-106",
+    "libelle": "simplanter.fr — Z.A. La Peyrade",
+    "url": "https://simplanter.fr/zone-activites/z-a-la-peyrade-frontignan",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-107",
+    "libelle": "cavescooperatives.com",
+    "url": "https://www.cavescooperatives.com/frontignan-muscat/",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-108",
+    "libelle": "frontignan-tourisme.com",
+    "url": "https://www.frontignan-tourisme.com/",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-109",
+    "libelle": "france-cadastre.fr — risques Frontignan",
+    "url": "https://france-cadastre.fr/risques/frontignan",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "dossier:src-110",
+    "libelle": "bien-dans-ma-ville.fr",
+    "url": "https://www.bien-dans-ma-ville.fr/frontignan-34108/",
+    "date": null,
+    "type": "juridique",
+    "famille": "A.3",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-1",
+    "libelle": "INSEE — Comparateur de territoires",
+    "url": "https://www.insee.fr/fr/statistiques/1405599?geo=COM-34108",
+    "date": "27/08/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-2",
+    "libelle": "Ville de Frontignan — dossier Muscat 90 ans",
+    "url": "https://www.frontignan.fr/flp-mag-51-le-dossier-muscat-90-ans-dappellation-celebres/",
+    "date": "06/07/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-3",
+    "libelle": "INSEE — RP2023",
+    "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "date": "27/08/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-4",
+    "libelle": "Décomptes publics — comptes 2024",
+    "url": "https://www.decomptes-publics.fr/villes/34108-34110-frontignan",
+    "date": "2025",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-5",
+    "libelle": "Midi Libre — résultats 2026",
+    "url": "https://www.midilibre.fr/2026/03/15/resultats-des-municipales-2026-a-frontignan-le-maire-sortant-michel-arrouy-fait-le-grand-chelem-et-conserve-son-poste-13274171.php",
+    "date": "15/03/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-6",
+    "libelle": "Ville de Frontignan — concertation citoyenne",
+    "url": "https://www.frontignan.fr/la-concertation-citoyenne-est-lancee/",
+    "date": "28/09/2021",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-7",
+    "libelle": "Rapport d'analyse territoriale §7.2",
+    "url": "rapport-frontignan-analyse-territoriale.md",
+    "date": "08/09/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-8",
+    "libelle": "Vision 2026-2040 §1.3",
+    "url": "vision-frontignan-2026-2040.md",
+    "date": "08/09/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-9",
+    "libelle": "SMBT — fiche risques du SCoT",
+    "url": "https://www.smbt.fr/storage/2020/04/3.1.9-ANNEXE-EIE-Fiche-Risques-SCOT-BASIN-DE-THAU-ARRET-15-10-24.pdf",
+    "date": "15/10/2024",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-10",
+    "libelle": "Météo-France — TRACC Occitanie",
+    "url": "https://meteofrance.com/changement-climatique/quel-climat-futur-en-occitanie",
+    "date": "13/05/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-11",
+    "libelle": "Sète Agglopôle — budget 2026",
+    "url": "https://www.agglopole.fr/le-budget-2026-de-l-agglopole-a-ete-vote/",
+    "date": "05/03/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-12",
+    "libelle": "SMBT — révision du SCoT",
+    "url": "https://www.smbt.fr/blog/2026/02/06/revision-du-scot-du-bassin-de-thau/",
+    "date": "06/02/2026",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-13",
+    "libelle": "Dossier de presse PPA",
+    "url": "https://www.agglopole.fr/storage/2024/06/Dossier-de-Presse-du-Projet-Partenarial-dAmenagement.pdf",
+    "date": "2024",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-14",
+    "libelle": "INSEE Analyses Occitanie n°115",
+    "url": "https://www.insee.fr/fr/statistiques/8568012",
+    "date": "15/05/2025",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "atlas:src-15",
+    "libelle": "INSEE Analyses — 170 000 ménages de plus dans l'Hérault",
+    "url": "https://www.insee.fr/fr/statistiques/8283176",
+    "date": "14/11/2024",
+    "type": "atlas",
+    "famille": "atlas",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:insee-dossier-complet",
+    "libelle": "INSEE — Dossier complet d’une commune",
+    "url": "https://www.insee.fr/fr/statistiques/2011101?geo=COM-34108",
+    "date": null,
+    "type": "veille",
+    "famille": "population",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:insee-base-dossier-complet",
+    "libelle": "INSEE — Base du dossier complet (fichier national)",
+    "url": "https://www.insee.fr/fr/statistiques/5359146",
+    "date": null,
+    "type": "veille",
+    "famille": "population",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:insee-donnees-locales",
+    "libelle": "INSEE — Données locales (portail)",
+    "url": "https://www.insee.fr/fr/information/3544265",
+    "date": null,
+    "type": "veille",
+    "famille": "population",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:gpu-api",
+    "libelle": "Géoportail de l’urbanisme — API et WFS",
+    "url": "https://www.geoportail-urbanisme.gouv.fr/api/",
+    "date": null,
+    "type": "veille",
+    "famille": "urbanisme",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:apicarto",
+    "libelle": "API Carto (IGN) — cadastre, urbanisme, nature",
+    "url": "https://apicarto.ign.fr/api/doc/",
+    "date": null,
+    "type": "veille",
+    "famille": "urbanisme",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:dvf",
+    "libelle": "DVF — Demandes de valeurs foncières",
+    "url": "https://app.dvf.etalab.gouv.fr",
+    "date": null,
+    "type": "veille",
+    "famille": "urbanisme",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:georisques-api",
+    "libelle": "Géorisques — API v1 (BRGM/Ministère)",
+    "url": "https://www.data.gouv.fr/dataservices/api-georisques",
+    "date": null,
+    "type": "veille",
+    "famille": "risques",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:ppri-ddtm34",
+    "libelle": "DDTM 34 — Règlement PPRI du bassin de Thau",
+    "url": "https://www.herault.gouv.fr/Politiques-publiques/Risques-naturels-et-technologiques/Prevention-des-risques-naturels/PPRI-de-l-Herault",
+    "date": null,
+    "type": "veille",
+    "famille": "risques",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:mrae-occitanie",
+    "libelle": "MRAe Occitanie — avis environnementaux",
+    "url": "https://www.mrae.developpement-durable.gouv.fr/IMG/pdf/2025ao18.pdf",
+    "date": null,
+    "type": "veille",
+    "famille": "risques",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:cerema-trait-de-cote",
+    "libelle": "Cerema — Indicateur national trait de côte & zones basses",
+    "url": "https://www.cerema.fr/fr/actualites/evaluation-enjeux-exposes-au-recul-du-trait-cote-court-moyen",
+    "date": null,
+    "type": "veille",
+    "famille": "risques",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:recherche-entreprises",
+    "libelle": "API Recherche d’entreprises (DINUM)",
+    "url": "https://annuaire-entreprises.data.gouv.fr/donnees/api-entreprises",
+    "date": null,
+    "type": "veille",
+    "famille": "entreprises",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:bodacc",
+    "libelle": "BODACC — annonces civiles et commerciales (DILA)",
+    "url": "https://www.bodacc.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "entreprises",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:boamp-api",
+    "libelle": "BOAMP — Bulletin officiel des annonces de marchés publics (API)",
+    "url": "https://www.data.gouv.fr/dataservices/api-bulletin-officiel-des-annonces-des-marches-publics-boamp",
+    "date": null,
+    "type": "veille",
+    "famille": "marches",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:decp",
+    "libelle": "DECP — Données essentielles de la commande publique",
+    "url": "https://www.data.gouv.fr/datasets/api-decp",
+    "date": null,
+    "type": "veille",
+    "famille": "marches",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:sncf-liO",
+    "libelle": "Région Occitanie — liO Train (données voyageurs)",
+    "url": "https://www.laregion.fr/liO-Train",
+    "date": null,
+    "type": "veille",
+    "famille": "mobilite",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:inpn",
+    "libelle": "INPN — Inventaire national du patrimoine naturel",
+    "url": "https://inpn.mnhn.fr/accueil/index",
+    "date": null,
+    "type": "veille",
+    "famille": "environnement",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:reseaux-canalisations",
+    "libelle": "Guichet unique des réseaux (INERIS) — DT/DICT",
+    "url": "https://www.reseaux-et-canalisations.gouv.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "chantier",
+    "verifie_le": "2026-10-07"
+   },
+   {
+    "id": "veille:pappers-societe",
+    "libelle": "Pappers / société.com — comptes et dirigeants",
+    "url": "https://www.pappers.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "entreprises",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:frontignan-site",
+    "libelle": "Ville de Frontignan la Peyrade — site officiel",
+    "url": "https://www.frontignan.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "local",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:agglopole",
+    "libelle": "Sète Agglopôle Méditerranée — site officiel",
+    "url": "https://www.agglopole.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "local",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:smbt",
+    "libelle": "SMBT — Syndicat mixte du bassin de Thau",
+    "url": "https://www.smbt.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "local",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:thau-infos",
+    "libelle": "Thau Infos — comptes rendus de conseils",
+    "url": "https://thau-infos.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "presse",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:gdelt",
+    "libelle": "GDELT — flux de presse mondial (filtrable en français)",
+    "url": "https://api.gdeltproject.org/api/v2/doc/doc",
+    "date": null,
+    "type": "veille",
+    "famille": "presse",
+    "verifie_le": "2026-09-08"
+   },
+   {
+    "id": "veille:midi-libre",
+    "libelle": "Midi Libre — édition de Sète et du bassin de Thau",
+    "url": "https://www.midilibre.fr/",
+    "date": null,
+    "type": "veille",
+    "famille": "presse",
+    "verifie_le": "2026-09-08"
+   }
+  ],
+  "lacunes": [
+   {
+    "rang": 1,
+    "texte": "Fréquentation de la gare de Frontignan (entrées/sorties annuelles, SNCF/Région) et avancement des études opérationnelles du PEM (lancées fin 2023, livrables, calendrier consolidé 2028-2029) — le financement (25 M€, Région ≤ 10 M€ / agglo 20 % / État engagé) est désormais documenté, pas la programmation détaillée. Point d'angle mort n°1.",
+    "gravite": "angle mort",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 2,
+    "texte": "Budgets consolidés : répartition précise BP 2025/2026 (fonctionnement/investissement), montant des subventions reçues par exercice et par financeur, dette fine 2025, PPI (programmation pluriannuelle des investissements).",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 3,
+    "texte": "Détail des financements de l'ORU cœur de ville, du pôle culturel Botta, du port (clé Ville/agglo/État/Région/PL21).",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 4,
+    "texte": "Étude d'usage / programmation de la friche Mobil (résultats fin 2026) et gouvernance d'aménagement prévue.",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 5,
+    "texte": "Vacance commerciale actualisée (4 % = donnée municipale datant de 2019-2020 ; demander l'observatoire ACV 2026).",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 6,
+    "texte": "Fréquentation touristique frontignanaise (taxe de séjour, nuitées, office de tourisme) — seule la capacité d'hébergement est publique.",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 7,
+    "texte": "Plan climat-air-énergie territorial (PCAET) de l'agglo et déclinaison communale ; sobriété lumineuse, photovoltaïque municipal.",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 8,
+    "texte": "Zonage PPRI/PPRT cartographié (geoportail) et état d'avancement des cartes « recul du trait de côte » 30/100 ans.",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 9,
+    "texte": "Effectifs et périmètres QPV exacts (population couverte, géographie — cartographie INSEE 2024).",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 10,
+    "texte": "Bilan des concertations (comités habitants, budget participatif : participation, projets lauréats).",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 11,
+    "texte": "Centre aquatique des Hierles : budget, programme (bassins, équipements associés), calendrier de chantier et maîtrise d'œuvre — les marchés sont lancés (budget agglo 2026) mais aucun chiffrage public n'est disponible.",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 12,
+    "texte": "Friche Lafarge : études d'aménagement (contenu, financement, calendrier de renaturation) et articulation avec le centre aquatique voisin.",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   },
+   {
+    "rang": 13,
+    "texte": "Contenus du PPA : cartes locales d'exposition 30/100 ans (livrées ?), plan-guide du triangle Sète-Balaruc-Frontignan, scénario de recomposition de Frontignan-Plage, stratégie foncière (EPF Occitanie).",
+    "gravite": "documentation",
+    "demandeur": "Ville / agglo"
+   }
+  ],
+  "contradictions": [
+   {
+    "sujet": "Voix liste Arrouy 2026",
+    "conflit": "Midi Libre (« 5 078 voix ») vs résultats officiels cumulés (5 922 voix, 51,16 % de 11 575 exprimés — 20min/JT/bienpublic)",
+    "traitement": "5 922 retenues (3 sources officielles agrégées) ; l'article ML semble compter différemment (électeurs vs exprimés)"
+   },
+   {
+    "sujet": "Population agglo",
+    "conflit": "129 982 (2022, Wikipédia/INSEE) vs « ≈ 125 000 » (tourisme-sete) vs 132 851 (transbus, 2024?) vs 131 033 (pop. légales 2023, calcul propre)",
+    "traitement": "≈ 131 000 hab. (2023) retenu ; à confirmer avec le bilan annuel agglo"
+   },
+   {
+    "sujet": "Budget « cœur de ville »",
+    "conflit": "15 M€/10 ans (site Ville) vs 35 M€/10 ans (actu.fr 2022)",
+    "traitement": "15 M€ = périmètre ORU espaces publics ; 35 M€ probablement périmètre élargi (habitat, équipements) — signalé ❓"
+   },
+   {
+    "sujet": "Dette communale",
+    "conflit": "23,9 M€ / 995 €/hab. (fin 2024, JDN/Décomptes publics) vs « stock ≈ 21 M€ » (CM janvier 2026, actudirect24)",
+    "traitement": "Les deux sont plausibles (évolution 2024→2026, remboursement ~2,3 M€/an) ; écart signalé ❓"
+   },
+   {
+    "sujet": "Budget 2026 communal",
+    "conflit": "« 52 M€ » (BP voté 13/01/2026, actudirect24) vs « 52,4 M€ » (reprise de draft externe) vs « 64,9 M€ » (BP + BS + reports, juin 2026)",
+    "traitement": "Périmètres différents explicités (§9.1) ; 52 M€ (BP) et 64,9 M€ (consolidé) retenus, le « 52,4 M€ » n'ayant pas été vérifié à la source"
+   },
+   {
+    "sujet": "PPA agglo",
+    "conflit": "« budget études > 1 M€ » (draft externe) vs 700 k€ HT (dossier de presse agglo 2024 / guide juridique)",
+    "traitement": "700 k€ HT retenus (sources primaires)"
+   },
+   {
+    "sujet": "Coût du PEM",
+    "conflit": "41 M€ (premières ébauches) vs 25 M€ (annonce officielle Région, juin 2023)",
+    "traitement": "25 M€ retenus ; la révision est documentée (suppression du déplacement d'aiguillage)"
+   },
+   {
+    "sujet": "Superficie vignoble AOP",
+    "conflit": "650 ha (Ville, 2019) vs 622-640 ha (cave coop) vs 800 ha (Ville 2026, vins-LR)",
+    "traitement": "800 ha (2026) retenu (source la plus récente), fourchette signalée"
+   },
+   {
+    "sujet": "Fréquentation FIRN",
+    "conflit": "5 876 (2023) vs 8 500 (2016) vs « sur-gonflés » (critique d'opposition citée par ML)",
+    "traitement": "Chiffres organique/communiqués : à considérer comme ordres de grandeur"
+   },
+   {
+    "sujet": "Aire de jeux / Maison Mathieu",
+    "conflit": "« Aire de jeux inclusive, parc de la Maison Mathieu, 281 800 € » (Le Moniteur) vs « transformation de la Maison Mathieu en salle de spectacle, 220 k€ » (BP 2025, frontignan.fr)",
+    "traitement": "Deux opérations distinctes possibles sur le même site — à clarifier avec la Ville ❓"
+   }
+  ]
+ },
+ "vision": {
+  "forces": [
+   {
+    "titre": "Démographie — la croissance régionale, la stagnation du bassin de Thau",
+    "resume": "- Occitanie : +640 000 habitants et +570 000 ménages entre 2021 et 2050 (INSEE Omphale 2022, scénario central) ; besoin estimé à 29 000 logements/an ; les personnes seules (45 % des ménages en 2050, bascule dès 2035) dépasseront les couples. ✅ - Hérault : 1 430 000 habitants en 2050 (+245 000 vs 2020), +170 000 ménages dont la moitié dans le Montpelliérain ; le Montpelliérain capterait 60 % des gains de population du département ; +10 500 hab./an jusqu'en 2035 puis +5 900. ✅ - Territoire « Étang de Thau » (INSEE) : +0,05 %/an seulement — la plus faible croissance des territoires héraultais, soit ≈ 127 000 habitants en 2050, quasi-stagnation. La croissance frontignanaise récente (+1,0 %/an, 2"
+   },
+   {
+    "titre": "Climat — un littoral sous contrainte croissante, mais à vitesse connue",
+    "resume": "- Projections Météo-France (TRACC) pour l'Occitanie : +2,2 °C à l'horizon 2050 (+2,5 °C en été dans l'Hérault) ; jours > 35 °C : 1,3 → 7,7/an en 2050 (17,8 en 2100) ; nuits tropicales : 5 → 24/an ; jours de sols secs : 93 → 126 ; risque feu ×2,5 ; pluies estivales −15 % mais fortes pluies +8 %. ✅ - Mer : +24 cm en 2050, +62 à +81 cm en 2100 (Méditerranée) ; le PPRI de Frontignan retient déjà une PHE centennale de 2,00 m — les cartes d'exposition 30/100 ans du PPA (attendues 2026-2027) transformeront cette donnée en front d'urbanisme. ✅ - Conchyliculture : crise sanitaire majeure (suspension 28 jours fin décembre 2025, norovirus après fortes pluies) ; l'agglo a investi 120 M€ en 10 ans dans l"
+   },
+   {
+    "titre": "Mobilités — la décennie ferroviaire 2026-2034",
+    "resume": "| Jalon | Date | Statut | |---|---|---| | TCSP RD2 phase 1 (Sète) + nouveau réseau bus + ligne express Balaruc-Sète | 5 janvier 2026 | ✅ en service | | Sections TCSP sur Frontignan, Balaruc-les-Bains, Balaruc-le-Vieux | ≈ 2027-2030 | 📅 ≈ 30 M€ de travaux supplémentaires annoncés | | PEM & nouvelle gare de Frontignan (25 M€ : Région ≤ 10 M€, agglo 20 %, État, Ville) | horizon 2028-2029 | 📅 études opérationnelles lancées fin 2023 | | Travaux LGV phase 1 Montpellier-Béziers | 2029 → service 2034 | 📅 appel d'offres ≈ 1,5 Md€ lancé fin 2026 | | LGV phase 2 Béziers-Perpignan | DUP ≈ 2030, service ≈ 2040 | ⚠️ concertation 2026-2028 en cours | | Effet 2034 : gares de Sète et Frontignan « orphelin"
+   },
+   {
+    "titre": "Finances publiques & foncier — l'ère de la rareté maîtrisée",
+    "resume": "- Fonds vert national : 2,5 Md€ (2024) → 1,15 Md€ (2025) → 834 M€ (2026) ; dotations sous tension (FCTVA −2 pts à Frontignan) ; taux d'intérêt en hausse (intérêts agglo +27,6 % en 2025). ✅ - ZAN : −50 % de consommation d'espaces en 2031, ZAN 2050 ; le SCoT du Bassin de Thau révisé traduit cela localement : −54 % d'artificialisation vs SCoT précédent, objectif ≈ 1 000 logements/an sur le bassin, développement dans l'enveloppe urbaine et par les friches (30 ha encore à remobiliser dans le bassin selon L. Linares). ✅ - Action cœur de Ville prolongé (déc. 2025), politique de ville « Quartiers 2030 » (2024-2030), appels à projets friches de la Région (2 sessions/an) : les financements existent ma"
+   },
+   {
+    "titre": "Bloc 2026-2030 — « tout se joue maintenant »",
+    "resume": "| Chantier | 2026 | 2027 | 2028 | 2029 | 2030 | |---|---|---|---|---|---| | Friche ExxonMobil (11 ha) | Études d'usages (résultats fin 2026) ; ville propriétaire | Programmation du quartier (MOA/MOE à définir) | Pré-opérationnel, premiers travaux d'aménagement | Aménagement tranche 1 | ★ Premiers usages livrés | | PEM / gare nouvelle (25 M€) | Études opérationnelles | Études, dossier IA (travaux) | Livraison visée 2028 | Mise en vitesse, services | ★ Pôle en régime de croisière | | Centre aquatique Hiérles | Marchés lancés (budget agglo 2026) | Chantier | Chantier | Livraison probable ⚠️ | ★ Équipement en service | | Port de plaisance (4,5 M€) | Chantier (avant-port, promenade Rive Est) | Po"
+   },
+   {
+    "titre": "Bloc 2030-2034 — le temps des preuves",
+    "resume": "- Municipales de mars 2032 : le bilan 2026-2031 (gare livrée ? friche engagée ? piscine ouverte ? plage : quel scénario ?) fera l'élection. La mandature 2026-2032 est donc une mandature d'exécution, la suivante (2032-2038) sera une mandature d'achèvement ou de correction. - LGV phase 1 en service en 2034 : bascule de la desserte — moins de TGV à Sète/Frontignan, plus de TER (« un train/10 min aux heures de pointe » visé par le SERM), gares recalibrées en pôles de mobilité du quotidien. Le PEM frontignanais, livré 2028-2029, aura 5 ans d'avance sur cette bascule : atout si l'offre TER suit, risque si elle ne suit pas. 🔮 - Montée en charge du quartier de la friche (tranches successives), satu"
+   },
+   {
+    "titre": "Bloc 2034-2040 — la maturité",
+    "resume": "- 2040 : LGV complète Montpellier-Perpignan ; le bassin de Thau arrive à l'horizon de son SCoT (+12 à 16 400 hab.) ; Frontignan-Plage entre dans la phase opérationnelle de recomposition si le PPA a abouti ; le quartier de la friche est construit pour l'essentiel ; la question 2040 est celle du littoral : quelle part de la station est encore défendable, quelle part est recomposée. - Horizon PPA 100 ans (≈ 2120) : les décisions prises 2026-2040 engagent le très long terme — c'est précisément l'horizon de la démarche design proposée. ---"
+   }
+  ],
+  "population_2030": [
+   25200,
+   25800
+  ],
+  "points_2030": [
+   "Une nouvelle porte ferroviaire : gare/PEM en service depuis 1 à 2 ans, parking relais, passerelle vers les chais Botta — le train du quotidien (Montpellier en ~20 min, Sète en ~5) comme colonne vertébrale.",
+   "Un cœur de ville requalifié : ORU achevée dans ses phases principales (places, rues, halage, quai Voltaire), salle de spectacle à la Maison Mathieu, pôle culturel du Quai en exploitation, vacance commerciale contenue (< 5-6 %) — le label ACV aura soutenu habitat et commerces.",
+   "Un front de Thau réinventé en chantier : les 11 ha de la friche en première tranche (économique + équipements publics + espaces publics), la ville propriétaire du foncier, la programmation issue des études 2026-2027.",
+   "Une offre d'équipements intercommunale renforcée : centre aquatique des Hiérles ouvert, ZAE du Barnier modernisée (2027), TCSP continu Sète-Balaruc-Frontignan.",
+   "Une station balnéaire sous doctrine : cartes d'exposition 30/100 ans publiées, scénario de recomposition de Frontignan-Plage en débat public, port à 750 anneaux, premières mesures d'adaptation (ombrage, accès, gestion du sable).",
+   "Une démographie en croissance ralentie : ≈ 25 200-25 800 habitants (estimation propre : prolongement d'une croissance de +0,4 à +0,8 %/an), vieillissement continu (65+ ≈ 27-29 %), pression sur la santé et l'autonomie.",
+   "Des finances sous tension maîtrisée : dette ≈ dans la moyenne de strate, fiscalité stable si le cap est tenu, mais chaque grand projet (friche, plage, écoles) dépendra des cofinancements (ACV, Fonds vert résiduel, Région, agglo, Europe)."
+  ],
+  "conditions": [
+   "conditions de succès à 2030 (autant d'indicateurs à suivre) : ① le PEM livré dans les temps et desservi",
+   "② une programmation de la friche validée et financée",
+   "③ l'emploi local en progression mesurable (+300 à +600 postes)",
+   "④ la qualité de l'eau de Thau en amélioration (fin des suspensions sanitaires récurrentes)",
+   "⑤ une trajectoire démographique maintenue sans gentrification du centre (loyers, vacance, mixité). ---"
+  ],
+  "scenarios": [
+   {
+    "nom": "Thau tranquille",
+    "brut": "S1 — Thau tranquille",
+    "recommande": false,
+    "criteres": [
+     {
+      "critere": "Moteur",
+      "valeur": "Stagnation du bassin (+0,05 %/an INSEE) ; friche sous-aménagée ; PEM sous-utilisé"
+     },
+     {
+      "critere": "Population 2040",
+      "valeur": "≈ 24-25 000 (65+ > 30 %)"
+     },
+     {
+      "critere": "Paysage urbain",
+      "valeur": "Banlieue résidentielle vieillissante ; friche en logistique basique"
+     },
+     {
+      "critere": "Économie",
+      "valeur": "Emplois publics/services ; muscat statique"
+     },
+     {
+      "critere": "Risque politique",
+      "valeur": "Abstention, RN, déclin des services"
+     }
+    ]
+   },
+   {
+    "nom": "Couronne métropolitaine",
+    "brut": "S2 — Couronne métropolitaine",
+    "recommande": false,
+    "criteres": [
+     {
+      "critere": "Moteur",
+      "valeur": "Débordement du Montpelliérain (+60 % des gains dept) ; spéculation littorale"
+     },
+     {
+      "critere": "Population 2040",
+      "valeur": "> 27 000, résidences secondaires 25-30 %"
+     },
+     {
+      "critere": "Paysage urbain",
+      "valeur": "Mas de Chave + friche en promotion privée dominante ; centre en gentrification"
+     },
+     {
+      "critere": "Économie",
+      "valeur": "Économie résidentielle ; emplois précaires saisonniers"
+     },
+     {
+      "critere": "Risque politique",
+      "valeur": "Conflits d'usages, sécession sociale, municipales 2032 clivées"
+     }
+    ]
+   },
+   {
+    "nom": "Pôle de la transition",
+    "brut": "S3 — Pôle de la transition ★",
+    "recommande": true,
+    "criteres": [
+     {
+      "critere": "Moteur",
+      "valeur": "Friche + PEM + identité (muscat, FIRN, Thau) = renaissance économique et culturelle"
+     },
+     {
+      "critere": "Population 2040",
+      "valeur": "≈ 26 000, attractivité familiale"
+     },
+     {
+      "critere": "Paysage urbain",
+      "valeur": "Quartier de la transition (économique + culturel intercommunal) ; recomposition engagée à la plage"
+     },
+     {
+      "critere": "Économie",
+      "valeur": "+500 à +1 000 emplois (friche, Barnier, œnotourisme, économie bleue)"
+     },
+     {
+      "critere": "Risque politique",
+      "valeur": "Fatigue participative si les promesses 2026-2030 ne tiennent pas"
+     }
+    ]
+   }
+  ],
+  "fragilites": [
+   {
+    "fragilite": "Enquête publique Mas de Chave",
+    "detail": "Reprise de concertation en juillet 2026 (projet ramené à ≈ 400 logements) fragilise l'enquête annoncée « 2026 »",
+    "parade": "Co-construction fine avec les habitants de La Peyrade ; scénarios comparés",
+    "marqueurs": []
+   },
+   {
+    "fragilite": "Études d'usages de la friche",
+    "detail": "L'arrêté de récolement n'autorise qu'un usage industriel ; les usages tertiaires/culturels dépendent d'études complémentaires (résultats fin 2026) ⚠️",
+    "parade": "Anticiper les scénarios à usages conditionnels ; usages transitoires dès 2027",
+    "marqueurs": [
+     "⚠️"
+    ]
+   },
+   {
+    "fragilite": "Desserte TER post-2034",
+    "detail": "La compensation « SERM » n'est pas contractée à ce jour",
+    "parade": "Mobilisation agglo/Région ; le design du PEM doit rendre la gare « prête à tout »",
+    "marqueurs": []
+   },
+   {
+    "fragilite": "Calendrier LGV phase 2",
+    "detail": "DUP ≈ 2030, service ≈ 2040, contentieux probable",
+    "parade": "Ne pas caler le modèle économique local sur la LGV ; miser sur le train du quotidien",
+    "marqueurs": []
+   },
+   {
+    "fragilite": "Approbation du SCoT",
+    "detail": "Procedure resserrée (reprise 2025, consultation réouverte 2026) ; approbation attendue fin 2026 ⚠️",
+    "parade": "Veille réglementaire ; PLU à synchroniser",
+    "marqueurs": [
+     "⚠️"
+    ]
+   },
+   {
+    "fragilite": "Financement du centre aquatique",
+    "detail": "Marchés lancés en 2026 mais coût public non publié",
+    "parade": "Transparence budgétaire, phasage",
+    "marqueurs": []
+   },
+   {
+    "fragilite": "Thau sanitaire",
+    "detail": "Suspensions récurrentes possibles tant que les réseaux ne sont pas au niveau",
+    "parade": "Communication de crise, design de la confiance (données ouvertes sur l'eau)",
+    "marqueurs": []
+   }
+  ],
+  "signaux": [
+   "cadence des TER après 2034 (SERM)",
+   "vitesse d'instruction du PLU/Mas de Chave",
+   "prix du foncier et part des résidences secondaires",
+   "taux de remplissage du cinéma du Quai et de la future salle",
+   "taux d'abstention aux municipales 2032",
+   "nombre de jours de fermeture sanitaire de Thau par an",
+   "autorefina­cement communal."
+  ]
+ },
+ "statistiques": {
+  "dossier": {
+   "projets": 13,
+   "projetsAvecBudget": 2,
+   "projetsSansLien": 1,
+   "chiffres": 32,
+   "sources": 110,
+   "sourcesParFamille": {
+    "A.1": 46,
+    "A.2": 50,
+    "A.3": 14
+   },
+   "sourcesAvecDate": 95,
+   "lacunes": 13,
+   "scenarios": 3,
+   "fragilites": 7,
+   "signaux": 7
+  },
+  "atlas": {
+   "noeuds": 79,
+   "liens": 167,
+   "communes": 14,
+   "peuplement": 131216,
+   "types": {
+    "territoire": 11,
+    "ressource": 3,
+    "data": 7,
+    "acteur": 31,
+    "projet": 10,
+    "risque": 5,
+    "commune": 2,
+    "politique": 6,
+    "futur": 4
+   },
+   "sources": 15,
+   "noeudsSansSource": 60,
+   "projets": 10,
+   "acteurs": 31,
+   "risques": 5
+  },
+  "veille": {
+   "total": 24,
+   "parFamille": {
+    "population": 3,
+    "urbanisme": 3,
+    "risques": 4,
+    "entreprises": 3,
+    "marches": 2,
+    "mobilite": 1,
+    "environnement": 1,
+    "chantier": 1,
+    "local": 3,
+    "presse": 3
+   },
+   "parEtat": {
+    "cité": 13,
+    "identifie": 10,
+    "humain": 1
+   },
+   "avecApi": 9,
+   "familles": 10,
+   "verifiees": 24
+  },
+  "chiffres": 32,
+  "sources": 110,
+  "rapprochements": 7,
+  "scenarios": 3,
+  "projets": 13
+ }
+}

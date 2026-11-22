@@ -40,6 +40,7 @@ export const NOMS = {
   'wt-intel': ['INTEL — tableau de bord expert', 'donnees', '🧠'],
   'intel-hud': ['HUD Intel (bandeau)', 'donnees', '🧠'],
   'wt-fiche': ['Fiche lieu', 'donnees', '📄'],
+  'wt-dock-territoire': ['TERRITOIRE — carte stratégique (France → Thau → Frontignan)', 'vues', '🗺'],
   'wt-minimap': ['Minicarte', 'vues', '🗺'],
   'wt-cadrans': ['Cadrans de la commune', 'vues', '🔲'],
   'wt-entites': ['Entités de la carte', 'donnees', '🏷'],

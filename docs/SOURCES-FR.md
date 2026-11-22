@@ -55,6 +55,8 @@ réel mais basse résolution, voir nuages).
 | data.gouv.fr | 50 000+ jeux de données | 🟢 gratuit |
 | Géorisques | Risques naturels/industriels par commune | 🟢 gratuit |
 | cadastre.data.gouv.fr | Parcelles GeoJSON par commune | 🟢 gratuit — importable direct (drag & drop) |
+| **Observatoire national DT-DICT** | Endommagements de réseaux, retours d'expérience, bonnes pratiques | 🟢 gratuit | source de la lentille RÉSEAUX et de la base `imprevusTp.js` |
+| INRS / OPPBTP (PreventionBTP) | Risques de chantier, presque-accidents, modes opératoires | 🟢 gratuit | base `imprevusTp.js` (niveaux de preuve documenté / rapporté / déduit) |
 
 ## Feuille de route mode chantier (4D)
 
