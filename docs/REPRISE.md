@@ -1,5 +1,8 @@
 # 💾 WATCHTOWER — ÉTAT DE REPRISE (sauvegarde de session)
 
+> **Index de reprise GitHub complémentaire (22/11/2026)** : [audit maître](agent-memory/08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md), [diff T vs 2D](agent-memory/11-MATRICE-CONVERGENCE-TERRITOIRE-2D.md), [hub agent](agent-memory/01-HUB-SUIVI-AGENTS.md). **Le présent fichier reste un snapshot historique**, non une validation de la tour actuelle.
+
+
 > [!note] Référence documentaire ajoutée le 22/11/2026 (sans modifier l'instantané historique)
 > Cette page conserve la **sauvegarde de session originelle** (itération 21 et branche mentionnée ci-dessous). Pour reprendre un travail d'agent aujourd'hui, consulter d'abord le [hub de suivi](agent-memory/01-HUB-SUIVI-AGENTS.md) et la [mindmap unifiée](agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md), puis vérifier le SHA, les services et les tests effectivement accessibles. Le corps de cette sauvegarde n'est **pas** une preuve de disponibilité actuelle sur le PC.
 > **Audit GitHub du 22/11/2026** : voir la [matrice d'architecture](agent-memory/03-CAPACITES-ARCHITECTURE-DIVERGENCES.md), l'[index complet](agent-memory/02-INVENTAIRE-GITHUB-COMPLET.md) et la [CI vérifiée](agent-memory/04-VALIDATION-CI-REPRISE.md). Les 2 échecs historiques `ign-ortho` ont été retrouvés dans les logs de la CI récente ; ceci ne prouve pas l'état du PC.
