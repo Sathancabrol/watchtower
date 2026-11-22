@@ -13,6 +13,10 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 
 # WATCHTOWER — HUB DE SUIVI ET DE REPRISE POUR AGENTS
 
+> [!important] Navigation à profondeur non limitée
+> Nouvelle arborescence détaillée : [[12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX]] ([fichier GitHub](12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX.md)). Lire l'index pour traverser les domaines et sous-domaines, puis ouvrir les preuves précises et consulter la branche correspondante.
+
+
 > [!important] Point d'entrée, **pas une seconde roadmap**
 > Ce document est le **routeur documentaire** d'Obsidian et des agents IA. Le suivi produit reste dans [`ROADMAP.md`](../../ROADMAP.md) ; la sauvegarde historique de session dans [`docs/REPRISE.md`](../REPRISE.md). Ne jamais copier ici un statut sans le dater, lui associer une source et préciser s'il s'agit d'un test réellement rejoué.
 
