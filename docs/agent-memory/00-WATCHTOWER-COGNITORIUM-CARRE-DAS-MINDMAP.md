@@ -29,6 +29,10 @@ tags:
 
 # WATCHTOWER × COGNITORIUM × CARRÉ D'AS
 
+> [!important] Index hiérarchique exhaustif
+> Pour descendre dans les sous-niveaux, modules, branches Git, capacités et chemins documentaires, ouvrir [[12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX]] ([sur GitHub](12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX.md)). Cet index développe la présente carte et relie les 84 branches documentées ; il ne prouve pas l'état runtime.
+
+
 > [!abstract] Mission de cette note
 > **Carte mentale centrale, lisible par un humain ET exploitable comme mémoire externe par un agent IA.** Elle réunit les concepts, dépôts, modules, agents, données, outils, interfaces, flux, contraintes, décisions, incertitudes et travaux restants, sans présenter les souhaits comme des fonctionnalités actives.
 >
