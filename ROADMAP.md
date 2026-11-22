@@ -1,5 +1,15 @@
 # 🗺 WATCHTOWER — FEUILLE DE ROUTE
 
+## Index de mémoire et suivi des agents — documentation (22/11/2026)
+
+- **[Mindmap WATCHTOWER × COGNITORIUM × CARRÉ D'AS](docs/agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md)** : vue structurée Obsidian pour agents IA, relations entre modules, états et dépendances.
+- **[Hub de suivi et de reprise des agents](docs/agent-memory/01-HUB-SUIVI-AGENTS.md)** : point d'entrée, statut épistémique et ordre de lecture des sources.
+
+Ces ajouts sont **documentaires uniquement** : ils ne constituent ni une itération fonctionnelle supplémentaire, ni une recette sur la tour, ni une confirmation de fusion des développements Hermes de novembre. Le suivi des itérations reste dans **ce fichier** ; la sauvegarde de session historique est dans [`docs/REPRISE.md`](docs/REPRISE.md).
+
+---
+
+
 Document vivant : **mis à jour à chaque itération**. Chaque entrée indique
 l'état (`✅ fait` · `🟡 en cours` · `⬜ prévu`), le module concerné et la
 source de données utilisée (toutes ouvertes et sans clé, sauf mention).
