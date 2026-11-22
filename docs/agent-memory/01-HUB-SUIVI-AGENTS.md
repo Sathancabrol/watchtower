@@ -16,6 +16,24 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 > [!important] Point d'entrée, **pas une seconde roadmap**
 > Ce document est le **routeur documentaire** d'Obsidian et des agents IA. Le suivi produit reste dans [`ROADMAP.md`](../../ROADMAP.md) ; la sauvegarde historique de session dans [`docs/REPRISE.md`](../REPRISE.md). Ne jamais copier ici un statut sans le dater, lui associer une source et préciser s'il s'agit d'un test réellement rejoué.
 
+## L'audit maître GitHub — v2 du 22 novembre 2026
+
+**Le nouveau point d'entrée global** est [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]] — [ouvrir le document maître sur GitHub](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md). Il rassemble les conclusions, les modules, les preuves et les 29+ annexes techniques, sans remplacer `ROADMAP.md` ni la sauvegarde de session `REPRISE.md`.
+
+| Question de l'agent | Lecture immédiate |
+|---|---|
+| Quel état de code existe dans tous les dépôts et toutes les branches ? | [Audit maître](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md) → annexes 05A–D et 06A–D ; 84 branches, neuf dépôts |
+| Quel commit a fait quoi ? | [07A](07A-WATCHTOWER-TOUS-COMMITS.md) puis 07B–07I : **1 389 références SHA distinctes** dans les annexes des dépôts personnels |
+| Qu'est-ce qui a changé dans God's Eye View ? | [10](10-UPSTREAM-GODS-EYE-VIEW-COMPARAISON.md) et [10B–10F](10B-UPSTREAM-BRANCHES-01-10.md) : 49 pointes upstream et différences de fichiers |
+| Quelles versions doivent être rapprochées ? | [11 — matrice T vs 2D](11-MATRICE-CONVERGENCE-TERRITOIRE-2D.md) : neuf chemins divergents, sept en code/config/tests |
+| Quel code Carré d'As pointe réellement vers Watchtower ? | [Master §4](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md#4-carré-das--deux-dépôts-apparents-deux-implémentations) : `carredas/modules/watchtower` sur branche Arena, **viewer 3D pas encore raccordé** |
+| Quelle part d'OLYMPUS/X-Ray/CRONOS est réellement reliée ? | [Master §6](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md#6-olympus-studio-xr-laplace-hermes-et-cronos-fleet) : inspecter `integration-registry.js` ; « not-integrated » ≠ fonction active |
+| Quelle erreur CI est prouvée ? | [04](04-VALIDATION-CI-REPRISE.md), logs GitHub 22/11 : `ign-ortho` deux mappings absents |
+| Comment intégrer dans Obsidian ? | Importer **tout `docs/agent-memory/*.md` ensemble**, puis ouvrir la [[00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP]] et le master |
+
+> [!warning] Conditions d'arrêt
+> Audit des **références GitHub** clos au snapshot du 22/11. **Non clos :** disque externe, worktrees non committés, API live, exécution Windows/Android, performance GPU et tests d'appareils. Aucune fusion ni changement de code n'a été effectué par cet audit documentaire.
+
 ## Inventaire multi-branches et vérifications — 22/11/2026
 
 **Documentation ajoutée par passes successives, à lire sans recopier les catalogues :**
