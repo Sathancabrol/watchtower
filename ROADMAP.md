@@ -4,6 +4,9 @@
 
 - **[Mindmap WATCHTOWER × COGNITORIUM × CARRÉ D'AS](docs/agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md)** : vue structurée Obsidian pour agents IA, relations entre modules, états et dépendances.
 - **[Hub de suivi et de reprise des agents](docs/agent-memory/01-HUB-SUIVI-AGENTS.md)** : point d'entrée, statut épistémique et ordre de lecture des sources.
+- [Inventaire des fichiers et variantes](docs/agent-memory/02-INVENTAIRE-GITHUB-COMPLET.md) et [index JSON](docs/agent-memory/WATCHTOWER-FILE-INDEX.json) : 11 branches recensées ; toutes variantes de fichiers indexées avec leurs SHA.
+- [Capacités et divergences](docs/agent-memory/03-CAPACITES-ARCHITECTURE-DIVERGENCES.md) : versions territoriales, 2D, INTEL, sources et autres projets.
+- [Validation CI et reprise](docs/agent-memory/04-VALIDATION-CI-REPRISE.md) : PR ouvertes, tests GitHub et suites de travail à vérifier.
 
 Ces ajouts sont **documentaires uniquement** : ils ne constituent ni une itération fonctionnelle supplémentaire, ni une recette sur la tour, ni une confirmation de fusion des développements Hermes de novembre. Le suivi des itérations reste dans **ce fichier** ; la sauvegarde de session historique est dans [`docs/REPRISE.md`](docs/REPRISE.md).
 
