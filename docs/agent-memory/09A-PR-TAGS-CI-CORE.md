@@ -6,6 +6,12 @@ tags: [watchtower, git, pr, ci, releases]
 
 # GitHub : métadonnées de livraison — Watchtower, Monorepo, Cognitorium
 
+> [!note] Correctif de méthode — vérification des tags
+> Le premier relevé de ce document utilisait un endpoint `/tags` rejeté par la connexion GitHub et affichait `null` pour les tags. Un second relevé du 22/11 via `git/matching-refs/tags` donne : `watchtower` 0 ref(s) tag ; `monorepo` 1 ref(s) tag ; `COGNITORIUM` 0 ref(s) tag. L'absence de tag dans ce relevé porte **uniquement** sur ces dépôts et cette source. Le libellé initial « aucun tag trouvé » sans ce correctif n'était pas une vérification.
+>
+> Les workflows GitHub évoluent pendant les commits documentaires. Une valeur `conclusion:null` peut indiquer un workflow en cours, et non une réussite ni un échec. Lire le lien du run pour le dernier état.
+
+
 Relevé GitHub du 22/11/2026. Les PR ouvertes ne sont pas des fonctionnalités fusionnées ; les runs CI ne prouvent pas la recette sur les ordinateurs des utilisateurs.
 
 ## [watchtower](https://github.com/Sathancabrol/watchtower)
