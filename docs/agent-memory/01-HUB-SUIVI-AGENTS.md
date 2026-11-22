@@ -16,6 +16,22 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 > [!important] Point d'entrée, **pas une seconde roadmap**
 > Ce document est le **routeur documentaire** d'Obsidian et des agents IA. Le suivi produit reste dans [`ROADMAP.md`](../../ROADMAP.md) ; la sauvegarde historique de session dans [`docs/REPRISE.md`](../REPRISE.md). Ne jamais copier ici un statut sans le dater, lui associer une source et préciser s'il s'agit d'un test réellement rejoué.
 
+## Inventaire multi-branches et vérifications — 22/11/2026
+
+**Documentation ajoutée par passes successives, à lire sans recopier les catalogues :**
+
+| Référence | Quand l'utiliser |
+|---|---|
+| [Inventaire complet des 1 131 chemins GitHub](02-INVENTAIRE-GITHUB-COMPLET.md) | Rechercher un fichier, voir ses branches et si son contenu diverge de `main` |
+| [Index JSON des versions (SHA + taille)](WATCHTOWER-FILE-INDEX.json) | Traitement programmatique, déduplication et recherche exacte par agent |
+| [Carte des capacités et de l'architecture](03-CAPACITES-ARCHITECTURE-DIVERGENCES.md) | Comprendre les modules, les variantes territoriales, la 2D, le moteur IA, la convergence |
+| [Tests CI, PR, validation et reprise](04-VALIDATION-CI-REPRISE.md) | Voir les résultats GitHub **réels**, les dépendances de fusion et la prochaine vérification |
+| [Handoff historique sur branche PR #4](https://github.com/Sathancabrol/watchtower/blob/chore/agent-handoff-2026-10-11/AGENT_HANDOFF.md) | Conserver le protocole de journal de session historique, non fusionné à `main` |
+
+**Constats non négociables pour l'agent :** 11 noms de branches ; les deux familles de développements `T` (INTEL/CSV) et `2D` (MapLibre/territoire) ne sont pas fusionnées ; **quatre PR ouvertes** (#3, #4, #5, #6) ; CI du 22/11 : Windows onboarding réussi, **3 144 tests dont 2 en échec** sur Node 24/26 ; copie Monorepo ayant 416 fichiers de build `dist`, non 416 nouveaux modules métier.
+
+**Aucun changement de code ni de runtime n'a accompagné la constitution de cette mémoire.** Les résultats de tests viennent de GitHub Actions et sont attachés à leur workflow ; les données de CRONOS, du disque externe ou d'un agent sur smartphone doivent être vérifiées séparément.
+
 ## Lire selon la mission
 
 | Mission | Ouvrir en priorité | Précaution |
@@ -68,6 +84,7 @@ next_action: null
 
 ## Liens de contrôle
 
+- [Inventaire](02-INVENTAIRE-GITHUB-COMPLET.md) · [Index JSON](WATCHTOWER-FILE-INDEX.json) · [Capacités](03-CAPACITES-ARCHITECTURE-DIVERGENCES.md) · [CI et reprise](04-VALIDATION-CI-REPRISE.md)
 - [Dépôt Watchtower](https://github.com/Sathancabrol/watchtower) · [Branches](https://github.com/Sathancabrol/watchtower/branches)
 - [Roadmap](../../ROADMAP.md) · [Reprise](../REPRISE.md) · [Audit](../AUDIT.md) · [Mindmap](00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md)
 
