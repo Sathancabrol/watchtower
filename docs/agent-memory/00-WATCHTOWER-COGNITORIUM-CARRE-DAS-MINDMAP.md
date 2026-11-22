@@ -7,14 +7,14 @@ aliases:
   - "Olympus — carte du système"
 created: 2026-11-22
 updated: 2026-11-22
-version: "1.2.0"
+version: "1.3.0"
 document_type: "mindmap+agent-memory"
 project: "WATCHTOWER / COGNITORIUM / CARRÉ D'AS"
 source_scope: "Conversations + Atlas OLYMPUS/CHRONOS v0.2 + GitHub Watchtower 11 branches, 4 PR, CI, monorepo et COGNITORIUM au 2026-11-22"
 verification_scope: "Arbres GitHub et code ciblé examinés, CI consultée, aucun runtime Windows local testé le 2026-11-22"
 canonical_owner: "architecture-projet"
 confidentiality: "documentation-projet-publiable"
-status: "base_de_connaissance_v1_2_sources_github_verifiees_runtime_local_inconnu"
+status: "base_de_connaissance_v1_3_84_branches_49_upstream_runtime_local_inconnu"
 tags:
   - watchtower
   - cognitorium
@@ -263,6 +263,38 @@ flowchart LR
 | Agent Hermes vs Watchtower | `src/llm.js` local ; pas de pont CRONOS runtime prouvé dans `main` | Contrat de capacité, transport, reprise, autorisations et healthchecks |
 | Vues scientifiques vs données de terrain | HCSM `PROPOSED`, informations tierces | Séparer cognition humaine, observation publique, source et inférence |
 | Déploiement Windows et Android | Messages historiques et test CI Windows | Machine réelle, commande reproductible, logs, tests et statut de disponibilité |
+
+### 4.9 `WT-900` Scan GitHub transversal — 84 branches du compte et 49 upstream
+
+> [!important] Lire le [document maître d'audit v2](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md) pour le détail complet et les annexes source. Les branches décrites ci-dessous sont **des variantes de code**, pas des services confirmés en exécution.
+
+```mermaid
+flowchart LR
+  WT[Watchtower main] --> T[Territoire INTEL PR #3]
+  WT --> W2D[MapLibre carte 2D branche]
+  WT -.-> O[Oracle Axis idées PR #6]
+  CA[Carré d'As carredas - branche Arena] --> B[API carto et canonical record]
+  B -. "viewer à intégrer" .-> WT
+  CG[COGNITORIUM branch OSINT Workbench] --> EV[Source / Observation / Claim / Validation]
+  EV -. "adapter" .-> B
+  ST[OLYMPUS Studio branche] -. "SPATIAL not-integrated" .-> WT
+  XR[X-Ray Mirror branche] -. "XR not-integrated" .-> ST
+  HER[Hermes / Chronos Fleet] -. "routage non validé" .-> CA
+  GE[Gods Eye View upstream - 49 branches] -. "portage sélectif" .-> WT
+```
+
+**Apports documentés et vérifiés dans GitHub ce 22/11 :**
+
+- **9 dépôts** du compte, **84 branches** recensées, arbres et historiques de commits paginés ; **1 389 références de commits uniques** dans les annexes datées (hors upstream et ajouts documentaires récents), plus 49 pointes de branches du projet source [God's Eye View](https://github.com/bilawalsidhu/gods-eye-view).
+- Le [module Carré d'As de Watchtower](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/carredas/modules/watchtower/router.py) implémente des endpoints `/api/carto` et un registre de sources, **mais le viewer Cesium intégral reste à connecter**. Ne pas confondre `carredas/` avec `projects/carre-d-as/` (autre produit/branche).
+- [OSINT Workbench](https://github.com/Sathancabrol/COGNITORIUM/tree/watchtower/osint-workbench-v0.1/watchtower-mods/src/osint) dispose d'un modèle de cas, de `FACT/INFERENCE/HYPOTHESIS/UNKNOWN`, d'un registre de sources et d'une **démo** ; les données d'observation de la démo sont **fictives et non collectées**, ne jamais les promouvoir comme preuves.
+- [OLYMPUS Studio](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-studio-20261112/projects/olympus-studio/src/integration-registry.js) marque `SPATIAL/Watchtower`, `XR` et `AUTOMATE/Hermes` comme **non intégrés**. Les interfaces et protocoles sont des engagements de contrat, non une preuve d'interopérabilité.
+- [Chronos Fleet](https://github.com/Sathancabrol/monorepo/blob/feat/chronos-fleet-free-fallback-20261113/scripts/chronos-fleet/README.md) est un routeur local séparé sur :18888, différent de CRONOS Core :8789 ; ses nœuds supplémentaires n'étaient pas connectés dans la livraison GitHub.
+- [Matrice T ↔ 2D](11-MATRICE-CONVERGENCE-TERRITOIRE-2D.md) : **9 chemins divergents** de code/docs entre les deux branches riches, dont **7 chemins code/config/tests** ; la fusion demande contrats et tests.
+- [Upstream](10-UPSTREAM-GODS-EYE-VIEW-COMPARAISON.md) : 5 086 fichiers sur la branche source, 49 branches comparées, mais les milliers de changements ne doivent pas être recopiés sans priorisation.
+- **CI réelle** (run 22/11) : 3 144 tests dont 2 rouges `ign-ortho`, onboarding Windows passé ; aucun test sur le disque externe ni sur les téléphones pendant ce scan.
+
+**Annexes Obsidian :** [inventaire complet](02-INVENTAIRE-GITHUB-COMPLET.md), [capacités](03-CAPACITES-ARCHITECTURE-DIVERGENCES.md), [CI](04-VALIDATION-CI-REPRISE.md), [84 branches et historiques](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md#10-index-de-toutes-les-annexes-produites--obsidian), [49 branches upstream](10B-UPSTREAM-BRANCHES-01-10.md), [risques de convergence](11-MATRICE-CONVERGENCE-TERRITOIRE-2D.md).
 
 ## 5. COGNITORIUM / COGNITARIUM — `CG-*` : humains, savoirs et apprentissage
 
@@ -759,6 +791,7 @@ next_actions: []
 | 2026-11-22 | 1.0.0 | Consolidation Watchtower / Cognitorium / Carré d’As / CRONOS / OLYMPUS et protocole mémoire agent | README GitHub consultés + Atlas/documentation + contexte historique ; **pas** d’audit runtime local |
 | 2026-11-22 | 1.1.0 | Raccordement à `ROADMAP.md`, `docs/REPRISE.md`, audit/diagnostic ; état documenté des itérations et précautions de reprise | Lecture de `main` GitHub, **pas** de tests sur tour |
 | 2026-11-22 | 1.2.0 | Inventaire 11 branches et copies, 1 131 chemins, CI, 4 PR, matrice de capacités et divergences 2D/INTEL ; index JSON | GitHub source + workflows ; **aucune recette locale** |
+| 2026-11-22 | 1.3.0 | Scan 84 branches du compte + 49 upstream, historiques paginés, Carré d'As en code, OSINT Workbench, Olympus Studio et matrice T/2D | Arbres Git, code ciblé, CI ; **aucun test sur disque externe** |
 
 ---
 
