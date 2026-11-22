@@ -7,14 +7,14 @@ aliases:
   - "Olympus — carte du système"
 created: 2026-11-22
 updated: 2026-11-22
-version: "1.1.0"
+version: "1.2.0"
 document_type: "mindmap+agent-memory"
 project: "WATCHTOWER / COGNITORIUM / CARRÉ D'AS"
-source_scope: "Conversations du projet + Atlas OLYMPUS/CHRONOS v0.2 du 2026-11-11 + README GitHub consultés le 2026-11-22"
-verification_scope: "Sources/documentation consultées, sans audit ni test runtime local au 2026-11-22"
+source_scope: "Conversations + Atlas OLYMPUS/CHRONOS v0.2 + GitHub Watchtower 11 branches, 4 PR, CI, monorepo et COGNITORIUM au 2026-11-22"
+verification_scope: "Arbres GitHub et code ciblé examinés, CI consultée, aucun runtime Windows local testé le 2026-11-22"
 canonical_owner: "architecture-projet"
 confidentiality: "documentation-projet-publiable"
-status: "base_de_connaissance_v1_1_a_verifier"
+status: "base_de_connaissance_v1_2_sources_github_verifiees_runtime_local_inconnu"
 tags:
   - watchtower
   - cognitorium
@@ -216,6 +216,53 @@ mindmap
 - **Ambiguïté du mot « SUIVI » :** dans `REPRISE.md`, « SUIVI → TRACKING » désigne un renommage d'interface, **pas** le fichier Markdown de suivi de développement.
 
 **Ordre de reprise Watchtower :** `ROADMAP → REPRISE → AUDIT → DIAGNOSTIC/KNOWN-ISSUES → SHA + tests du code réel → mindmap transversale → mise à jour contrôlée des statuts`.
+
+### 4.7 `WT-700` Les **versions de code** : cartographie vérifiée au 22/11/2026
+
+> [!warning] Les branches sont des états de code alternatifs, pas des modules actifs en même temps.
+> Ne pas additionner naïvement les fonctionnalités ni les compteurs de tests de deux branches. Voir l'[inventaire de tous les fichiers](02-INVENTAIRE-GITHUB-COMPLET.md) et les [capacités avec provenance](03-CAPACITES-ARCHITECTURE-DIVERGENCES.md).
+
+```mermaid
+flowchart LR
+  WT["watchtower/main — socle autonome"] --> DOC["docs/agent-memory — mémoire IA"]
+  WT --> PR3["PR #3 ouverte — INTEL/TERRITOIRE"]
+  PR3 --> BASE["Base 14 communes, 13 projets, 32 chiffres, 110 sources, 13 lacunes, 10 contradictions"]
+  PR3 --> CSV["Import CSV, exports JSON/CSV"]
+  CSV --> PR5["PR #5 — correctif sécurité des formules"]
+  WT --> B2["Branche 2D/3D — MapLibre"]
+  B2 --> TERR["Autre modèle territorial, 5 échelles et sources typées"]
+  WT --> PR4["PR #4 — AGENT_HANDOFF.md"]
+  WT --> PR6["PR #6 — Audit Oracle Axis (32 idées)"]
+  WT -. "copie app + dist" .-> MONO["monorepo/projects/watchtower"]
+  WT -. "source historique fork" .-> COG["COGNITORIUM/watchtower-mods"]
+```
+
+**Points de vérité actuellement établis par GitHub :**
+
+- `main` : **585 fichiers à l'instantané de départ** (la mémoire ajoutée ensuite est une modification documentaire) ; socle Cesium/Vite.
+- `arena/01a072e1-watchtower` : **650 fichiers**, soit **86 nouveaux chemins** face au `main` initial ; code `carte2dControleur`, `data/carte2d`, `data/territoire`, ergonomie et rapports d'audit.
+- `arena/dec9cd88-watchtower` : **623 fichiers**, soit **40 nouveaux chemins** face au `main` initial ; base INTEL, Frontignan, Thau, CSV, enquêtes et sources officielles.
+- `fix/territory-csv-formula-2026-10-18` : PR #5 porte une réparation dans `src/data/attributsTerritoire.js` et son test, non intégrée à `main`.
+- `chore/agent-handoff-2026-10-11` : [passation préexistante](https://github.com/Sathancabrol/watchtower/blob/chore/agent-handoff-2026-10-11/AGENT_HANDOFF.md), ouverte en PR #4.
+- `research/oracle-axis-integration-20261113` : un document d'étude de 32 capacités, **pas** une application Oracle Axis intégrée.
+- `monorepo` : copie de Watchtower avec **416 livrables `dist/` supplémentaires**, qui ne sont pas des nouveaux modules ; source code partagé très largement identique par SHA.
+- `COGNITORIUM/watchtower-mods` : ancien foyer du fork ; le document de septembre intitulé « dépôt vide » est **obsolète** après publication de Watchtower.
+
+**Validation CI à date :** [run GitHub Actions du 22/11](https://github.com/Sathancabrol/watchtower/actions/runs/45033922316) = onboarding Windows **success** ; unit tests Node 24/26 **failure**, **3 144 tests, deux erreurs `ign-ortho`**. Ne pas prétendre « tous les tests au vert ». Lire le [protocole complet](04-VALIDATION-CI-REPRISE.md).
+
+**Références à charger avant toute intervention** : [hub de suivi](01-HUB-SUIVI-AGENTS.md) → [inventaire](02-INVENTAIRE-GITHUB-COMPLET.md) → [matrice de capacités](03-CAPACITES-ARCHITECTURE-DIVERGENCES.md) → [validation](04-VALIDATION-CI-REPRISE.md) → `ROADMAP.md` et `docs/REPRISE.md` → vrais fichiers/commits et tests.
+
+### 4.8 `WT-800` Carte des risques de duplication et des contrats à unifier
+
+| Risque | Indice découvert | Critère de convergence |
+|---|---|---|
+| Deux implémentations territoriales | `T/src/territoireScenes.js` vs `2D/src/data/territoire/dossierTerritorial.js` | Adaptateurs à IDs et preuves stables, tests de compatibilité |
+| INTEL incomplet sur `main` | 6 vues historiques, DOSSIER/TERRAIN en branche T | Décider un propriétaire de données, brancher une UI réversible |
+| 2D disponible seulement en branche | Contrôleur MapLibre et camera neutre en `2D` | Test réel GPU et aller-retour de caméra, pas de fusion brute |
+| Copies de code | Monorepo, COGNITORIUM et Watchtower source | Copie construite et versionnée à partir du SHA canonique, sans code édité en parallèle |
+| Agent Hermes vs Watchtower | `src/llm.js` local ; pas de pont CRONOS runtime prouvé dans `main` | Contrat de capacité, transport, reprise, autorisations et healthchecks |
+| Vues scientifiques vs données de terrain | HCSM `PROPOSED`, informations tierces | Séparer cognition humaine, observation publique, source et inférence |
+| Déploiement Windows et Android | Messages historiques et test CI Windows | Machine réelle, commande reproductible, logs, tests et statut de disponibilité |
 
 ## 5. COGNITORIUM / COGNITARIUM — `CG-*` : humains, savoirs et apprentissage
 
@@ -711,6 +758,7 @@ next_actions: []
 |---|---|---|---|
 | 2026-11-22 | 1.0.0 | Consolidation Watchtower / Cognitorium / Carré d’As / CRONOS / OLYMPUS et protocole mémoire agent | README GitHub consultés + Atlas/documentation + contexte historique ; **pas** d’audit runtime local |
 | 2026-11-22 | 1.1.0 | Raccordement à `ROADMAP.md`, `docs/REPRISE.md`, audit/diagnostic ; état documenté des itérations et précautions de reprise | Lecture de `main` GitHub, **pas** de tests sur tour |
+| 2026-11-22 | 1.2.0 | Inventaire 11 branches et copies, 1 131 chemins, CI, 4 PR, matrice de capacités et divergences 2D/INTEL ; index JSON | GitHub source + workflows ; **aucune recette locale** |
 
 ---
 
