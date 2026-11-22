@@ -8,6 +8,9 @@
 
 ### Mémoire externe des agents — Watchtower
 
+**Audit exhaustif et mémoire externe Obsidian (22/11/2026) :** [document maître Watchtower / Cognitorium / Carré d'As](docs/agent-memory/08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md). Il référence les **84 branches des neuf dépôts associés**, les historiques de commits, les **49 branches du projet upstream**, le code INTEL, le Workbench OSINT, les ponts Carré d'As, l'état OLYMPUS et les vérifications CI. Cet inventaire Git n'est **pas** une validation des services sur les machines.
+
+
 Pour reprendre l'architecture et le suivi sans repartir de zéro : [hub des agents](docs/agent-memory/01-HUB-SUIVI-AGENTS.md), [carte mentale Obsidian](docs/agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md), [inventaire complet GitHub](docs/agent-memory/02-INVENTAIRE-GITHUB-COMPLET.md), [capacités et divergences](docs/agent-memory/03-CAPACITES-ARCHITECTURE-DIVERGENCES.md), [CI et reprise](docs/agent-memory/04-VALIDATION-CI-REPRISE.md). Ces documents distinguent code présent, projet, tests historiques et état d'exécution réel. La documentation n'active aucun service ni fusion de branche.
 
 
