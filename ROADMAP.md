@@ -2,6 +2,10 @@
 
 ## Index de mémoire et suivi des agents — documentation (22/11/2026)
 
+- **[Audit maître GitHub 2026-11-22](docs/agent-memory/08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md)** : 9 dépôts / 84 branches / 49 branches upstream, historiques de commits, interfaces et contrats retrouvés. **Documentaire, pas une itération produit.**
+- **[Matrice T/2D](docs/agent-memory/11-MATRICE-CONVERGENCE-TERRITOIRE-2D.md)** : les neuf chemins divergents à traiter avant une intégration.
+
+
 - **[Mindmap WATCHTOWER × COGNITORIUM × CARRÉ D'AS](docs/agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md)** : vue structurée Obsidian pour agents IA, relations entre modules, états et dépendances.
 - **[Hub de suivi et de reprise des agents](docs/agent-memory/01-HUB-SUIVI-AGENTS.md)** : point d'entrée, statut épistémique et ordre de lecture des sources.
 - [Inventaire des fichiers et variantes](docs/agent-memory/02-INVENTAIRE-GITHUB-COMPLET.md) et [index JSON](docs/agent-memory/WATCHTOWER-FILE-INDEX.json) : 11 branches recensées ; toutes variantes de fichiers indexées avec leurs SHA.
