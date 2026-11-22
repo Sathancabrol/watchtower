@@ -1,5 +1,9 @@
 # 💾 WATCHTOWER — ÉTAT DE REPRISE (sauvegarde de session)
 
+> [!note] Référence documentaire ajoutée le 22/11/2026 (sans modifier l'instantané historique)
+> Cette page conserve la **sauvegarde de session originelle** (itération 21 et branche mentionnée ci-dessous). Pour reprendre un travail d'agent aujourd'hui, consulter d'abord le [hub de suivi](agent-memory/01-HUB-SUIVI-AGENTS.md) et la [mindmap unifiée](agent-memory/00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md), puis vérifier le SHA, les services et les tests effectivement accessibles. Le corps de cette sauvegarde n'est **pas** une preuve de disponibilité actuelle sur le PC.
+
+
 > Document de **sauvegarde** : il permet de reprendre le travail exactement là
 > où il en est, même après une réinitialisation du bac à sable (les
 > `node_modules` **et** l'historique git local sont régulièrement effacés
