@@ -246,7 +246,7 @@ Cela correspond aux deux échecs préexistants signalés par [REPRISE](../REPRIS
 - [ROADMAP](../../ROADMAP.md), [REPRISE](../REPRISE.md), [DIAGNOSTIC](../DIAGNOSTIC.md), [AUDIT](../AUDIT.md), [AGENTS](../../AGENTS.md).
 
 > [!tip] Import Obsidian
-> Pour que tous les liens `[[...]]` fonctionnent, **conserver ensemble les fichiers Markdown du dossier `docs/agent-memory/`** dans un même coffre Obsidian (ou préserver leur arborescence). Les liens GitHub absolus restent utilisables si l'on n'importe que ce document.
+> Pour que tous les wikilinks internes d'Obsidian fonctionnent, **conserver ensemble les fichiers Markdown du dossier `docs/agent-memory/`** dans un même coffre Obsidian (ou préserver leur arborescence). Les liens GitHub absolus restent utilisables si l'on n'importe que ce document.
 
 ## 11. Format de mémoire machine pour un agent
 
