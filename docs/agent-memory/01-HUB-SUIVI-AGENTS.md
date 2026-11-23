@@ -24,6 +24,10 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 > [!note] Audit OSINT au niveau des fonctions — 23/11/2026
 > [[13-OSINT-WORKBENCH-AUDIT-CODE-2026-11-23]] : lecture de quatre fichiers JS et deux spécifications de la branche `COGNITORIUM/watchtower/osint-workbench-v0.1` ; inventaire des contrats, limites de preuve et risques de rendu HTML. Aucun runtime exécuté.
 
+
+> [!note] Convergence OSINT / Carré d'As / INTEL — 23/11/2026
+> [[14-CONVERGENCE-OSINT-CANONICAL-INTEL-2026-11-23]] : comparaison champ par champ des trois contrats, six blobs Git relus, risques de promotion abusive en `fact`, projection canonique sans perte et invariants de tests. Aucun runtime exécuté.
+
 ## L'audit maître GitHub — v2 du 22 novembre 2026
 
 **Le nouveau point d'entrée global** est [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]] — [ouvrir le document maître sur GitHub](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md). Il rassemble les conclusions, les modules, les preuves et les 29+ annexes techniques, sans remplacer `ROADMAP.md` ni la sauvegarde de session `REPRISE.md`.
