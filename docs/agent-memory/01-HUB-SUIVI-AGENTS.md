@@ -13,6 +13,10 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 
 # WATCHTOWER — HUB DE SUIVI ET DE REPRISE POUR AGENTS
 
+> [!warning] Audit de sécurité et persistance OSINT (23/11/2026)
+> [[15-OSINT-STORE-HTTP-REGISTRES-AUDIT-2026-11-23]] : analyse statique de `store.py`, `httpsrv.py`, `registries.py`, `router.py` dans `monorepo/arena/0034230e-monorepo` ; garde HTTP potentiellement fail-open, validation des chemins/IDs, limites HTTP et journal de preuves à vérifier avant exposition réseau. **Aucun exploit ni runtime confirmé.**
+
+
 > [!important] Navigation à profondeur non limitée
 > Nouvelle arborescence détaillée : [[12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX]] ([fichier GitHub](12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX.md)). Lire l'index pour traverser les domaines et sous-domaines, puis ouvrir les preuves précises et consulter la branche correspondante.
 
