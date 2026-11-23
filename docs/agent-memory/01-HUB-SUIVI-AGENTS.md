@@ -20,6 +20,10 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 > [!important] Point d'entrée, **pas une seconde roadmap**
 > Ce document est le **routeur documentaire** d'Obsidian et des agents IA. Le suivi produit reste dans [`ROADMAP.md`](../../ROADMAP.md) ; la sauvegarde historique de session dans [`docs/REPRISE.md`](../REPRISE.md). Ne jamais copier ici un statut sans le dater, lui associer une source et préciser s'il s'agit d'un test réellement rejoué.
 
+
+> [!note] Audit OSINT au niveau des fonctions — 23/11/2026
+> [[13-OSINT-WORKBENCH-AUDIT-CODE-2026-11-23]] : lecture de quatre fichiers JS et deux spécifications de la branche `COGNITORIUM/watchtower/osint-workbench-v0.1` ; inventaire des contrats, limites de preuve et risques de rendu HTML. Aucun runtime exécuté.
+
 ## L'audit maître GitHub — v2 du 22 novembre 2026
 
 **Le nouveau point d'entrée global** est [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]] — [ouvrir le document maître sur GitHub](08-WATCHTOWER-AUDIT-MAITRE-2026-11-22.md). Il rassemble les conclusions, les modules, les preuves et les 29+ annexes techniques, sans remplacer `ROADMAP.md` ni la sauvegarde de session `REPRISE.md`.
