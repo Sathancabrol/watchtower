@@ -13,6 +13,10 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 
 # WATCHTOWER — HUB DE SUIVI ET DE REPRISE POUR AGENTS
 
+> [!warning] Câblage réel de la garde et routes fichiers (23/11/2026)
+> [[16-CARREDAS-CABLAGE-ACCES-FICHIERS-2026-11-23]] : `router.garde` est bien installée dans `carredas/server.py` sur la branche Arena ; politique token local/distant, routes de fichiers, exposition potentielle de configuration, sauvegarde excluant les blobs. **Lecture statique, runtime et exposition réseau non testés.**
+
+
 > [!warning] Audit de sécurité et persistance OSINT (23/11/2026)
 > [[15-OSINT-STORE-HTTP-REGISTRES-AUDIT-2026-11-23]] : analyse statique de `store.py`, `httpsrv.py`, `registries.py`, `router.py` dans `monorepo/arena/0034230e-monorepo` ; garde HTTP potentiellement fail-open, validation des chemins/IDs, limites HTTP et journal de preuves à vérifier avant exposition réseau. **Aucun exploit ni runtime confirmé.**
 
