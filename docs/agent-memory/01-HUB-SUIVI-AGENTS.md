@@ -139,3 +139,5 @@ next_action: null
 - [Roadmap](../../ROADMAP.md) · [Reprise](../REPRISE.md) · [Audit](../AUDIT.md) · [Mindmap](00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP.md)
 
 _Initialisé le 22/11/2026 à partir de la documentation GitHub ; **aucun test du runtime Windows ni opération d'installation**._
+
+- [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]] — inventaire statique de 79 décorateurs HTTP et 1 chevauchement(s) de segments, périmètre cœur + quatre plugins (24/11/2026).
