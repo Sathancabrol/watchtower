@@ -161,3 +161,15 @@ Inventaire vérifié par lecture GitHub de `main` ; les empreintes ci-dessous id
 | OLYMPUS | [[24-OLYMPUS-RELAIS-CAMERA-TESTS-2026-11-24]] | `e176677de6e358931cc65878dee5c94e5540171e` |
 
 Reprise : [[24-OLYMPUS-RELAIS-CAMERA-TESTS-2026-11-24]] → déploiement Fleet, concurrence et intégration X-Ray/CRONOS ; [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]] → plugins restants et lanceurs. Ne pas confondre ces audits statiques avec une recette locale.
+
+## Extension scientifique et continuité — 2026-11-24
+
+| Domaine | Note Obsidian | SHA blob vérifié |
+|---|---|---|
+| Hermes | [[25-HERMES-CONTINUITE-DIAGNOSTIC-2026-11-24]] | `d5efb810103d70650ff1d9eddfdff95a1c831bce` |
+| Research Engine | [[26-RESEARCH-ENGINE-HERMES-CONTRATS-2026-11-24]] | `dfe501a3dfa67f2d2b1b5550db831118f0031380` |
+| Research Engine | [[27-RESEARCH-ENGINE-REPRISE-SUFFISANCE-2026-11-24]] | `74db83d6732bd7da4cd0319660b0bd0c2fa27f5a` |
+| Research Engine | [[28-RESEARCH-ENGINE-EVIDENCE-GRAPH-DOSSIER-2026-11-24]] | `b655283ddb94157bca4d0052af2f8726b611b6ee` |
+| Research Engine | [[29-RESEARCH-ENGINE-AGENTS-DECISIONS-2026-11-24]] | `bc4abb970e1a4c2fd6b5549a6f923b22656a0907` |
+
+Reprise prioritaire : machine à états et suffisance (27), provenance et projection (28), rétroaction des agents (29), puis recherche du routeur CRONOS. Les constats sont statiques ; aucun test Python ou PowerShell exécuté dans ces audits. Voir [[12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX]] et [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]].
