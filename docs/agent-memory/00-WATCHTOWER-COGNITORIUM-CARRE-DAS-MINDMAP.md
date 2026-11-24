@@ -6,8 +6,8 @@ aliases:
   - "Carré d'As — architecture unifiée"
   - "Olympus — carte du système"
 created: 2026-11-22
-updated: 2026-11-22
-version: "1.3.0"
+updated: 2026-11-24
+version: "1.4.0"
 document_type: "mindmap+agent-memory"
 project: "WATCHTOWER / COGNITORIUM / CARRÉ D'AS"
 source_scope: "Conversations + Atlas OLYMPUS/CHRONOS v0.2 + GitHub Watchtower 11 branches, 4 PR, CI, monorepo et COGNITORIUM au 2026-11-22"
@@ -800,3 +800,22 @@ next_actions: []
 ---
 
 **Résumé opérationnel :** **Watchtower observe le monde ; Cognitorium modélise les connaissances et parcours humains ; Carré d'As unifie l'expérience ; CRONOS orchestre ; Hermes/Nexus exécutent selon capacité réelle ; OLYMPUS représente ; les preuves et la mémoire relient le tout.** La prochaine étape n'est pas de tout recréer, mais de **vérifier les intégrations, stabiliser les identifiants et brancher les flux de données et événements**.
+
+## Extension scientifique — 2026-11-24
+
+Consolidation documentaire, sans validation runtime. Voir [[12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX]] section 8 (blob `9681bcbcfd1927945676e628ec296d5cd8066f09`) et [[01-HUB-SUIVI-AGENTS]]. Annexes relues sur main (SHA de blobs) :
+
+- [[25-HERMES-CONTINUITE-DIAGNOSTIC-2026-11-24]] — `d5efb810103d70650ff1d9eddfdff95a1c831bce`
+- [[26-RESEARCH-ENGINE-HERMES-CONTRATS-2026-11-24]] — `dfe501a3dfa67f2d2b1b5550db831118f0031380`
+- [[27-RESEARCH-ENGINE-REPRISE-SUFFISANCE-2026-11-24]] — `74db83d6732bd7da4cd0319660b0bd0c2fa27f5a`
+- [[28-RESEARCH-ENGINE-EVIDENCE-GRAPH-DOSSIER-2026-11-24]] — `b655283ddb94157bca4d0052af2f8726b611b6ee`
+- [[29-RESEARCH-ENGINE-AGENTS-DECISIONS-2026-11-24]] — `bc4abb970e1a4c2fd6b5549a6f923b22656a0907`
+
+### Parcours de reprise
+- CRONOS / Hermes → diagnostic → capacité réelle → fallback → preuve d'exécution (25).
+- Research Engine → orchestration → machine à états → reprise → suffisance (26–27).
+- Sources → preuves → assertions → dossier → projection Watchtower (28).
+- Agents → vérification → décision → nouvelles requêtes : rétroaction à démontrer (29).
+- Recherche individuelle GitHub sur main de monorepo : `question_analyzer.py`, `research_strategy.py`, `source_quality.py`, `planner.py` : zéro résultat pour chaque requête le 24/11 ; absence non démontrée. Prochaine étape : inspection des arbres et imports, puis tests synthétiques.
+
+Aucun code applicatif modifié ; aucun test runtime exécuté. Les constats des annexes restent statiques.
