@@ -13,6 +13,10 @@ tags: [watchtower, suivi, reprise, agents-ia, cognitorium, obsidian]
 
 # WATCHTOWER — HUB DE SUIVI ET DE REPRISE POUR AGENTS
 
+> [!important] Routeur HTTP, collisions et dispatch — 24/11/2026
+> [[19-CARREDAS-ROUTER-DISPATCH-SECURITE-2026-11-24]] : lecture statique de `httpsrv.py`, `server.py` et du chargeur de modules ; garde fail-open, ordre des routes, HEAD/OPTIONS, limites de corps, CORS et plan de tests. **Aucun runtime testé.**
+
+
 > [!important] Manifeste de modules et routes Carré d'As — 24/11/2026
 > [[18-CARREDAS-MANIFESTES-ROUTES-CHARGEMENT-2026-11-24]] : inspection de 11 fichiers Git sur `monorepo/arena/0034230e-monorepo` ; contrat `discover → load → register → canonique`, divergences de chemins Meeting (`generate` / `generer`), routes sous-documentées, configuration `modules.desactives` non consultée par le chargeur inspecté. **Audit statique uniquement.**
 
