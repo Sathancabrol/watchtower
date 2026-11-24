@@ -141,3 +141,23 @@ next_action: null
 _Initialisé le 22/11/2026 à partir de la documentation GitHub ; **aucun test du runtime Windows ni opération d'installation**._
 
 - [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]] — inventaire statique de 79 décorateurs HTTP et 1 chevauchement(s) de segments, périmètre cœur + quatre plugins (24/11/2026).
+
+## Index consolidé des audits techniques — 24/11/2026
+
+Inventaire vérifié par lecture GitHub de `main` ; les empreintes ci-dessous identifient les notes (blobs), non les commits des sources applicatives. Les tests proposés ou retrouvés ne sont pas réputés exécutés. Le numéro 21 est absent du répertoire inspecté ; aucune conclusion sur son historique.
+
+| Domaine | Note Obsidian | SHA blob de la note |
+|---|---|---|
+| OSINT / convergence | [[13-OSINT-WORKBENCH-AUDIT-CODE-2026-11-23]] | `1b4d241034cc477354d3b11e99e8c6900e53aaca` |
+| OSINT / convergence | [[14-CONVERGENCE-OSINT-CANONICAL-INTEL-2026-11-23]] | `10f4f5e51e35881ade2bf08884526ce6155345ac` |
+| OSINT / convergence | [[15-OSINT-STORE-HTTP-REGISTRES-AUDIT-2026-11-23]] | `5279ac6fd143dd1137e6a5aa418862cfbd640a22` |
+| Carré d’As / HTTP | [[16-CARREDAS-CABLAGE-ACCES-FICHIERS-2026-11-23]] | `e97ba53652c791a3379a7e9820850b42ba47b8e1` |
+| Carré d’As / HTTP | [[17-CARREDAS-CONFIG-MODULES-UPDATER-2026-11-23]] | `6b0699fe71b9707b2a030068d03bd9b167cebe7e` |
+| Carré d’As / HTTP | [[18-CARREDAS-MANIFESTES-ROUTES-CHARGEMENT-2026-11-24]] | `b7bc36d816341ead4b59a56344575cf099abea88` |
+| Carré d’As / HTTP | [[19-CARREDAS-ROUTER-DISPATCH-SECURITE-2026-11-24]] | `b6a038b8cf14a49964ef0d3f98633a5c31a8b040` |
+| Carré d’As / HTTP | [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]] | `4f66c4f1aeb765ec9ff3ac92be735ef8ea6f7794` |
+| OLYMPUS | [[22-OLYMPUS-CONTRATS-API-DIVERGENCES-2026-11-24]] | `99f19ca041dad443d595baf47984fc6818518265` |
+| OLYMPUS | [[23-OLYMPUS-CLIENT-CAMERA-CONVERGENCE-2026-11-24]] | `dbe889b285637b14aa9707742a4044591823ccbe` |
+| OLYMPUS | [[24-OLYMPUS-RELAIS-CAMERA-TESTS-2026-11-24]] | `e176677de6e358931cc65878dee5c94e5540171e` |
+
+Reprise : [[24-OLYMPUS-RELAIS-CAMERA-TESTS-2026-11-24]] → déploiement Fleet, concurrence et intégration X-Ray/CRONOS ; [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]] → plugins restants et lanceurs. Ne pas confondre ces audits statiques avec une recette locale.
