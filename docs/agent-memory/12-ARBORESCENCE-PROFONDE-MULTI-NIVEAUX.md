@@ -831,3 +831,23 @@ Statut : CODE-LU et contrôle structurel JSON exécuté sur les blobs GitHub ; a
 - Convergence cible : conserver objets natifs et provenance ; ne pas promouvoir automatiquement une preuve en fait ; aucun raccordement runtime démontré.
 
 Annexes : [[13-OSINT-WORKBENCH-AUDIT-CODE-2026-11-23]] · [[14-CONVERGENCE-OSINT-CANONICAL-INTEL-2026-11-23]] · [[15-OSINT-STORE-HTTP-REGISTRES-AUDIT-2026-11-23]] · [[18-CARREDAS-MANIFESTES-ROUTES-CHARGEMENT-2026-11-24]] · [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]].
+
+## 8. Research Engine / CRONOS / Hermes — consolidation du 2026-11-24
+
+Statut : synthèse des audits statiques existants, non une recette runtime. Sources relues sur Sathancabrol/watchtower, main ; empreintes de blobs des annexes :
+- [[25-HERMES-CONTINUITE-DIAGNOSTIC-2026-11-24]] — blob `d5efb810103d70650ff1d9eddfdff95a1c831bce`
+- [[26-RESEARCH-ENGINE-HERMES-CONTRATS-2026-11-24]] — blob `dfe501a3dfa67f2d2b1b5550db831118f0031380`
+- [[27-RESEARCH-ENGINE-REPRISE-SUFFISANCE-2026-11-24]] — blob `74db83d6732bd7da4cd0319660b0bd0c2fa27f5a`
+- [[28-RESEARCH-ENGINE-EVIDENCE-GRAPH-DOSSIER-2026-11-24]] — blob `b655283ddb94157bca4d0052af2f8726b611b6ee`
+- [[29-RESEARCH-ENGINE-AGENTS-DECISIONS-2026-11-24]] — blob `bc4abb970e1a4c2fd6b5549a6f923b22656a0907`
+
+- Sathancabrol/monorepo → branche de secours fix/hermes-autonomy-rescue-20261114 → DIAGNOSTIC_POWERSHELL.ps1 → inventaire système/configuration → présence des fallbacks, pas validation de leur capacité → tests Pester et appels inoffensifs à prévoir (25).
+- Sathancabrol/monorepo → main → projects/reaserch-engine (orthographe exacte) → orchestration → ResearchRun / Orchestrator / ProviderRegistry → contexte partagé, fournisseurs documentaires, budget → exceptions et collisions à tester (26).
+  - Machine à états → reprise intermédiaire et deuxième cycle → transition potentiellement interdite ; test de deux cycles et checkpoint (27).
+  - Suffisance → assess() → contrat JSON → trois champs obligatoires absents des huit retours littéraux selon audit 27 ; validation runtime à faire.
+  - EvidenceGraph → source → preuve → assertion → dossier → orientations historiques et canoniques des arêtes ; projection incomplète possible ; test des deux orientations et restauration (28).
+  - Pipeline → Planner → Researcher → Evidence Analyst → Contradiction Analyst → Synthesizer → Verifier → Next Action → rétroaction non démontrée ; tester consommation effective de next_action, nouvelles requêtes et idempotence (29).
+- Convergence cible uniquement : CRONOS choisit une capacité, Hermes exécute, Research Engine conserve protocole et décisions scientifiques, Watchtower projette les preuves sans les transformer automatiquement en faits.
+- Reprise : localiser les composants spécialisés et leurs appels réels, puis reproduire les anomalies avec fixtures synthétiques. Aucun test Python/PowerShell ni intégration locale exécuté dans cette consolidation.
+
+Navigation : [[01-HUB-SUIVI-AGENTS]] · [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]] · [[00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP]].
