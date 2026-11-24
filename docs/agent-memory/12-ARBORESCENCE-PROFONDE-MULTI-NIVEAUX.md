@@ -802,3 +802,32 @@ Les listes suivantes sont des **références de branches Git**, pas autant de pr
   - Statut : code lu et annexes reliées ; aucun runtime ni test rejoué, aucune fusion.
 
 Retour : [[01-HUB-SUIVI-AGENTS]] · [[00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP]] · [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]].
+
+## 7. Extension OSINT / Carré d'As — 2026-11-24
+
+Statut : CODE-LU et contrôle structurel JSON exécuté sur les blobs GitHub ; aucun serveur ni test Python exécuté. Référence source commune : `Sathancabrol/monorepo@arena/0034230e-monorepo` ; les SHA ci-dessous sont des blobs, non des commits.
+
+- Carré d'As → OSINT → [registries.py](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/carredas/modules/osint/registries.py) — `5ea15bcec70a726e61d624369b55b119de43ffd8`
+  - chemin_registre(config) → Path ou None ; chemin relatif au dépôt ou absolu configuré.
+  - charger_watchtower(config) → dict ou None ; JSON local, contrôle de type minimal.
+  - normaliser_outil_watchtower(o) → outil préfixé wt-, catégorie, licence, risque, URLs et première commande d'installation ; aucune exécution.
+  - fusionner(local,wt) → catégories/outils/besoins/registres/meta/legende ; fusion au chargement, pas de rafraîchissement démontré.
+  - Sources réellement relues et analysées par parsing JSON :
+    - [outils.json](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/carredas/modules/osint/data/outils.json) — `a5842ca001ca7add90828d9f466410aa68c03896` : 34 outils, 7 catégories, aucun ID outil dupliqué.
+    - [REGISTRE-OUTILS.json](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/projects/watchtower/audit/reference/REGISTRE-OUTILS.json) — `2f3bb1bfb15d65588db9269cfc9443a715c8c927` : 86 outils, 12 catégories, 25 besoins, aucun ID outil dupliqué, aucune référence besoin→outil orpheline dans ce fichier.
+    - Total nominal fusionné : 120 outils et 19 catégories ; calcul statique, non résultat HTTP. Licences, installations et disponibilité non vérifiées.
+- OSINT → [router.py](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/carredas/modules/osint/router.py) — `83cf39e8a373671de9ea10137f0f74bf314d2c14`
+  - register(router,ctx) → 15 routes ; dépendances Store, Response, docsgen, registres.
+  - creer_cas / maj_cas / supprimer_cas → collection osintcas ; maj_cas accepte tous champs sauf id.
+  - ajouter_preuve → exige source textuelle non vide ; cotation et confiance non validées contre les listes.
+  - supprimer_preuve → réécriture du cas ; generer → document et lien de téléchargement ; tableau → compteurs.
+  - canonique(store,cfg) → projection de chaque preuve via depuis_preuve.
+- Contrat partagé → [canonical.py](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/carredas/core/canonical.py) — `d4d8817233a57d6508760580fcee9bc9d04e7020`
+  - enregistrement → dictionnaire à champs connus ; statut inconnu ramené à unknown.
+  - valider → tuple bool/liste erreurs ; contrôle minimal, distinct du [JSON Schema](https://github.com/Sathancabrol/monorepo/blob/arena/0034230e-monorepo/carredas/core/canonical-record.schema.json) — `682ee353ddfdb6f33a30335fc3e7f8300667151e`.
+  - Divergences statiques : confidence chaîne numérique acceptée par valider mais type number requis par schéma ; relations non contrôlées par valider ; date contrôlée par préfixe seulement, format date-time déclaré dans schéma (validation de format dépend du validateur).
+  - depuis_preuve → A/B=fact, C=inference, D=hypothesis, X=unknown ; collecte_le utilisé pour observed_at ET retrieved_at. La qualité de source ne suffit pas à établir la vérité d'une assertion.
+  - Tests à créer/retrouver : parité validateur/schéma, dates invalides, conservation des contradictions et distinction observation/collecte, doublons après normalisation, références de besoins après fusion.
+- Convergence cible : conserver objets natifs et provenance ; ne pas promouvoir automatiquement une preuve en fait ; aucun raccordement runtime démontré.
+
+Annexes : [[13-OSINT-WORKBENCH-AUDIT-CODE-2026-11-23]] · [[14-CONVERGENCE-OSINT-CANONICAL-INTEL-2026-11-23]] · [[15-OSINT-STORE-HTTP-REGISTRES-AUDIT-2026-11-23]] · [[18-CARREDAS-MANIFESTES-ROUTES-CHARGEMENT-2026-11-24]] · [[20-CARREDAS-INVENTAIRE-ROUTES-COLLISIONS-2026-11-24]].
