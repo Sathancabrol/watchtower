@@ -768,3 +768,37 @@ Les listes suivantes sont des **références de branches Git**, pas autant de pr
 - [ ] Vérifier les 49 branches upstream contre la version locale avant toute reprise.
 
 **Critère d'arrêt :** l'index est complet relativement aux deux notes sources et à la liste des 84 branches, mais pas à toutes les sources et exécutions possibles. Une absence de résultat n'est pas une preuve d'absence de module.
+
+## 6. Extension fonctionnelle OLYMPUS — 2026-11-24
+
+- Studio / Fleet / Mobile — dépôt Sathancabrol/monorepo, préfixe `projects/olympus-studio/`
+  - Studio : `feat/olympus-studio-20261112`
+    - `server.mjs` : handle, API health, OBS JPEG, Comfy queue/job/output, registre integrations.
+    - `src/integration-registry.js` : integrationSnapshot ; disponibilité distincte de validation opérationnelle ; SPATIAL cible non enregistrée.
+    - [[22-OLYMPUS-CONTRATS-API-DIVERGENCES-2026-11-24]]
+  - Fleet / Mobile : `feat/olympus-fleet-247-20261113` et `feat/olympus-mobile-preview-20261113`
+    - Client : acquisition mutualisée, calques distants ; ne pas remplacer par Studio sans convergence.
+    - [[23-OLYMPUS-CLIENT-CAMERA-CONVERGENCE-2026-11-24]]
+    - [camera-pool.js](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/src/camera-pool.js) — blob `3c81482cbb5a52ac908f61de1f8be9eb9db1663e`, relu le 24/11.
+      - createCameraPool(getUserMedia) → acquire, release, isActive ; dépendance MediaDevices injectable.
+        - start(preferRear) → MediaStream ; fallback selon type d'erreur ; audio désactivé.
+        - acquire(owner, options) → Promise de MediaStream ; owners Set et promesse connecting.
+        - release(owner) → arrêt des pistes si dernier propriétaire.
+        - isActive() → booléen, au moins une piste vidéo live.
+        - Invariant manquant : libération pendant acquisition pendante ; owners.add après await. Risque statique, non reproduit.
+      - [tests/camera-pool.test.mjs](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/tests/camera-pool.test.mjs) — blob `fc83fd2d1f111e3ed46cbbecff73073c248e8da7`, quatre tests relus, non exécutés.
+        - Partage séquentiel, concurrence acquisition, fallback caméra, refus permission.
+        - Lacunes : annulation pendante, propriétaire répété, piste terminée.
+    - [scripts/shared-camera-relay.mjs](https://github.com/Sathancabrol/monorepo/blob/feat/olympus-mobile-preview-20261113/projects/olympus-studio/scripts/shared-camera-relay.mjs) — blob `075ff20447626cce46952390c0787aead77d946b`, relu le 24/11.
+      - createSharedCameraRelay({now}) → handleCamera(req,res,url) ; Map en mémoire, horloge injectable.
+        - clean : expiration à chaque requête, >12 s.
+        - readFrame : Buffer JPEG, 350000 octets maximum, marqueurs uniquement.
+        - GET streams/frame : métadonnées/images ; pas de clé de lecture dans ce module.
+        - POST/DELETE frame : origine et clé de session ; limites nominales quatre flux et 150 ms.
+        - Invariant manquant : contrôle de capacité et propriété avant lecture asynchrone, écriture après ; vérifier concurrence avec fixtures isolées.
+      - Données : images éphémères de capteurs consentis, jamais à verser dans Git.
+      - [[24-OLYMPUS-RELAIS-CAMERA-TESTS-2026-11-24]]
+  - Intégration cible : préserver EDIT/Comfy de Studio et caméra Fleet/Mobile ; SPATIAL, XR et Hermes restent à vérifier par contrat et recette.
+  - Statut : code lu et annexes reliées ; aucun runtime ni test rejoué, aucune fusion.
+
+Retour : [[01-HUB-SUIVI-AGENTS]] · [[00-WATCHTOWER-COGNITORIUM-CARRE-DAS-MINDMAP]] · [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]].
