@@ -173,3 +173,15 @@ Reprise : [[24-OLYMPUS-RELAIS-CAMERA-TESTS-2026-11-24]] → déploiement Fleet, 
 | Research Engine | [[29-RESEARCH-ENGINE-AGENTS-DECISIONS-2026-11-24]] | `bc4abb970e1a4c2fd6b5549a6f923b22656a0907` |
 
 Reprise prioritaire : machine à états et suffisance (27), provenance et projection (28), rétroaction des agents (29), puis recherche du routeur CRONOS. Les constats sont statiques ; aucun test Python ou PowerShell exécuté dans ces audits. Voir [[12-ARBORESCENCE-PROFONDE-MULTI-NIVEAUX]] et [[08-WATCHTOWER-AUDIT-MAITRE-2026-11-22]].
+
+## Validation expérimentale et index complémentaire — 2026-11-25
+
+- [[30-RESEARCH-ENGINE-PLANIFICATION-QUALITE-2026-11-24]] — blob `6ba90d5c6c783f671710fb9027051e9102fea9b2`, reproduction pytest documentée dans la note.
+- [[31-RESEARCH-ENGINE-CONTRATS-TRANSITIONS-2026-11-24]] — blob `3598c93ce6d9218ffbe12f6b2a04767e63e8fd58`, contrôle structurel des contrats.
+
+### Machine à états : exécution Python isolée
+Source : [reaserch-engine/main/engine/state_machine.py](https://github.com/Sathancabrol/reaserch-engine/blob/main/engine/state_machine.py), blob `0c3975a4eabd1c138f3c7667e01ab9ceea6625da`. Fichier reproduit localement et identité vérifiée par git hash-object avant exécution. Dépendance : enum standard. Interface transition(current: ResearchState, target: ResearchState) -> ResearchState ou ValueError. Aucune donnée externe.
+
+Contrôle exécuté : double boucle Python sur les neuf valeurs de ResearchState, appel transition(a,b), assertion du retour b, capture ValueError. 81 couples exercés : 19 acceptés, 62 rejetés ; aucune auto-transition ; seules created et blocked permettent planning. blocked -> completed accepté. researching -> researching lève ValueError: Illegal research transition: researching -> researching. Code de sortie du script : 0. Il s'agit d'un inventaire comportemental, pas de 81 assertions métier indépendantes.
+
+Statut TEST_LOCAL_SANDBOX : fonction pure exécutée, pas le pipeline ni la tour. Le passage blocked -> completed exige une distinction explicite entre clôture opérationnelle et suffisance scientifique dans le consommateur. Prochain lot : orchestrateur avec agents injectés, validation JSON Schema des huit décisions et reprise persistante. Aucun code applicatif modifié.
