@@ -185,3 +185,20 @@ Source : [reaserch-engine/main/engine/state_machine.py](https://github.com/Satha
 Contrôle exécuté : double boucle Python sur les neuf valeurs de ResearchState, appel transition(a,b), assertion du retour b, capture ValueError. 81 couples exercés : 19 acceptés, 62 rejetés ; aucune auto-transition ; seules created et blocked permettent planning. blocked -> completed accepté. researching -> researching lève ValueError: Illegal research transition: researching -> researching. Code de sortie du script : 0. Il s'agit d'un inventaire comportemental, pas de 81 assertions métier indépendantes.
 
 Statut TEST_LOCAL_SANDBOX : fonction pure exécutée, pas le pipeline ni la tour. Le passage blocked -> completed exige une distinction explicite entre clôture opérationnelle et suffisance scientifique dans le consommateur. Prochain lot : orchestrateur avec agents injectés, validation JSON Schema des huit décisions et reprise persistante. Aucun code applicatif modifié.
+
+## Index complémentaire — audits 32–34 (2026-11-25)
+
+- [[32-RESEARCH-ENGINE-VALIDATION-SUFFISANCE-2026-11-25]] — blob `33392643f6e887a8dfadea16019a29b937573957`
+- [[33-RESEARCH-ENGINE-ORCHESTRATION-CHECKPOINT-RETRIEVAL-2026-11-25]] — blob `a56009e1950b54022b3aee705872a20b01061a65`
+- [[34-RESEARCH-ENGINE-RETRIEVAL-TESTS-2026-11-25]] — blob `190d95973171d1f5a489751e2b1721332daa662f`
+
+### Checkpoints : approfondissement statique
+
+Source : [engine/persistence.py](https://github.com/Sathancabrol/reaserch-engine/blob/main/engine/persistence.py), blob `9484f2bc01b0c21a842d4cbcf8d42aee0e2cad29` ; [engine/orchestrator.py](https://github.com/Sathancabrol/reaserch-engine/blob/main/engine/orchestrator.py), blob `a8f5c32675cc34d4ff4aa3919d26180507a8ec57`.
+
+- JsonRunStore.save(run) -> Path : incrémente revision avant validation du chemin et sérialisation ; une erreur peut donc modifier la révision en mémoire sans checkpoint durable. Le fichier temporaire delete=False peut subsister si json.dump ou replace échoue. Aucun contrôle CAS de la révision sur disque.
+- load(run_id) -> ResearchRun : reconstruit état, contexte, historique ; revision absente vaut 0. Le marqueur __type__=EvidenceGraph est interprété sans espace de noms réservé ; collision possible avec une donnée agent ordinaire.
+- _json_value : Enum devient valeur, tuple devient liste, dataclass devient dictionnaire ; restauration non symétrique hors EvidenceGraph. Dépendances : bibliothèque standard, EvidenceGraph, ResearchState, ResearchRun. Données : JSON local, aucune API externe.
+- Orchestrator.run : checkpoint avant transition vers PLANNING ; reprise depuis un état intermédiaire peut échouer après avoir déjà écrit une nouvelle révision. Deuxième cycle : transition vers RESEARCHING en fin de cycle puis nouvelle transition identique au début suivant.
+- Tests à exécuter : deux lecteurs de même révision puis deux sauvegardes ; objet non sérialisable ; échec de replace ; collision du marqueur ; reprise depuis VERIFYING ; vérifier révision mémoire/disque et fichiers temporaires. Statut CODE_OBSERVE, aucun runtime exécuté dans cette passe.
+- Cible : CAS ou verrou, révision validée après écriture, nettoyage des temporaires, version du schéma, reprise idempotente. Aucun code applicatif modifié.
